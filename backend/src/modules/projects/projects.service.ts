@@ -10,6 +10,7 @@ import {
 } from './projects.types';
 import { NotFoundError, ValidationError, ForbiddenError } from '../../shared/errors/appErrors';
 import { prisma } from '../../shared/db/prismaClient';
+import { ProjectDiscussionsService } from './projectDiscussions.service';
 
 export class ProjectsService {
   constructor(private readonly repo: ProjectsRepository = new ProjectsRepository()) {}
@@ -233,5 +234,20 @@ export class ProjectsService {
 
   async respondInvitation(projectId: string, userId: string, accept: boolean): Promise<void> {
     await this.repo.respondToInvitation(projectId, userId, accept);
+  }
+
+  // Discussions
+  private readonly discussionService = new ProjectDiscussionsService();
+
+  async getDiscussions(projectId: string, userId: string) {
+    return this.discussionService.getDiscussions(projectId, userId);
+  }
+
+  async createDiscussion(projectId: string, userId: string, data: any) {
+    return this.discussionService.createDiscussion(projectId, userId, data);
+  }
+
+  async deleteDiscussion(projectId: string, userId: string, messageId: string) {
+    return this.discussionService.deleteDiscussion(projectId, userId, messageId);
   }
 }

@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
 import { Modal } from '../../../components/common/Modal';
-import { api } from '../../../services/api';
+import { api, ApiResponse } from '../../../services/api';
 import { useToast } from '../../../contexts/ToastContext';
-import { useAppFilter } from '../../../contexts/AppFilterContext';
+import { useAppFilter, SemesterOption } from '../../../contexts/AppFilterContext';
 import { Layers, Calendar, Save } from 'lucide-react';
 
 interface SemesterModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (newSemester?: SemesterOption) => void;
+  initialData?: SemesterOption | null;
 }
 
-export const SemesterModal: React.FC<SemesterModalProps> = ({ isOpen, onClose, onSuccess }) => {
+export const SemesterModal: React.FC<SemesterModalProps> = ({
+  isOpen,
+  onClose,
+  onSuccess,
+  initialData
+}) => {
   const [name, setName] = useState('');
   const [academicYear, setAcademicYear] = useState('2025-2026');
   const [isCurrent, setIsCurrent] = useState(false);
@@ -19,24 +25,53 @@ export const SemesterModal: React.FC<SemesterModalProps> = ({ isOpen, onClose, o
   const { showToast } = useToast();
   const { refreshFilterData } = useAppFilter();
 
+  const isEditing = Boolean(initialData?.id);
+
+  React.useEffect(() => {
+    if (initialData) {
+      setName(initialData.name || '');
+      setAcademicYear(initialData.academicYear || '2025-2026');
+      setIsCurrent(Boolean(initialData.isCurrent));
+    } else {
+      setName('');
+      setAcademicYear('2025-2026');
+      setIsCurrent(false);
+    }
+  }, [initialData, isOpen]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!name.trim()) {
+      showToast('Vui lòng nhập tên học kỳ', 'error');
+      return;
+    }
+
     setLoading(true);
-
     try {
-      await api.post('/semesters', {
-        name: name.trim(),
-        academicYear: academicYear.trim(),
-        isCurrent
-      });
+      let savedSemester: any;
+      if (isEditing && initialData?.id) {
+        const res = await api.put<ApiResponse<any>>(`/semesters/${initialData.id}`, {
+          name: name.trim(),
+          academicYear: academicYear.trim(),
+          isCurrent
+        });
+        savedSemester = res.data;
+        showToast('Cập nhật học kỳ thành công!', 'success');
+      } else {
+        const res = await api.post<ApiResponse<any>>('/semesters', {
+          name: name.trim(),
+          academicYear: academicYear.trim(),
+          isCurrent
+        });
+        savedSemester = res.data;
+        showToast('Tạo học kỳ mới thành công!', 'success');
+      }
 
-      showToast('Tạo học kỳ mới thành công!', 'success');
-      setName('');
       await refreshFilterData();
-      onSuccess();
+      onSuccess(savedSemester);
       onClose();
     } catch (err: any) {
-      showToast(err.message || 'Lỗi khi tạo học kỳ', 'error');
+      showToast(err.message || 'Lỗi khi lưu học kỳ', 'error');
     } finally {
       setLoading(false);
     }
@@ -46,7 +81,7 @@ export const SemesterModal: React.FC<SemesterModalProps> = ({ isOpen, onClose, o
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Thêm Học Kỳ Mới"
+      title={isEditing ? 'Chỉnh Sửa Học Kỳ' : 'Thêm Học Kỳ Mới'}
       maxWidth="500px"
       icon={<Layers size={20} />}
     >
@@ -107,7 +142,7 @@ export const SemesterModal: React.FC<SemesterModalProps> = ({ isOpen, onClose, o
             className="btn btn-primary"
           >
             <Save size={15} />
-            <span>{loading ? 'Đang lưu...' : 'Tạo Học Kỳ'}</span>
+            <span>{loading ? 'Đang lưu...' : isEditing ? 'Lưu Thay Đổi' : 'Tạo Học Kỳ'}</span>
           </button>
         </div>
       </form>

@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { TaskStatus, TaskPriority } from '@snote/shared';
+import { getTaskDueStatus } from '../../../utils/dateUtils';
 import {
   Flame,
   Calendar,
@@ -166,11 +167,20 @@ export const TasksEisenhowerView: React.FC<TasksEisenhowerViewProps> = ({
             )}
           </div>
 
-          {task.dueDate && (
-            <span style={{ flexShrink: 0, fontWeight: 500 }}>
-              {new Date(task.dueDate).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}
-            </span>
-          )}
+          {task.dueDate && (() => {
+            const dueInfo = getTaskDueStatus(task.dueDate, isDone);
+            return (
+              <span
+                style={{
+                  flexShrink: 0,
+                  fontWeight: dueInfo.isOverdue || dueInfo.isToday ? 700 : 500,
+                  color: dueInfo.isOverdue ? 'var(--color-danger)' : dueInfo.isToday ? 'var(--color-warning)' : 'inherit'
+                }}
+              >
+                {dueInfo.label || dueInfo.formattedDue}
+              </span>
+            );
+          })()}
         </div>
       </div>
     );

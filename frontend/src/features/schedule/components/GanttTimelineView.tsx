@@ -10,9 +10,15 @@ import {
   Sparkles,
   AlertCircle,
   ExternalLink,
-  Target
+  Target,
+  Layers,
+  ChevronDown,
+  Filter,
+  MapPin,
+  BookOpen,
+  X
 } from 'lucide-react';
-import { extractNoteFeatures } from '../../notes/utils/smartNoteParser';
+import { useAuth } from '../../../contexts/AuthContext';
 
 export interface GanttItem {
   id: string;
@@ -46,81 +52,73 @@ interface GanttTimelineViewProps {
   items: GanttItem[];
   currentDate: Date;
   onDateChange: (date: Date) => void;
+  timeframe?: GanttTimeframe;
+  onTimeframeChange?: (tf: GanttTimeframe) => void;
   onItemClick: (item: GanttItem) => void;
   onDateClick?: (date: Date) => void;
+  onItemDateChange?: (item: GanttItem, newStart: Date, newEnd: Date) => Promise<void>;
 }
 
+export type GanttTimeframe = '3_DAYS' | '7_DAYS' | '30_DAYS' | 'YEAR';
 type StatusFilter = 'ALL' | 'TODO' | 'IN_PROGRESS' | 'PENDING' | 'DONE';
 
-const CELL_WIDTH = 40; // width of each day column in px
-const ROW_HEIGHT = 48; // height of each row in px
+const HOUR_HEIGHT = 56; // Chiều cao mỗi ô giờ trong Time Grid (px)
+const HOURS = Array.from({ length: 24 }, (_, i) => i); // 0h đến 23h
+
+interface DragState {
+  item: GanttItem;
+  action: 'MOVE' | 'RESIZE_START' | 'RESIZE_END';
+  startX: number;
+  startY: number;
+  initialStart: Date;
+  initialEnd: Date;
+  currentStart: Date;
+  currentEnd: Date;
+  targetDayIndex: number;
+}
 
 export const GanttTimelineView: React.FC<GanttTimelineViewProps> = ({
   items,
   currentDate,
   onDateChange,
+  timeframe: externalTimeframe,
+  onTimeframeChange,
   onItemClick,
-  onDateClick
+  onDateClick,
+  onItemDateChange
 }) => {
+  const { user } = useAuth();
+  const [internalTimeframe, setInternalTimeframe] = useState<GanttTimeframe>('30_DAYS');
+  const timeframe = externalTimeframe !== undefined ? externalTimeframe : internalTimeframe;
+  const setTimeframe = onTimeframeChange || setInternalTimeframe;
+
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('ALL');
   const [hoveredItemId, setHoveredItemId] = useState<string | null>(null);
   const [tooltipData, setTooltipData] = useState<{ item: GanttItem; x: number; y: number } | null>(null);
-  const timelineScrollRef = useRef<HTMLDivElement>(null);
+  const [dragState, setDragState] = useState<DragState | null>(null);
+  const [timeEditorData, setTimeEditorData] = useState<{
+    item: GanttItem;
+    startHour: string;
+    endHour: string;
+    x: number;
+    y: number;
+  } | null>(null);
+  const [moreEventsModal, setMoreEventsModal] = useState<{
+    date: Date;
+    items: GanttItem[];
+  } | null>(null);
 
-  // Month navigation & days generation
-  const year = currentDate.getFullYear();
-  const month = currentDate.getMonth();
+  // Drag and drop state for Month View
+  const [monthDraggedItem, setMonthDraggedItem] = useState<GanttItem | null>(null);
+  const [dragOverDate, setDragOverDate] = useState<string | null>(null);
 
-  // Days in current month + first few days of next month (total 35-42 columns for wide canvas)
-  const daysInMonth = useMemo(() => {
-    const totalDays = new Date(year, month + 1, 0).getDate();
-    const result: Date[] = [];
-    for (let d = 1; d <= totalDays; d++) {
-      result.push(new Date(year, month, d, 0, 0, 0, 0));
-    }
-    // Add 4 buffer days of next month for smooth overflow display
-    for (let d = 1; d <= 4; d++) {
-      result.push(new Date(year, month + 1, d, 0, 0, 0, 0));
-    }
-    return result;
-  }, [year, month]);
+  const isDraggingRef = useRef(false);
+  const hasMovedRef = useRef(false);
+  const latestDragStateRef = useRef<DragState | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const bodyGridRef = useRef<HTMLDivElement>(null);
 
-  const monthStart = daysInMonth[0];
-  const monthEnd = daysInMonth[daysInMonth.length - 1];
-
-  // Auto-scroll to today column on mount or date change
-  useEffect(() => {
-    const today = new Date();
-    if (today.getMonth() === month && today.getFullYear() === year) {
-      const todayDay = today.getDate();
-      const scrollPos = Math.max(0, (todayDay - 3) * CELL_WIDTH);
-      if (timelineScrollRef.current) {
-        timelineScrollRef.current.scrollTo({ left: scrollPos, behavior: 'smooth' });
-      }
-    }
-  }, [month, year]);
-
-  const handleJumpToToday = () => {
-    const today = new Date();
-    onDateChange(today);
-    const todayDay = today.getDate();
-    const scrollPos = Math.max(0, (todayDay - 3) * CELL_WIDTH);
-    if (timelineScrollRef.current) {
-      timelineScrollRef.current.scrollTo({ left: scrollPos, behavior: 'smooth' });
-    }
-  };
-
-  const handlePrevMonth = () => {
-    const prev = new Date(year, month - 1, 1);
-    onDateChange(prev);
-  };
-
-  const handleNextMonth = () => {
-    const next = new Date(year, month + 1, 1);
-    onDateChange(next);
-  };
-
-  // Counts for status tabs
+  // Status counts
   const counts = useMemo(() => {
     let todo = 0;
     let inProgress = 0;
@@ -138,7 +136,7 @@ export const GanttTimelineView: React.FC<GanttTimelineViewProps> = ({
     return { all: items.length, todo, inProgress, pending, done };
   }, [items]);
 
-  // Filter items according to status
+  // Filter items
   const filteredItems = useMemo(() => {
     if (statusFilter === 'ALL') return items;
     return items.filter((item) => {
@@ -151,7 +149,8 @@ export const GanttTimelineView: React.FC<GanttTimelineViewProps> = ({
     });
   }, [items, statusFilter]);
 
-  const dayOfWeekNames = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+  const dayOfWeekNamesLong = ['CN', 'THỨ 2', 'THỨ 3', 'THỨ 4', 'THỨ 5', 'THỨ 6', 'THỨ 7'];
+  const dayOfWeekNamesShort = ['Cn', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
 
   const isToday = (d: Date) => {
     const now = new Date();
@@ -162,600 +161,1049 @@ export const GanttTimelineView: React.FC<GanttTimelineViewProps> = ({
     );
   };
 
-  // Calculate Gantt bar position and width
-  const getGanttBarStyle = (item: GanttItem) => {
-    const start = new Date(item.startTime || item.createdAt || monthStart);
-    const end = new Date(item.endTime || item.dueDate || item.startTime || monthEnd);
-
-    // Normalize start/end
-    start.setHours(0, 0, 0, 0);
-    end.setHours(23, 59, 59, 999);
-
-    const msPerDay = 24 * 60 * 60 * 1000;
-    const offsetDays = Math.floor((start.getTime() - monthStart.getTime()) / msPerDay);
-    const durationDays = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / msPerDay));
-
-    const left = Math.max(0, offsetDays * CELL_WIDTH);
-    const width = Math.max(CELL_WIDTH - 6, durationDays * CELL_WIDTH - 8);
-
-    // Status colors
-    const s = (item.status || '').toUpperCase();
-    let bgGradient = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
-    let borderColor = '#b45309';
-    let textColor = '#ffffff';
-
-    if (s === 'DONE' || s === 'COMPLETED') {
-      bgGradient = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
-      borderColor = '#047857';
-    } else if (s === 'IN_PROGRESS') {
-      bgGradient = 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)';
-      borderColor = '#0369a1';
-    } else if (s === 'PENDING' || s === 'REVIEW' || s === 'IN_REVIEW') {
-      bgGradient = 'linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)';
-      borderColor = '#6b21a8';
-    } else if (item.itemType === 'EVENT') {
-      bgGradient = 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)';
-      borderColor = '#1e40af';
-    }
-
-    return { left, width, bgGradient, borderColor, textColor };
+  const formatHHmm = (d: Date) => {
+    return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
   };
 
-  const getStatusBadge = (item: GanttItem) => {
-    const s = (item.status || '').toUpperCase();
-    if (s === 'DONE' || s === 'COMPLETED') {
-      return { text: 'Hoàn thành', bg: 'rgba(16, 185, 129, 0.15)', color: '#10b981', border: 'rgba(16, 185, 129, 0.3)' };
-    }
-    if (s === 'IN_PROGRESS') {
-      return { text: 'Đang làm', bg: 'rgba(14, 165, 233, 0.15)', color: '#0ea5e9', border: 'rgba(14, 165, 233, 0.3)' };
-    }
-    if (s === 'PENDING' || s === 'REVIEW' || s === 'IN_REVIEW') {
-      return { text: 'Chờ duyệt', bg: 'rgba(168, 85, 247, 0.15)', color: '#a855f7', border: 'rgba(168, 85, 247, 0.3)' };
-    }
+  const formatTime12h = (d: Date) => {
+    let h = d.getHours();
+    const m = d.getMinutes();
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12;
+    h = h ? h : 12;
+    const mStr = m === 0 ? '' : `:${String(m).padStart(2, '0')}`;
+    return `${h}${mStr}${ampm}`;
+  };
+
+  // Helper lấy giờ bắt đầu & kết thúc chuẩn xác
+  const getItemExactDates = (item: GanttItem) => {
+    let start: Date;
+    let end: Date;
+
     if (item.itemType === 'EVENT') {
-      return { text: 'Tiết học', bg: 'rgba(59, 130, 246, 0.15)', color: '#3b82f6', border: 'rgba(59, 130, 246, 0.3)' };
+      start = new Date(item.startTime || new Date());
+      end = new Date(item.endTime || new Date(start.getTime() + 90 * 60 * 1000));
+      if (isNaN(start.getTime())) start = new Date();
+      if (isNaN(end.getTime())) end = new Date(start.getTime() + 90 * 60 * 1000);
+      if (end.getTime() <= start.getTime()) {
+        end = new Date(start.getTime() + 90 * 60 * 1000);
+      }
+    } else {
+      // TASK or PROJECT
+      end = new Date(item.dueDate || item.endTime || item.startTime || new Date());
+      if (isNaN(end.getTime())) end = new Date();
+
+      if (item.startTime && !isNaN(new Date(item.startTime).getTime())) {
+        start = new Date(item.startTime);
+      } else {
+        start = new Date(end.getTime() - 60 * 60 * 1000);
+      }
+
+      if (end.getTime() <= start.getTime()) {
+        end = new Date(start.getTime() + 60 * 60 * 1000);
+      }
     }
-    return { text: 'Cần làm', bg: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', border: 'rgba(245, 158, 11, 0.3)' };
+
+    return { start, end };
   };
 
-  const getItemSubtasksInfo = (item: GanttItem) => {
-    if (!item.description) return null;
-    const features = extractNoteFeatures(item.description);
-    if (features.checklist.total > 0) {
-      return {
-        done: features.checklist.done,
-        total: features.checklist.total,
-        percent: Math.round((features.checklist.done / features.checklist.total) * 100)
-      };
+  // ----------------------------------------------------
+  // 1. DỮ LIỆU LỊCH THÁNG (MONTH VIEW GRID)
+  // ----------------------------------------------------
+  const monthViewData = useMemo(() => {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+
+    const firstDay = new Date(year, month, 1);
+    const startDayOfWeek = firstDay.getDay(); // 0 = CN, 1 = T2, ...
+
+    const startDate = new Date(year, month, 1 - startDayOfWeek);
+    startDate.setHours(0, 0, 0, 0);
+
+    const dates: Date[] = [];
+    for (let i = 0; i < 42; i++) {
+      const d = new Date(startDate);
+      d.setDate(startDate.getDate() + i);
+      dates.push(d);
     }
-    return null;
+
+    let visibleDates = dates;
+    if (dates[35].getMonth() !== month) {
+      visibleDates = dates.slice(0, 35);
+    }
+
+    const itemsByDay = new Map<string, GanttItem[]>();
+    visibleDates.forEach((d) => {
+      const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+      itemsByDay.set(key, []);
+    });
+
+    filteredItems.forEach((item) => {
+      const { start } = getItemExactDates(item);
+      const key = `${start.getFullYear()}-${start.getMonth()}-${start.getDate()}`;
+      if (itemsByDay.has(key)) {
+        itemsByDay.get(key)!.push(item);
+      }
+    });
+
+    itemsByDay.forEach((list) => {
+      list.sort((a, b) => {
+        const dateA = getItemExactDates(a).start.getTime();
+        const dateB = getItemExactDates(b).start.getTime();
+        return dateA - dateB;
+      });
+    });
+
+    return { visibleDates, itemsByDay, currentMonth: month, currentYear: year };
+  }, [currentDate, filteredItems]);
+
+  // ----------------------------------------------------
+  // 2. DỮ LIỆU LỊCH NĂM (YEAR VIEW - 12 THÁNG)
+  // ----------------------------------------------------
+  const yearViewData = useMemo(() => {
+    const year = currentDate.getFullYear();
+
+    // Bản đồ items theo ngày trong toàn bộ năm
+    const yearItemsMap = new Map<string, GanttItem[]>();
+    filteredItems.forEach((item) => {
+      const { start } = getItemExactDates(item);
+      const key = `${start.getFullYear()}-${start.getMonth()}-${start.getDate()}`;
+      if (!yearItemsMap.has(key)) {
+        yearItemsMap.set(key, []);
+      }
+      yearItemsMap.get(key)!.push(item);
+    });
+
+    const months = Array.from({ length: 12 }, (_, m) => {
+      const firstDay = new Date(year, m, 1);
+      const startDayOfWeek = firstDay.getDay();
+
+      const startDate = new Date(year, m, 1 - startDayOfWeek);
+      startDate.setHours(0, 0, 0, 0);
+
+      const days: Date[] = [];
+      for (let i = 0; i < 42; i++) {
+        const d = new Date(startDate);
+        d.setDate(startDate.getDate() + i);
+        days.push(d);
+      }
+
+      return {
+        monthIndex: m,
+        monthName: `Tháng ${m + 1}`,
+        days
+      };
+    });
+
+    return { year, months, yearItemsMap };
+  }, [currentDate, filteredItems]);
+
+  // ----------------------------------------------------
+  // 3. DỮ LIỆU LỊCH TUẦN / 3 NGÀY (TIME GRID VIEW)
+  // ----------------------------------------------------
+  const weekDates = useMemo(() => {
+    const count = timeframe === '3_DAYS' ? 3 : 7;
+    const start = new Date(currentDate);
+    start.setHours(0, 0, 0, 0);
+
+    if (timeframe === '7_DAYS') {
+      const day = start.getDay();
+      const diff = start.getDate() - day + (day === 0 ? -6 : 1);
+      start.setDate(diff);
+    }
+
+    const dates: Date[] = [];
+    for (let i = 0; i < count; i++) {
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      dates.push(d);
+    }
+    return dates;
+  }, [currentDate, timeframe]);
+
+  useEffect(() => {
+    if ((timeframe === '7_DAYS' || timeframe === '3_DAYS') && scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 7 * HOUR_HEIGHT;
+    }
+  }, [timeframe]);
+
+  // Layout map cho Week View
+  const weekDayItemsMap = useMemo(() => {
+    type WeekCard = {
+      item: GanttItem;
+      start: Date;
+      end: Date;
+      top: number;
+      height: number;
+      colIndex: number;
+      totalCols: number;
+    };
+
+    if (timeframe === '30_DAYS' || timeframe === 'YEAR') {
+      return new Map<number, WeekCard[]>();
+    }
+
+    const map = new Map<number, WeekCard[]>();
+    weekDates.forEach((_, idx) => map.set(idx, []));
+
+    filteredItems.forEach((item) => {
+      let start: Date;
+      let end: Date;
+      let dayIndex = -1;
+
+      if (dragState && dragState.item.id === item.id) {
+        start = dragState.currentStart;
+        end = dragState.currentEnd;
+        dayIndex = dragState.targetDayIndex;
+      } else {
+        const dates = getItemExactDates(item);
+        start = dates.start;
+        end = dates.end;
+
+        dayIndex = weekDates.findIndex(
+          (d) =>
+            d.getDate() === start.getDate() &&
+            d.getMonth() === start.getMonth() &&
+            d.getFullYear() === start.getFullYear()
+        );
+      }
+
+      if (dayIndex >= 0 && dayIndex < weekDates.length) {
+        const startMinutes = start.getHours() * 60 + start.getMinutes();
+        const endMinutes = end.getHours() * 60 + end.getMinutes();
+        const durationMinutes = Math.max(endMinutes - startMinutes, 20);
+
+        const top = (startMinutes / 60) * HOUR_HEIGHT;
+        const height = Math.max((durationMinutes / 60) * HOUR_HEIGHT, 28);
+
+        map.get(dayIndex)?.push({
+          item,
+          start,
+          end,
+          top,
+          height,
+          colIndex: 0,
+          totalCols: 1
+        });
+      }
+    });
+
+    map.forEach((dayList) => {
+      dayList.sort((a, b) => a.top - b.top || b.height - a.height);
+      const columns: Array<Array<{ top: number; bottom: number }>> = [];
+
+      dayList.forEach((ev) => {
+        const bottom = ev.top + ev.height;
+        let placedCol = -1;
+
+        for (let i = 0; i < columns.length; i++) {
+          const lastInCol = columns[i][columns[i].length - 1];
+          if (ev.top >= lastInCol.bottom - 2) {
+            placedCol = i;
+            columns[i].push({ top: ev.top, bottom });
+            break;
+          }
+        }
+
+        if (placedCol === -1) {
+          placedCol = columns.length;
+          columns.push([{ top: ev.top, bottom }]);
+        }
+
+        ev.colIndex = placedCol;
+      });
+
+      const total = Math.max(columns.length, 1);
+      dayList.forEach((ev) => {
+        ev.totalCols = total;
+      });
+    });
+
+    return map;
+  }, [filteredItems, weekDates, dragState, timeframe]);
+
+  // Card color styling
+  const getItemCardStyle = (item: GanttItem) => {
+    const s = (item.status || '').toUpperCase();
+    let bg = 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)';
+    let border = '#334155';
+    let accent = '#38bdf8';
+
+    if (s === 'DONE' || s === 'COMPLETED') {
+      bg = 'linear-gradient(135deg, #064e3b 0%, #022c22 100%)';
+      border = '#059669';
+      accent = '#10b981';
+    } else if (s === 'IN_PROGRESS') {
+      bg = 'linear-gradient(135deg, #0c4a6e 0%, #082f49 100%)';
+      border = '#0284c7';
+      accent = '#38bdf8';
+    } else if (s === 'PENDING' || s === 'REVIEW' || s === 'IN_REVIEW') {
+      bg = 'linear-gradient(135deg, #581c87 0%, #3b0764 100%)';
+      border = '#7e22ce';
+      accent = '#c084fc';
+    } else if (item.itemType === 'EVENT') {
+      bg = 'linear-gradient(135deg, #1e3a8a 0%, #172554 100%)';
+      border = '#2563eb';
+      accent = '#60a5fa';
+    }
+
+    if (item.subject?.color) {
+      accent = item.subject.color;
+    }
+
+    return { bg, border, accent };
   };
+
+  // Drag in Week View
+  const handleStartDragWeek = (
+    e: React.MouseEvent,
+    item: GanttItem,
+    action: 'MOVE' | 'RESIZE_START' | 'RESIZE_END',
+    initialStart: Date,
+    initialEnd: Date,
+    initialDayIndex: number
+  ) => {
+    if (e.button !== 0) return;
+    e.stopPropagation();
+
+    const startX = e.clientX;
+    const startY = e.clientY;
+    hasMovedRef.current = false;
+    isDraggingRef.current = true;
+
+    const initialDragState: DragState = {
+      item,
+      action,
+      startX,
+      startY,
+      initialStart,
+      initialEnd,
+      currentStart: new Date(initialStart),
+      currentEnd: new Date(initialEnd),
+      targetDayIndex: initialDayIndex
+    };
+
+    latestDragStateRef.current = initialDragState;
+    setDragState(initialDragState);
+
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      const deltaX = moveEvent.clientX - startX;
+      const deltaY = moveEvent.clientY - startY;
+
+      if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
+        hasMovedRef.current = true;
+      }
+
+      const pxPer15Min = HOUR_HEIGHT / 4;
+      const steps = Math.round(deltaY / pxPer15Min);
+      const deltaMinutes = steps * 15;
+
+      let targetDayIdx = initialDayIndex;
+      if (action === 'MOVE' && bodyGridRef.current) {
+        const gridRect = bodyGridRef.current.getBoundingClientRect();
+        const mouseX = moveEvent.clientX - gridRect.left;
+        const colWidth = gridRect.width / weekDates.length;
+        const computedIdx = Math.floor(mouseX / colWidth);
+        targetDayIdx = Math.max(0, Math.min(weekDates.length - 1, computedIdx));
+      }
+
+      const targetDay = weekDates[targetDayIdx];
+      let newStart = new Date(initialStart);
+      let newEnd = new Date(initialEnd);
+
+      newStart.setFullYear(targetDay.getFullYear(), targetDay.getMonth(), targetDay.getDate());
+      newEnd.setFullYear(targetDay.getFullYear(), targetDay.getMonth(), targetDay.getDate());
+
+      if (action === 'MOVE') {
+        const durationMs = initialEnd.getTime() - initialStart.getTime();
+        const curStartMins = initialStart.getHours() * 60 + initialStart.getMinutes() + deltaMinutes;
+        const clampedStartMins = Math.max(0, Math.min(24 * 60 - 30, curStartMins));
+
+        newStart.setHours(Math.floor(clampedStartMins / 60), clampedStartMins % 60, 0, 0);
+        newEnd = new Date(newStart.getTime() + durationMs);
+
+        const dayEnd = new Date(targetDay.getFullYear(), targetDay.getMonth(), targetDay.getDate(), 23, 59, 59, 999);
+        if (newEnd.getTime() > dayEnd.getTime()) {
+          newEnd = dayEnd;
+        }
+      } else if (action === 'RESIZE_START') {
+        const curStartMins = initialStart.getHours() * 60 + initialStart.getMinutes() + deltaMinutes;
+        const endMins = initialEnd.getHours() * 60 + initialEnd.getMinutes();
+        const clampedStartMins = Math.max(0, Math.min(endMins - 15, curStartMins));
+
+        newStart.setHours(Math.floor(clampedStartMins / 60), clampedStartMins % 60, 0, 0);
+      } else if (action === 'RESIZE_END') {
+        const startMins = initialStart.getHours() * 60 + initialStart.getMinutes();
+        const curEndMins = initialEnd.getHours() * 60 + initialEnd.getMinutes() + deltaMinutes;
+        const clampedEndMins = Math.max(startMins + 15, Math.min(24 * 60 - 1, curEndMins));
+
+        newEnd.setHours(Math.floor(clampedEndMins / 60), clampedEndMins % 60, 0, 0);
+      }
+
+      const updatedState: DragState = {
+        item,
+        action,
+        startX,
+        startY,
+        initialStart,
+        initialEnd,
+        currentStart: newStart,
+        currentEnd: newEnd,
+        targetDayIndex: targetDayIdx
+      };
+
+      latestDragStateRef.current = updatedState;
+      setDragState(updatedState);
+    };
+
+    const onMouseUp = async () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+
+      const wasMoved = hasMovedRef.current;
+      const latest = latestDragStateRef.current;
+
+      setTimeout(() => {
+        isDraggingRef.current = false;
+      }, 80);
+
+      setDragState(null);
+
+      if (wasMoved && latest && onItemDateChange) {
+        await onItemDateChange(latest.item, latest.currentStart, latest.currentEnd);
+      }
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+  };
+
+  // Month Drag & Drop handlers
+  const handleMonthDragStart = (e: React.DragEvent, item: GanttItem) => {
+    e.stopPropagation();
+    setMonthDraggedItem(item);
+    e.dataTransfer.setData('text/plain', item.id);
+  };
+
+  const handleMonthDrop = async (e: React.DragEvent, targetDate: Date) => {
+    e.preventDefault();
+    setDragOverDate(null);
+    if (!monthDraggedItem || !onItemDateChange) return;
+
+    const { start, end } = getItemExactDates(monthDraggedItem);
+    const durationMs = end.getTime() - start.getTime();
+
+    const newStart = new Date(targetDate);
+    newStart.setHours(start.getHours(), start.getMinutes(), 0, 0);
+
+    const newEnd = new Date(newStart.getTime() + durationMs);
+
+    await onItemDateChange(monthDraggedItem, newStart, newEnd);
+    setMonthDraggedItem(null);
+  };
+
+  // Mini Popover chỉnh giờ trực tiếp
+  const handleOpenTimeEditor = (e: React.MouseEvent, item: GanttItem) => {
+    e.stopPropagation();
+    const { start, end } = getItemExactDates(item);
+    const rect = e.currentTarget.getBoundingClientRect();
+    setTimeEditorData({
+      item,
+      startHour: formatHHmm(start),
+      endHour: formatHHmm(end),
+      x: Math.min(window.innerWidth - 320, Math.max(20, rect.left - 40)),
+      y: Math.min(window.innerHeight - 300, rect.bottom + 10)
+    });
+  };
+
+  const handleSaveTimeEditor = async () => {
+    if (!timeEditorData || !onItemDateChange) return;
+    const { item, startHour, endHour } = timeEditorData;
+    const { start, end } = getItemExactDates(item);
+
+    const [sH, sM] = startHour.split(':').map(Number);
+    const [eH, eM] = endHour.split(':').map(Number);
+
+    const newStart = new Date(start);
+    newStart.setHours(isNaN(sH) ? 8 : sH, isNaN(sM) ? 0 : sM, 0, 0);
+
+    const newEnd = new Date(end);
+    newEnd.setFullYear(newStart.getFullYear(), newStart.getMonth(), newStart.getDate());
+    newEnd.setHours(isNaN(eH) ? 10 : eH, isNaN(eM) ? 0 : eM, 0, 0);
+
+    if (newEnd.getTime() <= newStart.getTime()) {
+      newEnd.setTime(newStart.getTime() + 60 * 60 * 1000);
+    }
+
+    setTimeEditorData(null);
+    await onItemDateChange(item, newStart, newEnd);
+  };
+
+  // Header range label
+  const rangeHeaderLabel = useMemo(() => {
+    if (timeframe === 'YEAR') {
+      return `Năm ${currentDate.getFullYear()}`;
+    }
+    if (timeframe === '30_DAYS') {
+      return `Tháng ${currentDate.getMonth() + 1}, ${currentDate.getFullYear()}`;
+    }
+    const startStr = `${weekDates[0]?.getDate()}/${weekDates[0]?.getMonth() + 1}`;
+    const endStr = `${weekDates[weekDates.length - 1]?.getDate()}/${weekDates[weekDates.length - 1]?.getMonth() + 1}/${weekDates[weekDates.length - 1]?.getFullYear()}`;
+    return `${startStr} - ${endStr}`;
+  }, [currentDate, timeframe, weekDates]);
+
+  // Navigation handlers
+  const handlePrev = () => {
+    const prev = new Date(currentDate);
+    if (timeframe === 'YEAR') {
+      prev.setFullYear(prev.getFullYear() - 1);
+    } else if (timeframe === '30_DAYS') {
+      prev.setMonth(prev.getMonth() - 1);
+    } else {
+      prev.setDate(prev.getDate() - (timeframe === '3_DAYS' ? 3 : 7));
+    }
+    onDateChange(prev);
+  };
+
+  const handleNext = () => {
+    const next = new Date(currentDate);
+    if (timeframe === 'YEAR') {
+      next.setFullYear(next.getFullYear() + 1);
+    } else if (timeframe === '30_DAYS') {
+      next.setMonth(next.getMonth() + 1);
+    } else {
+      next.setDate(next.getDate() + (timeframe === '3_DAYS' ? 3 : 7));
+    }
+    onDateChange(next);
+  };
+
+  // Switch to specific month from Year view
+  const handleSelectMonthFromYear = (monthIndex: number) => {
+    const targetDate = new Date(currentDate);
+    targetDate.setMonth(monthIndex);
+    onDateChange(targetDate);
+    setTimeframe('30_DAYS');
+  };
+
+  // Current time line indicator (Week View)
+  const now = new Date();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  const currentTimeTop = (currentMinutes / 60) * HOUR_HEIGHT;
 
   return (
     <div
       style={{
         display: 'flex',
         flexDirection: 'column',
-        gap: '12px',
-        backgroundColor: 'var(--bg-secondary)',
-        borderRadius: 'var(--radius-lg)',
-        border: '1px solid var(--border-color)',
+        backgroundColor: '#111318',
+        borderRadius: '16px',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
         overflow: 'hidden',
-        boxShadow: '0 4px 20px -2px rgba(0, 0, 0, 0.25)'
+        boxShadow: '0 12px 40px rgba(0, 0, 0, 0.5)'
       }}
     >
-      {/* 1. Header Toolbar & Status Tabs */}
+      {/* 1. TOP TOOLBAR */}
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           flexWrap: 'wrap',
-          gap: '12px',
-          padding: '14px 18px',
-          borderBottom: '1px solid var(--border-color)',
-          backgroundColor: 'var(--bg-primary)'
+          gap: '14px',
+          padding: '12px 20px',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+          backgroundColor: '#171a21'
         }}
       >
-        {/* Left: Title & Status Tabs */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span
+        {/* Left: Today + Prev/Next + Title */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <button
+            onClick={() => onDateChange(new Date())}
+            style={{
+              padding: '6px 16px',
+              borderRadius: '20px',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              backgroundColor: 'transparent',
+              color: '#ffffff',
+              fontSize: '13px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            Hôm nay
+          </button>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <button
+              onClick={handlePrev}
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
                 width: '32px',
                 height: '32px',
-                borderRadius: '8px',
-                background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.2) 0%, rgba(99, 102, 241, 0.2) 100%)',
-                color: 'var(--accent-primary)',
-                border: '1px solid rgba(56, 189, 248, 0.3)'
+                borderRadius: '50%',
+                border: 'none',
+                backgroundColor: 'transparent',
+                color: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer'
               }}
+              title="Lùi thời gian"
             >
-              <Target size={18} />
-            </span>
-            <span style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
-              Sơ đồ Gantt
-            </span>
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              onClick={handleNext}
+              style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '50%',
+                border: 'none',
+                backgroundColor: 'transparent',
+                color: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer'
+              }}
+              title="Tiến thời gian"
+            >
+              <ChevronRight size={18} />
+            </button>
           </div>
 
-          {/* Status Filter Tabs (like image_128.png) */}
+          <span style={{ fontSize: '20px', fontWeight: 700, color: '#ffffff', letterSpacing: '-0.2px' }}>
+            {rangeHeaderLabel}
+          </span>
+        </div>
+
+        {/* Right: Timeframe Switcher (3 Ngày / Tuần / Tháng / Năm) */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
-              background: 'var(--bg-secondary)',
-              border: '1px solid var(--border-color)',
-              borderRadius: 'var(--radius-md)',
-              padding: '3px',
-              gap: '2px'
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              padding: '2px',
+              borderRadius: '10px',
+              border: '1px solid rgba(255, 255, 255, 0.08)'
             }}
           >
-            {[
-              { id: 'ALL', label: `Tất cả (${counts.all})` },
-              { id: 'TODO', label: `Cần làm (${counts.todo})` },
-              { id: 'IN_PROGRESS', label: `Đang làm (${counts.inProgress})` },
-              { id: 'PENDING', label: `Chờ duyệt (${counts.pending})` },
-              { id: 'DONE', label: `Hoàn thành (${counts.done})` }
-            ].map((tab) => {
-              const active = statusFilter === tab.id;
+            {(['3_DAYS', '7_DAYS', '30_DAYS', 'YEAR'] as GanttTimeframe[]).map((tf) => {
+              const isActive = timeframe === tf;
+              const labels: Record<GanttTimeframe, string> = {
+                '3_DAYS': '3 Ngày',
+                '7_DAYS': 'Tuần',
+                '30_DAYS': 'Tháng',
+                'YEAR': 'Năm'
+              };
               return (
                 <button
-                  key={tab.id}
-                  onClick={() => setStatusFilter(tab.id as StatusFilter)}
-                  className={`btn btn-sm ${active ? 'btn-primary' : 'btn-ghost'}`}
+                  key={tf}
+                  type="button"
+                  onClick={() => setTimeframe(tf)}
                   style={{
-                    fontSize: '12px',
-                    fontWeight: active ? 700 : 500,
-                    padding: '4px 10px',
-                    borderRadius: '6px',
-                    backgroundColor: active ? 'var(--accent-primary)' : 'transparent',
-                    color: active ? '#ffffff' : 'var(--text-secondary)'
+                    padding: '6px 14px',
+                    borderRadius: '8px',
+                    fontSize: '12.5px',
+                    fontWeight: isActive ? 700 : 500,
+                    border: 'none',
+                    backgroundColor: isActive ? '#3b82f6' : 'transparent',
+                    color: isActive ? '#ffffff' : '#94a3b8',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                    boxShadow: isActive ? '0 2px 8px rgba(59, 130, 246, 0.4)' : 'none'
                   }}
                 >
-                  {tab.label}
+                  {labels[tf]}
                 </button>
               );
             })}
           </div>
         </div>
+      </div>
 
-        {/* Right: Time Controls (Today, Prev, Next, Month Picker) */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <button
-            onClick={handleJumpToToday}
-            className="btn btn-outline btn-sm"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '5px',
-              fontSize: '12px',
-              fontWeight: 700,
-              color: 'var(--accent-primary)',
-              borderColor: 'rgba(56, 189, 248, 0.4)',
-              padding: '5px 12px'
-            }}
-            title="Nhảy về ngày hôm nay"
-          >
-            <Clock size={14} />
-            <span>Hôm nay</span>
-          </button>
+      {/* 2. SUB-HEADER: Status Filter Pills */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '6px 20px',
+          fontSize: '12px',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+          backgroundColor: '#14171f'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflowX: 'auto', padding: '2px 0' }}>
+          <span style={{ color: '#64748b', fontSize: '11px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <Filter size={12} /> Lọc:
+          </span>
+          {[
+            { id: 'ALL', label: `Tất cả (${counts.all})` },
+            { id: 'TODO', label: `Cần làm (${counts.todo})` },
+            { id: 'IN_PROGRESS', label: `Đang làm (${counts.inProgress})` },
+            { id: 'PENDING', label: `Chờ duyệt (${counts.pending})` },
+            { id: 'DONE', label: `Hoàn thành (${counts.done})` }
+          ].map((tab) => {
+            const active = statusFilter === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setStatusFilter(tab.id as StatusFilter)}
+                style={{
+                  padding: '2px 9px',
+                  borderRadius: '12px',
+                  fontSize: '11.5px',
+                  fontWeight: active ? 700 : 500,
+                  border: active ? '1px solid #3b82f6' : '1px solid transparent',
+                  backgroundColor: active ? 'rgba(59, 130, 246, 0.15)' : 'transparent',
+                  color: active ? '#60a5fa' : '#94a3b8',
+                  cursor: 'pointer'
+                }}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
 
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              background: 'var(--bg-secondary)',
-              border: '1px solid var(--border-color)',
-              borderRadius: 'var(--radius-md)',
-              padding: '2px'
-            }}
-          >
-            <button
-              onClick={handlePrevMonth}
-              className="btn btn-ghost btn-icon btn-sm"
-              title="Tháng trước"
-              style={{ padding: '5px' }}
-            >
-              <ChevronLeft size={16} />
-            </button>
-
-            <span style={{ fontSize: '13px', fontWeight: 700, padding: '0 10px', color: 'var(--text-primary)' }}>
-              Tháng {month + 1}/{year}
-            </span>
-
-            <button
-              onClick={handleNextMonth}
-              className="btn btn-ghost btn-icon btn-sm"
-              title="Tháng sau"
-              style={{ padding: '5px' }}
-            >
-              <ChevronRight size={16} />
-            </button>
-          </div>
+        <div style={{ fontSize: '11px', color: '#64748b' }}>
+          {timeframe === 'YEAR'
+            ? 'Nhấp vào tiêu đề tháng để vào lịch tháng • Nhấp vào ngày để xem chi tiết sự kiện'
+            : timeframe === '30_DAYS'
+            ? 'Kéo thả sự kiện giữa các ô ngày để dời ngày • Nhấp vào ngày để thêm sự kiện mới'
+            : 'Kéo thẻ lên/xuống để đổi giờ • Kéo 2 núm mép để co giãn khoảng thời gian'}
         </div>
       </div>
 
-      {/* 2. Main Gantt Body: Left Sticky Table + Right Scrollable Timeline Canvas */}
-      <div style={{ display: 'flex', width: '100%', overflow: 'hidden', position: 'relative' }}>
-        {/* Left Side: Tasks Info Table (~340px) */}
+      {/* 3. MAIN BODY VIEW */}
+      {timeframe === 'YEAR' ? (
+        /* ========================================================
+           YEAR VIEW (Lưới 12 mini tháng 4x3 chuẩn hình mẫu)
+           ======================================================== */
         <div
           style={{
-            width: '360px',
-            minWidth: '360px',
-            flexShrink: 0,
-            borderRight: '1px solid var(--border-color)',
-            backgroundColor: 'var(--bg-primary)',
-            zIndex: 10
+            padding: '24px 20px',
+            backgroundColor: '#0f1218',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: '24px 20px',
+            overflowY: 'auto',
+            maxHeight: '720px'
           }}
         >
-          {/* Table Header */}
-          <div
-            style={{
-              height: '56px',
-              display: 'grid',
-              gridTemplateColumns: '1.6fr 1fr 1fr',
-              alignItems: 'center',
-              padding: '0 14px',
-              borderBottom: '1px solid var(--border-color)',
-              fontSize: '12px',
-              fontWeight: 700,
-              color: 'var(--text-muted)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.04em',
-              backgroundColor: 'var(--bg-secondary)'
-            }}
-          >
-            <div>Công việc</div>
-            <div>Phụ trách</div>
-            <div style={{ textAlign: 'right' }}>Thời gian</div>
-          </div>
-
-          {/* Table Rows */}
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {filteredItems.length === 0 ? (
-              <div style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '13px' }}>
-                Không có sự kiện hoặc công việc nào trong bộ lọc này.
+          {yearViewData.months.map((mObj) => (
+            <div
+              key={mObj.monthIndex}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                backgroundColor: 'transparent',
+                borderRadius: '8px',
+                padding: '4px'
+              }}
+            >
+              {/* Month Header (Click to open Month view) */}
+              <div
+                onClick={() => handleSelectMonthFromYear(mObj.monthIndex)}
+                style={{
+                  fontSize: '14px',
+                  fontWeight: 700,
+                  color: '#e2e8f0',
+                  marginBottom: '10px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+                title="Nhấp để xem chi tiết tháng này"
+              >
+                <span>{mObj.monthName}</span>
               </div>
-            ) : (
-              filteredItems.map((item) => {
-                const isHovered = hoveredItemId === item.id;
-                const badge = getStatusBadge(item);
-                const subtasks = getItemSubtasksInfo(item);
-                const assigneeName = item.assignees?.[0]?.name || 'Tôi';
-                const assigneeInitial = assigneeName.slice(0, 2).toUpperCase();
 
-                const startDate = new Date(item.startTime || item.createdAt || monthStart);
-                const endDate = new Date(item.endTime || item.dueDate || item.startTime || monthEnd);
-                const dateStr = `${startDate.getDate()}/${startDate.getMonth() + 1} - ${endDate.getDate()}/${endDate.getMonth() + 1}`;
+              {/* Day of Week Row: Cn T2 T3 T4 T5 T6 T7 */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(7, 1fr)',
+                  textAlign: 'center',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  color: '#94a3b8',
+                  marginBottom: '6px'
+                }}
+              >
+                {dayOfWeekNamesShort.map((dayName, idx) => (
+                  <div key={idx}>{dayName}</div>
+                ))}
+              </div>
 
-                return (
-                  <div
-                    key={item.id}
-                    onMouseEnter={() => setHoveredItemId(item.id)}
-                    onMouseLeave={() => setHoveredItemId(null)}
-                    onClick={() => onItemClick(item)}
-                    style={{
-                      height: `${ROW_HEIGHT}px`,
-                      display: 'grid',
-                      gridTemplateColumns: '1.6fr 1fr 1fr',
-                      alignItems: 'center',
-                      padding: '0 14px',
-                      borderBottom: '1px solid var(--border-subtle)',
-                      backgroundColor: isHovered ? 'var(--bg-hover)' : 'transparent',
-                      cursor: 'pointer',
-                      transition: 'background-color var(--transition-fast)'
-                    }}
-                  >
-                    {/* Column 1: Badge + Title + Subtask count */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
+              {/* 7x6 Mini Days Grid */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(7, 1fr)',
+                  gridAutoRows: '28px',
+                  rowGap: '2px',
+                  textAlign: 'center'
+                }}
+              >
+                {mObj.days.map((d, dIdx) => {
+                  const isCurMonth = d.getMonth() === mObj.monthIndex;
+                  const today = isToday(d);
+                  const dateKey = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+                  const dayEvents = yearViewData.yearItemsMap.get(dateKey) || [];
+                  const hasEvents = dayEvents.length > 0;
+
+                  return (
+                    <div
+                      key={dIdx}
+                      onClick={() => {
+                        if (hasEvents) {
+                          setMoreEventsModal({ date: d, items: dayEvents });
+                        } else if (onDateClick) {
+                          onDateClick(d);
+                        }
+                      }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        userSelect: 'none',
+                        position: 'relative'
+                      }}
+                      title={hasEvents ? `${dayEvents.length} sự kiện` : undefined}
+                    >
                       <span
                         style={{
-                          fontSize: '10px',
-                          fontWeight: 700,
-                          padding: '1.5px 6px',
-                          borderRadius: '4px',
-                          backgroundColor: badge.bg,
-                          color: badge.color,
-                          border: `1px solid ${badge.border}`,
-                          flexShrink: 0
-                        }}
-                      >
-                        {badge.text}
-                      </span>
-                      <span
-                        style={{
-                          fontSize: '12.5px',
-                          fontWeight: 600,
-                          color: 'var(--text-primary)',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis'
-                        }}
-                        title={item.title}
-                      >
-                        {item.title}
-                      </span>
-                      {subtasks && (
-                        <span
-                          style={{
-                            fontSize: '10px',
-                            fontWeight: 700,
-                            color: 'var(--accent-primary)',
-                            backgroundColor: 'rgba(56, 189, 248, 0.12)',
-                            padding: '1px 5px',
-                            borderRadius: '4px',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '2px',
-                            flexShrink: 0
-                          }}
-                          title={`Tiến độ: ${subtasks.done}/${subtasks.total} việc cần làm (${subtasks.percent}%)`}
-                        >
-                          <ListTodo size={10} />
-                          {subtasks.done}/{subtasks.total}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Column 2: Assignee */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
-                      <span
-                        style={{
-                          width: '22px',
-                          height: '22px',
-                          borderRadius: '50%',
-                          backgroundColor: 'var(--accent-primary)',
-                          color: '#ffffff',
-                          fontSize: '10px',
-                          fontWeight: 700,
+                          width: '24px',
+                          height: '24px',
                           display: 'inline-flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          flexShrink: 0
-                        }}
-                      >
-                        {assigneeInitial}
-                      </span>
-                      <span
-                        style={{
+                          borderRadius: '50%',
                           fontSize: '11.5px',
-                          color: 'var(--text-secondary)',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis'
+                          fontWeight: today || hasEvents ? 700 : 500,
+                          color: today
+                            ? '#ffffff'
+                            : isCurMonth
+                            ? hasEvents
+                              ? '#38bdf8'
+                              : '#cbd5e1'
+                            : '#475569',
+                          backgroundColor: today
+                            ? '#3b82f6'
+                            : hasEvents && isCurMonth
+                            ? 'rgba(56, 189, 248, 0.15)'
+                            : 'transparent',
+                          border: hasEvents && !today && isCurMonth ? '1px solid rgba(56, 189, 248, 0.4)' : 'none',
+                          boxShadow: today ? '0 0 8px rgba(59, 130, 246, 0.6)' : 'none',
+                          transition: 'all 0.1s ease'
                         }}
                       >
-                        {assigneeName}
+                        {d.getDate()}
                       </span>
                     </div>
-
-                    {/* Column 3: Duration string */}
-                    <div style={{ textAlign: 'right', fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: 500 }}>
-                      {dateStr}
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
-
-        {/* Right Side: Horizontal Scrollable Timeline Canvas */}
-        <div
-          ref={timelineScrollRef}
-          style={{
-            flex: 1,
-            overflowX: 'auto',
-            overflowY: 'hidden',
-            backgroundColor: 'var(--bg-secondary)',
-            position: 'relative'
-          }}
-        >
-          {/* Day Headers (Row 1: Day numbers, Row 2: Day of week) */}
+      ) : timeframe === '30_DAYS' ? (
+        /* ========================================================
+           MONTH VIEW (Giao diện lịch tháng chuẩn Google Calendar)
+           ======================================================== */
+        <div style={{ display: 'flex', flexDirection: 'column', width: '100%', backgroundColor: '#0f1218' }}>
+          {/* Day of Week Header Row: CN, THỨ 2, THỨ 3, THỨ 4, THỨ 5, THỨ 6, THỨ 7 */}
           <div
             style={{
-              height: '56px',
-              display: 'flex',
-              borderBottom: '1px solid var(--border-color)',
-              position: 'sticky',
-              top: 0,
-              backgroundColor: 'var(--bg-secondary)',
-              zIndex: 5,
-              width: `${daysInMonth.length * CELL_WIDTH}px`
+              display: 'grid',
+              gridTemplateColumns: 'repeat(7, 1fr)',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+              backgroundColor: '#14171f'
             }}
           >
-            {daysInMonth.map((d, idx) => {
-              const today = isToday(d);
-              const dayNum = d.getDate();
-              const dayOfWeek = dayOfWeekNames[d.getDay()];
-              const isWeekend = d.getDay() === 0 || d.getDay() === 6;
+            {dayOfWeekNamesLong.map((dayName, idx) => (
+              <div
+                key={idx}
+                style={{
+                  textAlign: 'center',
+                  padding: '8px 0',
+                  fontSize: '11.5px',
+                  fontWeight: 700,
+                  color: '#94a3b8',
+                  letterSpacing: '0.5px'
+                }}
+              >
+                {dayName}
+              </div>
+            ))}
+          </div>
+
+          {/* Month 7x5 / 7x6 Grid Cells */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(7, 1fr)',
+              gridAutoRows: 'minmax(110px, 1fr)',
+              backgroundColor: '#0f1218'
+            }}
+          >
+            {monthViewData.visibleDates.map((dateObj, cellIdx) => {
+              const today = isToday(dateObj);
+              const isCurrentMonth = dateObj.getMonth() === monthViewData.currentMonth;
+              const dateKey = `${dateObj.getFullYear()}-${dateObj.getMonth()}-${dateObj.getDate()}`;
+              const dayItems = monthViewData.itemsByDay.get(dateKey) || [];
+              const isDragOver = dragOverDate === dateKey;
+
+              const isFirstOfMonth = dateObj.getDate() === 1;
+              const dayLabel = isFirstOfMonth
+                ? `1 thg ${dateObj.getMonth() + 1}`
+                : `${dateObj.getDate()}`;
+
+              const maxVisible = 3;
+              const visibleItems = dayItems.slice(0, maxVisible);
+              const remainingCount = dayItems.length - maxVisible;
 
               return (
                 <div
-                  key={idx}
-                  onClick={() => onDateClick?.(d)}
+                  key={cellIdx}
+                  onClick={() => onDateClick?.(dateObj)}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setDragOverDate(dateKey);
+                  }}
+                  onDragLeave={() => setDragOverDate(null)}
+                  onDrop={(e) => handleMonthDrop(e, dateObj)}
                   style={{
-                    width: `${CELL_WIDTH}px`,
-                    minWidth: `${CELL_WIDTH}px`,
-                    height: '100%',
+                    borderRight: '1px solid rgba(255, 255, 255, 0.06)',
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+                    padding: '6px 8px',
                     display: 'flex',
                     flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRight: '1px solid var(--border-subtle)',
-                    backgroundColor: today
-                      ? 'rgba(56, 189, 248, 0.15)'
-                      : isWeekend
-                      ? 'rgba(0, 0, 0, 0.12)'
+                    backgroundColor: isDragOver
+                      ? 'rgba(59, 130, 246, 0.15)'
+                      : today
+                      ? 'rgba(59, 130, 246, 0.05)'
+                      : !isCurrentMonth
+                      ? 'rgba(0, 0, 0, 0.25)'
                       : 'transparent',
-                    borderTop: today ? '2px solid var(--accent-primary)' : 'none',
-                    cursor: 'pointer'
-                  }}
-                  title={`Nhấp để thêm nhanh sự kiện vào ngày ${dayNum}/${d.getMonth() + 1}`}
-                >
-                  <span
-                    style={{
-                      fontSize: '13px',
-                      fontWeight: today ? 800 : 700,
-                      color: today ? 'var(--accent-primary)' : 'var(--text-primary)'
-                    }}
-                  >
-                    {dayNum}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: '10px',
-                      fontWeight: today ? 700 : 500,
-                      color: today ? 'var(--accent-primary)' : isWeekend ? 'var(--text-muted)' : 'var(--text-secondary)'
-                    }}
-                  >
-                    {dayOfWeek}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Timeline Grid & Gantt Bars Area */}
-          <div
-            style={{
-              position: 'relative',
-              width: `${daysInMonth.length * CELL_WIDTH}px`,
-              minHeight: `${Math.max(filteredItems.length * ROW_HEIGHT, 240)}px`
-            }}
-          >
-            {/* Background Vertical Grid Columns & Today Highlight Column */}
-            <div
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                display: 'flex',
-                pointerEvents: 'none'
-              }}
-            >
-              {daysInMonth.map((d, idx) => {
-                const today = isToday(d);
-                const isWeekend = d.getDay() === 0 || d.getDay() === 6;
-                return (
-                  <div
-                    key={idx}
-                    style={{
-                      width: `${CELL_WIDTH}px`,
-                      minWidth: `${CELL_WIDTH}px`,
-                      height: '100%',
-                      borderRight: '1px solid var(--border-subtle)',
-                      backgroundColor: today
-                        ? 'rgba(56, 189, 248, 0.08)'
-                        : isWeekend
-                        ? 'rgba(0, 0, 0, 0.06)'
-                        : 'transparent',
-                      borderLeft: today ? '1px dashed var(--accent-primary)' : 'none',
-                      borderRightStyle: today ? 'dashed' : 'solid',
-                      borderRightColor: today ? 'var(--accent-primary)' : undefined
-                    }}
-                  />
-                );
-              })}
-            </div>
-
-            {/* Render Horizontal Gantt Bars */}
-            {filteredItems.map((item, rowIdx) => {
-              const bar = getGanttBarStyle(item);
-              const isHovered = hoveredItemId === item.id;
-              const subtasks = getItemSubtasksInfo(item);
-
-              return (
-                <div
-                  key={item.id}
-                  onMouseEnter={() => setHoveredItemId(item.id)}
-                  onMouseLeave={() => setHoveredItemId(null)}
-                  style={{
-                    height: `${ROW_HEIGHT}px`,
-                    width: '100%',
-                    position: 'relative',
-                    display: 'flex',
-                    alignItems: 'center',
-                    borderBottom: '1px solid var(--border-subtle)',
-                    backgroundColor: isHovered ? 'rgba(255, 255, 255, 0.03)' : 'transparent'
+                    cursor: onDateClick ? 'pointer' : 'default',
+                    minHeight: '110px',
+                    transition: 'background-color 0.15s ease',
+                    position: 'relative'
                   }}
                 >
-                  {/* The Gantt Bar */}
-                  <div
-                    onClick={() => onItemClick(item)}
-                    onMouseEnter={(e) => {
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      setTooltipData({ item, x: rect.left + rect.width / 2, y: rect.top - 8 });
-                    }}
-                    onMouseLeave={() => setTooltipData(null)}
-                    style={{
-                      position: 'absolute',
-                      left: `${bar.left + 4}px`,
-                      width: `${bar.width}px`,
-                      height: '28px',
-                      borderRadius: '6px',
-                      background: bar.bgGradient,
-                      boxShadow: isHovered
-                        ? '0 4px 14px rgba(0, 0, 0, 0.4), 0 0 0 1.5px #ffffff'
-                        : '0 2px 6px rgba(0, 0, 0, 0.25)',
-                      border: `1px solid ${bar.borderColor}`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: '0 10px',
-                      cursor: 'pointer',
-                      overflow: 'hidden',
-                      zIndex: isHovered ? 4 : 2,
-                      transform: isHovered ? 'translateY(-1px) scale(1.01)' : 'none',
-                      transition: 'all 150ms ease-out'
-                    }}
-                  >
-                    {/* Status Dot */}
-                    <span
-                      style={{
-                        width: '6px',
-                        height: '6px',
-                        borderRadius: '50%',
-                        backgroundColor: '#ffffff',
-                        marginRight: '6px',
-                        flexShrink: 0
-                      }}
-                    />
-
-                    {/* Task Title */}
+                  {/* Date Header Number */}
+                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '4px' }}>
                     <span
                       style={{
                         fontSize: '12px',
-                        fontWeight: 700,
-                        color: bar.textColor,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        textShadow: '0 1px 2px rgba(0,0,0,0.3)'
+                        fontWeight: today ? 800 : isFirstOfMonth ? 700 : 600,
+                        color: today
+                          ? '#ffffff'
+                          : isCurrentMonth
+                          ? '#e2e8f0'
+                          : '#475569',
+                        backgroundColor: today ? '#3b82f6' : 'transparent',
+                        width: today ? '24px' : 'auto',
+                        height: today ? '24px' : 'auto',
+                        borderRadius: today ? '50%' : '0',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: today ? '0 0 10px rgba(59, 130, 246, 0.6)' : 'none'
                       }}
                     >
-                      {item.title}
+                      {dayLabel}
                     </span>
+                  </div>
 
-                    {/* Subtasks Progress inside Bar */}
-                    {subtasks && (
-                      <span
+                  {/* List of Events / Tasks in Day */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', flex: 1, overflow: 'hidden' }}>
+                    {visibleItems.map((item) => {
+                      const { start } = getItemExactDates(item);
+                      const timeStr = formatTime12h(start);
+                      const cardStyle = getItemCardStyle(item);
+                      const isHovered = hoveredItemId === item.id;
+
+                      return (
+                        <div
+                          key={item.id}
+                          draggable={true}
+                          onDragStart={(e) => handleMonthDragStart(e, item)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onItemClick(item);
+                          }}
+                          onMouseEnter={() => setHoveredItemId(item.id)}
+                          onMouseLeave={() => setHoveredItemId(null)}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                            padding: '2px 4px',
+                            borderRadius: '4px',
+                            backgroundColor: isHovered ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
+                            cursor: 'pointer',
+                            fontSize: '11.5px',
+                            color: '#cbd5e1',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            transition: 'background-color 0.1s ease',
+                            userSelect: 'none'
+                          }}
+                          title={`${timeStr} ${item.title}`}
+                        >
+                          <span
+                            style={{
+                              width: '6px',
+                              height: '6px',
+                              borderRadius: '50%',
+                              backgroundColor: cardStyle.accent,
+                              flexShrink: 0
+                            }}
+                          />
+                          <span style={{ fontWeight: 600, color: '#94a3b8', fontSize: '11px', flexShrink: 0 }}>
+                            {timeStr}
+                          </span>
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 500 }}>
+                            {item.title}
+                          </span>
+                        </div>
+                      );
+                    })}
+
+                    {/* "+N mục khác" Button */}
+                    {remainingCount > 0 && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setMoreEventsModal({ date: dateObj, items: dayItems });
+                        }}
                         style={{
-                          marginLeft: 'auto',
-                          fontSize: '10.5px',
-                          fontWeight: 700,
-                          color: 'rgba(255, 255, 255, 0.9)',
-                          backgroundColor: 'rgba(0, 0, 0, 0.2)',
-                          padding: '1px 5px',
-                          borderRadius: '4px',
-                          flexShrink: 0
+                          background: 'none',
+                          border: 'none',
+                          color: '#60a5fa',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          textAlign: 'left',
+                          padding: '2px 4px',
+                          cursor: 'pointer',
+                          marginTop: 'auto',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '2px'
                         }}
                       >
-                        ({subtasks.done}/{subtasks.total})
-                      </span>
+                        <span>{remainingCount} mục khác</span>
+                      </button>
                     )}
                   </div>
                 </div>
@@ -763,60 +1211,662 @@ export const GanttTimelineView: React.FC<GanttTimelineViewProps> = ({
             })}
           </div>
         </div>
-      </div>
+      ) : (
+        /* ========================================================
+           WEEK / 3-DAY TIME GRID VIEW (Trục giờ cạnh trái 00:00-23:00)
+           ======================================================== */
+        <div
+          ref={scrollContainerRef}
+          style={{
+            height: '650px',
+            overflowY: 'auto',
+            overflowX: 'auto',
+            position: 'relative',
+            backgroundColor: '#0f1218'
+          }}
+        >
+          {/* Top Sticky Header */}
+          <div
+            style={{
+              display: 'flex',
+              position: 'sticky',
+              top: 0,
+              zIndex: 30,
+              backgroundColor: '#171a21',
+              borderBottom: '2px solid rgba(255, 255, 255, 0.1)',
+              minWidth: `${64 + weekDates.length * 150}px`
+            }}
+          >
+            {/* Top Left Clock Label */}
+            <div
+              style={{
+                width: '64px',
+                minWidth: '64px',
+                height: '52px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRight: '2px solid rgba(255, 255, 255, 0.1)',
+                backgroundColor: '#171a21',
+                position: 'sticky',
+                left: 0,
+                zIndex: 35,
+                color: '#94a3b8',
+                fontSize: '11px',
+                fontWeight: 700
+              }}
+            >
+              <Clock size={15} style={{ marginBottom: '2px', color: '#3b82f6' }} />
+              <span>Giờ</span>
+            </div>
 
-      {/* Floating Tooltip Component (Matching image_128.png Tooltip Card) */}
-      {tooltipData && (
+            {/* Day Header Cells */}
+            {weekDates.map((d, idx) => {
+              const today = isToday(d);
+              const dayNum = d.getDate();
+              const dayOfWeek = dayOfWeekNamesLong[d.getDay()];
+
+              return (
+                <div
+                  key={idx}
+                  onClick={() => onDateClick?.(d)}
+                  style={{
+                    flex: 1,
+                    minWidth: '150px',
+                    height: '52px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRight: '1px solid rgba(255, 255, 255, 0.06)',
+                    backgroundColor: today ? 'rgba(59, 130, 246, 0.12)' : 'transparent',
+                    cursor: onDateClick ? 'pointer' : 'default',
+                    userSelect: 'none'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span
+                      style={{
+                        fontSize: '15px',
+                        fontWeight: today ? 800 : 700,
+                        color: today ? '#60a5fa' : '#ffffff',
+                        backgroundColor: today ? 'rgba(59, 130, 246, 0.25)' : 'transparent',
+                        padding: today ? '2px 8px' : '0',
+                        borderRadius: '8px'
+                      }}
+                    >
+                      {dayNum}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: '12px',
+                        fontWeight: today ? 700 : 500,
+                        color: today ? '#60a5fa' : '#94a3b8'
+                      }}
+                    >
+                      {dayOfWeek}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '10px', color: '#64748b', marginTop: '2px' }}>
+                    Tháng {d.getMonth() + 1}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Time Grid Canvas */}
+          <div
+            style={{
+              display: 'flex',
+              position: 'relative',
+              minWidth: `${64 + weekDates.length * 150}px`,
+              height: `${24 * HOUR_HEIGHT}px`
+            }}
+          >
+            {/* Left Time Axis (Sticky Left) */}
+            <div
+              style={{
+                width: '64px',
+                minWidth: '64px',
+                height: `${24 * HOUR_HEIGHT}px`,
+                borderRight: '2px solid rgba(255, 255, 255, 0.1)',
+                backgroundColor: '#171a21',
+                position: 'sticky',
+                left: 0,
+                zIndex: 25,
+                userSelect: 'none'
+              }}
+            >
+              {HOURS.map((h) => (
+                <div
+                  key={h}
+                  style={{
+                    height: `${HOUR_HEIGHT}px`,
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    justifyContent: 'center',
+                    paddingTop: '6px',
+                    boxSizing: 'border-box'
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: '11px',
+                      fontWeight: 700,
+                      fontFamily: 'monospace',
+                      color: '#64748b'
+                    }}
+                  >
+                    {String(h).padStart(2, '0')}:00
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Day Columns */}
+            <div
+              ref={bodyGridRef}
+              style={{
+                flex: 1,
+                display: 'flex',
+                position: 'relative',
+                height: `${24 * HOUR_HEIGHT}px`
+              }}
+            >
+              {weekDates.map((dayDate, dayIdx) => {
+                const today = isToday(dayDate);
+                const dayCards = weekDayItemsMap.get(dayIdx) || [];
+
+                return (
+                  <div
+                    key={dayIdx}
+                    style={{
+                      flex: 1,
+                      minWidth: '150px',
+                      height: '100%',
+                      position: 'relative',
+                      borderRight: '1px solid rgba(255, 255, 255, 0.06)',
+                      backgroundColor: today ? 'rgba(59, 130, 246, 0.03)' : 'transparent'
+                    }}
+                    onDoubleClick={() => onDateClick?.(dayDate)}
+                  >
+                    {/* Hourly Lines */}
+                    {HOURS.map((h) => (
+                      <div
+                        key={h}
+                        style={{
+                          position: 'absolute',
+                          top: `${h * HOUR_HEIGHT}px`,
+                          left: 0,
+                          right: 0,
+                          height: `${HOUR_HEIGHT}px`,
+                          borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                          boxSizing: 'border-box',
+                          pointerEvents: 'none'
+                        }}
+                      >
+                        <div
+                          style={{
+                            position: 'absolute',
+                            top: `${HOUR_HEIGHT / 2}px`,
+                            left: 0,
+                            right: 0,
+                            borderBottom: '1px dashed rgba(255, 255, 255, 0.03)'
+                          }}
+                        />
+                      </div>
+                    ))}
+
+                    {/* Current Time Indicator */}
+                    {today && (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          top: `${currentTimeTop}px`,
+                          left: 0,
+                          right: 0,
+                          height: '2px',
+                          backgroundColor: '#ef4444',
+                          boxShadow: '0 0 8px rgba(239, 68, 68, 0.8)',
+                          zIndex: 20,
+                          pointerEvents: 'none'
+                        }}
+                      />
+                    )}
+
+                    {/* Render Week Event Cards */}
+                    {dayCards.map(({ item, start, end, top, height, colIndex, totalCols }) => {
+                      const cardStyle = getItemCardStyle(item);
+                      const isHovered = hoveredItemId === item.id;
+                      const isDragging = dragState?.item.id === item.id;
+
+                      const widthPercent = 100 / totalCols;
+                      const leftPercent = colIndex * widthPercent;
+
+                      return (
+                        <div
+                          key={item.id}
+                          onMouseDown={(e) => handleStartDragWeek(e, item, 'MOVE', start, end, dayIdx)}
+                          onClick={() => {
+                            if (!hasMovedRef.current) {
+                              onItemClick(item);
+                            }
+                          }}
+                          onMouseEnter={(e) => {
+                            if (!dragState) {
+                              setHoveredItemId(item.id);
+                              const rect = e.currentTarget.getBoundingClientRect();
+                              setTooltipData({ item, x: rect.left + rect.width / 2, y: rect.top - 8 });
+                            }
+                          }}
+                          onMouseLeave={() => {
+                            if (!dragState) {
+                              setHoveredItemId(null);
+                              setTooltipData(null);
+                            }
+                          }}
+                          style={{
+                            position: 'absolute',
+                            top: `${top + 1}px`,
+                            left: `calc(${leftPercent}% + 2px)`,
+                            width: `calc(${widthPercent}% - 4px)`,
+                            height: `${height - 2}px`,
+                            minHeight: '26px',
+                            background: cardStyle.bg,
+                            border: `1.5px solid ${cardStyle.border}`,
+                            borderLeft: `4px solid ${cardStyle.accent}`,
+                            borderRadius: '6px',
+                            boxShadow: isDragging
+                              ? '0 12px 28px rgba(0, 0, 0, 0.6), 0 0 0 2px #ffffff, 0 0 16px rgba(59, 130, 246, 0.6)'
+                              : isHovered
+                              ? '0 6px 18px rgba(0, 0, 0, 0.45), 0 0 0 1px #ffffff'
+                              : '0 2px 6px rgba(0, 0, 0, 0.25)',
+                            zIndex: isDragging ? 50 : isHovered ? 15 : 5,
+                            cursor: isDragging ? 'grabbing' : 'grab',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'space-between',
+                            padding: '3px 6px',
+                            boxSizing: 'border-box',
+                            overflow: 'hidden',
+                            userSelect: 'none',
+                            transform: isDragging ? 'scale(1.02)' : isHovered ? 'scale(1.01)' : 'none'
+                          }}
+                        >
+                          {/* Top Resize Handle */}
+                          <div
+                            onMouseDown={(e) => handleStartDragWeek(e, item, 'RESIZE_START', start, end, dayIdx)}
+                            style={{
+                              position: 'absolute',
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              height: '6px',
+                              cursor: 'ns-resize',
+                              zIndex: 10,
+                              backgroundColor: isHovered || isDragging ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+                              borderRadius: '6px 6px 0 0'
+                            }}
+                            title="Kéo mép trên để chỉnh giờ bắt đầu"
+                          />
+
+                          {/* Content */}
+                          <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
+                            <div
+                              style={{
+                                fontSize: height < 40 ? '11px' : '12px',
+                                fontWeight: 700,
+                                color: '#ffffff',
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                lineHeight: '1.2',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px'
+                              }}
+                            >
+                              <span
+                                style={{
+                                  width: '6px',
+                                  height: '6px',
+                                  borderRadius: '50%',
+                                  backgroundColor: cardStyle.accent,
+                                  flexShrink: 0
+                                }}
+                              />
+                              <span>{item.title}</span>
+                            </div>
+
+                            {height >= 50 && item.subject && (
+                              <div style={{ fontSize: '10px', color: cardStyle.accent, marginTop: '2px', fontWeight: 600 }}>
+                                {item.subject.name}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Time Badge */}
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '2px' }}>
+                            <button
+                              type="button"
+                              onClick={(e) => handleOpenTimeEditor(e, item)}
+                              onMouseDown={(e) => e.stopPropagation()}
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '3px',
+                                padding: '1px 4px',
+                                borderRadius: '4px',
+                                fontSize: '9.5px',
+                                fontWeight: 700,
+                                color: '#e2e8f0',
+                                backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                                border: '1px solid rgba(255, 255, 255, 0.15)',
+                                cursor: 'pointer'
+                              }}
+                              title="Nhấp để nhập giờ bắt đầu & kết thúc"
+                            >
+                              <Clock size={9} />
+                              <span>{formatHHmm(start)} - {formatHHmm(end)}</span>
+                            </button>
+                          </div>
+
+                          {/* Bottom Resize Handle */}
+                          <div
+                            onMouseDown={(e) => handleStartDragWeek(e, item, 'RESIZE_END', start, end, dayIdx)}
+                            style={{
+                              position: 'absolute',
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              height: '6px',
+                              cursor: 'ns-resize',
+                              zIndex: 10,
+                              backgroundColor: isHovered || isDragging ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+                              borderRadius: '0 0 6px 6px'
+                            }}
+                            title="Kéo mép dưới để chỉnh giờ kết thúc"
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 4. REALTIME FLOATING DRAG PREVIEW PILL (Week View) */}
+      {dragState && (
         <div
           style={{
             position: 'fixed',
-            left: `${tooltipData.x}px`,
-            top: `${tooltipData.y}px`,
-            transform: 'translate(-50%, -100%)',
-            backgroundColor: '#1e293b',
-            color: '#f8fafc',
-            padding: '12px 16px',
-            borderRadius: '8px',
-            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-            zIndex: 9999,
+            left: '50%',
+            bottom: '28px',
+            transform: 'translateX(-50%)',
+            backgroundColor: '#0f172a',
+            color: '#38bdf8',
+            padding: '8px 18px',
+            borderRadius: '24px',
+            fontSize: '13px',
+            fontWeight: 800,
+            boxShadow: '0 12px 36px rgba(0,0,0,0.8), 0 0 0 2px rgba(56, 189, 248, 0.5)',
+            zIndex: 200,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
             pointerEvents: 'none',
-            fontSize: '12px',
-            lineHeight: 1.5,
-            minWidth: '180px',
-            maxWidth: '280px'
+            animation: 'fadeIn 0.15s ease'
           }}
         >
-          <div style={{ fontWeight: 800, fontSize: '13px', color: '#ffffff', marginBottom: '4px' }}>
-            {tooltipData.item.title}
-          </div>
-          <div style={{ color: '#94a3b8', display: 'flex', gap: '4px' }}>
-            <span>Phụ trách:</span>
-            <span style={{ color: '#f8fafc', fontWeight: 600 }}>
-              {tooltipData.item.assignees?.[0]?.name || 'Tôi'}
-            </span>
-          </div>
-          <div style={{ color: '#94a3b8', display: 'flex', gap: '4px' }}>
-            <span>Thời gian:</span>
-            <span style={{ color: '#f8fafc', fontWeight: 600 }}>
-              {new Date(tooltipData.item.startTime).toLocaleDateString('vi-VN')} -{' '}
-              {new Date(tooltipData.item.endTime || tooltipData.item.dueDate || tooltipData.item.startTime).toLocaleDateString('vi-VN')}
-            </span>
-          </div>
-          <div style={{ color: '#94a3b8', display: 'flex', gap: '4px' }}>
-            <span>Trạng thái:</span>
-            <span style={{ color: getStatusBadge(tooltipData.item).color, fontWeight: 700 }}>
-              {getStatusBadge(tooltipData.item).text}
-            </span>
-          </div>
-          {getItemSubtasksInfo(tooltipData.item) && (
-            <div style={{ color: '#94a3b8', display: 'flex', gap: '4px', marginTop: '2px' }}>
-              <span>Tiến độ:</span>
-              <span style={{ color: '#38bdf8', fontWeight: 700 }}>
-                {getItemSubtasksInfo(tooltipData.item)?.percent}% ({getItemSubtasksInfo(tooltipData.item)?.done}/{getItemSubtasksInfo(tooltipData.item)?.total})
-              </span>
-            </div>
-          )}
+          <Clock size={16} />
+          <span>
+            {dragState.item.title}: {formatHHmm(dragState.currentStart)} - {formatHHmm(dragState.currentEnd)} (
+            {dayOfWeekNamesLong[dragState.currentStart.getDay()]}, {dragState.currentStart.getDate()}/{dragState.currentStart.getMonth() + 1})
+          </span>
         </div>
+      )}
+
+      {/* 5. MORE EVENTS MODAL (Khi bấm vào ngày ở lịch năm hoặc "+N mục khác" ở lịch tháng) */}
+      {moreEventsModal && (
+        <div
+          onClick={() => setMoreEventsModal(null)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.65)',
+            zIndex: 150,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backdropFilter: 'blur(3px)'
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: '380px',
+              maxHeight: '80vh',
+              backgroundColor: '#171a21',
+              borderRadius: '16px',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              boxShadow: '0 20px 50px rgba(0,0,0,0.8)',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column'
+            }}
+          >
+            {/* Header */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '14px 18px',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+              }}
+            >
+              <div>
+                <div style={{ fontSize: '15px', fontWeight: 800, color: '#ffffff' }}>
+                  {dayOfWeekNamesLong[moreEventsModal.date.getDay()]}, {moreEventsModal.date.getDate()} Tháng {moreEventsModal.date.getMonth() + 1}, {moreEventsModal.date.getFullYear()}
+                </div>
+                <div style={{ fontSize: '11px', color: '#94a3b8' }}>
+                  {moreEventsModal.items.length} sự kiện & công việc
+                </div>
+              </div>
+
+              <button
+                onClick={() => setMoreEventsModal(null)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#94a3b8',
+                  cursor: 'pointer',
+                  padding: '4px'
+                }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* List */}
+            <div style={{ padding: '12px 16px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {moreEventsModal.items.map((item) => {
+                const { start, end } = getItemExactDates(item);
+                const cardStyle = getItemCardStyle(item);
+
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => {
+                      setMoreEventsModal(null);
+                      onItemClick(item);
+                    }}
+                    style={{
+                      padding: '10px 12px',
+                      borderRadius: '8px',
+                      background: cardStyle.bg,
+                      border: `1px solid ${cardStyle.border}`,
+                      borderLeft: `4px solid ${cardStyle.accent}`,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '4px',
+                      transition: 'transform 0.1s ease'
+                    }}
+                  >
+                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#ffffff' }}>
+                      {item.title}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: '#94a3b8' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                        <Clock size={11} /> {formatHHmm(start)} - {formatHHmm(end)}
+                      </span>
+                      {item.subject && (
+                        <span style={{ color: cardStyle.accent, fontWeight: 600 }}>• {item.subject.name}</span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 6. MINI INLINE TIME EDITOR POPOVER */}
+      {timeEditorData && (
+        <>
+          <div
+            onClick={() => setTimeEditorData(null)}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 110,
+              backgroundColor: 'rgba(0,0,0,0.1)'
+            }}
+          />
+
+          <div
+            style={{
+              position: 'fixed',
+              left: `${timeEditorData.x}px`,
+              top: `${timeEditorData.y}px`,
+              zIndex: 120,
+              width: '290px',
+              backgroundColor: '#1e293b',
+              color: '#ffffff',
+              borderRadius: '12px',
+              padding: '14px',
+              boxShadow: '0 12px 36px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.15)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 800, color: '#38bdf8' }}>
+              <Clock size={16} />
+              <span>Chỉnh Giờ Bắt Đầu & Kết Thúc</span>
+            </div>
+
+            <div style={{ fontSize: '11.5px', color: '#94a3b8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {timeEditorData.item.title}
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              <div>
+                <label style={{ fontSize: '10.5px', fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: '4px' }}>
+                  Giờ Bắt Đầu
+                </label>
+                <input
+                  type="time"
+                  value={timeEditorData.startHour}
+                  onChange={(e) => setTimeEditorData({ ...timeEditorData, startHour: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '6px 8px',
+                    borderRadius: '6px',
+                    backgroundColor: '#0f172a',
+                    color: '#ffffff',
+                    border: '1px solid #334155',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    outline: 'none'
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '10.5px', fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: '4px' }}>
+                  Giờ Kết Thúc
+                </label>
+                <input
+                  type="time"
+                  value={timeEditorData.endHour}
+                  onChange={(e) => setTimeEditorData({ ...timeEditorData, endHour: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '6px 8px',
+                    borderRadius: '6px',
+                    backgroundColor: '#0f172a',
+                    color: '#ffffff',
+                    border: '1px solid #334155',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    outline: 'none'
+                  }}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '4px' }}>
+              <button
+                type="button"
+                onClick={() => setTimeEditorData(null)}
+                style={{
+                  padding: '5px 12px',
+                  borderRadius: '6px',
+                  fontSize: '11.5px',
+                  fontWeight: 600,
+                  backgroundColor: 'transparent',
+                  color: '#94a3b8',
+                  border: '1px solid #334155',
+                  cursor: 'pointer'
+                }}
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveTimeEditor}
+                style={{
+                  padding: '5px 14px',
+                  borderRadius: '6px',
+                  fontSize: '11.5px',
+                  fontWeight: 700,
+                  backgroundColor: '#3b82f6',
+                  color: '#ffffff',
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(59, 130, 246, 0.4)'
+                }}
+              >
+                Lưu Giờ
+              </button>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

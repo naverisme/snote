@@ -25,4 +25,9 @@ router.post('/:id/members', asyncBoundary(controller.addMember));
 router.put('/:id/members/:memberUserId', asyncBoundary(controller.updateMemberRole));
 router.delete('/:id/members/:memberUserId', asyncBoundary(controller.removeMember));
 
+// Discussions (Team Chat with Media & Audio)
+router.get('/:id/discussions', asyncBoundary(controller.getDiscussions));
+router.post('/:id/discussions', asyncBoundary(controller.createDiscussion));
+router.delete('/:id/discussions/:messageId', asyncBoundary(controller.deleteDiscussion));
+
 export const projectsRouter = router;

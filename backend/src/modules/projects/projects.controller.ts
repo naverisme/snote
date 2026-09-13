@@ -134,4 +134,37 @@ export class ProjectsController {
       message: 'Bạn đã từ chối tham gia dự án'
     });
   };
+
+  // Discussions (Group Team Chat)
+  getDiscussions = async (req: Request, res: Response): Promise<void> => {
+    const userId = req.user!.id;
+    const id = req.params.id as string;
+    const data = await this.service.getDiscussions(id, userId);
+    res.status(200).json({
+      success: true,
+      data
+    });
+  };
+
+  createDiscussion = async (req: Request, res: Response): Promise<void> => {
+    const userId = req.user!.id;
+    const id = req.params.id as string;
+    const data = await this.service.createDiscussion(id, userId, req.body);
+    res.status(201).json({
+      success: true,
+      message: 'Gửi tin nhắn thành công',
+      data
+    });
+  };
+
+  deleteDiscussion = async (req: Request, res: Response): Promise<void> => {
+    const userId = req.user!.id;
+    const id = req.params.id as string;
+    const messageId = req.params.messageId as string;
+    await this.service.deleteDiscussion(id, userId, messageId);
+    res.status(200).json({
+      success: true,
+      message: 'Đã xóa tin nhắn trao đổi'
+    });
+  };
 }

@@ -7,6 +7,7 @@ import { NoteModal, NoteModalMode } from '../components/NoteModal';
 import { TaskModal } from '../../tasks/components/TaskModal';
 import { NotesGraphView } from '../components/NotesGraphView';
 import { MarkdownViewer } from '../../../components/common/MarkdownViewer';
+import { UnifiedQuickBar } from '../../../components/common/UnifiedQuickBar';
 import { toggleChecklistItem, detectNoteType } from '../utils/smartNoteParser';
 import { NoteType } from '@snote/shared';
 import {
@@ -51,14 +52,6 @@ export const NotesListPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
 
-  // Quick Capture State
-  const [quickText, setQuickText] = useState('');
-  const [isQuickExpanded, setIsQuickExpanded] = useState(false);
-  const [quickSubjectId, setQuickSubjectId] = useState<string>('');
-  const [quickProjectId, setQuickProjectId] = useState<string>('');
-  const [quickNoteType, setQuickNoteType] = useState<NoteType>(NoteType.GENERAL);
-  const [quickSaving, setQuickSaving] = useState(false);
-  const quickInputRef = useRef<HTMLInputElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Filter & Sort State
@@ -79,7 +72,7 @@ export const NotesListPage: React.FC = () => {
   const [isSelectionMode, setIsSelectionMode] = useState<boolean>(false);
   const { showToast } = useToast();
 
-  // Keyboard shortcuts: '/' for Search, 'N' for Quick Capture
+  // Keyboard shortcut: '/' for Search
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
@@ -89,10 +82,6 @@ export const NotesListPage: React.FC = () => {
       if (e.key === '/') {
         e.preventDefault();
         searchInputRef.current?.focus();
-      } else if (e.key === 'n' || e.key === 'N') {
-        e.preventDefault();
-        quickInputRef.current?.focus();
-        setIsQuickExpanded(true);
       }
     };
 
@@ -103,7 +92,7 @@ export const NotesListPage: React.FC = () => {
   useEffect(() => {
     api.get<ApiResponse<any[]>>('/projects')
       .then((res) => setProjects(res.data || []))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const fetchNotes = useCallback(async () => {
@@ -337,32 +326,6 @@ export const NotesListPage: React.FC = () => {
     }
   };
 
-  const handleQuickSubmit = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!quickText.trim() || quickSaving) return;
-
-    setQuickSaving(true);
-    try {
-      const autoType = detectNoteType(quickText);
-      const finalNoteType = quickNoteType !== NoteType.GENERAL ? quickNoteType : autoType;
-
-      await api.post<ApiResponse<any>>('/notes', {
-        content: quickText.trim(),
-        subjectId: quickSubjectId || (selectedSubjectId ? selectedSubjectId : undefined),
-        projectId: quickProjectId || undefined,
-        noteType: finalNoteType
-      });
-
-      showToast('Đã lưu ghi chú nhanh thành công!', 'success');
-      setQuickText('');
-      setIsQuickExpanded(false);
-      fetchNotes();
-    } catch (err: any) {
-      showToast(err.message || 'Lỗi khi lưu ghi chú nhanh', 'error');
-    } finally {
-      setQuickSaving(false);
-    }
-  };
 
   // Filtered and Sorted Notes Calculation
   const filteredNotes = useMemo(() => {
@@ -541,25 +504,6 @@ export const NotesListPage: React.FC = () => {
 
             <button
               type="button"
-              onClick={() => setViewDensity('SPLIT')}
-              className={`btn btn-sm ${viewDensity === 'SPLIT' ? 'btn-primary' : 'btn-ghost'}`}
-              style={{
-                padding: '4px 10px',
-                fontSize: '12px',
-                fontWeight: viewDensity === 'SPLIT' ? 700 : 500,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '5px',
-                borderRadius: 'var(--radius-sm)'
-              }}
-              title="Chế độ xem Chia đôi đọc sâu (Split Notebook)"
-            >
-              <Columns size={13} />
-              <span>Chia đôi (Đọc sâu)</span>
-            </button>
-
-            <button
-              type="button"
               onClick={() => setViewDensity('LIST')}
               className={`btn btn-sm ${viewDensity === 'LIST' ? 'btn-primary' : 'btn-ghost'}`}
               style={{
@@ -646,139 +590,6 @@ export const NotesListPage: React.FC = () => {
             <span>Thêm Ghi Chú</span>
           </button>
         </div>
-      </div>
-
-      {/* 2. Quick Capture Bar (Google Keep / Apple Notes Style) */}
-      <div
-        className="snote-card"
-        style={{
-          padding: isQuickExpanded ? '14px 18px' : '10px 16px',
-          borderRadius: 'var(--radius-lg)',
-          backgroundColor: 'var(--bg-secondary)',
-          border: isQuickExpanded ? '1.5px solid var(--accent-primary)' : '1px solid var(--border-color)',
-          boxShadow: isQuickExpanded ? '0 8px 24px -4px rgba(99, 102, 241, 0.22)' : 'none',
-          transition: 'all var(--transition-normal)'
-        }}
-      >
-        <form onSubmit={handleQuickSubmit}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ color: 'var(--accent-primary)', display: 'flex', flexShrink: 0 }}>
-              <Sparkles size={16} />
-            </span>
-            <input
-              ref={quickInputRef}
-              type="text"
-              placeholder="Ghi nhanh ý tưởng, việc cần làm [ ], hoặc dán đường link... (Nhấn 'N' hoặc Enter để lưu)"
-              value={quickText}
-              onFocus={() => setIsQuickExpanded(true)}
-              onChange={(e) => setQuickText(e.target.value)}
-              style={{
-                width: '100%',
-                background: 'transparent',
-                border: 'none',
-                outline: 'none',
-                color: 'var(--text-primary)',
-                fontSize: '14px',
-                fontWeight: 500
-              }}
-            />
-            {quickText.trim() && !isQuickExpanded && (
-              <button
-                type="submit"
-                disabled={quickSaving}
-                className="btn btn-primary btn-sm"
-                style={{ padding: '4px 12px', fontSize: '12px', flexShrink: 0 }}
-              >
-                {quickSaving ? 'Đang lưu...' : 'Lưu (Enter)'}
-              </button>
-            )}
-          </div>
-
-          {/* Quick Capture Expanded Toolbar */}
-          {isQuickExpanded && (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                gap: '10px',
-                marginTop: '12px',
-                paddingTop: '10px',
-                borderTop: '1px solid var(--border-subtle)'
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                {/* Subject Selector */}
-                <select
-                  value={quickSubjectId}
-                  onChange={(e) => setQuickSubjectId(e.target.value)}
-                  className="snote-select"
-                  style={{ height: '30px', fontSize: '12px', padding: '2px 8px' }}
-                >
-                  <option value="">📖 Chọn môn học (Tùy chọn)</option>
-                  {subjects.map((sub) => (
-                    <option key={sub.id} value={sub.id}>
-                      {sub.code ? `[${sub.code}] ` : ''}{sub.name}
-                    </option>
-                  ))}
-                </select>
-
-                {/* Project Selector */}
-                <select
-                  value={quickProjectId}
-                  onChange={(e) => setQuickProjectId(e.target.value)}
-                  className="snote-select"
-                  style={{ height: '30px', fontSize: '12px', padding: '2px 8px' }}
-                >
-                  <option value="">📁 Đồ án / BTL (Tùy chọn)</option>
-                  {projects.map((proj) => (
-                    <option key={proj.id} value={proj.id}>
-                      {proj.name}
-                    </option>
-                  ))}
-                </select>
-
-                {/* Note Type Selector */}
-                <select
-                  value={quickNoteType}
-                  onChange={(e) => setQuickNoteType(e.target.value as any)}
-                  className="snote-select"
-                  style={{ height: '30px', fontSize: '12px', padding: '2px 8px' }}
-                >
-                  <option value={NoteType.GENERAL}>📝 Tự nhận diện loại</option>
-                  <option value={NoteType.LECTURE}>📖 Bài giảng</option>
-                  <option value={NoteType.LAB_REPORT}>🧪 Thực hành</option>
-                  <option value={NoteType.EXAM_PREP}>🎯 Ôn thi</option>
-                  <option value={NoteType.PROJECT_LOG}>🛠️ Dự án</option>
-                  <option value={NoteType.MEETING_MINUTES}>👥 Họp nhóm</option>
-                </select>
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsQuickExpanded(false);
-                    if (!quickText.trim()) setQuickText('');
-                  }}
-                  className="btn btn-ghost btn-sm"
-                  style={{ fontSize: '12px', padding: '4px 10px' }}
-                >
-                  Đóng
-                </button>
-                <button
-                  type="submit"
-                  disabled={!quickText.trim() || quickSaving}
-                  className="btn btn-primary btn-sm"
-                  style={{ fontSize: '12px', padding: '4px 14px', fontWeight: 700 }}
-                >
-                  {quickSaving ? 'Đang lưu...' : 'Lưu ghi chú'}
-                </button>
-              </div>
-            </div>
-          )}
-        </form>
       </div>
 
       {/* 3. Horizontal Scroll Tab Bar: Sources + Status Tabs + Sort Dropdown */}

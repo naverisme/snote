@@ -4,14 +4,16 @@ import { useAppFilter } from '../../../contexts/AppFilterContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { EventModal } from '../components/EventModal';
 import { TaskModal } from '../../tasks/components/TaskModal';
-import { GanttTimelineView, GanttItem } from '../components/GanttTimelineView';
+import { GanttTimelineView, GanttItem, GanttTimeframe } from '../components/GanttTimelineView';
 import { Plus, Sparkles, BookOpen } from 'lucide-react';
 
 export const ScheduleWeekPage: React.FC = () => {
   const { selectedSubjectId, selectedSemesterId, subjects } = useAppFilter();
   const [currentGanttDate, setCurrentGanttDate] = useState<Date>(() => new Date());
+  const [timeframe, setTimeframe] = useState<GanttTimeframe>('30_DAYS');
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [initialLoaded, setInitialLoaded] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [eventToEdit, setEventToEdit] = useState<any | null>(null);
   const [selectedDateForNewEvent, setSelectedDateForNewEvent] = useState<Date | undefined>(undefined);
@@ -19,13 +21,12 @@ export const ScheduleWeekPage: React.FC = () => {
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const { showToast } = useToast();
 
-  const fetchEvents = useCallback(async () => {
-    setLoading(true);
+  const fetchEvents = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
       const year = currentGanttDate.getFullYear();
-      const month = currentGanttDate.getMonth();
-      const startDate = new Date(year, month, 1, 0, 0, 0, 0);
-      const endDate = new Date(year, month + 1, 10, 23, 59, 59, 999);
+      const startDate = new Date(year, 0, 1, 0, 0, 0, 0);
+      const endDate = new Date(year, 11, 31, 23, 59, 59, 999);
 
       const params = new URLSearchParams();
       params.append('startDate', startDate.toISOString());
@@ -39,11 +40,12 @@ export const ScheduleWeekPage: React.FC = () => {
       showToast('Không thể tải dữ liệu lịch trình học tập', 'error');
     } finally {
       setLoading(false);
+      setInitialLoaded(true);
     }
   }, [currentGanttDate, selectedSubjectId, selectedSemesterId, showToast]);
 
   useEffect(() => {
-    fetchEvents();
+    fetchEvents(initialLoaded);
   }, [fetchEvents]);
 
   const handleOpenTaskDetail = async (taskId: string, fallbackItem: any) => {
@@ -75,25 +77,65 @@ export const ScheduleWeekPage: React.FC = () => {
     setIsModalOpen(true);
   };
 
+  const handleGanttItemDateChange = async (item: GanttItem, newStart: Date, newEnd: Date) => {
+    // 1. Optimistic update in UI
+    setEvents((prev) =>
+      prev.map((e) =>
+        e.id === item.id
+          ? {
+              ...e,
+              startTime: newStart.toISOString(),
+              endTime: newEnd.toISOString(),
+              dueDate: newEnd.toISOString()
+            }
+          : e
+      )
+    );
+
+    try {
+      if (item.itemType === 'EVENT') {
+        await api.put(`/schedule/${item.id}`, {
+          startTime: newStart.toISOString(),
+          endTime: newEnd.toISOString()
+        });
+      } else if (item.itemType === 'TASK') {
+        await api.put(`/tasks/${item.id}`, {
+          dueDate: newEnd.toISOString()
+        });
+      } else if (item.itemType === 'PROJECT') {
+        await api.put(`/projects/${item.id}`, {
+          startDate: newStart.toISOString(),
+          dueDate: newEnd.toISOString()
+        });
+      }
+      showToast(`Đã cập nhật thời gian: ${item.title}`, 'success');
+      // Background silent refetch without unmounting or flipping view
+      await fetchEvents(true);
+    } catch {
+      showToast('Không thể cập nhật thời gian mốc lịch', 'error');
+      await fetchEvents(true);
+    }
+  };
+
   const currentSubjectObj = subjects.find((s) => s.id === selectedSubjectId);
 
   return (
     <div style={{ maxWidth: '1440px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
       {/* Top Header: Context Badges & Action Button */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
           {currentSubjectObj ? (
-            <span className="badge badge-blue" style={{ fontSize: '12px', padding: '4px 10px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+            <span className="badge badge-blue" style={{ fontSize: '12px', padding: '5px 10px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
               <BookOpen size={13} />
               <span>[{currentSubjectObj.code || 'MÔN'}] {currentSubjectObj.name}</span>
             </span>
           ) : (
-            <span className="badge badge-neutral" style={{ fontSize: '12px', padding: '4px 10px' }}>
+            <span className="badge badge-neutral" style={{ fontSize: '12px', padding: '5px 10px' }}>
               Tất cả môn học & đồ án
             </span>
           )}
 
-          <span className="badge badge-green" style={{ fontSize: '12px', padding: '4px 10px' }}>
+          <span className="badge badge-green" style={{ fontSize: '12px', padding: '5px 10px' }}>
             {events.length} mốc lịch & đầu việc
           </span>
         </div>
@@ -112,19 +154,22 @@ export const ScheduleWeekPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Main Gantt Timeline View */}
-      {loading ? (
+      {/* Main Gantt Timeline View (Always mounted to preserve view mode & scroll) */}
+      {!initialLoaded && loading ? (
         <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
           <Sparkles className="animate-spin" size={24} style={{ margin: '0 auto 12px auto', color: 'var(--accent-primary)' }} />
-          <div>Đang đồng bộ dữ liệu sơ đồ Gantt...</div>
+          <div>Đang đồng bộ dữ liệu sơ đồ lịch...</div>
         </div>
       ) : (
         <GanttTimelineView
           items={events}
           currentDate={currentGanttDate}
           onDateChange={(d) => setCurrentGanttDate(d)}
+          timeframe={timeframe}
+          onTimeframeChange={setTimeframe}
           onItemClick={handleGanttItemClick}
           onDateClick={handleDateClick}
+          onItemDateChange={handleGanttItemDateChange}
         />
       )}
 

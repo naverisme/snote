@@ -91,6 +91,9 @@ export class ScheduleRepository {
             });
           }
 
+          const dueDateObj = new Date(t.dueDate);
+          const taskStart = new Date(dueDateObj.getTime() - 60 * 60 * 1000);
+
           unifiedList.push({
             id: t.id,
             itemType: 'TASK',
@@ -98,7 +101,7 @@ export class ScheduleRepository {
             description: t.description,
             location: t.project ? `Đồ án: ${t.project.name}` : undefined,
             eventType: 'DEADLINE',
-            startTime: t.createdAt && t.createdAt < t.dueDate ? t.createdAt : t.dueDate,
+            startTime: taskStart,
             endTime: t.dueDate,
             dueDate: t.dueDate,
             createdAt: t.createdAt,
@@ -133,6 +136,9 @@ export class ScheduleRepository {
 
       for (const p of projects) {
         if (p.dueDate) {
+          const projectDue = new Date(p.dueDate);
+          const projectStart = p.startDate ? new Date(p.startDate) : new Date(projectDue.getTime() - 2 * 60 * 60 * 1000);
+
           unifiedList.push({
             id: p.id,
             itemType: 'PROJECT',
@@ -140,7 +146,7 @@ export class ScheduleRepository {
             description: p.description,
             location: p.description ? p.description.slice(0, 50) : undefined,
             eventType: 'DEADLINE',
-            startTime: p.startDate || p.createdAt || p.dueDate,
+            startTime: projectStart,
             endTime: p.dueDate,
             dueDate: p.dueDate,
             createdAt: p.createdAt,

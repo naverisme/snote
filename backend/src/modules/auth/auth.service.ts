@@ -31,11 +31,11 @@ export class AuthService {
 
   private generateTokens(payload: TokenPayload): AuthTokens {
     const accessToken = jwt.sign(payload, env.JWT_SECRET, {
-      expiresIn: '15m'
+      expiresIn: (env.JWT_EXPIRES_IN || '2h') as any
     });
 
     const refreshToken = jwt.sign(payload, env.JWT_REFRESH_SECRET, {
-      expiresIn: '7d'
+      expiresIn: (env.JWT_REFRESH_EXPIRES_IN || '30d') as any
     });
 
     return { accessToken, refreshToken };
@@ -73,9 +73,9 @@ export class AuthService {
       role: (user.role as UserRole) || UserRole.STUDENT
     });
 
-    // Lưu tokenHash vào CSDL với thời hạn 7 ngày
+    // Lưu tokenHash vào CSDL với thời hạn 30 ngày
     const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
+    expiresAt.setDate(expiresAt.getDate() + 30);
     await this.authRepo.saveRefreshToken({
       userId: user.id,
       tokenHash: this.hashToken(refreshToken),
@@ -113,7 +113,7 @@ export class AuthService {
     });
 
     const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
+    expiresAt.setDate(expiresAt.getDate() + 30);
     await this.authRepo.saveRefreshToken({
       userId: user.id,
       tokenHash: this.hashToken(refreshToken),
@@ -228,7 +228,7 @@ export class AuthService {
     });
 
     const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
+    expiresAt.setDate(expiresAt.getDate() + 30);
     await this.authRepo.saveRefreshToken({
       userId: user.id,
       tokenHash: this.hashToken(refreshToken),
@@ -273,7 +273,7 @@ export class AuthService {
     });
 
     const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
+    expiresAt.setDate(expiresAt.getDate() + 30);
     await this.authRepo.saveRefreshToken({
       userId: user.id,
       tokenHash: this.hashToken(newRefreshToken),

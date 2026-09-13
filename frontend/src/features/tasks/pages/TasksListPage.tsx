@@ -4,9 +4,9 @@ import { useAppFilter } from '../../../contexts/AppFilterContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { TaskCard } from '../components/TaskCard';
 import { TaskModal } from '../components/TaskModal';
-import { QuickTaskBar } from '../components/QuickTaskBar';
 import { TasksListView } from '../components/TasksListView';
 import { TasksEisenhowerView } from '../components/TasksEisenhowerView';
+import { getTaskDueStatus } from '../../../utils/dateUtils';
 import { TaskStatus, TaskPriority } from '@snote/shared';
 import confetti from 'canvas-confetti';
 import {
@@ -51,7 +51,7 @@ export const TasksListPage: React.FC = () => {
   useEffect(() => {
     api.get<ApiResponse<any[]>>('/projects')
       .then((res) => setProjects(res.data || []))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const fetchTasks = useCallback(async () => {
@@ -142,15 +142,11 @@ export const TasksListPage: React.FC = () => {
   const todoTasks = tasks.filter((t) => t.status === TaskStatus.TODO);
   const inProgressTasks = tasks.filter((t) => t.status === TaskStatus.IN_PROGRESS);
   const doneTasks = tasks.filter((t) => t.status === TaskStatus.DONE);
-
-  // Count overdue tasks
+  // Count overdue tasks (Chỉ tính quá hạn khi đã vượt quá thời điểm deadline)
   const overdueCount = useMemo(() => {
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
     return tasks.filter((t) => {
       if (t.status === TaskStatus.DONE || !t.dueDate) return false;
-      const dueDay = new Date(new Date(t.dueDate).getFullYear(), new Date(t.dueDate).getMonth(), new Date(t.dueDate).getDate()).getTime();
-      return dueDay < today;
+      return getTaskDueStatus(t.dueDate, false).isOverdue;
     }).length;
   }, [tasks]);
 
@@ -190,13 +186,6 @@ export const TasksListPage: React.FC = () => {
 
   return (
     <div style={{ maxWidth: '1380px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      {/* 1. Quick Task Capture Bar (1-Click Instant Add) */}
-      <QuickTaskBar
-        subjects={subjects}
-        defaultSubjectId={selectedSubjectId || undefined}
-        onTaskCreated={fetchTasks}
-      />
-
       {/* 2. Top Header Toolbar: Metrics & View Switcher */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
         {/* Left: View Mode Switcher */}
@@ -227,275 +216,277 @@ export const TasksListPage: React.FC = () => {
             }}
           >
             <Columns3 size={15} />
-            <span>Bảng Kanban</span>
+            <span>Bảng lịch trình</span>
           </button>
 
-          <button
-            onClick={() => handleSelectViewMode('LIST')}
-            className={`btn btn-sm ${viewMode === 'LIST' ? 'btn-primary' : 'btn-ghost'}`}
-            style={{
-              fontSize: '12.5px',
-              fontWeight: viewMode === 'LIST' ? 700 : 500,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '6px 14px',
-              borderRadius: '6px',
-              backgroundColor: viewMode === 'LIST' ? 'var(--accent-primary)' : 'transparent',
-              color: viewMode === 'LIST' ? '#ffffff' : 'var(--text-secondary)'
-            }}
-          >
-            <ListFilter size={15} />
-            <span>Danh sách Hạn chót</span>
-          </button>
+        <button
+          onClick={() => handleSelectViewMode('LIST')}
+          className={`btn btn-sm ${viewMode === 'LIST' ? 'btn-primary' : 'btn-ghost'}`}
+          style={{
+            fontSize: '12.5px',
+            fontWeight: viewMode === 'LIST' ? 700 : 500,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '6px 14px',
+            borderRadius: '6px',
+            backgroundColor: viewMode === 'LIST' ? 'var(--accent-primary)' : 'transparent',
+            color: viewMode === 'LIST' ? '#ffffff' : 'var(--text-secondary)'
+          }}
+        >
+          <ListFilter size={15} />
+          <span>Danh sách Hạn chót</span>
+        </button>
 
-          <button
-            onClick={() => handleSelectViewMode('EISENHOWER')}
-            className={`btn btn-sm ${viewMode === 'EISENHOWER' ? 'btn-primary' : 'btn-ghost'}`}
-            style={{
-              fontSize: '12.5px',
-              fontWeight: viewMode === 'EISENHOWER' ? 700 : 500,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '6px 14px',
-              borderRadius: '6px',
-              backgroundColor: viewMode === 'EISENHOWER' ? 'var(--accent-primary)' : 'transparent',
-              color: viewMode === 'EISENHOWER' ? '#ffffff' : 'var(--text-secondary)'
-            }}
-          >
-            <LayoutGrid size={15} />
-            <span>Ma trận Eisenhower (2x2)</span>
-          </button>
-        </div>
-
-        {/* Right: Metrics & Add Button */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-          {overdueCount > 0 && (
-            <span
-              className="badge"
-              style={{
-                fontSize: '11.5px',
-                padding: '4px 9px',
-                backgroundColor: 'rgba(239, 68, 68, 0.15)',
-                color: '#ef4444',
-                border: '1px solid rgba(239, 68, 68, 0.3)',
-                fontWeight: 700,
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px'
-              }}
-            >
-              <AlertTriangle size={13} />
-              {overdueCount} Quá hạn
-            </span>
-          )}
-
-          <span className="badge badge-green" style={{ fontSize: '11.5px', padding: '4px 9px', fontWeight: 700 }}>
-            {doneTasks.length}/{totalTasks} Hoàn thành ({completedPercent}%)
-          </span>
-
-          <button
-            onClick={handleOpenCreate}
-            className="btn btn-primary btn-sm"
-            style={{ padding: '7px 14px', fontWeight: 700, gap: '5px' }}
-          >
-            <Plus size={15} />
-            <span>Thêm Chi Tiết</span>
-          </button>
-        </div>
+        <button
+          onClick={() => handleSelectViewMode('EISENHOWER')}
+          className={`btn btn-sm ${viewMode === 'EISENHOWER' ? 'btn-primary' : 'btn-ghost'}`}
+          style={{
+            fontSize: '12.5px',
+            fontWeight: viewMode === 'EISENHOWER' ? 700 : 500,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '6px 14px',
+            borderRadius: '6px',
+            backgroundColor: viewMode === 'EISENHOWER' ? 'var(--accent-primary)' : 'transparent',
+            color: viewMode === 'EISENHOWER' ? '#ffffff' : 'var(--text-secondary)'
+          }}
+        >
+          <LayoutGrid size={15} />
+          <span>Ma trận Eisenhower (2x2)</span>
+        </button>
       </div>
 
-      {/* 3. Search & Filter Bar */}
-      <div
-        className="snote-card"
-        style={{
-          padding: '10px 14px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          flexWrap: 'wrap',
-          borderRadius: 'var(--radius-lg)'
-        }}
+      {/* Right: Metrics & Add Button */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+        {overdueCount > 0 && (
+          <span
+            className="badge"
+            style={{
+              fontSize: '11.5px',
+              padding: '4px 9px',
+              backgroundColor: 'rgba(239, 68, 68, 0.15)',
+              color: '#ef4444',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              fontWeight: 700,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}
+          >
+            <AlertTriangle size={13} />
+            {overdueCount} Quá hạn
+          </span>
+        )}
+
+        <span className="badge badge-green" style={{ fontSize: '11.5px', padding: '4px 9px', fontWeight: 700 }}>
+          {doneTasks.length}/{totalTasks} Hoàn thành ({completedPercent}%)
+        </span>
+
+        <button
+          onClick={handleOpenCreate}
+          className="btn btn-primary btn-sm"
+          style={{ padding: '7px 14px', fontWeight: 700, gap: '5px' }}
+        >
+          <Plus size={15} />
+          <span>Thêm Chi Tiết</span>
+        </button>
+      </div>
+    </div>
+
+      {/* 3. Search & Filter Bar */ }
+  <div
+    className="snote-card"
+    style={{
+      padding: '10px 14px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px',
+      flexWrap: 'wrap',
+      borderRadius: 'var(--radius-lg)'
+    }}
+  >
+    {/* Search */}
+    <div style={{ flex: 1, minWidth: '220px', position: 'relative' }}>
+      <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', display: 'flex' }}>
+        <Search size={16} />
+      </span>
+      <input
+        type="text"
+        placeholder="Tìm kiếm bài tập, hạn nộp hoặc công việc..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="snote-input"
+        style={{ paddingLeft: '38px', paddingRight: search ? '36px' : '14px' }}
+      />
+      {search && (
+        <button
+          onClick={() => setSearch('')}
+          style={{
+            position: 'absolute',
+            right: '10px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            background: 'transparent',
+            border: 'none',
+            color: 'var(--text-muted)',
+            cursor: 'pointer',
+            display: 'flex',
+            padding: 0
+          }}
+        >
+          <X size={14} />
+        </button>
+      )}
+    </div>
+
+    {/* Project Filter */}
+    <div style={{ minWidth: '180px' }}>
+      <select
+        value={filterProjectId}
+        onChange={(e) => setFilterProjectId(e.target.value)}
+        className="snote-select"
+        style={{ fontSize: '13px' }}
       >
-        {/* Search */}
-        <div style={{ flex: 1, minWidth: '220px', position: 'relative' }}>
-          <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', display: 'flex' }}>
-            <Search size={16} />
-          </span>
-          <input
-            type="text"
-            placeholder="Tìm kiếm bài tập, hạn nộp hoặc công việc..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="snote-input"
-            style={{ paddingLeft: '38px', paddingRight: search ? '36px' : '14px' }}
-          />
-          {search && (
-            <button
-              onClick={() => setSearch('')}
-              style={{
-                position: 'absolute',
-                right: '10px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                background: 'transparent',
-                border: 'none',
-                color: 'var(--text-muted)',
-                cursor: 'pointer',
-                display: 'flex',
-                padding: 0
-              }}
-            >
-              <X size={14} />
-            </button>
-          )}
-        </div>
+        <option value="ALL">Tất cả dự án & việc</option>
+        {projects.map((p) => (
+          <option key={p.id} value={p.id}>
+            📁 {p.name}
+          </option>
+        ))}
+      </select>
+    </div>
 
-        {/* Project Filter */}
-        <div style={{ minWidth: '180px' }}>
-          <select
-            value={filterProjectId}
-            onChange={(e) => setFilterProjectId(e.target.value)}
-            className="snote-select"
-            style={{ fontSize: '13px' }}
-          >
-            <option value="ALL">Tất cả dự án & việc</option>
-            {projects.map((p) => (
-              <option key={p.id} value={p.id}>
-                📁 {p.name}
-              </option>
-            ))}
-          </select>
-        </div>
+    {/* Priority Filter */}
+    <div style={{ minWidth: '180px' }}>
+      <select
+        value={filterPriority}
+        onChange={(e) => setFilterPriority(e.target.value)}
+        className="snote-select"
+        style={{ fontSize: '13px' }}
+      >
+        <option value="ALL">Tất cả mức ưu tiên</option>
+        <option value={TaskPriority.URGENT}>🔴 Khẩn cấp (Urgent)</option>
+        <option value={TaskPriority.HIGH}>🟠 Cao (High)</option>
+        <option value={TaskPriority.MEDIUM}>🟡 Trung bình (Medium)</option>
+        <option value={TaskPriority.LOW}>🟢 Thấp (Low)</option>
+      </select>
+    </div>
+  </div>
 
-        {/* Priority Filter */}
-        <div style={{ minWidth: '180px' }}>
-          <select
-            value={filterPriority}
-            onChange={(e) => setFilterPriority(e.target.value)}
-            className="snote-select"
-            style={{ fontSize: '13px' }}
-          >
-            <option value="ALL">Tất cả mức ưu tiên</option>
-            <option value={TaskPriority.URGENT}>🔴 Khẩn cấp (Urgent)</option>
-            <option value={TaskPriority.HIGH}>🟠 Cao (High)</option>
-            <option value={TaskPriority.MEDIUM}>🟡 Trung bình (Medium)</option>
-            <option value={TaskPriority.LOW}>🟢 Thấp (Low)</option>
-          </select>
+  {/* 4. Main Tasks Area: Conditional Rendering based on ViewMode */ }
+  {
+    loading ? (
+      <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '14px' }}>
+          <Sparkles size={18} className="pulse-urgent" style={{ color: 'var(--accent-primary)' }} />
+          <span>Đang đồng bộ danh sách công việc...</span>
         </div>
       </div>
-
-      {/* 4. Main Tasks Area: Conditional Rendering based on ViewMode */}
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '14px' }}>
-            <Sparkles size={18} className="pulse-urgent" style={{ color: 'var(--accent-primary)' }} />
-            <span>Đang đồng bộ danh sách công việc...</span>
-          </div>
-        </div>
-      ) : viewMode === 'LIST' ? (
-        <TasksListView
-          tasks={tasks}
-          onEdit={handleOpenEdit}
-          onDelete={handleDelete}
-          onToggleStatus={handleToggleStatus}
-          onMoveStatus={handleMoveStatus}
-        />
-      ) : viewMode === 'EISENHOWER' ? (
-        <TasksEisenhowerView
-          tasks={tasks}
-          onEdit={handleOpenEdit}
-          onDelete={handleDelete}
-          onToggleStatus={handleToggleStatus}
-          onMoveStatus={handleMoveStatus}
-          onOpenCreate={handleOpenCreate}
-        />
-      ) : (
-        /* Kanban Board Grid */
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', alignItems: 'start' }}>
-          {columns.map((col) => {
-            const Icon = col.icon;
-            return (
+    ) : viewMode === 'LIST' ? (
+      <TasksListView
+        tasks={tasks}
+        onEdit={handleOpenEdit}
+        onDelete={handleDelete}
+        onToggleStatus={handleToggleStatus}
+        onMoveStatus={handleMoveStatus}
+      />
+    ) : viewMode === 'EISENHOWER' ? (
+      <TasksEisenhowerView
+        tasks={tasks}
+        onEdit={handleOpenEdit}
+        onDelete={handleDelete}
+        onToggleStatus={handleToggleStatus}
+        onMoveStatus={handleMoveStatus}
+        onOpenCreate={handleOpenCreate}
+      />
+    ) : (
+      /* Kanban Board Grid */
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', alignItems: 'start' }}>
+        {columns.map((col) => {
+          const Icon = col.icon;
+          return (
+            <div
+              key={col.id}
+              className="snote-card"
+              style={{
+                backgroundColor: 'var(--bg-secondary)',
+                padding: '16px',
+                borderRadius: 'var(--radius-xl)',
+                minHeight: '440px',
+                display: 'flex',
+                flexDirection: 'column'
+              }}
+            >
+              {/* Column Header */}
               <div
-                key={col.id}
-                className="snote-card"
                 style={{
-                  backgroundColor: 'var(--bg-secondary)',
-                  padding: '16px',
-                  borderRadius: 'var(--radius-xl)',
-                  minHeight: '440px',
                   display: 'flex',
-                  flexDirection: 'column'
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginBottom: '16px',
+                  paddingBottom: '12px',
+                  borderBottom: '1px solid var(--border-color)'
                 }}
               >
-                {/* Column Header */}
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginBottom: '16px',
-                    paddingBottom: '12px',
-                    borderBottom: '1px solid var(--border-color)'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ color: col.accentColor, display: 'flex' }}>
-                      <Icon size={18} />
-                    </span>
-                    <h3 style={{ margin: 0, fontSize: '14.5px', fontWeight: 700, color: 'var(--text-primary)' }}>
-                      {col.title}
-                    </h3>
-                  </div>
-                  <span className={`badge ${col.badgeClass}`} style={{ fontSize: '12px', fontWeight: 700 }}>
-                    {col.count}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ color: col.accentColor, display: 'flex' }}>
+                    <Icon size={18} />
                   </span>
+                  <h3 style={{ margin: 0, fontSize: '14.5px', fontWeight: 700, color: 'var(--text-primary)' }}>
+                    {col.title}
+                  </h3>
                 </div>
-
-                {/* Column Task Items */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
-                  {col.items.length === 0 ? (
-                    <div
-                      style={{
-                        textAlign: 'center',
-                        padding: '40px 16px',
-                        color: 'var(--text-muted)',
-                        fontSize: '13px',
-                        border: '1px dashed var(--border-subtle)',
-                        borderRadius: 'var(--radius-lg)',
-                        marginTop: '10px'
-                      }}
-                    >
-                      Không có công việc nào trong mục này
-                    </div>
-                  ) : (
-                    col.items.map((task) => (
-                      <TaskCard
-                        key={task.id}
-                        task={task}
-                        onEdit={handleOpenEdit}
-                        onDelete={handleDelete}
-                        onToggleStatus={handleToggleStatus}
-                        onMoveStatus={handleMoveStatus}
-                      />
-                    ))
-                  )}
-                </div>
+                <span className={`badge ${col.badgeClass}`} style={{ fontSize: '12px', fontWeight: 700 }}>
+                  {col.count}
+                </span>
               </div>
-            );
-          })}
-        </div>
-      )}
 
-      {/* Modal Form */}
-      <TaskModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSuccess={fetchTasks}
-        taskToEdit={taskToEdit}
-      />
-    </div>
+              {/* Column Task Items */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
+                {col.items.length === 0 ? (
+                  <div
+                    style={{
+                      textAlign: 'center',
+                      padding: '40px 16px',
+                      color: 'var(--text-muted)',
+                      fontSize: '13px',
+                      border: '1px dashed var(--border-subtle)',
+                      borderRadius: 'var(--radius-lg)',
+                      marginTop: '10px'
+                    }}
+                  >
+                    Không có công việc nào trong mục này
+                  </div>
+                ) : (
+                  col.items.map((task) => (
+                    <TaskCard
+                      key={task.id}
+                      task={task}
+                      onEdit={handleOpenEdit}
+                      onDelete={handleDelete}
+                      onToggleStatus={handleToggleStatus}
+                      onMoveStatus={handleMoveStatus}
+                    />
+                  ))
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    )
+  }
+
+  {/* Modal Form */ }
+  <TaskModal
+    isOpen={isModalOpen}
+    onClose={() => setIsModalOpen(false)}
+    onSuccess={fetchTasks}
+    taskToEdit={taskToEdit}
+  />
+    </div >
   );
 };
 

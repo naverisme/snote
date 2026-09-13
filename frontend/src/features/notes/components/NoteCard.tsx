@@ -230,13 +230,12 @@ export const NoteCard: React.FC<NoteCardProps> = ({
           </div>
         )}
 
-        {/* Row 4: Main Content Area - Maximized Space & Live Preview */}
+        {/* Row 4: Main Content Area - Maximized Space & Live Scrollable Preview */}
         <div
+          className="snote-card-content-scroll"
           style={{
             margin: '0 0 6px 0',
             maxHeight: '160px',
-            overflow: 'hidden',
-            position: 'relative',
             backgroundColor: 'var(--bg-primary)',
             padding: '8px 10px',
             borderRadius: 'var(--radius-md)',
@@ -261,19 +260,6 @@ export const NoteCard: React.FC<NoteCardProps> = ({
               Chưa có nội dung ghi chép.
             </span>
           )}
-
-          {/* Fade-out gradient at bottom for smooth clipping */}
-          <div
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: '24px',
-              background: 'linear-gradient(to bottom, transparent, var(--bg-primary))',
-              pointerEvents: 'none'
-            }}
-          />
         </div>
       </div>
 

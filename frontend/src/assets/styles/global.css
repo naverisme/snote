@@ -974,6 +974,32 @@ code, pre, kbd {
   }
 }
 
+/* Card Content Scrollable Preview (Checklist / Text mouse wheel scroll) */
+.snote-card-content-scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.25) transparent;
+  overscroll-behavior: contain;
+}
+
+.snote-card-content-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.snote-card-content-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.snote-card-content-scroll::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: var(--radius-full);
+}
+
+.snote-card-content-scroll:hover::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.45);
+}
+
 /* Floating Batch Action Bar */
 .floating-batch-bar {
   position: fixed;

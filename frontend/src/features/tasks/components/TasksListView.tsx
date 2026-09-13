@@ -18,6 +18,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { extractNoteFeatures } from '../../notes/utils/smartNoteParser';
+import { getTaskDueStatus } from '../../../utils/dateUtils';
 
 interface TasksListViewProps {
   tasks: any[];
@@ -25,6 +26,7 @@ interface TasksListViewProps {
   onDelete: (id: string, title: string) => void;
   onToggleStatus: (id: string, currentStatus: TaskStatus) => void;
   onMoveStatus?: (id: string, newStatus: TaskStatus) => void;
+  onOpenTaskModal?: () => void;
 }
 
 export const TasksListView: React.FC<TasksListViewProps> = ({
@@ -32,16 +34,13 @@ export const TasksListView: React.FC<TasksListViewProps> = ({
   onEdit,
   onDelete,
   onToggleStatus,
-  onMoveStatus
+  onMoveStatus,
+  onOpenTaskModal
 }) => {
   const [isDoneSectionOpen, setIsDoneSectionOpen] = useState(true);
 
   // Group tasks into timeline categories
   const grouped = useMemo(() => {
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-    const tomorrow = today + 24 * 60 * 60 * 1000;
-
     const overdue: any[] = [];
     const dueToday: any[] = [];
     const upcoming: any[] = [];
@@ -59,12 +58,10 @@ export const TasksListView: React.FC<TasksListViewProps> = ({
         return;
       }
 
-      const due = new Date(t.dueDate);
-      const dueDay = new Date(due.getFullYear(), due.getMonth(), due.getDate()).getTime();
-
-      if (dueDay < today) {
+      const dueInfo = getTaskDueStatus(t.dueDate, false);
+      if (dueInfo.isOverdue) {
         overdue.push(t);
-      } else if (dueDay === today) {
+      } else if (dueInfo.isToday) {
         dueToday.push(t);
       } else {
         upcoming.push(t);
@@ -111,19 +108,8 @@ export const TasksListView: React.FC<TasksListViewProps> = ({
     const assigneeName = task.assignees?.[0]?.name || task.assignee?.fullName || task.user?.fullName;
     const assigneeInitial = assigneeName ? assigneeName.slice(0, 2).toUpperCase() : null;
 
-    let relativeDateStr = '';
-    if (task.dueDate) {
-      const due = new Date(task.dueDate);
-      const now = new Date();
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const dueDay = new Date(due.getFullYear(), due.getMonth(), due.getDate());
-      const diffDays = Math.round((dueDay.getTime() - today.getTime()) / (24 * 60 * 60 * 1000));
-
-      if (diffDays < 0) relativeDateStr = `Trễ ${Math.abs(diffDays)} ngày`;
-      else if (diffDays === 0) relativeDateStr = 'Hôm nay';
-      else if (diffDays === 1) relativeDateStr = 'Ngày mai';
-      else relativeDateStr = `Còn ${diffDays} ngày (${due.getDate()}/${due.getMonth() + 1})`;
-    }
+    const dueInfo = getTaskDueStatus(task.dueDate, isDone);
+    const relativeDateStr = dueInfo.label || dueInfo.formattedDue;
 
     return (
       <div

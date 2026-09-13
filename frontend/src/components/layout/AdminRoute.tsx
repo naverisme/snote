@@ -43,9 +43,9 @@ export const AdminRoute: React.FC = () => {
         <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '24px' }}>
           Trang <b>Trạng Thái Hệ Thống (System Status)</b> và các công cụ chẩn đoán máy chủ chỉ dành riêng cho tài khoản <b>Quản Trị Viên (Admin)</b>.
         </p>
-        <Link to="/notes" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+        <Link to="/workspace" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
           <ArrowLeft size={16} />
-          <span>Quay lại Trang Ghi Chú</span>
+          <span>Trở về Không Gian Học Tập</span>
         </Link>
       </div>
     );

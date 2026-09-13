@@ -10,13 +10,15 @@ interface SubjectModalProps {
   onClose: () => void;
   onSuccess: () => void;
   defaultSemesterId?: string | null;
+  initialData?: any | null;
 }
 
 export const SubjectModal: React.FC<SubjectModalProps> = ({
   isOpen,
   onClose,
   onSuccess,
-  defaultSemesterId
+  defaultSemesterId,
+  initialData
 }) => {
   const { semesters, refreshFilterData } = useAppFilter();
   const [semesterId, setSemesterId] = useState<string>('');
@@ -27,6 +29,8 @@ export const SubjectModal: React.FC<SubjectModalProps> = ({
   const [color, setColor] = useState('#6366f1');
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
+
+  const isEditing = Boolean(initialData?.id);
 
   const colorPresets = [
     '#6366f1', // Indigo
@@ -41,15 +45,33 @@ export const SubjectModal: React.FC<SubjectModalProps> = ({
   ];
 
   useEffect(() => {
-    if (defaultSemesterId) {
-      setSemesterId(defaultSemesterId);
-    } else if (semesters.length > 0) {
-      setSemesterId(semesters[0].id);
+    if (initialData) {
+      setSemesterId(initialData.semesterId || defaultSemesterId || (semesters[0]?.id ?? ''));
+      setName(initialData.name || '');
+      setCode(initialData.code || '');
+      setCredits(initialData.credits || 3);
+      setLecturer(initialData.lecturer || '');
+      setColor(initialData.color || '#6366f1');
+    } else {
+      if (defaultSemesterId) {
+        setSemesterId(defaultSemesterId);
+      } else if (semesters.length > 0) {
+        setSemesterId(semesters[0].id);
+      }
+      setName('');
+      setCode('');
+      setCredits(3);
+      setLecturer('');
+      setColor('#6366f1');
     }
-  }, [defaultSemesterId, semesters, isOpen]);
+  }, [defaultSemesterId, semesters, isOpen, initialData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!name.trim()) {
+      showToast('Vui lòng nhập tên môn học', 'error');
+      return;
+    }
     if (!semesterId) {
       showToast('Vui lòng chọn học kỳ tương ứng', 'error');
       return;
@@ -57,24 +79,33 @@ export const SubjectModal: React.FC<SubjectModalProps> = ({
 
     setLoading(true);
     try {
-      await api.post('/subjects', {
-        semesterId,
-        name: name.trim(),
-        code: code.trim() || undefined,
-        credits: Number(credits),
-        lecturer: lecturer.trim() || undefined,
-        color
-      });
+      if (isEditing && initialData?.id) {
+        await api.put(`/subjects/${initialData.id}`, {
+          semesterId,
+          name: name.trim(),
+          code: code.trim() || undefined,
+          credits: Number(credits),
+          lecturer: lecturer.trim() || undefined,
+          color
+        });
+        showToast('Cập nhật môn học thành công!', 'success');
+      } else {
+        await api.post('/subjects', {
+          semesterId,
+          name: name.trim(),
+          code: code.trim() || undefined,
+          credits: Number(credits),
+          lecturer: lecturer.trim() || undefined,
+          color
+        });
+        showToast('Tạo môn học mới thành công!', 'success');
+      }
 
-      showToast('Tạo môn học mới thành công!', 'success');
-      setName('');
-      setCode('');
-      setLecturer('');
       await refreshFilterData();
       onSuccess();
       onClose();
     } catch (err: any) {
-      showToast(err.message || 'Lỗi khi tạo môn học', 'error');
+      showToast(err.message || 'Lỗi khi lưu môn học', 'error');
     } finally {
       setLoading(false);
     }
@@ -84,7 +115,7 @@ export const SubjectModal: React.FC<SubjectModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Thêm Môn Học Mới"
+      title={isEditing ? 'Chỉnh Sửa Môn Học' : 'Thêm Môn Học Mới'}
       maxWidth="620px"
       icon={<BookOpen size={20} />}
     >
@@ -228,7 +259,7 @@ export const SubjectModal: React.FC<SubjectModalProps> = ({
             className="btn btn-primary"
           >
             <Save size={15} />
-            <span>{loading ? 'Đang lưu...' : 'Tạo Môn Học'}</span>
+            <span>{loading ? 'Đang lưu...' : isEditing ? 'Lưu Thay Đổi' : 'Tạo Môn Học'}</span>
           </button>
         </div>
       </form>

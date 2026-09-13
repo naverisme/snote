@@ -10,6 +10,18 @@ export const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [sessionNotice, setSessionNotice] = useState<string | null>(() => {
+    const notice = localStorage.getItem('snote_session_expired_notice');
+    if (notice) {
+      localStorage.removeItem('snote_session_expired_notice');
+      return notice;
+    }
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('expired') === '1') {
+      return 'Phiên làm việc đã hết hạn sau thời gian dài không hoạt động. Các thay đổi và bản nháp gần nhất của bạn đã được sao lưu an toàn.';
+    }
+    return null;
+  });
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -93,6 +105,29 @@ export const LoginPage: React.FC = () => {
             Second Brain & Workspace học tập thông minh cho Sinh viên
           </p>
         </div>
+
+        {/* Session Expired Notice */}
+        {sessionNotice && (
+          <div
+            className="animate-fade-in"
+            style={{
+              background: 'rgba(99, 102, 241, 0.12)',
+              border: '1px solid rgba(99, 102, 241, 0.35)',
+              color: 'var(--accent-primary)',
+              padding: '12px 16px',
+              borderRadius: 'var(--radius-md)',
+              marginBottom: '20px',
+              fontSize: '13px',
+              lineHeight: 1.45,
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '10px'
+            }}
+          >
+            <ShieldCheck size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
+            <span>{sessionNotice}</span>
+          </div>
+        )}
 
         {/* Error Alert */}
         {error && (

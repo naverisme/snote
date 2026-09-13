@@ -3,10 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import {
-  BookOpen,
-  CheckSquare,
-  Calendar,
-  BarChart3,
+  LayoutDashboard,
   Layers,
   FolderKanban,
   Settings,
@@ -34,10 +31,7 @@ export const Sidebar: React.FC = () => {
   const isExpanded = isPinned || isHovered;
 
   const baseNavItems = [
-    { to: '/notes', label: 'Ghi chú', icon: BookOpen, desc: 'Soạn thảo & Đề cương' },
-    { to: '/tasks', label: 'Công việc', icon: CheckSquare, desc: 'Nhiệm vụ & Hạn nộp' },
-    { to: '/schedule', label: 'Lịch trình', icon: Calendar, desc: 'Thời khóa biểu & Thi' },
-    { to: '/progress', label: 'Tiến độ', icon: BarChart3, desc: 'Thống kê & Tín chỉ' },
+    { to: '/workspace', label: 'Không Gian Học Tập', icon: LayoutDashboard, desc: 'Ghi chú • Việc làm • Lịch' },
     { to: '/semesters', label: 'Môn & Học kỳ', icon: Layers, desc: 'Cấu trúc học phần' },
     { to: '/projects', label: 'Dự án & BTL', icon: FolderKanban, desc: 'Đồ án & Nhóm' },
     { to: '/ai-chat', label: 'Trợ lý AI Copilot', icon: Sparkles, badge: 'AI', desc: 'Hỏi đáp bài học thông minh' },

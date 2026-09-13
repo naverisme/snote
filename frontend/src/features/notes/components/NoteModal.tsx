@@ -10,15 +10,15 @@ import { autoFormatPlainTextToMarkdown, detectNoteType, extractNoteFeatures, tog
 import { handleSmartListKeyDown } from '../utils/smartKeyboard';
 import {
   BookOpen,
-  List,
+  ListOrdered,
   CheckSquare,
   Edit3,
   Sparkles,
   Save,
   Tag,
-  Link,
   Trash2,
-  Share2
+  Share2,
+  Check
 } from 'lucide-react';
 
 export type NoteModalMode = 'VIEW' | 'EDIT' | 'WRITE' | 'PREVIEW' | 'SPLIT';
@@ -54,6 +54,7 @@ export const NoteModal: React.FC<NoteModalProps> = ({
   const [tagsInput, setTagsInput] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isAutoFormatted, setIsAutoFormatted] = useState(false);
   const [loading, setLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { showToast } = useToast();
@@ -95,6 +96,39 @@ export const NoteModal: React.FC<NoteModalProps> = ({
     const end = textarea.selectionEnd;
     const selectedText = content.substring(start, end) || defaultText;
     const newContent = content.substring(0, start) + prefix + selectedText + suffix + content.substring(end);
+
+    setContent(newContent);
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(start + prefix.length, start + prefix.length + selectedText.length);
+    }, 0);
+  };
+
+  const insertNumberedList = () => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+
+    const textBefore = content.substring(0, start);
+    const lineStart = textBefore.lastIndexOf('\n') + 1;
+    const isAtStartOfLine = start === lineStart;
+
+    // Tìm số thứ tự gần nhất ở các dòng phía trước
+    const lines = textBefore.split('\n');
+    let nextNum = 1;
+    for (let i = lines.length - 1; i >= 0; i--) {
+      const match = lines[i].trim().match(/^(\d+)\.\s/);
+      if (match) {
+        nextNum = parseInt(match[1], 10) + 1;
+        break;
+      }
+    }
+
+    const prefix = isAtStartOfLine ? `${nextNum}. ` : `\n${nextNum}. `;
+    const selectedText = content.substring(start, end) || 'Mục danh sách';
+    const newContent = content.substring(0, start) + prefix + selectedText + content.substring(end);
 
     setContent(newContent);
     setTimeout(() => {
@@ -479,24 +513,13 @@ export const NoteModal: React.FC<NoteModalProps> = ({
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                   <button
                     type="button"
-                    onClick={() => insertPlainText('• ', '', 'Mục danh sách')}
+                    onClick={insertNumberedList}
                     className="btn btn-secondary btn-sm"
                     style={{ fontSize: '12px', padding: '3px 8px', display: 'flex', alignItems: 'center', gap: '4px' }}
-                    title="Chèn dấu chấm đầu dòng"
+                    title="Chèn danh sách đánh số thứ tự (1., 2., 3...)"
                   >
-                    <List size={13} />
+                    <ListOrdered size={13} />
                     <span>Danh sách</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => insertPlainText('1. ', '', 'Mục đầu tiên')}
-                    className="btn btn-secondary btn-sm"
-                    style={{ fontSize: '12px', padding: '3px 8px', display: 'flex', alignItems: 'center', gap: '4px' }}
-                    title="Chèn danh sách đánh số thứ tự"
-                  >
-                    <span style={{ fontWeight: 800, fontSize: '11px' }}>1.</span>
-                    <span>Thứ tự</span>
                   </button>
 
                   <button
@@ -512,36 +535,30 @@ export const NoteModal: React.FC<NoteModalProps> = ({
 
                   <button
                     type="button"
-                    onClick={() => insertPlainText('https://', '', '')}
-                    className="btn btn-secondary btn-sm"
-                    style={{ fontSize: '12px', padding: '3px 8px', display: 'flex', alignItems: 'center', gap: '4px' }}
-                    title="Chèn đường link liên kết"
-                  >
-                    <Link size={13} />
-                    <span>Liên kết</span>
-                  </button>
-
-                  <button
-                    type="button"
                     onClick={() => {
                       const formatted = autoFormatPlainTextToMarkdown(content);
                       setContent(formatted);
-                      showToast('Đã tự động nhận diện danh sách, liên kết và phân cấp!', 'success');
+                      setIsAutoFormatted(true);
+                      showToast('✨ Đã tự động chuẩn hóa danh sách & liên kết!', 'success');
+                      setTimeout(() => setIsAutoFormatted(false), 2000);
                     }}
                     className="btn btn-secondary btn-sm"
                     style={{
                       fontSize: '12px',
                       padding: '3px 10px',
-                      color: 'var(--accent-primary)',
+                      color: isAutoFormatted ? 'var(--color-success)' : 'var(--accent-primary)',
+                      backgroundColor: isAutoFormatted ? 'rgba(16, 185, 129, 0.15)' : undefined,
+                      borderColor: isAutoFormatted ? 'var(--color-success)' : undefined,
                       fontWeight: 600,
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '4px'
+                      gap: '4px',
+                      transition: 'all var(--transition-fast)'
                     }}
                     title="Tự động nhận diện thụt lề, danh sách, checklist, liên kết từ văn bản thuần túy"
                   >
-                    <Sparkles size={12} />
-                    <span>Tự nhận diện</span>
+                    {isAutoFormatted ? <Check size={12} /> : <Sparkles size={12} />}
+                    <span>{isAutoFormatted ? 'Đã nhận diện' : 'Tự nhận diện'}</span>
                   </button>
                 </div>
 
@@ -557,7 +574,14 @@ export const NoteModal: React.FC<NoteModalProps> = ({
                 placeholder="Nhập nội dung ghi chú tự nhiên (bạn có thể gõ danh sách với dấu • hoặc 1., ô việc cần làm [ ], đường link web, các mục thụt lề... hệ thống sẽ tự động hiển thị đẹp mắt)..."
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                onKeyDown={(e) => handleSmartListKeyDown(e, content, setContent)}
+                onKeyDown={(e) => {
+                  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    handleSubmit(e);
+                  } else {
+                    handleSmartListKeyDown(e, content, setContent);
+                  }
+                }}
                 className="snote-textarea"
                 style={{
                   lineHeight: '1.65',

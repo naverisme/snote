@@ -1,6 +1,7 @@
 import React from 'react';
 import { TaskStatus, TaskPriority } from '@snote/shared';
 import { useAuth } from '../../../contexts/AuthContext';
+import { getTaskDueStatus } from '../../../utils/dateUtils';
 import {
   CheckCircle2,
   Circle,
@@ -66,22 +67,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   const canComplete = task.canComplete !== undefined ? task.canComplete : (isAssignee || isCreator || isProjectOwner || !task.projectId);
   const canEdit = task.canEdit !== undefined ? task.canEdit : (isAssignee || isCreator || isProjectOwner || !task.projectId);
 
-  // Due date status
-  let dueStatus: 'OVERDUE' | 'TODAY' | 'UPCOMING' | null = null;
-  if (task.dueDate && !isDone) {
-    const due = new Date(task.dueDate);
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const dueDay = new Date(due.getFullYear(), due.getMonth(), due.getDate());
-
-    if (dueDay < today) {
-      dueStatus = 'OVERDUE';
-    } else if (dueDay.getTime() === today.getTime()) {
-      dueStatus = 'TODAY';
-    } else {
-      dueStatus = 'UPCOMING';
-    }
-  }
+  // Unified Due date status (Cùng ngày nhưng chưa quá giờ thì không tính là quá hạn)
+  const dueInfo = getTaskDueStatus(task.dueDate, isDone);
+  const dueStatus = dueInfo.status;
 
   return (
     <div
@@ -281,7 +269,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             }}
           >
             <Calendar size={11} />
-            <span>{new Date(task.dueDate).toLocaleDateString('vi-VN')}</span>
+            <span>{dueInfo.label || dueInfo.formattedDue}</span>
           </div>
         )}
       </div>
