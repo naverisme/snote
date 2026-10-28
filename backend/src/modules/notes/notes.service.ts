@@ -82,7 +82,8 @@ export class NotesService {
   }
 
   async deleteNote(id: string, userId: string): Promise<void> {
-    await this.getNoteById(id, userId);
+    const note = await this.repository.findOwnedById(id, userId);
+    if (!note) throw new NotFoundError('Không tìm thấy ghi chú thuộc tài khoản của bạn');
     await this.repository.softDelete(id, userId);
   }
 

@@ -1,8 +1,9 @@
 import { prisma } from '../../shared/db/prismaClient';
-import { Note } from '@prisma/client';
 import { CreateNoteDto, UpdateNoteDto, NoteFilter } from './notes.types';
 
 export class NotesRepository {
+  constructor(private readonly db: typeof prisma = prisma) {}
+
   async findMany(userId: string, filter?: NoteFilter): Promise<{ notes: any[]; total: number }> {
     const page = filter?.page || 1;
     const limit = filter?.limit || 20;
@@ -26,8 +27,8 @@ export class NotesRepository {
     }
 
     const [total, notes] = await Promise.all([
-      prisma.note.count({ where }),
-      prisma.note.findMany({
+      this.db.note.count({ where }),
+      this.db.note.findMany({
         where,
         skip,
         take: limit,
@@ -50,15 +51,16 @@ export class NotesRepository {
   }
 
   async findById(id: string, userId: string): Promise<any | null> {
-    const hasShare = await prisma.resourceShare.findFirst({
+    const hasShare = await this.db.resourceShare.findFirst({
       where: {
         targetType: 'NOTE',
         targetId: id,
-        OR: [{ sharedWithUserId: userId }, { isPublic: true }]
+        sharedWithUserId: userId,
+        OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }]
       }
     });
 
-    return prisma.note.findFirst({
+    return this.db.note.findFirst({
       where: {
         id,
         deletedAt: null,
@@ -79,7 +81,7 @@ export class NotesRepository {
   }
 
   async findOwnedById(id: string, userId: string): Promise<any | null> {
-    return prisma.note.findFirst({ where: { id, userId, deletedAt: null } });
+    return this.db.note.findFirst({ where: { id, userId, deletedAt: null } });
   }
 
   private async getOrCreateTags(userId: string, tagNames: string[]): Promise<string[]> {
@@ -87,7 +89,7 @@ export class NotesRepository {
     for (const name of tagNames) {
       const cleanName = name.trim();
       if (!cleanName) continue;
-      const tag = await prisma.tag.upsert({
+      const tag = await this.db.tag.upsert({
         where: { userId_name: { userId, name: cleanName } },
         update: {},
         create: { userId, name: cleanName }
@@ -103,7 +105,7 @@ export class NotesRepository {
       tagIds = await this.getOrCreateTags(userId, data.tagNames);
     }
 
-    return prisma.note.create({
+    return this.db.note.create({
       data: {
         userId,
         title: data.title || 'Ghi chú không tiêu đề',
@@ -141,8 +143,8 @@ export class NotesRepository {
       };
     }
 
-    return prisma.note.update({
-      where: { id },
+    return this.db.note.update({
+      where: { id, userId, deletedAt: null },
       data: {
         title: data.title,
         content: data.content,
@@ -168,20 +170,20 @@ export class NotesRepository {
   }
 
   async softDelete(id: string, userId: string): Promise<void> {
-    await prisma.note.updateMany({
-      where: { id, userId },
+    await this.db.note.updateMany({
+      where: { id, userId, deletedAt: null },
       data: { deletedAt: new Date() }
     });
   }
 
   async togglePin(id: string, userId: string): Promise<any> {
-    const note = await this.findById(id, userId);
+    const note = await this.findOwnedById(id, userId);
     if (!note) return null;
     return this.update(id, userId, { isPinned: !note.isPinned });
   }
 
   async toggleArchive(id: string, userId: string): Promise<any> {
-    const note = await this.findById(id, userId);
+    const note = await this.findOwnedById(id, userId);
     if (!note) return null;
     return this.update(id, userId, { isArchived: !note.isArchived });
   }
