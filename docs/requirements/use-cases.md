@@ -168,6 +168,8 @@ Mọi quyền trên áp dụng ở máy chủ khi đọc danh sách, mở chi ti
 
 ## 6. Quyết định mở trước khi chốt SRS
 
+Bảng này ghi các câu hỏi từ lúc phác Use Case. Xem [quyết định M0](decisions.md) để biết mặc định triển khai đang dùng và [hợp đồng M1](../architecture/m1-api-contract.md) cho hành vi API đã chi tiết hóa.
+
 | Mã | Nội dung cần duyệt | Đề xuất đang dùng trong sơ đồ |
 |---|---|---|
 | D-01 | Phạm vi quản trị lớp và giáo viên | Quản trị lớp hỗ trợ thành viên và nhóm. Giáo viên quản lý giao bài, tiến độ và phản hồi. Giáo viên xem người phụ trách, hạn, trạng thái của việc gắn bài. Nháp và checklist chi tiết cần chia sẻ. |
