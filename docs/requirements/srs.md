@@ -47,11 +47,11 @@ Các số dưới đây là **mục tiêu lập kế hoạch**, cần xác nhậ
 | NFR-05 | Mục tiêu phục hồi ban đầu RPO ≤ 24 giờ, RTO ≤ 4 giờ. | Diễn tập phục hồi vào môi trường tách biệt. Đo tuổi của bản sao và thời gian đến khi qua kiểm tra chức năng. |
 | NFR-06 | Sau lỗi mạng hoặc thao tác lặp, dữ liệu nghiệp vụ duy trì nhất quán. Nộp trùng cùng khóa và cùng dữ liệu trả về bản nộp gốc. | Thử hai yêu cầu nộp đồng thời, thử lại sau mất kết nối, và lỗi lưu giữa quá trình. |
 
-## Quy tắc và quyết định cần duyệt
+## Quy tắc và quyết định trước triển khai
 
-- Dùng múi giờ hồ sơ để tính ranh giới ngày. Hạn có giờ được so với thời điểm hiện tại. Định dạng và quy tắc cho hạn chỉ có ngày cần duyệt trước khi khóa mô hình dữ liệu.
+- Dùng [D-07](decisions.md) cho quy tắc múi giờ và hạn chỉ có ngày, cùng [hợp đồng M1](../architecture/m1-api-contract.md) cho cách tính nhóm ngày.
 - Tiến độ bài hiển thị số việc đã hoàn thành trên tổng số việc gắn bài, cùng trạng thái nộp riêng. Bài chưa có việc hiển thị chưa có dữ liệu.
-- D-01 đến D-06 trong [Use Case](use-cases.md#6-quyết-định-mở-trước-khi-chốt-srs) vẫn là các mục duyệt. D-02 và D-06 có phạm vi đề xuất ở trên. D-03 và D-04 phải được chốt trước khi triển khai xếp hạng và nộp bài.
+- D-01 đến D-08 trong [quyết định M0](decisions.md) ghi mặc định dùng để phân công và kiểm thử. D-03 dùng cho M1. Xác nhận D-04 trước khi mở nhánh nộp bài M3. Các quyết định nghiệp vụ có thể được cập nhật qua quy trình rà soát trước coding.
 - Xác nhận nguồn cấp tài khoản giáo viên, người quản lý lớp, chính sách vòng đời dữ liệu và quyền xem sau khi rời lớp trước khi chạy thử với dữ liệu thật.
 
 Khi thay đổi một yêu cầu, cập nhật FR, UC, sơ đồ và ca nghiệm thu liên quan trong cùng thay đổi.
