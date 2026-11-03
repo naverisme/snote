@@ -17,6 +17,8 @@ Các tài liệu mô tả hành vi và kiến trúc đích để duyệt trướ
 
 1. [Quyết định M0](requirements/decisions.md) ghi các mặc định triển khai và những mục cần kiểm chứng trước phát hành.
 2. [Hợp đồng phối hợp](architecture/implementation-contracts.md) xác định biên module, giao diện dùng chung và dữ liệu thử.
-3. [Phân công coding](delivery/agent-work-plan.md) chia phạm vi theo agent, thứ tự mở nhánh và các cổng tích hợp.
+3. [Hợp đồng API M1](architecture/m1-api-contract.md) ghi payload, mã lỗi, quy tắc ngày giờ và ví dụ để khóa hợp đồng.
+4. [Phân công coding](delivery/agent-work-plan.md) chia phạm vi theo agent và thứ tự ghép.
+5. [Hồ sơ sẵn sàng coding](delivery/coding-readiness.md) có phiếu giao A0/Q0 và bằng chứng cần có trước khi mở từng mốc.
 
 Dùng mã UC, FR, NFR và AT để lần từ yêu cầu sang luồng và ca kiểm thử.
