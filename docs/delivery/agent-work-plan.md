@@ -2,7 +2,7 @@
 
 **Điểm dừng của kế hoạch: giao phạm vi và điều kiện bắt đầu cho từng agent.** Mỗi mã bên dưới là một gói có thể giao cho một agent coding. Các vai trò là vị trí công việc. Mã nguồn và nhánh tính năng được tạo khi bắt đầu triển khai gói tương ứng.
 
-Đọc [quyết định M0](../requirements/decisions.md), [hợp đồng phối hợp](../architecture/implementation-contracts.md), [SRS](../requirements/srs.md) và [ma trận nghiệm thu](plan.md#3-ma-trận-nghiệm-thu) trước khi bắt đầu.
+Đọc [quyết định M0](../requirements/decisions.md), [hợp đồng phối hợp](../architecture/implementation-contracts.md), [SRS](../requirements/srs.md) và [ma trận nghiệm thu](plan.md#3-ma-trận-nghiệm-thu) trước khi bắt đầu. [Hồ sơ sẵn sàng coding](coding-readiness.md) có phiếu A0/Q0, tiêu chí từng cổng và điều kiện mở nhánh.
 
 ## 1. Thứ tự thực hiện
 
