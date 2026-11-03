@@ -13,4 +13,10 @@ Các tài liệu mô tả hành vi và kiến trúc đích để duyệt trướ
 | 7 | [Điều hướng](architecture/frontend-navigation.md) và [triển khai](architecture/deployment.md) | Luồng màn hình và quy trình đưa bản phát hành qua staging. |
 | 8 | [Kế hoạch bàn giao](delivery/plan.md) | Timeline, công sức, chi phí giả định và nghiệm thu. |
 
-Bắt đầu với mốc M0. Dùng mã UC, FR, NFR và AT để lần từ yêu cầu sang luồng và ca kiểm thử. Những mục D-01 đến D-06 còn chờ quyết định nghiệp vụ được ghi trong Use Case.
+## Chuẩn bị coding
+
+1. [Quyết định M0](requirements/decisions.md) ghi các mặc định triển khai và những mục cần kiểm chứng trước phát hành.
+2. [Hợp đồng phối hợp](architecture/implementation-contracts.md) xác định biên module, giao diện dùng chung và dữ liệu thử.
+3. [Phân công coding](delivery/agent-work-plan.md) chia phạm vi theo agent, thứ tự mở nhánh và các cổng tích hợp.
+
+Dùng mã UC, FR, NFR và AT để lần từ yêu cầu sang luồng và ca kiểm thử.
