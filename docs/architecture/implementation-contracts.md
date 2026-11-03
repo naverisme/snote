@@ -19,14 +19,16 @@ Tài liệu nối [SRS](../requirements/srs.md), [quyết định M0](../require
 
 ## M1 · Hợp đồng các luồng đầu tiên
 
+Dùng [đặc tả API M1](m1-api-contract.md) làm căn cứ cho payload, lỗi, phân trang, quyền và ví dụ nghiệm thu. Bảng sau là tóm tắt.
+
 | Module | API dự kiến | Đầu vào và kết quả tối thiểu |
 |---|---|---|
 | Phiên | `POST /api/session/login`, `GET /api/session`, `DELETE /api/session` | Đăng nhập bằng định danh và mật khẩu trong dữ liệu thử. Thành công tạo phiên và trả `user: { id, timeZone }`. Đọc phiên trả người dùng hiện tại. Đăng xuất thu hồi phiên. Thiết kế cơ chế phiên và cookie trước khi mở nhánh phụ thuộc. |
 | Workspace | `GET /api/me/workspace` | Trả ID workspace cá nhân và quyền. Tạo workspace và tư cách chủ một lần khi chuẩn bị tài khoản hoặc lần khởi tạo đã xác định. |
 | Hộp thu | `POST /api/inbox`, `PATCH /api/inbox/:id`, `GET /api/inbox`, `GET /api/inbox/:id` | URL hoặc văn bản, tiêu đề tùy chọn, nhãn. Tạo trả `id, kind, title, status`. Tìm với từ khóa và bộ lọc trạng thái. Người ngoài phạm vi nhận 404. |
-| Công việc | `POST /api/tasks`, `GET /api/tasks/:taskId`, `PATCH /api/tasks/:taskId` | Tiêu đề, mô tả, mức quan trọng, hạn và trạng thái. Trả mã việc, workspace nguồn và quyền hiệu lực. M1 dùng workspace cá nhân. |
-| Checklist | `POST /api/tasks/:taskId/check-items`, `PATCH /api/tasks/:taskId/check-items/:itemId` | Tạo mục có nhãn và thứ tự. Sửa nhận trạng thái đích hoặc trường được phép. Trả mục và tổng hợp `doneCount, totalCount, nextItemId`. Xóa hoặc sắp lại mục khi yêu cầu được đặc tả. |
-| Kế hoạch | `PUT /api/me/task-plans/:taskId` | Đặt thời lượng dự kiến theo phút và danh sách khoảng làm, có thể rỗng. Trả kế hoạch riêng. Việc vẫn giữ hạn gốc. |
+| Công việc | `POST /api/tasks`, `GET /api/tasks/:taskId`, `PATCH /api/tasks/:taskId` | Tiêu đề, mô tả, mức quan trọng, hạn và trạng thái. Trả dữ liệu việc và workspace nguồn. M1 chỉ dùng workspace cá nhân. |
+| Checklist | `POST /api/tasks/:taskId/check-items`, `PATCH /api/tasks/:taskId/check-items/:itemId` | Tạo mục bằng nhãn và nối cuối. Sửa nhận trạng thái đích. Trả mục và tổng hợp `doneCount, totalCount, nextItemId`. Xóa hoặc sắp lại mục khi yêu cầu được đặc tả. |
+| Kế hoạch | `GET /api/me/task-plans/:taskId`, `PUT /api/me/task-plans/:taskId` | Đặt thời lượng dự kiến theo phút và danh sách khoảng làm, có thể rỗng. Trả kế hoạch riêng. Việc vẫn giữ hạn gốc. |
 | Việc của tôi | `GET /api/me/tasks` | Trả việc được đọc, nguồn và nhóm ngày/gợi ý, lý do, thời lượng, trạng thái, checklist tóm tắt. Phân nhóm và thứ tự theo D-03. M2 mở rộng sang việc nhóm qua cùng giao diện. |
 
 ## M2 và M3 · Điểm tích hợp cần khóa trước khi mở nhánh
