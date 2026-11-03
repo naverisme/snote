@@ -1,6 +1,6 @@
 # SNOTE v2 — Sơ đồ 1 · Use Case
 
-**Trạng thái: bản đề xuất để duyệt.** Tài liệu mô tả hành vi mong muốn, vai trò, ngoại lệ và tiêu chí nghiệm thu để làm đầu vào cho SRS. Xem [kiến trúc hiện tại](../../ARCHITECTURE.md) để đối chiếu với hành vi đã triển khai. Các mã UC-01 đến UC-20 giữ nguyên từ bản phác thảo. UC-21 đến UC-27 bổ sung các thao tác cần để hoàn thành luồng.
+**Trạng thái: bản đề xuất để duyệt.** Tài liệu mô tả hành vi mong muốn, vai trò, ngoại lệ và tiêu chí nghiệm thu để làm đầu vào cho SRS. Xem [kiến trúc đích v2](../architecture/system.md) để đối chiếu với thiết kế đề xuất. Các mã UC-01 đến UC-20 giữ nguyên từ bản phác thảo. UC-21 đến UC-27 bổ sung các thao tác cần để hoàn thành luồng.
 
 ## 1. Phạm vi và tác nhân
 
@@ -177,9 +177,9 @@ Mọi quyền trên áp dụng ở máy chủ khi đọc danh sách, mở chi ti
 | D-05 | Đo tiến độ và trạng thái hoàn thành | Hiện số việc hoàn thành trên tổng số việc gắn bài và trạng thái nộp riêng. Duyệt quy tắc khi checklist đã xong nhưng đầu ra chưa được bàn giao. |
 | D-06 | Phạm vi phát hành | Đề xuất lần lượt nghiệm thu cá nhân và lưu nhanh, việc nhóm xuất hiện trong Việc của tôi, rồi giao bài và nộp bài theo lớp. Chốt phạm vi phát hành trong SRS và timeline. |
 
-## 7. Đối chiếu với nhánh v2
+## 7. Đối chiếu với thiết kế SNOTE trước đây
 
-- Kiến trúc hiện tại đã mô tả đăng nhập, các loại workspace, membership, phân công, lịch có hạn công việc và lớp → nhóm → dự án lớp → báo cáo tiến độ.
-- Danh sách việc cá nhân hiện đã có cơ chế hiển thị việc được giao từ nơi khác. UC-04 đến UC-07 bổ sung hành vi lập kế hoạch riêng, checklist và chọn việc tiếp theo cần đặc tả.
+- Tài liệu kiến trúc trước đây đã mô tả đăng nhập, các loại workspace, membership, phân công, lịch có hạn công việc và lớp → nhóm → dự án lớp → báo cáo tiến độ.
+- Thiết kế trước đây đã mô tả cơ chế hiển thị việc được giao từ nơi khác. UC-04 đến UC-07 bổ sung hành vi lập kế hoạch riêng, checklist và chọn việc tiếp theo cần đặc tả.
 - Báo cáo tiến độ hiện có là đầu vào cho UC-26. Bài giao, phần việc gắn bài, bản nộp và phản hồi theo bản nộp là mô hình nghiệp vụ đề xuất, cần đối chiếu khi thiết kế SRS và dữ liệu.
 - Hộp thu nhanh, nhận nội dung từ nền tảng khác và tải tệp cần xác nhận phạm vi triển khai. Tài liệu này dùng các mã UC làm điểm nối sang yêu cầu chức năng và ca kiểm thử.
