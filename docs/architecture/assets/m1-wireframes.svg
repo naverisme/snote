@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="1065" viewBox="0 0 1240 1065" role="img" aria-labelledby="title desc">
+<title id="title">SNOTE v2 · Wireframe M1</title>
+<desc id="desc">Vị trí thành phần của đăng nhập, việc của tôi, chi tiết việc, hộp thu, chi tiết tài nguyên và bố cục điện thoại.</desc>
+<g font-family="DejaVu Sans, sans-serif" fill="#222">
+<rect x="0" y="0" width="1240" height="1065" rx="4" fill="#fff" stroke="#fff"/>
+<text x="28" y="34" font-size="25" font-weight="700">SNOTE v2 · Wireframe M1</text>
+<text x="28" y="57" font-size="13">Bố cục đề xuất · Khối nền đậm hơn biểu thị nút chính của màn hình</text>
+<text x="28" y="95" font-size="17" font-weight="700">01 · Đăng nhập</text>
+<rect x="28" y="108" width="580" height="267" rx="4" fill="#fff" stroke="#999"/>
+<rect x="28" y="108" width="580" height="34" rx="4" fill="#f2f2f2" stroke="#999"/>
+<text x="40" y="130" font-size="12" font-weight="700">SNOTE</text>
+<rect x="192" y="157" width="252" height="200" rx="4" fill="#fff" stroke="#999"/>
+<text x="212" y="184" font-size="17" font-weight="700">Đăng nhập</text>
+<rect x="212" y="198" width="212" height="30" rx="4" fill="#fff" stroke="#999"/>
+<text x="221" y="217.0" font-size="12">Email</text>
+<rect x="212" y="238" width="212" height="30" rx="4" fill="#fff" stroke="#999"/>
+<text x="221" y="257.0" font-size="12">Mật khẩu</text>
+<text x="212" y="287" font-size="11">Thông báo lỗi nếu có</text>
+<rect x="212" y="299" width="212" height="34" rx="4" fill="#e4e4e4" stroke="#444"/>
+<text x="221" y="320.0" font-size="12" font-weight="700">Đăng nhập</text>
+<text x="632" y="95" font-size="17" font-weight="700">02 · Việc của tôi</text>
+<rect x="632" y="108" width="580" height="267" rx="4" fill="#fff" stroke="#999"/>
+<rect x="632" y="108" width="580" height="34" rx="4" fill="#f2f2f2" stroke="#999"/>
+<text x="644" y="130" font-size="12" font-weight="700">SNOTE</text>
+<text x="1121" y="130" font-size="12">Tài khoản</text>
+<rect x="632" y="142" width="118" height="233" rx="4" fill="#f6f6f6" stroke="#999"/>
+<text x="643" y="166" font-size="12">Việc của tôi</text>
+<text x="643" y="190" font-size="12">Hộp thu nhanh</text>
+<text x="764" y="168" font-size="17" font-weight="700">Việc của tôi</text>
+<rect x="1092" y="149" width="106" height="29" rx="4" fill="#e4e4e4" stroke="#444"/>
+<text x="1101" y="167.5" font-size="12" font-weight="700">+ Tạo việc</text>
+<rect x="764" y="188" width="98" height="27" rx="4" fill="#fff" stroke="#999"/>
+<text x="773" y="205.5" font-size="12">Tất cả</text>
+<rect x="870" y="188" width="98" height="27" rx="4" fill="#fff" stroke="#999"/>
+<text x="879" y="205.5" font-size="12">Hôm nay 1</text>
+<rect x="976" y="188" width="98" height="27" rx="4" fill="#fff" stroke="#999"/>
+<text x="985" y="205.5" font-size="12">Ngày mai 1</text>
+<rect x="1082" y="188" width="98" height="27" rx="4" fill="#fff" stroke="#999"/>
+<text x="1091" y="205.5" font-size="12">Quá hạn 0</text>
+<rect x="764" y="225" width="208" height="32" rx="4" fill="#fff" stroke="#999"/>
+<text x="773" y="245.0" font-size="12">Cần xử lý</text>
+<rect x="982" y="225" width="216" height="32" rx="4" fill="#fff" stroke="#999"/>
+<text x="991" y="245.0" font-size="12">Quan trọng</text>
+<rect x="764" y="268" width="434" height="35" rx="4" fill="#fff" stroke="#999"/>
+<text x="773" y="289.5" font-size="12">Đọc chương 3   ·   Hôm nay   ·   2/3 mục</text>
+<rect x="764" y="312" width="434" height="35" rx="4" fill="#fff" stroke="#999"/>
+<text x="773" y="333.5" font-size="12">Soạn dàn ý   ·   Ngày mai   ·   45 phút</text>
+<text x="28" y="410" font-size="17" font-weight="700">03 · Chi tiết việc</text>
+<rect x="28" y="423" width="580" height="267" rx="4" fill="#fff" stroke="#999"/>
+<rect x="28" y="423" width="580" height="34" rx="4" fill="#f2f2f2" stroke="#999"/>
+<text x="40" y="445" font-size="12" font-weight="700">SNOTE</text>
+<text x="517" y="445" font-size="12">Tài khoản</text>
+<rect x="28" y="457" width="118" height="233" rx="4" fill="#f6f6f6" stroke="#999"/>
+<text x="39" y="481" font-size="12">Việc của tôi</text>
+<text x="39" y="505" font-size="12">Hộp thu nhanh</text>
+<text x="160" y="475" font-size="12">‹ Việc của tôi</text>
+<text x="160" y="504" font-size="17" font-weight="700">Đọc chương 3</text>
+<rect x="428" y="484" width="166" height="28" rx="4" fill="#e4e4e4" stroke="#444"/>
+<text x="437" y="502.0" font-size="12" font-weight="700">Đánh dấu hoàn thành</text>
+<rect x="160" y="522" width="108" height="26" rx="4" fill="#fff" stroke="#999"/>
+<text x="169" y="539.0" font-size="12">Sửa thông tin</text>
+<text x="278" y="539" font-size="12">Quan trọng cao · Hạn hôm nay</text>
+<rect x="160" y="560" width="252" height="116" rx="4" fill="#fff" stroke="#999"/>
+<text x="171" y="582" font-size="12" font-weight="700">Checklist · 2/3</text>
+<text x="171" y="600" font-size="12">✓ Đọc đề mục</text>
+<text x="171" y="617" font-size="12">✓ Đọc ví dụ</text>
+<text x="171" y="634" font-size="12">□ Ghi câu hỏi</text>
+<rect x="171" y="643" width="115" height="25" rx="4" fill="#fff" stroke="#999"/>
+<text x="180" y="659.5" font-size="12">+ Thêm mục</text>
+<rect x="422" y="560" width="172" height="116" rx="4" fill="#fff" stroke="#999"/>
+<text x="432" y="582" font-size="12" font-weight="700">Lịch làm của tôi</text>
+<text x="432" y="604" font-size="12">Hôm nay · 45 phút</text>
+<rect x="432" y="623" width="151" height="29" rx="4" fill="#fff" stroke="#999"/>
+<text x="441" y="641.5" font-size="12">Lên lịch / Sửa lịch</text>
+<text x="632" y="410" font-size="17" font-weight="700">04 · Hộp thu nhanh</text>
+<rect x="632" y="423" width="580" height="267" rx="4" fill="#fff" stroke="#999"/>
+<rect x="632" y="423" width="580" height="34" rx="4" fill="#f2f2f2" stroke="#999"/>
+<text x="644" y="445" font-size="12" font-weight="700">SNOTE</text>
+<text x="1121" y="445" font-size="12">Tài khoản</text>
+<rect x="632" y="457" width="118" height="233" rx="4" fill="#f6f6f6" stroke="#999"/>
+<text x="643" y="481" font-size="12">Việc của tôi</text>
+<text x="643" y="505" font-size="12">Hộp thu nhanh</text>
+<text x="764" y="483" font-size="17" font-weight="700">Hộp thu nhanh</text>
+<rect x="1092" y="464" width="106" height="29" rx="4" fill="#e4e4e4" stroke="#444"/>
+<text x="1101" y="482.5" font-size="12" font-weight="700">+ Lưu nhanh</text>
+<rect x="764" y="505" width="258" height="31" rx="4" fill="#fff" stroke="#999"/>
+<text x="773" y="524.5" font-size="12">Tìm trong Hộp thu</text>
+<rect x="1032" y="505" width="166" height="31" rx="4" fill="#fff" stroke="#999"/>
+<text x="1041" y="524.5" font-size="12">Trạng thái: Tất cả</text>
+<rect x="764" y="548" width="434" height="38" rx="4" fill="#fff" stroke="#999"/>
+<text x="773" y="571.0" font-size="12">Bài đọc chương 3   ·   URL   ·   Chưa xử lý</text>
+<rect x="764" y="594" width="434" height="38" rx="4" fill="#fff" stroke="#999"/>
+<text x="773" y="617.0" font-size="12">Ghi chú buổi học   ·   Văn bản   ·   Đã xử lý</text>
+<rect x="764" y="641" width="122" height="27" rx="4" fill="#fff" stroke="#999"/>
+<text x="773" y="658.5" font-size="12">Tải thêm</text>
+<text x="28" y="725" font-size="17" font-weight="700">05 · Chi tiết tài nguyên</text>
+<rect x="28" y="738" width="580" height="267" rx="4" fill="#fff" stroke="#999"/>
+<rect x="28" y="738" width="580" height="34" rx="4" fill="#f2f2f2" stroke="#999"/>
+<text x="40" y="760" font-size="12" font-weight="700">SNOTE</text>
+<text x="517" y="760" font-size="12">Tài khoản</text>
+<rect x="28" y="772" width="118" height="233" rx="4" fill="#f6f6f6" stroke="#999"/>
+<text x="39" y="796" font-size="12">Việc của tôi</text>
+<text x="39" y="820" font-size="12">Hộp thu nhanh</text>
+<text x="160" y="791" font-size="12">‹ Hộp thu nhanh</text>
+<text x="160" y="819" font-size="17" font-weight="700">Bài đọc chương 3</text>
+<rect x="486" y="799" width="108" height="28" rx="4" fill="#e4e4e4" stroke="#444"/>
+<text x="495" y="817.0" font-size="12" font-weight="700">Mở nguồn</text>
+<rect x="160" y="836" width="434" height="50" rx="4" fill="#fff" stroke="#999"/>
+<text x="172" y="856" font-size="12">Nguồn hoặc nội dung đã lưu</text>
+<text x="172" y="874" font-size="11">URL · Chưa xử lý</text>
+<rect x="160" y="898" width="208" height="31" rx="4" fill="#fff" stroke="#999"/>
+<text x="169" y="917.5" font-size="12">Tiêu đề</text>
+<rect x="378" y="898" width="216" height="31" rx="4" fill="#fff" stroke="#999"/>
+<text x="387" y="917.5" font-size="12">Nhãn</text>
+<rect x="160" y="941" width="197" height="30" rx="4" fill="#fff" stroke="#999"/>
+<text x="169" y="960.0" font-size="12">Trạng thái: Chưa xử lý</text>
+<rect x="501" y="941" width="93" height="30" rx="4" fill="#fff" stroke="#999"/>
+<text x="510" y="960.0" font-size="12">Lưu sửa</text>
+<text x="632" y="725" font-size="17" font-weight="700">06 · Điện thoại · Việc của tôi</text>
+<rect x="787" y="738" width="270" height="310" rx="4" fill="#fff" stroke="#999"/>
+<rect x="787" y="738" width="270" height="32" rx="4" fill="#f2f2f2" stroke="#999"/>
+<text x="798" y="759" font-size="12" font-weight="700">☰  SNOTE</text>
+<text x="798" y="793" font-size="15" font-weight="700">Việc của tôi</text>
+<rect x="959" y="776" width="86" height="24" rx="4" fill="#e4e4e4" stroke="#444"/>
+<text x="968" y="792.0" font-size="12" font-weight="700">+ Tạo việc</text>
+<rect x="798" y="810" width="117" height="26" rx="4" fill="#fff" stroke="#999"/>
+<text x="807" y="827.0" font-size="12">Tất cả</text>
+<rect x="922" y="810" width="117" height="26" rx="4" fill="#fff" stroke="#999"/>
+<text x="931" y="827.0" font-size="12">Hôm nay</text>
+<rect x="798" y="842" width="117" height="26" rx="4" fill="#fff" stroke="#999"/>
+<text x="807" y="859.0" font-size="12">Ngày mai</text>
+<rect x="922" y="842" width="117" height="26" rx="4" fill="#fff" stroke="#999"/>
+<text x="931" y="859.0" font-size="12">Quá hạn</text>
+<rect x="798" y="882" width="247" height="30" rx="4" fill="#fff" stroke="#999"/>
+<text x="807" y="901.0" font-size="12">Cần xử lý</text>
+<rect x="798" y="919" width="247" height="30" rx="4" fill="#fff" stroke="#999"/>
+<text x="807" y="938.0" font-size="12">Quan trọng</text>
+<rect x="798" y="957" width="247" height="31" rx="4" fill="#fff" stroke="#999"/>
+<text x="807" y="976.5" font-size="12">Đọc chương 3   ·   2/3 mục</text>
+<rect x="798" y="995" width="247" height="31" rx="4" fill="#fff" stroke="#999"/>
+<text x="807" y="1014.5" font-size="12">Soạn dàn ý   ·   45 phút</text>
+</g>
+</svg>
