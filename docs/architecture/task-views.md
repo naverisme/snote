@@ -1,5 +1,7 @@
 # SNOTE v2 — Chế độ xem công việc · Gantt
 
+> **Phân cấp giao diện:** Dùng [đặc tả thành phần](frontend-information-architecture.md) để xác định thanh điều hướng, vị trí nhóm và dữ liệu được tải. Thanh điều hướng trong hình dưới đây là minh họa cũ.
+
 **Thiết kế đề xuất.** Sau Danh sách hiện có, **Gantt là chế độ xem bổ sung đầu tiên**. Các chế độ dùng cùng mã công việc, trạng thái, quyền và trang chi tiết. Chuyển chế độ giữ ngữ cảnh cá nhân hoặc workspace đang mở. Bộ lọc riêng của mỗi chế độ được giữ khi chuyển qua lại.
 
 | Chế độ | Câu hỏi người dùng cần trả lời | Thứ tự đề xuất |
