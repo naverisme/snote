@@ -1,9 +1,10 @@
 # Quy ước tài liệu SNOTE v2
 
-- **Trạng thái:** bảy nhóm đích đã được chủ sản phẩm chốt; quy tắc chi tiết trong tài liệu này chờ duyệt khi rà soát PR.
+- **Trạng thái:** đã chốt cấu trúc bảy nhóm và quy tắc quản lý tài liệu cho v2; không phê duyệt nội dung hồ sơ cũ.
 - **Phạm vi:** SNOTE v2, nhánh `s_note_v2`.
 - **Người chịu trách nhiệm:** chủ sản phẩm với cấu trúc và nội dung nghiệp vụ; người phụ trách kỹ thuật với chi tiết kỹ thuật.
 - **Ngày cập nhật:** 2026-11-04.
+- **Quyết định/cập nhật:** yêu cầu của chủ sản phẩm trong phiên này; thay đổi ghi tại [PR #5](https://github.com/naverisme/snote/pull/5).
 
 **Phạm vi quyết định:** cấu trúc và quy tắc quản lý `docs/` trên nhánh `s_note_v2`. Việc chốt cấu trúc **không đồng nghĩa** với duyệt nội dung, sơ đồ, hợp đồng, kế hoạch hoặc kết luận sẵn sàng coding đã viết trước đây.
 
