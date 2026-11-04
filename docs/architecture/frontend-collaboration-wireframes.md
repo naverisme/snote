@@ -1,5 +1,7 @@
 # SNOTE v2 — Wireframe M2–M3 · Cộng tác và lớp học
 
+> **Phân cấp giao diện:** Dùng [đặc tả thành phần](frontend-information-architecture.md) để xác định thanh điều hướng, vị trí nhóm và dữ liệu được tải. Thanh điều hướng trong hình dưới đây là minh họa cũ.
+
 **Bố cục đề xuất theo vai trò.** Các form và trạng thái bên dưới cụ thể hóa [Use Case](../requirements/use-cases.md) và [ma trận quyền](../requirements/permissions.md). Endpoint, chính sách thu hồi lời mời, chuyển nhóm và quyền sau khi rời nhóm vẫn đi qua cổng hợp đồng của từng mốc trong [hồ sơ sẵn sàng coding](../delivery/coding-readiness.md).
 
 ![Wireframe workspace, lớp, bài giao, tiến độ, nộp và phản hồi](assets/m2-m3-wireframes.svg)
