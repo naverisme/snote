@@ -1,0 +1,362 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 3180" width="1240" height="3180" role="img" aria-labelledby="title desc">
+<title id="title">SNOTE v2 · Wireframe cộng tác và lớp học</title>
+<desc id="desc">M2–M3 · Mỗi khung ghi rõ vai trò. Quyền cuối cùng theo đối tượng và trạng thái.</desc>
+<rect width="1240" height="3180" fill="#fff"/>
+<g font-family="DejaVu Sans, sans-serif" fill="#232323">
+<text x="24" y="34" font-size="24" font-weight="700">SNOTE v2 · Wireframe cộng tác và lớp học</text>
+<text x="24" y="57" font-size="12">M2–M3 · Mỗi khung ghi rõ vai trò. Quyền cuối cùng theo đối tượng và trạng thái.</text>
+<text x="24" y="92" font-size="15" font-weight="700">M2-01 · Workspace và lời mời đến</text>
+<rect x="24" y="105" width="586" height="235" rx="4" fill="#fff" stroke="#777"/>
+<rect x="24" y="105" width="586" height="29" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="32" y="123.5" font-size="12" font-weight="700">SNOTE  /  Người dùng · Workspace</text>
+<text x="38" y="164" font-size="16" font-weight="700">Workspace</text>
+<rect x="468" y="147" width="128" height="26" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="476" y="164.0" font-size="12" font-weight="700">+ Tạo dự án</text>
+<rect x="38" y="189" width="558" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="46" y="206.0" font-size="12">Dự án Robot · Trưởng nhóm · Mở workspace</text>
+<rect x="38" y="223" width="558" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="46" y="240.0" font-size="12">Nhóm môn học · Thành viên · Mở workspace</text>
+<text x="38" y="273" font-size="12">Lời mời đang chờ · Dự án Mô phỏng</text>
+<rect x="360" y="257" width="110" height="27" rx="4" fill="#fff" stroke="#777"/>
+<text x="368" y="274.5" font-size="12">Từ chối</text>
+<rect x="480" y="257" width="116" height="27" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="488" y="274.5" font-size="12" font-weight="700">Chấp nhận</text>
+<text x="630" y="92" font-size="15" font-weight="700">M2-02 · Công việc chung · Trưởng nhóm</text>
+<rect x="630" y="105" width="586" height="235" rx="4" fill="#fff" stroke="#777"/>
+<rect x="630" y="105" width="586" height="29" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="638" y="123.5" font-size="12" font-weight="700">SNOTE  /  Dự án Robot · Điều phối</text>
+<rect x="630" y="134" width="117" height="206" rx="4" fill="#f5f5f5" stroke="#777"/>
+<text x="639" y="156" font-size="11" font-weight="700">Công việc</text>
+<text x="639" y="180" font-size="11">Lịch nhóm</text>
+<text x="639" y="204" font-size="11">Tài nguyên</text>
+<text x="639" y="228" font-size="11">Thành viên</text>
+<text x="760" y="164" font-size="16" font-weight="700">Công việc</text>
+<rect x="1075" y="147" width="128" height="26" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="1083" y="164.0" font-size="12" font-weight="700">+ Giao việc</text>
+<rect x="760" y="185" width="443" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="768" y="202.0" font-size="12">Lọc theo người phụ trách hoặc trạng thái</text>
+<rect x="760" y="224" width="443" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="768" y="241.0" font-size="12">Mô phỏng · Lan · Hạn 12/11 · Đang làm</text>
+<rect x="760" y="259" width="443" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="768" y="276.0" font-size="12">Báo cáo · Minh · Hạn 14/11 · Chưa làm</text>
+<text x="760" y="310" font-size="11">Mở dòng để xem đầu ra và giao lại nếu có quyền.</text>
+<text x="24" y="374" font-size="15" font-weight="700">M2-03 · Chi tiết việc · Người được giao</text>
+<rect x="24" y="387" width="586" height="235" rx="4" fill="#fff" stroke="#777"/>
+<rect x="24" y="387" width="586" height="29" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="32" y="405.5" font-size="12" font-weight="700">SNOTE  /  Dự án Robot · Mô phỏng</text>
+<rect x="24" y="416" width="117" height="206" rx="4" fill="#f5f5f5" stroke="#777"/>
+<text x="33" y="438" font-size="11" font-weight="700">Công việc</text>
+<text x="33" y="462" font-size="11">Lịch nhóm</text>
+<text x="33" y="486" font-size="11">Tài nguyên</text>
+<text x="33" y="510" font-size="11">Thành viên</text>
+<text x="154" y="446" font-size="16" font-weight="700">Mô phỏng</text>
+<rect x="486" y="429" width="111" height="26" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="494" y="446.0" font-size="12" font-weight="700">Hoàn thành</text>
+<rect x="154" y="465" width="443" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="162" y="482.0" font-size="12">Lan · Hạn 12/11 · Đầu ra: kết quả mô phỏng</text>
+<rect x="154" y="499" width="443" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="162" y="516.0" font-size="12">Checklist · 1/2 · □ Chạy lần cuối</text>
+<rect x="154" y="533" width="443" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="162" y="550.0" font-size="12">Lịch làm của tôi · Chỉ mình tôi xem</text>
+<rect x="154" y="572" width="114" height="27" rx="4" fill="#fff" stroke="#777"/>
+<text x="162" y="589.5" font-size="12">Sửa lịch</text>
+<rect x="280" y="572" width="144" height="27" rx="4" fill="#fff" stroke="#777"/>
+<text x="288" y="589.5" font-size="12">Tài nguyên chung</text>
+<text x="630" y="374" font-size="15" font-weight="700">M2-04 · Lịch nhóm · Điều phối</text>
+<rect x="630" y="387" width="586" height="235" rx="4" fill="#fff" stroke="#777"/>
+<rect x="630" y="387" width="586" height="29" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="638" y="405.5" font-size="12" font-weight="700">SNOTE  /  Dự án Robot · Lịch chung</text>
+<rect x="630" y="416" width="117" height="206" rx="4" fill="#f5f5f5" stroke="#777"/>
+<text x="639" y="438" font-size="11" font-weight="700">Công việc</text>
+<text x="639" y="462" font-size="11">Lịch nhóm</text>
+<text x="639" y="486" font-size="11">Tài nguyên</text>
+<text x="639" y="510" font-size="11">Thành viên</text>
+<text x="760" y="446" font-size="16" font-weight="700">Lịch nhóm</text>
+<rect x="1061" y="429" width="142" height="26" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="1069" y="446.0" font-size="12" font-weight="700">+ Lên lịch họp</text>
+<rect x="760" y="469" width="443" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="768" y="486.0" font-size="12">‹ Trước   |   Tuần hiện tại   |   Sau ›</text>
+<rect x="760" y="508" width="443" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="768" y="525.0" font-size="12">Cuộc họp · Thứ ba 09:00 · Sửa / Hủy</text>
+<rect x="760" y="542" width="443" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="768" y="559.0" font-size="12">Hạn mô phỏng · 12/11 · Mở việc gốc</text>
+<text x="760" y="594" font-size="11">Thành viên xem lịch và mở sự kiện được phép.</text>
+<text x="24" y="656" font-size="15" font-weight="700">M2-05 · Form giao việc</text>
+<rect x="24" y="669" width="586" height="235" rx="4" fill="#fff" stroke="#777"/>
+<rect x="24" y="669" width="586" height="29" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="32" y="687.5" font-size="12" font-weight="700">SNOTE  /  Điều phối  ›  Công việc</text>
+<rect x="116" y="711" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="124" y="728.0" font-size="12">Tiêu đề * và phạm vi</text>
+<rect x="116" y="741" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="124" y="758.0" font-size="12">Đầu ra cần bàn giao</text>
+<rect x="116" y="771" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="124" y="788.0" font-size="12">Người phụ trách · Chọn thành viên hiệu lực</text>
+<rect x="116" y="801" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="124" y="818.0" font-size="12">Hạn và checklist (nếu có)</text>
+<rect x="494" y="864" width="102" height="27" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="502" y="881.5" font-size="12" font-weight="700">Giao việc</text>
+<rect x="378" y="864" width="102" height="27" rx="4" fill="#fff" stroke="#777"/>
+<text x="386" y="881.5" font-size="12">Hủy</text>
+<text x="630" y="656" font-size="15" font-weight="700">M2-06 · Thành viên và lời mời đã gửi</text>
+<rect x="630" y="669" width="586" height="235" rx="4" fill="#fff" stroke="#777"/>
+<rect x="630" y="669" width="586" height="29" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="638" y="687.5" font-size="12" font-weight="700">SNOTE  /  Chủ workspace dự án</text>
+<rect x="630" y="698" width="117" height="206" rx="4" fill="#f5f5f5" stroke="#777"/>
+<text x="639" y="720" font-size="11" font-weight="700">Công việc</text>
+<text x="639" y="744" font-size="11">Lịch nhóm</text>
+<text x="639" y="768" font-size="11">Tài nguyên</text>
+<text x="639" y="792" font-size="11">Thành viên</text>
+<text x="760" y="728" font-size="16" font-weight="700">Thành viên</text>
+<rect x="1062" y="711" width="141" height="26" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="1070" y="728.0" font-size="12" font-weight="700">+ Mời thành viên</text>
+<rect x="760" y="754" width="443" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="768" y="771.0" font-size="12">Lan · Thành viên hiệu lực</text>
+<rect x="760" y="787" width="443" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="768" y="804.0" font-size="12">Minh · Thành viên hiệu lực</text>
+<rect x="760" y="827" width="443" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="768" y="844.0" font-size="12">Lời mời của An · Đang chờ</text>
+<text x="760" y="883" font-size="11">Người đang chờ chưa có quyền đọc workspace.</text>
+<text x="630" y="1220" font-size="15" font-weight="700">M3-01 · Danh sách lớp và tham gia</text>
+<rect x="630" y="1233" width="586" height="235" rx="4" fill="#fff" stroke="#777"/>
+<rect x="630" y="1233" width="586" height="29" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="638" y="1251.5" font-size="12" font-weight="700">SNOTE  /  Lớp học</text>
+<text x="644" y="1292" font-size="16" font-weight="700">Lớp của tôi</text>
+<rect x="1074" y="1275" width="128" height="26" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="1082" y="1292.0" font-size="12" font-weight="700">Tham gia lớp</text>
+<rect x="644" y="1317" width="558" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="652" y="1334.0" font-size="12">Điều khiển Robot · Lớp đã tham gia</text>
+<rect x="644" y="1351" width="558" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="652" y="1368.0" font-size="12">Mã hoặc liên kết · Xem thông tin lớp</text>
+<rect x="1033" y="1396" width="169" height="27" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="1041" y="1413.5" font-size="12" font-weight="700">Xác nhận tham gia</text>
+<text x="644" y="1448" font-size="11">Giáo viên có quyền tạo lớp thấy nút + Tạo lớp.</text>
+<text x="24" y="1502" font-size="15" font-weight="700">M3-02 · Lớp · Giáo viên phụ trách</text>
+<rect x="24" y="1515" width="586" height="235" rx="4" fill="#fff" stroke="#777"/>
+<rect x="24" y="1515" width="586" height="29" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="32" y="1533.5" font-size="12" font-weight="700">SNOTE  /  Điều khiển Robot</text>
+<rect x="24" y="1544" width="117" height="206" rx="4" fill="#f5f5f5" stroke="#777"/>
+<text x="33" y="1566" font-size="11" font-weight="700">Bài giao</text>
+<text x="33" y="1590" font-size="11">Nhóm</text>
+<text x="33" y="1614" font-size="11">Thành viên</text>
+<text x="154" y="1574" font-size="16" font-weight="700">Bài giao</text>
+<rect x="463" y="1557" width="134" height="26" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="471" y="1574.0" font-size="12" font-weight="700">+ Tạo bài giao</text>
+<rect x="154" y="1597" width="443" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="162" y="1614.0" font-size="12">Bài 1 · Hạn nộp 14/11 17:00 · 2 nhóm nhận</text>
+<rect x="154" y="1632" width="443" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="162" y="1649.0" font-size="12">Bài 2 · Mở chi tiết hoặc chọn nhóm</text>
+<text x="154" y="1690" font-size="11">Quản lý chia nhóm và trưởng nhóm ở mục Nhóm.</text>
+<text x="154" y="1713" font-size="11">Quản trị lớp chỉ có mục theo ủy quyền.</text>
+<text x="630" y="1502" font-size="15" font-weight="700">M3-03 · Form công bố bài</text>
+<rect x="630" y="1515" width="586" height="235" rx="4" fill="#fff" stroke="#777"/>
+<rect x="630" y="1515" width="586" height="29" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="638" y="1533.5" font-size="12" font-weight="700">SNOTE  /  Giáo viên  ›  Lớp  ›  Tạo bài</text>
+<rect x="722" y="1557" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="730" y="1574.0" font-size="12">Tiêu đề và yêu cầu *</text>
+<rect x="722" y="1587" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="730" y="1604.0" font-size="12">Đầu ra cần nộp *</text>
+<rect x="722" y="1617" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="730" y="1634.0" font-size="12">Hạn nộp: ngày, giờ và múi giờ *</text>
+<rect x="722" y="1647" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="730" y="1664.0" font-size="12">Chọn nhóm nhận *</text>
+<rect x="1100" y="1710" width="102" height="27" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="1108" y="1727.5" font-size="12" font-weight="700">Công bố</text>
+<rect x="984" y="1710" width="102" height="27" rx="4" fill="#fff" stroke="#777"/>
+<text x="992" y="1727.5" font-size="12">Hủy</text>
+<text x="24" y="1784" font-size="15" font-weight="700">M3-04 · Bài giao · Trưởng nhóm</text>
+<rect x="24" y="1797" width="586" height="235" rx="4" fill="#fff" stroke="#777"/>
+<rect x="24" y="1797" width="586" height="29" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="32" y="1815.5" font-size="12" font-weight="700">SNOTE  /  Lớp  ›  Bài 1  ›  Nhóm A</text>
+<rect x="24" y="1826" width="117" height="206" rx="4" fill="#f5f5f5" stroke="#777"/>
+<text x="33" y="1848" font-size="11" font-weight="700">Bài được giao</text>
+<text x="33" y="1872" font-size="11">Nhóm của tôi</text>
+<text x="154" y="1856" font-size="16" font-weight="700">Bài 1</text>
+<rect x="485" y="1839" width="112" height="26" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="493" y="1856.0" font-size="12" font-weight="700">Nộp kết quả</text>
+<rect x="154" y="1876" width="443" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="162" y="1893.0" font-size="12">Yêu cầu · Đầu ra · Hạn nộp · Chưa nộp</text>
+<rect x="154" y="1912" width="443" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="162" y="1929.0" font-size="12">Phần việc của nhóm · 1/3 đã hoàn thành</text>
+<rect x="154" y="1949" width="114" height="27" rx="4" fill="#fff" stroke="#777"/>
+<text x="162" y="1966.5" font-size="12">+ Gắn phần việc</text>
+<rect x="276" y="1949" width="152" height="27" rx="4" fill="#fff" stroke="#777"/>
+<text x="284" y="1966.5" font-size="12">Cập nhật tiến độ</text>
+<rect x="437" y="1949" width="160" height="27" rx="4" fill="#fff" stroke="#777"/>
+<text x="445" y="1966.5" font-size="12">Chia sẻ với giáo viên</text>
+<text x="154" y="2010" font-size="11">Thành viên thường thấy cập nhật tiến độ và bài đã nộp.</text>
+<text x="630" y="1784" font-size="15" font-weight="700">M3-05 · Tiến độ · Giáo viên phụ trách</text>
+<rect x="630" y="1797" width="586" height="235" rx="4" fill="#fff" stroke="#777"/>
+<rect x="630" y="1797" width="586" height="29" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="638" y="1815.5" font-size="12" font-weight="700">SNOTE  /  Lớp  ›  Bài 1  ›  Nhóm A</text>
+<rect x="630" y="1826" width="117" height="206" rx="4" fill="#f5f5f5" stroke="#777"/>
+<text x="639" y="1848" font-size="11" font-weight="700">Bài giao</text>
+<text x="639" y="1872" font-size="11">Nhóm</text>
+<text x="639" y="1896" font-size="11">Thành viên</text>
+<text x="760" y="1856" font-size="16" font-weight="700">Tiến độ nhóm A</text>
+<rect x="1081" y="1839" width="122" height="26" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="1089" y="1856.0" font-size="12" font-weight="700">Mở bài nộp</text>
+<rect x="760" y="1876" width="443" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="768" y="1893.0" font-size="12">Nhóm nhận: A   |   1/3 việc xong   |   Đã nộp</text>
+<rect x="760" y="1909" width="443" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="768" y="1926.0" font-size="12">Phần việc · Người phụ trách · Hạn · Trạng thái</text>
+<rect x="760" y="1943" width="443" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="768" y="1960.0" font-size="12">Cập nhật nhóm đã gửi · Tài nguyên được chia sẻ</text>
+<text x="760" y="1993" font-size="11">Chỉ mở nháp hoặc checklist nếu nhóm đã chia sẻ.</text>
+<text x="24" y="2066" font-size="15" font-weight="700">M3-06 · Xác nhận nộp · Trưởng nhóm</text>
+<rect x="24" y="2079" width="586" height="235" rx="4" fill="#fff" stroke="#777"/>
+<rect x="24" y="2079" width="586" height="29" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="32" y="2097.5" font-size="12" font-weight="700">SNOTE  /  Bài 1  ›  Nhóm A  ›  Nộp</text>
+<rect x="116" y="2121" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="124" y="2138.0" font-size="12">Đầu ra bắt buộc · Hạn nộp</text>
+<rect x="116" y="2151" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="124" y="2168.0" font-size="12">Loại kết quả: Văn bản / URL</text>
+<rect x="116" y="2181" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="124" y="2198.0" font-size="12">Nội dung hoặc URL *</text>
+<rect x="116" y="2211" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="124" y="2228.0" font-size="12">Nhắc: mỗi nhóm nộp một bản trong hạn</text>
+<rect x="494" y="2274" width="102" height="27" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="502" y="2291.5" font-size="12" font-weight="700">Xác nhận nộp</text>
+<rect x="378" y="2274" width="102" height="27" rx="4" fill="#fff" stroke="#777"/>
+<text x="386" y="2291.5" font-size="12">Hủy</text>
+<text x="630" y="2066" font-size="15" font-weight="700">M3-07 · Phản hồi · Giáo viên</text>
+<rect x="630" y="2079" width="586" height="235" rx="4" fill="#fff" stroke="#777"/>
+<rect x="630" y="2079" width="586" height="29" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="638" y="2097.5" font-size="12" font-weight="700">SNOTE  /  Bài 1  ›  Nhóm A  ›  Bản đã nộp</text>
+<rect x="722" y="2121" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="730" y="2138.0" font-size="12">Bản đã nộp · Người gửi và thời điểm</text>
+<rect x="722" y="2151" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="730" y="2168.0" font-size="12">Kết quả nộp · Chỉ đọc</text>
+<rect x="722" y="2181" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="730" y="2198.0" font-size="12">Nhận xét *</text>
+<rect x="1100" y="2274" width="102" height="27" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="1108" y="2291.5" font-size="12" font-weight="700">Gửi phản hồi</text>
+<rect x="984" y="2274" width="102" height="27" rx="4" fill="#fff" stroke="#777"/>
+<text x="992" y="2291.5" font-size="12">Hủy</text>
+<text x="24" y="2348" font-size="15" font-weight="700">M3-08 · Xem phản hồi · Thành viên</text>
+<rect x="24" y="2361" width="586" height="235" rx="4" fill="#fff" stroke="#777"/>
+<rect x="24" y="2361" width="586" height="29" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="32" y="2379.5" font-size="12" font-weight="700">SNOTE  /  Bài 1  ›  Nhóm A  ›  Bản đã nộp</text>
+<rect x="24" y="2390" width="117" height="206" rx="4" fill="#f5f5f5" stroke="#777"/>
+<text x="33" y="2412" font-size="11" font-weight="700">Bài được giao</text>
+<text x="33" y="2436" font-size="11">Nhóm của tôi</text>
+<text x="154" y="2420" font-size="16" font-weight="700">Bản nộp của nhóm</text>
+<rect x="154" y="2443" width="443" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="162" y="2460.0" font-size="12">Đã nộp · Người gửi và thời điểm nhận</text>
+<rect x="154" y="2477" width="443" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="162" y="2494.0" font-size="12">Kết quả đã nộp · Chỉ đọc</text>
+<rect x="154" y="2511" width="443" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="162" y="2528.0" font-size="12">Phản hồi của giáo viên / Chưa có phản hồi</text>
+<text x="154" y="2561" font-size="11">Hiển thị trong đúng nhóm nhận bài.</text>
+<text x="24" y="938" font-size="15" font-weight="700">M2-07 · Form mời thành viên</text>
+<rect x="24" y="951" width="586" height="235" rx="4" fill="#fff" stroke="#777"/>
+<rect x="24" y="951" width="586" height="29" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="32" y="969.5" font-size="12" font-weight="700">SNOTE  /  Dự án  ›  Thành viên</text>
+<rect x="116" y="993" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="124" y="1010.0" font-size="12">Người được mời *</text>
+<rect x="116" y="1023" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="124" y="1040.0" font-size="12">Quyền dự kiến *</text>
+<rect x="494" y="1146" width="102" height="27" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="502" y="1163.5" font-size="12" font-weight="700">Gửi lời mời</text>
+<rect x="378" y="1146" width="102" height="27" rx="4" fill="#fff" stroke="#777"/>
+<text x="386" y="1163.5" font-size="12">Hủy</text>
+<text x="630" y="938" font-size="15" font-weight="700">M2-08 · Form lên lịch họp</text>
+<rect x="630" y="951" width="586" height="235" rx="4" fill="#fff" stroke="#777"/>
+<rect x="630" y="951" width="586" height="29" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="638" y="969.5" font-size="12" font-weight="700">SNOTE  /  Điều phối  ›  Lịch nhóm</text>
+<rect x="722" y="993" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="730" y="1010.0" font-size="12">Tiêu đề *</text>
+<rect x="722" y="1023" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="730" y="1040.0" font-size="12">Bắt đầu * · Kết thúc *</text>
+<rect x="722" y="1053" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="730" y="1070.0" font-size="12">Địa điểm hoặc liên kết</text>
+<rect x="1100" y="1146" width="102" height="27" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="1108" y="1163.5" font-size="12" font-weight="700">Lưu cuộc họp</text>
+<rect x="984" y="1146" width="102" height="27" rx="4" fill="#fff" stroke="#777"/>
+<text x="992" y="1163.5" font-size="12">Hủy</text>
+<text x="24" y="1220" font-size="15" font-weight="700">M2-09 · Gắn tài nguyên vào việc</text>
+<rect x="24" y="1233" width="586" height="235" rx="4" fill="#fff" stroke="#777"/>
+<rect x="24" y="1233" width="586" height="29" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="32" y="1251.5" font-size="12" font-weight="700">SNOTE  /  Công việc  ›  Tài nguyên</text>
+<rect x="116" y="1275" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="124" y="1292.0" font-size="12">Chọn tài nguyên đã dùng chung hoặc tài nguyên riêng</text>
+<rect x="116" y="1305" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="124" y="1322.0" font-size="12">Phạm vi chia sẻ nếu chọn tài nguyên riêng</text>
+<rect x="116" y="1335" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="124" y="1352.0" font-size="12">Xác nhận quyền trước khi gắn</text>
+<rect x="494" y="1428" width="102" height="27" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="502" y="1445.5" font-size="12" font-weight="700">Gắn tài nguyên</text>
+<rect x="378" y="1428" width="102" height="27" rx="4" fill="#fff" stroke="#777"/>
+<text x="386" y="1445.5" font-size="12">Hủy</text>
+<text x="630" y="2348" font-size="15" font-weight="700">M3-09 · Quản lý nhóm và trưởng nhóm</text>
+<rect x="630" y="2361" width="586" height="235" rx="4" fill="#fff" stroke="#777"/>
+<rect x="630" y="2361" width="586" height="29" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="638" y="2379.5" font-size="12" font-weight="700">SNOTE  /  Điều khiển Robot · Quản trị lớp</text>
+<rect x="630" y="2390" width="117" height="206" rx="4" fill="#f5f5f5" stroke="#777"/>
+<text x="639" y="2412" font-size="11" font-weight="700">Nhóm</text>
+<text x="639" y="2436" font-size="11">Thành viên</text>
+<text x="760" y="2420" font-size="16" font-weight="700">Nhóm</text>
+<rect x="1094" y="2403" width="109" height="26" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="1102" y="2420.0" font-size="12" font-weight="700">+ Tạo nhóm</text>
+<rect x="760" y="2443" width="443" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="768" y="2460.0" font-size="12">Nhóm A · Lan là trưởng nhóm</text>
+<rect x="760" y="2476" width="443" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="768" y="2493.0" font-size="12">Nhóm B · Minh là trưởng nhóm</text>
+<rect x="760" y="2516" width="443" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="768" y="2533.0" font-size="12">Chọn người trong lớp · Chỉ định trưởng nhóm</text>
+<text x="760" y="2572" font-size="11">Xem thành viên theo nhóm và lưu thay đổi.</text>
+<text x="24" y="2630" font-size="15" font-weight="700">M3-10 · Form tạo lớp</text>
+<rect x="24" y="2643" width="586" height="235" rx="4" fill="#fff" stroke="#777"/>
+<rect x="24" y="2643" width="586" height="29" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="32" y="2661.5" font-size="12" font-weight="700">SNOTE  /  Giáo viên có quyền tạo lớp</text>
+<rect x="116" y="2685" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="124" y="2702.0" font-size="12">Tên lớp *</text>
+<rect x="116" y="2715" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="124" y="2732.0" font-size="12">Phương thức tham gia theo cấu hình lớp</text>
+<rect x="494" y="2838" width="102" height="27" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="502" y="2855.5" font-size="12" font-weight="700">Tạo lớp</text>
+<rect x="378" y="2838" width="102" height="27" rx="4" fill="#fff" stroke="#777"/>
+<text x="386" y="2855.5" font-size="12">Hủy</text>
+<text x="630" y="2630" font-size="15" font-weight="700">M3-11 · Cập nhật tiến độ</text>
+<rect x="630" y="2643" width="586" height="235" rx="4" fill="#fff" stroke="#777"/>
+<rect x="630" y="2643" width="586" height="29" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="638" y="2661.5" font-size="12" font-weight="700">SNOTE  /  Bài giao  ›  Nhóm nhận bài</text>
+<rect x="722" y="2685" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="730" y="2702.0" font-size="12">Phần đã xong</text>
+<rect x="722" y="2715" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="730" y="2732.0" font-size="12">Trở ngại</text>
+<rect x="722" y="2745" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="730" y="2762.0" font-size="12">Bước tiếp theo</text>
+<text x="722" y="2789" font-size="11">Gửi tiến độ không thay đổi trạng thái nộp.</text>
+<rect x="1100" y="2838" width="102" height="27" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="1108" y="2855.5" font-size="12" font-weight="700">Gửi cập nhật</text>
+<rect x="984" y="2838" width="102" height="27" rx="4" fill="#fff" stroke="#777"/>
+<text x="992" y="2855.5" font-size="12">Hủy</text>
+<text x="24" y="2912" font-size="15" font-weight="700">M3-12 · Gắn phần việc</text>
+<rect x="24" y="2925" width="586" height="235" rx="4" fill="#fff" stroke="#777"/>
+<rect x="24" y="2925" width="586" height="29" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="32" y="2943.5" font-size="12" font-weight="700">SNOTE  /  Trưởng nhóm  ›  Bài giao</text>
+<rect x="116" y="2967" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="124" y="2984.0" font-size="12">Tạo việc mới hoặc chọn việc sẵn có</text>
+<rect x="116" y="2997" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="124" y="3014.0" font-size="12">Chỉ hiện việc của workspace nhóm nhận bài</text>
+<rect x="494" y="3120" width="102" height="27" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="502" y="3137.5" font-size="12" font-weight="700">Gắn phần việc</text>
+<rect x="378" y="3120" width="102" height="27" rx="4" fill="#fff" stroke="#777"/>
+<text x="386" y="3137.5" font-size="12">Hủy</text>
+<text x="630" y="2912" font-size="15" font-weight="700">M3-13 · Chia sẻ với giáo viên</text>
+<rect x="630" y="2925" width="586" height="235" rx="4" fill="#fff" stroke="#777"/>
+<rect x="630" y="2925" width="586" height="29" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="638" y="2943.5" font-size="12" font-weight="700">SNOTE  /  Trưởng nhóm có quyền chia sẻ</text>
+<rect x="722" y="2967" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="730" y="2984.0" font-size="12">Tài nguyên hoặc checklist thuộc bài *</text>
+<rect x="722" y="2997" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="730" y="3014.0" font-size="12">Người nhận: Giáo viên phụ trách</text>
+<rect x="722" y="3027" width="402" height="26" rx="4" fill="#fff" stroke="#777"/>
+<text x="730" y="3044.0" font-size="12">Phạm vi: Bài giao và nhóm nhận bài</text>
+<text x="722" y="3071" font-size="11">Rà quyền và nội dung trước khi xác nhận.</text>
+<rect x="1100" y="3120" width="102" height="27" rx="4" fill="#e2e2e2" stroke="#777"/>
+<text x="1108" y="3137.5" font-size="12" font-weight="700">Chia sẻ</text>
+<rect x="984" y="3120" width="102" height="27" rx="4" fill="#fff" stroke="#777"/>
+<text x="992" y="3137.5" font-size="12">Hủy</text>
+</g>
+</svg>
