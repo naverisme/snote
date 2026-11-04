@@ -1,5 +1,7 @@
 # SNOTE v2 — Wireframe M1 · Cá nhân
 
+> **Phân cấp giao diện:** Dùng [đặc tả thành phần](frontend-information-architecture.md) để xác định thanh điều hướng, vị trí nhóm và dữ liệu được tải. Thanh điều hướng trong hình dưới đây là minh họa cũ.
+
 **Bản sửa để duyệt bố cục trước coding.** [Điều hướng](frontend-navigation.md) mô tả đường đi. Tài liệu này đặt nút, vùng dữ liệu và form vào màn hình. Dữ liệu trong hình là ví dụ. Xem [wireframe Gantt](task-views.md) cho bố cục chuyển giữa Danh sách và trục thời gian. Thứ tự thao tác, phạm vi và lỗi đối chiếu với [hợp đồng API M1](m1-api-contract.md).
 
 ![Wireframe M1 từ đăng nhập đến quản lý việc và Hộp thu](assets/m1-wireframes.svg)
