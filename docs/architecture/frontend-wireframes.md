@@ -1,34 +1,29 @@
-# SNOTE v2 — Wireframe frontend M1
+# SNOTE v2 — Wireframe M1 · Cá nhân
 
-**Bố cục đề xuất để duyệt trước khi dựng giao diện.** [Sơ đồ điều hướng](frontend-navigation.md) xác định đường đi giữa màn hình. Wireframe này đặt các thành phần vào từng màn hình. Màu xám trong hình chỉ để phân biệt vùng và nút chính.
+**Bản sửa để duyệt bố cục trước coding.** [Điều hướng](frontend-navigation.md) mô tả đường đi. Tài liệu này đặt nút, vùng dữ liệu và form vào màn hình. Dữ liệu trong hình là ví dụ. Thứ tự thao tác, phạm vi và lỗi đối chiếu với [hợp đồng API M1](m1-api-contract.md).
 
-![Wireframe M1 gồm năm màn hình máy tính và một ví dụ điện thoại](assets/m1-wireframes.svg)
+![Wireframe M1 từ đăng nhập đến quản lý việc và Hộp thu](assets/m1-wireframes.svg)
 
-## Vị trí và hành vi
+## Màn hình, nút và đích
 
-| Màn hình | Bố cục | Thao tác và trạng thái |
+| Khung | Vị trí và thao tác | Kết quả hoặc giới hạn |
 |---|---|---|
-| **Đăng nhập** | Form ở giữa, email trên mật khẩu, thông báo lỗi ngay dưới trường liên quan hoặc trước nút chính. | **Đăng nhập** ở cuối form. Đang gửi thì khóa gửi lặp. Khi phiên hết, đăng nhập lại rồi kiểm tra quyền vào đích cũ. |
-| **Việc của tôi** | Tiêu đề và **+ Tạo việc** ở đầu vùng nội dung. Dưới là bộ lọc ngày, hai lối vào **Cần xử lý** và **Quan trọng**, rồi danh sách. | Chọn một bộ lọc đổi cùng danh sách. Mỗi dòng có tiêu đề, lý do, hạn hoặc thời lượng, và tiến độ checklist nếu có. Chọn dòng mở việc gốc. Đặt **Tải thêm** sau danh sách khi còn trang. |
-| **Chi tiết việc** | Đường quay lại và tiêu đề trên cùng. **Đánh dấu hoàn thành** ở đầu màn hình. Checklist bên trái, **Lịch làm của tôi** bên phải trên máy tính. | **Sửa thông tin** cạnh thông tin việc. **+ Thêm mục** ở cuối checklist. **Lên lịch / Sửa lịch** trong vùng kế hoạch. Việc hoàn tất hiện **Mở lại** thay cho nút hoàn thành. Khi việc đóng, ẩn hoặc vô hiệu thao tác ghi checklist và kế hoạch, vẫn hiển thị dữ liệu đã lưu. |
-| **Hộp thu nhanh** | **+ Lưu nhanh** cạnh tiêu đề. Ô tìm và bộ lọc trạng thái ngay dưới, danh sách ở giữa, tải thêm ở cuối. | Lưu nhanh mở form chọn URL hoặc văn bản. Mỗi dòng tài nguyên mở chi tiết. Trạng thái trống theo bộ lọc được hiển thị trong vùng danh sách. |
-| **Chi tiết tài nguyên** | Đường quay lại và tiêu đề ở đầu. Nút **Mở nguồn** phía trên bên phải cho mục URL. Khối nội dung ở giữa, trường tiêu đề, nhãn và trạng thái bên dưới. | **Lưu sửa** ở cuối form. Mục văn bản giữ cùng vị trí hiển thị nội dung, bỏ nút mở nguồn. |
-| **Điện thoại** | Thanh điều hướng trái chuyển thành menu trên thanh đầu. Mỗi màn hình xếp thành một cột. | Nút chính ở đầu màn hình hoặc cuối form tương ứng. Chi tiết việc xếp checklist trước lịch làm. Bộ lọc ngày xuống hai dòng khi thiếu chỗ. |
+| **M1-01 · Đăng nhập** | Email → mật khẩu → lỗi → **Đăng nhập** cuối form. Menu tài khoản ở thanh đầu sau khi đăng nhập có **Đăng xuất**. | Thành công vào **Việc của tôi** hoặc đích nội bộ đã kiểm tra quyền. Phiên hết hạn chuyển lại đăng nhập. M1 dùng tài khoản thử nghiệm. |
+| **M1-02, M1-11 · Việc của tôi** | **+ Tạo việc** cạnh tiêu đề. Sáu bộ lọc phía dưới điều khiển **một** danh sách, chỉ một bộ lọc đang chọn. Mỗi dòng mở việc gốc. **Tải thêm** nằm cuối. | Tất cả mặc định và gồm việc đã xong. Hôm nay, Ngày mai và Quá hạn có số đếm toàn bộ. Cần xử lý và Quan trọng là hai bộ lọc riêng, có thể chứa cùng một việc. |
+| **M1-03, M1-13 · Tạo/sửa việc** | Tiêu đề → mô tả → mức quan trọng → loại hạn. Chọn Theo ngày thì hiện trường ngày. Chọn Theo thời điểm thì hiện ngày và giờ. **Hủy / Lưu việc** ở chân form. | Tạo thành công mở chi tiết mới. Sửa thành công trả về chi tiết đang sửa. Hạn có thể trống. Thay lịch làm ở form riêng. |
+| **M1-04, M1-12, M1-14 · Chi tiết việc mở** | Đầu trang có quay lại, tiêu đề, **Hoàn thành** và **Sửa thông tin**. Dưới hạn gốc là checklist và vùng kế hoạch riêng. **+ Thêm mục** mở trường tên ở cuối checklist. | Đánh dấu từng mục cập nhật số mục xong và mục chưa xong đầu tiên. Xong hết checklist giữ trạng thái việc đang mở đến khi bấm **Hoàn thành**. M1 hỗ trợ thêm và đánh dấu mục. |
+| **M1-05 · Lịch làm** | Hạn gốc chỉ đọc → thời lượng → các khoảng bắt đầu/kết thúc → thêm/bỏ khoảng → **Hủy / Lưu lịch**. | Gửi toàn bộ kế hoạch. Có thể lưu danh sách khoảng rỗng. Xung đột giữa các khoảng trong cùng việc và giờ kết thúc không hợp lệ hiển thị tại trường tương ứng. |
+| **M1-06 · Hộp thu** | **+ Lưu nhanh** cạnh tiêu đề, tìm và lọc ngay dưới, danh sách ở giữa. **Tải thêm** nằm cuối. | Mở từng tài nguyên bằng dòng tương ứng. Tìm cả mục đã xử lý khi bộ lọc là Tất cả. |
+| **M1-07 · Lưu nhanh** | Loại → đúng một trường nội dung bắt buộc → tiêu đề/nhãn tùy chọn → **Hủy / Lưu**. | URL hoặc văn bản. Lưu thành công trở về Hộp thu và có đường mở mục mới kể cả khi bộ lọc hiện tại ẩn mục đó. |
+| **M1-08 · Tài nguyên** | Quay lại, tiêu đề, **Mở nguồn** khi là URL, vùng nội dung gốc chỉ đọc, rồi tiêu đề/nhãn/trạng thái và **Lưu sửa**. | Mục văn bản không có nút mở nguồn. Không có tải tệp, xóa hay nút chia sẻ trong M1. |
+| **M1-09 · Việc đã xong** | **Mở lại** thay nút Hoàn thành. Checklist và kế hoạch đã lưu được hiển thị chỉ đọc. | Việc rời số đếm đang mở, còn trong Tất cả. Mở lại giữ checklist và lịch làm đã lưu. |
+| **M1-10 · Trạng thái danh sách** | Đang tải, trống theo bộ lọc, lỗi đọc và mất quyền thay nội dung của vùng danh sách. | Lỗi đọc có **Thử lại** khi phù hợp. Khi mất quyền, loại dữ liệu riêng khỏi màn hình và đưa đường quay lại. |
 
-## Form và phản hồi
+## Điểm dễ nhầm khi triển khai
 
-- **Tạo việc:** đặt tiêu đề trước, rồi mô tả, mức quan trọng và hạn. **Hủy** và **Lưu việc** ở chân form. Khi tạo thành công, mở chi tiết việc mới.
-- **Lưu nhanh:** chọn loại trước, sau đó nhập URL hoặc văn bản, tiêu đề và nhãn tùy chọn. **Hủy** và **Lưu** ở chân form. Khi thành công, trở về danh sách và báo mục đã lưu. Nếu bộ lọc hiện tại loại mục mới, thông báo phải có đường mở mục.
-- **Lên lịch:** hiển thị thời lượng trước, các khoảng làm tiếp theo, nút thêm khoảng bên dưới, **Hủy** và **Lưu lịch** ở chân form. Nhắc hạn gốc trong vùng thông tin để người dùng phân biệt với lịch riêng.
-- **Đang tải, trống và lỗi:** giữ tiêu đề và điều hướng ổn định. Lỗi đọc đặt tại vùng nội dung với **Thử lại** khi phù hợp. Lỗi lưu giữ nguyên dữ liệu đã nhập. Khi không còn quyền, chuyển sang trạng thái không truy cập được, kèm đường quay về.
-- Trên máy tính, form tạo có thể mở trong hộp thoại. Trên điện thoại, dùng màn hình dọc. Giữ cùng thứ tự trường, thao tác, thông báo và thứ tự tiêu điểm. Khi đóng form, trả tiêu điểm về nút mở nếu vẫn còn.
+- **Hạn gốc khác lịch làm.** Ví dụ việc đến hạn hôm nay, bạn lên lịch hai khoảng trong hôm nay, danh sách vẫn có một dòng và tính một lần. Dòng có thể nêu cả hai lý do. Dời hai khoảng làm giữ nguyên hạn.
+- **Khối gợi ý khác bộ đếm.** Sáu lựa chọn gọi cùng danh sách với các giá trị `all`, `today`, `tomorrow`, `overdue`, `actionable`, `important`. Không dựng sáu danh sách riêng. API trả ba bộ đếm ngày. Dùng đúng thứ tự, quyền và múi giờ theo hợp đồng.
+- **Lưu và lỗi.** Nút lưu đứng cuối form. Khi đang gửi, chặn gửi lặp. Lỗi trường đặt ngay cạnh trường và giữ nội dung. Lỗi tải đặt tại vùng nội dung. Sau cập nhật thành công, đọc lại dữ liệu việc và phần tổng hợp liên quan.
+- **Điện thoại.** Điều hướng nằm trong menu trên thanh đầu. Bộ lọc xuống dòng. Chi tiết xếp checklist trước kế hoạch. Form dùng một cột và giữ thứ tự bàn phím. Khi đóng form, trả tiêu điểm về nút mở nếu nó còn hiện.
 
-## Bàn giao frontend
-
-- **A0:** khung điều hướng chung và đăng nhập. Đầu mối A sở hữu router gốc.
-- **B1:** Hộp thu, form lưu nhanh và chi tiết tài nguyên.
-- **C1:** form tạo việc, chi tiết và vùng checklist. Dữ liệu việc gốc thuộc C.
-- **D1:** danh sách Việc của tôi và vùng kế hoạch. D bàn giao khối kế hoạch để C lắp vào chi tiết việc qua giao diện chung.
-- **Q1:** kiểm tra đường đi, tiêu điểm, thao tác bằng bàn phím, vùng lỗi/trống và thứ tự nút trên máy tính lẫn điện thoại.
-
-Đối chiếu từng thao tác với [hợp đồng API M1](m1-api-contract.md). Workspace nhóm, bài giao và bảng giáo viên thuộc M2–M3 và cần wireframe theo vai trò trước khi mở frontend của các mốc đó.
+**Phạm vi bàn giao:** A0 sở hữu khung điều hướng và phiên, B1 sở hữu Hộp thu, C1 sở hữu việc và checklist, D1 sở hữu danh sách và vùng kế hoạch. D1 bàn giao vùng kế hoạch để C1 lắp vào trang chi tiết theo hợp đồng chung. Q1 kiểm tra thao tác, quyền, lỗi và thứ tự tiêu điểm. Xem tiếp [wireframe M2–M3](frontend-collaboration-wireframes.md).
