@@ -1,6 +1,6 @@
 # SNOTE v2 — Sơ đồ điều hướng frontend
 
-Các đường dẫn là đề xuất. Điều hướng xuất phát từ nhu cầu đang làm, và chi tiết việc nhóm giữ ngữ cảnh workspace gốc. Phạm vi màn hình ưu tiên theo [SRS](../requirements/srs.md).
+Các đường dẫn là đề xuất. Điều hướng xuất phát từ nhu cầu đang làm, và chi tiết việc nhóm giữ ngữ cảnh workspace gốc. Phạm vi màn hình ưu tiên theo [SRS](../requirements/srs.md). Vị trí nút, biểu mẫu và vùng nội dung của M1 nằm ở [wireframe frontend](frontend-wireframes.md).
 
 ```mermaid
 flowchart TD
