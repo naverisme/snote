@@ -26,7 +26,7 @@ flowchart TD
 | Màn hình | Đường dẫn đề xuất | Điểm cần nghiệm thu |
 |---|---|---|
 | Đăng nhập | `/login` | Khi phiên hết, quay lại đích nội bộ hợp lệ sau xác thực và kiểm tra quyền lần nữa. |
-| Việc của tôi | `/me/tasks` | Có mục hôm nay, ngày mai, quá hạn và danh sách chung. Việc được giao có nhãn nguồn, mở đúng việc gốc. |
+| Việc của tôi | `/me/tasks` | Có mục hôm nay, ngày mai, quá hạn và danh sách chung. Việc được giao có nhãn nguồn, mở đúng việc gốc. [Chế độ xem Gantt](task-views.md) là phần mở rộng đề xuất cùng khu vực. |
 | Hộp thu nhanh | `/inbox`, `/inbox/:resourceId` | Lưu và tìm nhanh, có trạng thái trống, lỗi, đang lưu và đã lưu. Chia sẻ cần xác nhận riêng. |
 | Workspace | `/workspaces/:workspaceId` | Xem việc, lịch và tài nguyên theo quyền. Lịch nhóm hiển thị mốc chung. |
 | Chi tiết việc | `/workspaces/:workspaceId/tasks/:taskId` | Hiện phạm vi, đầu ra, hạn, người được giao và checklist. Lịch làm của tôi là thao tác riêng tư. |
