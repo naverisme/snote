@@ -10,7 +10,7 @@ Các tài liệu mô tả hành vi và kiến trúc đích để duyệt trướ
 | 4 | [Kiến trúc hệ thống](architecture/system.md) | Sơ đồ 3 và 4. Ngữ cảnh, container, module và phụ thuộc. |
 | 5 | [ERD](architecture/data-model.md) | Sơ đồ 5. Dữ liệu workspace, công việc, lớp, bài giao và bài nộp. |
 | 6 | [Trình tự và API](architecture/sequences.md) | Sơ đồ 6. Kiểm tra quyền, tiến độ và nộp bài có thể thử lại. |
-| 7 | [Điều hướng](architecture/frontend-navigation.md), [wireframe M1](architecture/frontend-wireframes.md), [wireframe M2–M3](architecture/frontend-collaboration-wireframes.md), [chế độ xem công việc và Gantt](architecture/task-views.md) và [triển khai](architecture/deployment.md) | Luồng màn hình, bố cục frontend cơ bản và quy trình đưa bản phát hành qua staging. |
+| 7 | [Cấu trúc frontend và đặc tả thành phần](architecture/frontend-information-architecture.md), [Điều hướng](architecture/frontend-navigation.md), [wireframe M1](architecture/frontend-wireframes.md), [wireframe M2–M3](architecture/frontend-collaboration-wireframes.md), [chế độ xem công việc và Gantt](architecture/task-views.md) và [triển khai](architecture/deployment.md) | Luồng màn hình, bố cục frontend cơ bản và quy trình đưa bản phát hành qua staging. |
 | 8 | [Kế hoạch bàn giao](delivery/plan.md) | Timeline, công sức, chi phí giả định và nghiệm thu. |
 
 ## Chuẩn bị coding
