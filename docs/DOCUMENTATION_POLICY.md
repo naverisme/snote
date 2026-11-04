@@ -1,5 +1,10 @@
 # Quy ước tài liệu SNOTE v2
 
+- **Trạng thái:** bảy nhóm đích đã được chủ sản phẩm chốt; quy tắc chi tiết trong tài liệu này chờ duyệt khi rà soát PR.
+- **Phạm vi:** SNOTE v2, nhánh `s_note_v2`.
+- **Người chịu trách nhiệm:** chủ sản phẩm với cấu trúc và nội dung nghiệp vụ; người phụ trách kỹ thuật với chi tiết kỹ thuật.
+- **Ngày cập nhật:** 2026-11-04.
+
 **Phạm vi quyết định:** cấu trúc và quy tắc quản lý `docs/` trên nhánh `s_note_v2`. Việc chốt cấu trúc **không đồng nghĩa** với duyệt nội dung, sơ đồ, hợp đồng, kế hoạch hoặc kết luận sẵn sàng coding đã viết trước đây.
 
 ## 1. Vai trò của `docs/`
