@@ -1,18 +1,7 @@
-# Hướng dẫn tác nhân — SNOTE
+# Hướng dẫn tác nhân — SNOTE v2
 
-Phạm vi áp dụng: làm việc trên nhánh `s_note_v2` và các nhánh tách từ đó. Đây là bản đồ đọc và quy tắc phối hợp; nguồn nghiệp vụ nằm trong tài liệu đã được duyệt.
+Áp dụng trên `s_note_v2` và nhánh tách từ đó. Bắt đầu bằng [chỉ mục](docs/README.md), [quy ước](docs/DOCUMENTATION_POLICY.md) và tài liệu đúng chủ đề; không cần đọc toàn bộ cây `docs/`. Kiểm tra phạm vi, nguồn và trạng thái của từng mệnh đề trước khi dùng.
 
-## Bắt đầu một nhiệm vụ
+Chỉ ba tài liệu được liệt kê trong chỉ mục hiện hành là đầu vào đã đối chiếu trong phạm vi cuộc trao đổi với chủ sản phẩm. `architecture/` và `contracts/` chưa có đặc tả đã duyệt. Tệp cũ trong lịch sử Git, kể cả file từng tự ghi “đã khóa” hay “sẵn sàng coding”, chỉ là nguồn đối chiếu; không được dùng làm yêu cầu, wireframe, hợp đồng API, phân công hoặc bằng chứng nghiệm thu. Xem [dấu vết](review/provenance.md) và [vấn đề chưa chốt](review/unresolved.md).
 
-1. Đọc [quy ước tài liệu](docs/DOCUMENTATION_POLICY.md) và [chỉ mục](docs/README.md).
-2. Xác định loại nhiệm vụ rồi chỉ đọc các tài liệu liên quan: `product/` cho mục tiêu/phạm vi; `requirements/` cho hành vi/quyền; `ux/` cho giao diện; `architecture/` cho cấu trúc/dữ liệu; `contracts/` cho giao tiếp; `verification/` cho nghiệm thu; `operations/` cho vận hành. Tìm theo mã yêu cầu và liên kết từ chỉ mục khi cần. Không bắt buộc đọc hết `docs/`.
-3. Kiểm tra trạng thái, phiên bản và liên kết phê duyệt của từng tài liệu. Tài liệu cũ trong `requirements/`, `architecture/`, `delivery/` hiện là đầu vào để rà soát, không tự trở thành yêu cầu đã chốt. Một tệp tự viết “sẵn sàng coding” không phải quyết định của chủ sản phẩm.
-4. Tóm tắt phạm vi, tài liệu đã dùng, điều còn chưa được quyết định và các tệp dự kiến sửa trước khi làm thay đổi lớn.
-
-## Làm việc và xử lý mâu thuẫn
-
-- Tuân theo yêu cầu mới nhất của chủ sản phẩm và các quyết định có bằng chứng duyệt, đúng phạm vi áp dụng. Nếu hai tài liệu mâu thuẫn hoặc thiếu quyết định, nêu rõ điểm lệch và yêu cầu người có trách nhiệm quyết định trước khi triển khai phần phụ thuộc.
-- Giữ một nội dung chuẩn ở đúng nhóm; tài liệu nhóm khác liên kết tới đó thay vì chép lại quy tắc. Khi sửa yêu cầu có ảnh hưởng đến giao diện, dữ liệu, hợp đồng hoặc nghiệm thu, liệt kê và cập nhật các tham chiếu liên quan trong cùng PR hoặc ghi việc phụ thuộc rõ ràng.
-- Công việc đang chạy, phân công, tiến độ và deadline theo GitHub Issues/Projects hoặc hệ thống theo dõi được chọn. Các kế hoạch và phân công agent trong `docs/delivery/` là bản cũ cần thẩm định, không tự cấp quyền sở hữu file.
-- Chỉ bắt đầu coding khi nhiệm vụ yêu cầu coding và đầu vào liên quan đã được xác nhận đủ cho phạm vi đó. Nếu có nhiều agent song song, xác định phạm vi sở hữu file, hợp đồng chung, người tích hợp và thứ tự ghép bằng công việc đang được giao; không suy ra từ bảng phân công cũ.
-- Trước khi bàn giao, kiểm tra liên kết và tính nhất quán của phần vừa sửa; báo rõ điều đã duyệt, điều còn chờ duyệt và bằng chứng kiểm tra. Không gọi một tài liệu là đã duyệt chỉ vì nó được commit hoặc nằm trong `docs/`.
+Khi cần một quyết định chưa có, ghi đúng điểm thiếu và xin xác nhận trước khi triển khai phần phụ thuộc. Không bổ sung chi tiết tưởng tượng vào `docs/` để lấp khoảng trống. Nếu nhiều tác nhân cùng coding, phân công sở hữu tệp và hợp đồng phối hợp bằng công việc đang được giao; không áp dụng bảng phân công lịch sử. Khi sửa tài liệu, kiểm tra liên kết và ảnh hưởng liên nhóm, báo rõ nguồn quyết định và phần còn mở.
