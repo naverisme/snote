@@ -4,11 +4,11 @@
 | --- | --- |
 | Phạm vi | Phân cấp tính năng và cách xem trong workspace, phạm vi cá nhân và lớp |
 | Trạng thái | Đã đối chiếu ở mức được nói rõ; **chưa duyệt wireframe hay hợp đồng lệnh** |
-| Nguồn | [Hồ sơ nguồn](../../review/provenance.md), SRC-03 đến SRC-07; [PR #6](https://github.com/naverisme/snote/pull/6) |
+| Nguồn | [Hồ sơ nguồn](../../review/provenance.md), SRC-03 đến SRC-08; [PR #6](https://github.com/naverisme/snote/pull/6) |
 
 ## Cấp tính năng
 
-Khi đăng ký, người dùng tự chọn một hoặc nhiều cách dùng: Quản lý cá nhân, Người học, Giáo viên; có thể thay đổi sau. Mọi tài khoản có workspace cá nhân mặc định. Chọn Giáo viên làm xuất hiện lối vào Lớp học và thao tác tạo lớp; chọn Người học làm xuất hiện phạm vi các lớp đang học. Quyền thao tác bên trong lớp và workspace còn phụ thuộc vai trò trong chính phạm vi đó. Vị trí chính xác của các lối vào này chưa được duyệt.
+Khi đăng ký, người dùng tự chọn một hoặc nhiều cách dùng: Quản lý cá nhân, Người học, Giáo viên; có thể thay đổi sau. Mọi tài khoản có workspace cá nhân mặc định. Chọn Giáo viên làm xuất hiện lối vào Lớp học và thao tác tạo lớp, nhưng không yêu cầu tạo lớp ngay khi đăng ký; Giáo viên vẫn dùng workspace cá nhân. Chọn Người học làm xuất hiện phạm vi các lớp đang học. Quyền thao tác bên trong lớp và workspace còn phụ thuộc vai trò trong chính phạm vi đó. Vị trí chính xác của các lối vào này chưa được duyệt.
 
 Trong một workspace, **Công việc | Lịch | Thư viện** là các mục ngang cấp, đứng gần nhau. **Thư viện ở cạnh Lịch** để người dùng mở bất cứ khi nào cần. Khi xem Công việc hoặc Lịch, vùng nội dung chính chỉ trình bày tính năng được chọn, không đồng thời hiện ghi chú gây xao nhãng. Thư viện chứa Hộp thu (ở workspace cá nhân mặc định), thư mục và các mục văn bản/ghi chú, đường dẫn, tệp.
 

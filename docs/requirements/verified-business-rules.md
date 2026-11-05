@@ -4,19 +4,19 @@
 | --- | --- |
 | Phạm vi | Hành vi được chủ sản phẩm xác nhận trong cuộc trao đổi về v2 |
 | Trạng thái | Đã đối chiếu trong phạm vi mệnh đề dưới đây; không phải SRS đầy đủ hay phê duyệt triển khai |
-| Nguồn | [Hồ sơ nguồn](../../review/provenance.md), SRC-01 đến SRC-07; [PR #6](https://github.com/naverisme/snote/pull/6) |
+| Nguồn | [Hồ sơ nguồn](../../review/provenance.md), SRC-01 đến SRC-08; [PR #6](https://github.com/naverisme/snote/pull/6) |
 
 Định nghĩa lớp, nhóm và workspace ở [khái niệm sản phẩm](../product/concepts.md). Quy tắc chi tiết chưa nêu dưới đây không được lấy từ hồ sơ cũ.
 
 ## Tư cách và quyền
 
-Khi đăng ký, người dùng tự chọn Người học, Giáo viên hoặc Quản lý cá nhân; có thể chọn cả học và dạy trên cùng tài khoản, cũng như đổi cách dùng sau này. Người tự chọn Giáo viên được tạo lớp mà không cần duyệt vai trò riêng. Quyền với nội dung của từng lớp/workspace vẫn theo tư cách và vai trò tại phạm vi ấy.
+Khi đăng ký, người dùng tự chọn Người học, Giáo viên hoặc Quản lý cá nhân; có thể chọn cả học và dạy trên cùng tài khoản, cũng như đổi cách dùng sau này. Mọi tài khoản, kể cả Giáo viên, đều có workspace cá nhân mặc định. Người tự chọn Giáo viên được tạo lớp mà không cần duyệt vai trò riêng và không bắt buộc tạo lớp lúc đăng ký. Quyền với nội dung của từng lớp/workspace vẫn theo tư cách và vai trò tại phạm vi ấy.
 
 | Phạm vi | Quy tắc |
 | --- | --- |
-| Lớp | Chỉ tài khoản tự chọn Giáo viên mở lớp. Lớp mới mặc định không công khai; người học vào bằng lời mời hoặc mã lớp, gửi yêu cầu và giáo viên duyệt trước khi tư cách có hiệu lực. Lớp là cấp trên các workspace nhóm thuộc lớp. |
-| Workspace nhóm | Giáo viên tạo nhóm hoặc cấp quyền tạo. Người được ủy quyền tạo mặc định là admin workspace ấy, giáo viên có thể đổi. Thành viên được mời/xếp vào nhóm phải chấp nhận trước khi tư cách có hiệu lực. |
-| Yêu cầu vào nhóm | Mặc định giáo viên, lớp trưởng và trưởng nhóm của workspace đó có thể duyệt; giáo viên có thể cấu hình lại. Mặc định mỗi người học có tối đa một nhóm đang hoạt động trong cùng lớp; giáo viên có thể đổi giới hạn trong cài đặt lớp. |
+| Lớp | Chỉ tài khoản tự chọn Giáo viên mở lớp, khi cần. Lớp mới mặc định không công khai. Nếu giáo viên mời, người học chấp nhận là thành viên có hiệu lực, không cần giáo viên duyệt lần hai; nếu dùng mã lớp, người học gửi yêu cầu và giáo viên duyệt trước khi thành viên có hiệu lực. Lớp là cấp trên các workspace nhóm thuộc lớp. |
+| Workspace nhóm | Mặc định giáo viên tạo nhóm; giáo viên có thể cấp quyền này cho lớp trưởng hoặc người học cụ thể. Người được ủy quyền tạo mặc định là trưởng nhóm kiêm admin workspace ấy; giáo viên có thể đổi sau. Thành viên được mời/xếp vào nhóm phải chấp nhận trước khi tư cách có hiệu lực. |
+| Yêu cầu vào nhóm | Người học tự gửi yêu cầu thì tư cách có hiệu lực sau khi người có quyền duyệt, không cần họ chấp nhận lần hai. Mặc định giáo viên, lớp trưởng và trưởng nhóm của workspace đó có thể duyệt; giáo viên có thể cấu hình lại. Mặc định mỗi người học có tối đa một nhóm đang hoạt động trong cùng lớp; giáo viên có thể đổi giới hạn trong cài đặt lớp. |
 | Rời nhóm | Thành viên có thể rời. Trưởng nhóm hoặc người đang phụ trách việc phải bàn giao trước; việc và lịch sử vẫn thuộc workspace. |
 | Giáo viên | Được xem, sửa và xóa toàn bộ **nội dung chung** trong các workspace nhóm của lớp mình. Quyền này không tự mở nội dung riêng của người học. |
 | Lớp trưởng | Mặc định được xem và sửa công việc, lịch và ghi chú chung của mọi nhóm trong lớp; giáo viên có thể chỉnh quyền. Quyền xóa mặc định chưa được chốt. |

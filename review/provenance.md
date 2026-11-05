@@ -22,6 +22,8 @@ Các câu trích ngắn là phát biểu của chủ sản phẩm trong chuỗi 
 
 | SRC-07 | Hai lượt sau câu hỏi về phần còn thiếu: chủ sản phẩm nói “oke” với các đề xuất 1–7, sau đó thay cách nhận vai trò thành tự chọn lúc đăng ký; lượt “pke” xác nhận đề xuất một tài khoản vừa học vừa dạy và lớp mặc định không công khai | Workspace cá nhân mặc định; giới hạn nhóm mặc định; bộ lọc ngày và mức quan trọng; tiến độ tách nguồn; tự chọn cách dùng, quyền tạo lớp và phạm vi lớp. Phạm vi phát hành đầu còn cần làm rõ do yêu cầu lối vào Lớp học sau đăng ký. | `docs/product/concepts.md`, `docs/requirements/verified-business-rules.md`, `docs/ux/validated-navigation.md` |
 
+| SRC-08 | Chủ sản phẩm nói “giáo viên cũng có không gian cá nhân, không nhất thiết phải tạo lớp ngay khi tạo tài khoản. còn lại đồng ý” sau bốn đề xuất về bản phát hành đầu, lời mời/mã lớp, yêu cầu vào nhóm và quyền lập nhóm | Lớp học cơ bản thuộc bản đầu nhưng tạo lớp là tùy chọn; hai đường vào lớp, hai đường vào nhóm, giáo viên mặc định lập nhóm và quyền ủy nhiệm; người được ủy nhiệm tạo nhóm mặc định là trưởng nhóm kiêm admin. | `docs/product/concepts.md`, `docs/requirements/verified-business-rules.md`, `docs/ux/validated-navigation.md` |
+
 `PR #6` trước đây đưa ba tài liệu mới vào nhánh; lần rà này đã giới hạn lại các mệnh đề theo chính các lượt xác nhận nêu trên. Tên và mã ngữ cảnh không chứng minh mọi chi tiết được diễn giải trong PR cũ đã được duyệt.
 
 ## Các nguồn cũ đã kiểm kê và xử lý
