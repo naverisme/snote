@@ -4,7 +4,7 @@
 - **Phạm vi:** SNOTE v2.
 - **Người chịu trách nhiệm:** Chủ sản phẩm.
 - **Ngày cập nhật:** 2026-11-05.
-- **Nguồn quyết định:** Các xác nhận trực tiếp của chủ sản phẩm trong phiên rà soát ngày 2026-11-05; pull request đưa tệp này vào `s_note_v2` ghi phạm vi thay đổi.
+- **Nguồn quyết định:** Các xác nhận trực tiếp của chủ sản phẩm trong phiên rà soát ngày 2026-11-05; [PR #6](https://github.com/naverisme/snote/pull/6) đưa tệp này vào `s_note_v2` ghi phạm vi thay đổi.
 
 Xem [khái niệm sản phẩm](../product/concepts.md). Các phần chưa được nêu hoặc ghi rõ “chưa chốt” không được suy ra từ hồ sơ cũ.
 
@@ -45,7 +45,7 @@ Quyền được xét theo người, hành động và phạm vi hiện tại. Q
 ## Lịch
 
 - Lịch của tôi tổng hợp sự kiện, hạn và buổi làm riêng từ mọi workspace liên quan mà người dùng được phép thấy. Lịch workspace chứa sự kiện/hạn chung, không tự lộ buổi làm riêng của người khác.
-- Sự kiện lớp hiện ở Lịch lớp, Lịch của tôi và Lịch các workspace nhóm liên quan theo quyền. Cùng một sự kiện có thể xuất hiện ở nhiều màn nhưng vẫn là một bản ghi.
+- Sự kiện lớp hiện ở Lịch lớp, Lịch của tôi và Lịch các workspace nhóm liên quan theo quyền. Cùng một sự kiện có thể xuất hiện ở nhiều màn nhưng không hiển thị trùng trong cùng một màn.
 - Lịch còn chứa sự kiện độc lập không gắn việc như lịch học, lịch thi, cuộc hẹn cá nhân; sự kiện riêng chỉ chủ tài khoản thấy.
 
 ## Bài giao, tiến độ và nộp kết quả
