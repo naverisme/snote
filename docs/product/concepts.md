@@ -4,7 +4,7 @@
 | --- | --- |
 | Phạm vi | Các khái niệm đã xác nhận trong cuộc trao đổi về SNOTE v2 |
 | Trạng thái | Đã đối chiếu với quyết định trực tiếp của chủ sản phẩm trong phạm vi nêu dưới đây |
-| Nguồn | [Hồ sơ nguồn](../../review/provenance.md), SRC-01 đến SRC-08; [PR #6](https://github.com/naverisme/snote/pull/6) |
+| Nguồn | [Hồ sơ nguồn](../../review/provenance.md), SRC-01 đến SRC-10; [PR #6](https://github.com/naverisme/snote/pull/6) |
 
 SNOTE hướng tới học sinh, người dùng cá nhân và giáo viên. Một người có thể sử dụng nhiều workspace để tách công việc cá nhân, dự án và bài tập nhưng vẫn xem được việc và lịch liên quan trên phạm vi cá nhân. **AI Note** là nội dung cũ, không phải tên hay nguồn yêu cầu cho v2.
 
@@ -15,16 +15,16 @@ SNOTE hướng tới học sinh, người dùng cá nhân và giáo viên. Một
 | Workspace | Không gian làm việc có Công việc, Lịch và Thư viện; có thể thêm thành viên để cộng tác. Một người có thể có nhiều workspace. |
 | Lớp | Cấp bao trùm các workspace thuộc lớp, do giáo viên tạo và quản lý. Lớp có người học và bài giao cho nhóm. |
 | Nhóm trong lớp | Chính là **workspace thuộc lớp** trong ngữ cảnh học tập, không phải một loại thực thể/cấp không gian khác. Workspace độc lập cũng có thể có thành viên và công việc chung. |
-| Giáo viên, lớp trưởng, trưởng nhóm | Giáo viên quản lý lớp; lớp trưởng có quyền cấp lớp do giáo viên điều chỉnh; trưởng nhóm quản lý workspace của nhóm mình. Cùng một người có thể mang vai trò khác nhau theo phạm vi. |
+| Giáo viên, lớp trưởng, trưởng nhóm | Giáo viên quản lý lớp; mỗi lớp có tối đa một lớp trưởng chính và có thể cấp quyền hỗ trợ cho người khác. Mỗi nhóm có một trưởng nhóm chính, có thể thêm người quản lý workspace theo cấu hình. Cùng một người có thể mang vai trò khác nhau theo phạm vi. |
 | Thư viện | Khu vực của workspace để lưu văn bản/ghi chú, đường dẫn và tệp; có thư mục để phân loại các mục và thông tin gắn với chúng. “Bài viết” không phải loại nội dung riêng đã được chốt. |
 | Hộp thu | Thành phần của Thư viện trong workspace cá nhân mặc định, nhận mục lưu nhanh chưa phân loại; nội dung này riêng tư cho chủ tài khoản. |
 | Việc của tôi | Màn tổng hợp việc cá nhân và việc được giao từ các workspace người dùng tham gia; màn Công việc của workspace chỉ theo workspace đó. |
 | Lịch của tôi | Màn tổng hợp lịch liên quan đến người dùng xuyên các workspace; Lịch của workspace có phạm vi của workspace ấy. |
 
-Người tự chọn Giáo viên có thể tạo lớp, không cần bước xét duyệt vai trò riêng, nhưng không phải tạo lớp ngay khi đăng ký. Lớp mới mặc định không công khai: lời mời của giáo viên có hiệu lực sau khi người học chấp nhận; người vào bằng mã lớp gửi yêu cầu để giáo viên duyệt. Việc tự chọn Giáo viên không cấp quyền quản lý lớp của người khác.
+Người tự chọn Giáo viên có thể tạo lớp, không cần bước xét duyệt vai trò riêng, nhưng không phải tạo lớp ngay khi đăng ký. Lớp mới mặc định không công khai: lời mời của giáo viên có hiệu lực sau khi người học chấp nhận; người vào bằng mã lớp gửi yêu cầu để giáo viên duyệt. Việc tự chọn Giáo viên không cấp quyền quản lý lớp của người khác. Bản đầu chưa có vai trò đồng giáo viên riêng; giáo viên chủ lớp có thể ủy quyền từng chức năng.
 
-Giáo viên là chủ lớp và các workspace nhóm thuộc lớp; giáo viên mặc định là người có quyền lập nhóm và có thể ủy quyền cho lớp trưởng hoặc người học cụ thể. Người được ủy quyền tạo nhóm mặc định làm trưởng nhóm kiêm admin của workspace vừa tạo; giáo viên có thể thay đổi. Các quyền cụ thể, tư cách thành viên, lịch và bài giao được ghi tại [quy tắc nghiệp vụ](../requirements/verified-business-rules.md). [Điều hướng](../ux/validated-navigation.md) chỉ nêu phân cấp đã xác nhận.
+Giáo viên là chủ lớp và các workspace nhóm thuộc lớp; giáo viên mặc định là người có quyền lập nhóm và có thể ủy quyền cho lớp trưởng hoặc người học cụ thể. Người được ủy quyền tạo nhóm mặc định làm trưởng nhóm kiêm admin của workspace vừa tạo; giáo viên có thể thay đổi. Giáo viên có thể lưu trữ lớp; muốn rời lớp đang hoạt động thì cần bàn giao quyền chủ lớp cho tài khoản Giáo viên khác và người nhận chấp nhận. Các quyền cụ thể, tư cách thành viên, lịch và bài giao được ghi tại [quy tắc nghiệp vụ](../requirements/verified-business-rules.md). [Điều hướng](../ux/validated-navigation.md) chỉ nêu phân cấp đã xác nhận.
 
-**Phạm vi bản đầu đã xác nhận ở mức luồng chính:** cá nhân, cộng tác workspace, cùng khả năng tạo lớp, lập nhóm và giao bài cơ bản cho Giáo viên; giáo viên không bắt buộc sử dụng Lớp học. Chi tiết mốc phát hành và các tính năng mở rộng chưa chốt.
+**Phạm vi bản đầu đã xác nhận ở mức luồng chính:** cá nhân, cộng tác workspace, cùng khả năng tạo lớp, lập nhóm và giao bài cơ bản cho Giáo viên; giáo viên không bắt buộc sử dụng Lớp học. Bản đầu dùng web trên máy tính và điện thoại, lưu nhanh qua giao diện web; tích hợp nhận chia sẻ trực tiếp từ ứng dụng khác để đặc tả sau. Bài giao có nhận xét theo phiên bản, chưa có điểm số/thang điểm. Chi tiết mốc phát hành và các tính năng mở rộng chưa chốt.
 
-**Chưa xác nhận:** cách lưu nội dung từ từng nền tảng, trường metadata bắt buộc, lưu toàn văn trang web, giới hạn kỹ thuật của file hay mô hình dữ liệu. Các điểm cần quyết định nằm ở [hồ sơ rà soát](../../review/unresolved.md).
+**Chưa xác nhận:** tích hợp nhận chia sẻ từ từng nền tảng, trường metadata bắt buộc, lưu toàn văn trang web, giới hạn kỹ thuật của file hay mô hình dữ liệu. Các điểm cần quyết định nằm ở [hồ sơ rà soát](../../review/unresolved.md).
