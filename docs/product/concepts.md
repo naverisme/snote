@@ -1,41 +1,24 @@
-# SNOTE v2 — Khái niệm và phạm vi sản phẩm
+# SNOTE v2 — Khái niệm sản phẩm
 
-- **Trạng thái:** Đã duyệt đối với các mệnh đề trong tài liệu này; chưa xác nhận phạm vi phát hành hoặc chi tiết triển khai.
-- **Phạm vi:** SNOTE v2.
-- **Người chịu trách nhiệm:** Chủ sản phẩm.
-- **Ngày cập nhật:** 2026-11-05.
-- **Nguồn quyết định:** Các xác nhận trực tiếp của chủ sản phẩm trong phiên rà soát ngày 2026-11-05; thay đổi và đối chiếu được ghi trong [PR #6](https://github.com/naverisme/snote/pull/6) đưa tài liệu này vào `s_note_v2`.
-
-## Bài toán và người dùng
-
-SNOTE phục vụ học sinh, người dùng cá nhân và giáo viên. Người dùng cần lưu nhanh thông tin để tìm lại, quản lý việc riêng và việc được giao, theo dõi hạn, lịch và tiến độ, cộng tác minh bạch trong workspace. Giáo viên tạo lớp, giao bài cho các nhóm, quan sát tiến độ và phản hồi kết quả.
-
-Hồ sơ mang tên **AI Note** là tư liệu cũ, không phải nguồn yêu cầu đã duyệt cho SNOTE v2. Các mốc và lựa chọn kỹ thuật trong hồ sơ v2 trước đây cũng phải được thẩm định lại trước khi sử dụng.
-
-## Khái niệm và quan hệ
-
-| Khái niệm | Định nghĩa đã xác nhận |
+| Trường | Giá trị |
 | --- | --- |
-| Tài khoản | Một người có thể tham gia nhiều workspace và giữ các vai trò khác nhau theo từng lớp hoặc workspace. |
-| Workspace | Không gian làm việc có Công việc, Lịch và Thư viện; có thành viên, vai trò, lời mời/yêu cầu tham gia và nội dung theo phạm vi quyền. Một tài khoản có thể có nhiều workspace để tách các việc, dự án hoặc bài tập. |
-| Lớp | Không gian do giáo viên tạo và quản lý, ở **một cấp trên** các workspace thuộc lớp. Lớp có người học, quy tắc quyền, bài giao và sự kiện chung. |
-| Nhóm trong lớp | **Chính là một workspace thuộc lớp**, được gọi là “nhóm” trong ngữ cảnh lớp. Nhóm và workspace không phải hai cấp hoặc hai loại không gian làm việc khác nhau. |
-| Workspace độc lập | Workspace không thuộc lớp, có thể dùng riêng hoặc mời người khác cùng làm. Quyền quản trị lớp không tự áp dụng cho workspace độc lập. |
-| Lớp trưởng | Vai trò ở cấp lớp được giáo viên điều chỉnh quyền; quyền áp dụng trên các workspace thuộc lớp theo cấu hình. |
-| Trưởng nhóm | Vai trò quản trị workspace của nhóm mình; không tự có quyền quản lý cả lớp hoặc workspace nhóm khác. |
+| Phạm vi | Các khái niệm đã xác nhận trong cuộc trao đổi về SNOTE v2 |
+| Trạng thái | Đã đối chiếu với quyết định trực tiếp của chủ sản phẩm trong phạm vi nêu dưới đây |
+| Nguồn | [Hồ sơ nguồn](../../review/provenance.md), SRC-01 đến SRC-04; [PR #6](https://github.com/naverisme/snote/pull/6) |
 
-Giáo viên là chủ lớp và là chủ các workspace thuộc lớp; trưởng nhóm là người quản trị workspace được giao. Người được giáo viên cấp quyền tạo workspace nhóm mặc định trở thành người quản trị workspace vừa tạo; giáo viên có thể thay đổi quyền đó.
+SNOTE hướng tới học sinh, người dùng cá nhân và giáo viên. Một người có thể sử dụng nhiều workspace để tách công việc cá nhân, dự án và bài tập nhưng vẫn xem được việc và lịch liên quan trên phạm vi cá nhân. **AI Note** là nội dung cũ, không phải tên hay nguồn yêu cầu cho v2.
 
-Tư cách thành viên lớp và tư cách thành viên workspace nhóm là hai phạm vi riêng. Việc vào lớp không tự cấp quyền đọc nội dung của mọi nhóm. Một người học được tham gia tối đa bao nhiêu workspace nhóm đang hoạt động trong cùng lớp phụ thuộc cài đặt của giáo viên.
+| Khái niệm | Ý nghĩa đã xác nhận |
+| --- | --- |
+| Workspace | Không gian làm việc có Công việc, Lịch và Thư viện; có thể thêm thành viên để cộng tác. Một người có thể có nhiều workspace. |
+| Lớp | Cấp bao trùm các workspace thuộc lớp, do giáo viên tạo và quản lý. Lớp có người học và bài giao cho nhóm. |
+| Nhóm trong lớp | Chính là **workspace thuộc lớp** trong ngữ cảnh học tập, không phải một loại thực thể/cấp không gian khác. Workspace độc lập cũng có thể có thành viên và công việc chung. |
+| Giáo viên, lớp trưởng, trưởng nhóm | Giáo viên quản lý lớp; lớp trưởng có quyền cấp lớp do giáo viên điều chỉnh; trưởng nhóm quản lý workspace của nhóm mình. Cùng một người có thể mang vai trò khác nhau theo phạm vi. |
+| Thư viện | Khu vực của workspace để lưu văn bản/ghi chú, đường dẫn và tệp; có thư mục để phân loại các mục và thông tin gắn với chúng. “Bài viết” không phải loại nội dung riêng đã được chốt. |
+| Hộp thu | Thành phần của Thư viện trong workspace cá nhân mặc định, nhận mục lưu nhanh chưa phân loại; nội dung này riêng tư cho chủ tài khoản. |
+| Việc của tôi | Màn tổng hợp việc cá nhân và việc được giao từ các workspace người dùng tham gia; màn Công việc của workspace chỉ theo workspace đó. |
+| Lịch của tôi | Màn tổng hợp lịch liên quan đến người dùng xuyên các workspace; Lịch của workspace có phạm vi của workspace ấy. |
 
-## Thư viện, công việc và lịch
+Giáo viên là chủ lớp và các workspace nhóm thuộc lớp; người được ủy quyền tạo nhóm mặc định là admin của workspace vừa tạo, giáo viên có thể thay đổi. Các quyền cụ thể, tư cách thành viên, lịch và bài giao được ghi tại [quy tắc nghiệp vụ](../requirements/verified-business-rules.md). [Điều hướng](../ux/validated-navigation.md) chỉ nêu phân cấp đã xác nhận.
 
-**Thư viện** là nơi chứa văn bản/ghi chú, đường dẫn và tệp trong mỗi workspace. Nội dung được phân loại vào thư mục và có thể mang thông tin như tiêu đề, nguồn, mô tả, nhãn và ngày lưu. “Bài viết” không phải loại nội dung bắt buộc riêng; một đường dẫn đến bài viết vẫn là đường dẫn. Chưa có quyết định về lưu toàn văn trang web.
-
-**Hộp thu** thuộc Thư viện của workspace cá nhân được chọn làm mặc định. Nội dung lưu nhanh chưa phân loại đi vào đây và chỉ chủ tài khoản thấy; việc workspace có thêm thành viên không tự chia sẻ nội dung Hộp thu. Người dùng có thể phân loại và chia sẻ/chuyển nội dung bằng hành động rõ ràng.
-
-**Việc của tôi** tổng hợp việc cá nhân và việc được giao mà người dùng còn quyền đọc từ mọi workspace. Công việc bên trong một workspace chỉ hiển thị việc của workspace đó.
-
-**Lịch của tôi** tổng hợp các buổi làm riêng, hạn việc và sự kiện liên quan đến người dùng từ mọi workspace. Lịch workspace hiển thị nội dung chung thuộc phạm vi workspace. Lịch lớp có sự kiện lớp và hạn bài giao; sự kiện lớp cũng xuất hiện trong Lịch của tôi và Lịch của các workspace nhóm liên quan theo quyền. Một sự kiện có thể được mở từ nhiều phạm vi xem mà không hiển thị trùng trong cùng một màn. Lịch còn chứa sự kiện không gắn công việc, như lịch học, lịch thi hoặc cuộc hẹn riêng.
-
-Các quy tắc hành động, phạm vi quyền và ngoại lệ được ghi tại [quy tắc nghiệp vụ đã xác nhận](../requirements/verified-business-rules.md). Hành vi điều hướng đã xác nhận nằm tại [cấu trúc giao diện](../ux/validated-navigation.md).
+**Chưa xác nhận:** cách lưu nội dung từ từng nền tảng, trường metadata bắt buộc, lưu toàn văn trang web, giới hạn kỹ thuật của file, mô hình dữ liệu hay phạm vi phát hành. Các điểm cần quyết định nằm ở [hồ sơ rà soát](../../review/unresolved.md).

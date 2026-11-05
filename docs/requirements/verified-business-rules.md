@@ -1,63 +1,44 @@
 # SNOTE v2 — Quy tắc nghiệp vụ đã xác nhận
 
-- **Trạng thái:** Đã duyệt trong phạm vi các quy tắc dưới đây; chưa duyệt toàn bộ SRS, API hoặc mốc coding.
-- **Phạm vi:** SNOTE v2.
-- **Người chịu trách nhiệm:** Chủ sản phẩm.
-- **Ngày cập nhật:** 2026-11-05.
-- **Nguồn quyết định:** Các xác nhận trực tiếp của chủ sản phẩm trong phiên rà soát ngày 2026-11-05; [PR #6](https://github.com/naverisme/snote/pull/6) đưa tệp này vào `s_note_v2` ghi phạm vi thay đổi.
-
-Xem [khái niệm sản phẩm](../product/concepts.md). Các phần chưa được nêu hoặc ghi rõ “chưa chốt” không được suy ra từ hồ sơ cũ.
-
-## Lớp, workspace và quyền
-
-| Hành động/phạm vi | Quy tắc đã xác nhận |
+| Trường | Giá trị |
 | --- | --- |
-| Lớp và nhóm | Chỉ giáo viên được tạo lớp. “Nhóm” là tên gọi của workspace khi thuộc lớp; lớp ở một cấp trên workspace. Giáo viên là chủ lớp và các workspace thuộc lớp. |
-| Tạo workspace nhóm | Giáo viên tạo hoặc cấp quyền tạo cho người khác. Người được ủy quyền tạo mặc định là admin của workspace vừa tạo; giáo viên có thể đổi quyền. |
-| Vào lớp | Người học gửi yêu cầu; giáo viên duyệt trước khi tư cách lớp có hiệu lực. |
-| Vào workspace nhóm | Người học được xếp/mời phải chấp nhận trước khi tư cách thành viên nhóm có hiệu lực. Mặc định giáo viên, lớp trưởng và trưởng nhóm của workspace đó có thể duyệt yêu cầu vào nhóm; giáo viên có thể thay đổi quy tắc. |
-| Một người ở nhiều nhóm | Giới hạn số workspace nhóm đang hoạt động trong cùng lớp do giáo viên đặt trong cài đặt lớp. |
-| Rời nhóm | Thành viên được tự rời; nếu đang là trưởng nhóm hoặc phụ trách việc thì phải bàn giao trước. Công việc và lịch sử vẫn thuộc workspace. |
-| Giáo viên | Xem, sửa, xóa toàn bộ nội dung chung trong các workspace thuộc lớp mình. Không tự có quyền với workspace độc lập hoặc dữ liệu riêng của người học. |
-| Lớp trưởng | Mặc định xem và sửa công việc, lịch, ghi chú chung của mọi workspace nhóm trong lớp và duyệt yêu cầu vào nhóm. Giáo viên có thể chỉnh quyền. Quyền xóa mặc định chưa được xác nhận. |
-| Trưởng nhóm | Quản lý workspace nhóm mình, mặc định duyệt yêu cầu vào đó. Vai trò này không tự cấp quyền quản lý lớp hoặc nhóm khác. |
+| Phạm vi | Hành vi được chủ sản phẩm xác nhận trong cuộc trao đổi về v2 |
+| Trạng thái | Đã đối chiếu trong phạm vi mệnh đề dưới đây; không phải SRS đầy đủ hay phê duyệt triển khai |
+| Nguồn | [Hồ sơ nguồn](../../review/provenance.md), SRC-01 đến SRC-06; [PR #6](https://github.com/naverisme/snote/pull/6) |
 
-Quyền được xét theo người, hành động và phạm vi hiện tại. Quyền sửa nội dung chung không tự cấp quyền nộp kết quả đại diện nhóm.
+Định nghĩa lớp, nhóm và workspace ở [khái niệm sản phẩm](../product/concepts.md). Quy tắc chi tiết chưa nêu dưới đây không được lấy từ hồ sơ cũ.
 
-## Thư viện
+## Tư cách và quyền
 
-- Mỗi workspace có Thư viện chứa văn bản/ghi chú, đường dẫn và tệp; các mục có thể được xếp vào thư mục và gắn thông tin phù hợp với dạng nội dung.
-- Hộp thu thuộc Thư viện của workspace cá nhân mặc định. Mục lưu nhanh ở đây chỉ chủ tài khoản thấy cho đến khi có hành động phân loại/chia sẻ/chuyển rõ ràng.
-- “Bài viết” không phải loại nội dung riêng bắt buộc. Lưu toàn văn web, định dạng tệp hỗ trợ và nhận nội dung từ nền tảng khác chưa được chốt.
-
-## Công việc và thời gian
-
-| Hành vi | Quy tắc đã xác nhận |
+| Phạm vi | Quy tắc |
 | --- | --- |
-| Phạm vi | “Việc của tôi” tổng hợp việc cá nhân và việc được giao từ mọi workspace còn quyền; Công việc trong workspace chỉ hiện việc của workspace đó. |
-| Hạn | Việc cá nhân và việc được giao đều có thể không hạn. Việc được giao bắt đầu khoảng được giao để hoàn thành ở thời điểm giao; người giao chọn điểm cuối khi đặt hạn. |
-| Đếm thời gian | Việc có hạn đếm thời gian còn đến hạn. Quá hạn chưa xong thì đếm thời gian quá hạn. Không hạn thì không đếm. Khi xác nhận hoàn thành, đồng hồ dừng và hiển thị hoàn thành trễ nếu có. |
-| Mốc quá hạn | Hạn chỉ có ngày bắt đầu quá hạn lúc 00:00 ngày kế tiếp theo múi giờ áp dụng cho việc; hạn có giờ tính từ thời điểm đã đặt. |
-| Lịch làm riêng | Người nhận việc tự chọn các buổi làm. Buổi sau hạn vẫn được lưu, gắn nhãn “Làm muộn”; không tự sửa hạn. Lịch riêng không tự hiển thị trên lịch nhóm của người khác. |
-| Checklist | Hiện số mục và tỷ lệ xong, ví dụ 3/5 là 60%. Hoàn thành việc cần xác nhận riêng, không tự đóng khi xong checklist. |
-| Bộ lọc và thứ tự | Lọc theo ngữ cảnh như Hôm nay, Ngày mai, Quan trọng; có thứ tự mặc định theo bộ lọc và cài đặt để thay đổi thứ tự mặc định. Thuật toán cụ thể chưa được duyệt. |
+| Lớp | Chỉ giáo viên mở lớp. Người học yêu cầu vào lớp và giáo viên duyệt. Lớp là cấp trên các workspace nhóm thuộc lớp. |
+| Workspace nhóm | Giáo viên tạo nhóm hoặc cấp quyền tạo. Người được ủy quyền tạo mặc định là admin workspace ấy, giáo viên có thể đổi. Thành viên được mời/xếp vào nhóm phải chấp nhận trước khi tư cách có hiệu lực. |
+| Yêu cầu vào nhóm | Mặc định giáo viên, lớp trưởng và trưởng nhóm của workspace đó có thể duyệt; giáo viên có thể cấu hình lại. Giới hạn số nhóm hoạt động mà một người học được tham gia trong cùng lớp cũng do giáo viên đặt. |
+| Rời nhóm | Thành viên có thể rời. Trưởng nhóm hoặc người đang phụ trách việc phải bàn giao trước; việc và lịch sử vẫn thuộc workspace. |
+| Giáo viên | Được xem, sửa và xóa toàn bộ **nội dung chung** trong các workspace nhóm của lớp mình. Quyền này không tự mở nội dung riêng của người học. |
+| Lớp trưởng | Mặc định được xem và sửa công việc, lịch và ghi chú chung của mọi nhóm trong lớp; giáo viên có thể chỉnh quyền. Quyền xóa mặc định chưa được chốt. |
+| Trưởng nhóm | Quản lý workspace nhóm mình, không tự có quyền quản lý lớp hoặc nhóm khác. Một workspace có thể được nhiều người quản lý tùy cấu hình giáo viên. |
 
-## Lịch
+## Thư viện, công việc và lịch
 
-- Lịch của tôi tổng hợp sự kiện, hạn và buổi làm riêng từ mọi workspace liên quan mà người dùng được phép thấy. Lịch workspace chứa sự kiện/hạn chung, không tự lộ buổi làm riêng của người khác.
-- Sự kiện lớp hiện ở Lịch lớp, Lịch của tôi và Lịch các workspace nhóm liên quan theo quyền. Cùng một sự kiện có thể xuất hiện ở nhiều màn nhưng không hiển thị trùng trong cùng một màn.
-- Lịch còn chứa sự kiện độc lập không gắn việc như lịch học, lịch thi, cuộc hẹn cá nhân; sự kiện riêng chỉ chủ tài khoản thấy.
+- Thư viện lưu văn bản/ghi chú, đường dẫn và tệp; các mục được phân loại trong thư mục. Hộp thu của Thư viện thuộc workspace cá nhân mặc định nhận mục lưu nhanh và riêng tư cho chủ tài khoản.
+- “Việc của tôi” tổng hợp việc cá nhân và việc được giao từ mọi workspace còn quyền truy cập; màn Công việc của workspace chỉ hiện việc thuộc workspace ấy.
+- Việc cá nhân và việc giao cho thành viên đều có thể không đặt hạn. Khi giao việc, khoảng được giao để hoàn thành bắt đầu từ lúc giao; người giao chọn mốc kết thúc nếu đặt hạn. Người đảm nhận tự sắp các buổi làm riêng; buổi làm sau hạn vẫn lưu và được đánh dấu “Làm muộn”, không tự đổi hạn.
+- “Thời lượng còn lại” là đếm ngược đến hạn; việc chưa hoàn thành quá hạn thì đếm thời gian quá hạn. Với hạn chỉ có ngày, mốc quá hạn là 00:00 ngày kế tiếp theo múi giờ áp dụng cho việc; hạn kèm giờ tính từ thời điểm đã đặt.
+- Checklist hiển thị số mục và tỷ lệ hoàn thành (3/5 = 60%). Hoàn thành việc là thao tác xác nhận riêng, không tự động theo checklist.
+- Công việc có lọc Hôm nay, Ngày mai, Quan trọng và thứ tự hiển thị có thể chỉnh mặc định theo cài đặt. **Cách tính tập kết quả và thứ tự cụ thể chưa chốt.**
+- “Lịch của tôi” tổng hợp xuyên workspace. Lịch cũng chứa sự kiện độc lập với việc, như lịch học, lịch thi, hẹn riêng. Sự kiện của lớp xuất hiện trong Lịch của tôi và Lịch của workspace nhóm liên quan; lịch làm cá nhân không tự công khai cho các thành viên khác.
 
-## Bài giao, tiến độ và nộp kết quả
+## Bài giao và nộp
 
-| Hành vi | Quy tắc đã xác nhận |
+| Phạm vi | Quy tắc |
 | --- | --- |
-| Phân phối | Giáo viên giao cùng bài cho cả lớp hoặc chọn nhóm nhận. Mỗi nhóm có tiến độ và bản nộp riêng; nhóm chỉ xem bài mình được giao. |
-| Tiến độ | Giáo viên xem số việc/checklist đã xong do hệ thống tổng hợp và các bản cập nhật tiến độ dạng văn bản do nhóm gửi, như hai nguồn thông tin riêng. Công thức tổng hợp nhiều việc chưa chốt. |
-| Người nộp/sửa | Mặc định trưởng nhóm; giáo viên có thể cấp quyền này cho thành viên khác. Lớp trưởng không tự có quyền nộp từ quyền sửa nội dung chung. |
-| Phiên bản | Trước hoặc đúng hạn được nộp và sửa. Mỗi lần sửa lưu bản cũ, bản mới, người sửa và thời điểm. |
-| Sau hạn | Mặc định khóa **nộp lần đầu** và **sửa bản đã nộp**. Giáo viên có thể bật hai quyền này bằng hai cài đặt độc lập. |
-| Ưu tiên cài đặt | Mặc định ở cấp lớp áp dụng chung. Cài đặt tường minh trên từng bài giao được ưu tiên so với mặc định lớp. Chưa có quy tắc ghi đè theo từng nhóm. |
-| Hạn bài | Giáo viên chọn ngày kèm giờ hoặc chỉ ngày. Hạn chỉ có ngày kết thúc cuối ngày đó theo múi giờ lớp. |
+| Giao bài | Giáo viên giao cùng bài cho cả lớp hoặc chọn nhóm. Mỗi nhóm có tiến độ và bản nộp của riêng nhóm. |
+| Tiến độ | Giáo viên xem số việc/checklist đã hoàn thành được hệ thống tổng hợp và cập nhật tiến độ bằng văn bản do nhóm gửi; hai loại thông tin được phân biệt. Công thức gộp nhiều việc chưa chốt. |
+| Nộp và sửa | Mặc định trưởng nhóm bấm Nộp và sửa bản nộp; giáo viên có thể cấp quyền ấy cho thành viên khác. Sửa bản nộp ghi lịch sử phiên bản, người sửa và thời điểm. |
+| Hạn | Trước và đến hạn, bản nộp được sửa. Sau hạn, mặc định khóa cả nộp lần đầu lẫn sửa bản đã nộp. Giáo viên có hai cài đặt **riêng** để cho phép từng hành động sau hạn. |
+| Ưu tiên cài đặt | Cài đặt lớp là mặc định chung; cài đặt tường minh trên từng bài giao được ưu tiên hơn mặc định lớp. |
+| Kiểu hạn bài | Giáo viên có thể chọn ngày kèm giờ hoặc chỉ ngày; hạn chỉ ngày kết thúc vào cuối ngày ấy theo múi giờ lớp. |
 
-Phản hồi gắn phiên bản nào, đổi hạn sau khi đã nộp, quyền xóa bản nộp và công thức tiến độ còn chờ xác minh. Các đề xuất mâu thuẫn trong `requirements/decisions.md`, `requirements/srs.md` và `architecture/data-model.md` là tư liệu cũ cần rà lại; không lấy kết luận “đủ coding” của chúng làm quyết định.
+**Giới hạn:** chưa có ma trận quyền cho mọi thao tác, thuật toán lọc/sắp xếp, công thức tiến độ, quy tắc phản hồi/đổi hạn sau nộp, wireframe hay API được duyệt. Xem [vấn đề chưa chốt](../../review/unresolved.md).
