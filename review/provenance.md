@@ -20,6 +20,8 @@ Các câu trích ngắn là phát biểu của chủ sản phẩm trong chuỗi 
 | SRC-05 | “Sau hạn chưa nộp lần nào ... khóa nộp lần đầu”; “đặt riêng với cho sửa bản đã nộp sau hạn”; “mặc định ... trưởng nhóm”; “duyệt” | Hai quyền sau hạn riêng; người nộp/sửa mặc định và quyền bổ sung; ưu tiên cài đặt từng bài; lịch sử sửa. | `docs/requirements/verified-business-rules.md` |
 | SRC-06 | “chốt kiến trúc này cho dự án snote” sau khi xác định bảy nhóm `docs/`, và [PR #5](https://github.com/naverisme/snote/pull/5) | Bảy nhóm tài liệu và hướng dẫn tác nhân; chốt cấu trúc không duyệt các bản thiết kế cũ. | `docs/DOCUMENTATION_POLICY.md`, `AGENTS.md` |
 
+| SRC-07 | Hai lượt sau câu hỏi về phần còn thiếu: chủ sản phẩm nói “oke” với các đề xuất 1–7, sau đó thay cách nhận vai trò thành tự chọn lúc đăng ký; lượt “pke” xác nhận đề xuất một tài khoản vừa học vừa dạy và lớp mặc định không công khai | Workspace cá nhân mặc định; giới hạn nhóm mặc định; bộ lọc ngày và mức quan trọng; tiến độ tách nguồn; tự chọn cách dùng, quyền tạo lớp và phạm vi lớp. Phạm vi phát hành đầu còn cần làm rõ do yêu cầu lối vào Lớp học sau đăng ký. | `docs/product/concepts.md`, `docs/requirements/verified-business-rules.md`, `docs/ux/validated-navigation.md` |
+
 `PR #6` trước đây đưa ba tài liệu mới vào nhánh; lần rà này đã giới hạn lại các mệnh đề theo chính các lượt xác nhận nêu trên. Tên và mã ngữ cảnh không chứng minh mọi chi tiết được diễn giải trong PR cũ đã được duyệt.
 
 ## Các nguồn cũ đã kiểm kê và xử lý
