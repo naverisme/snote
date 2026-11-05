@@ -4,7 +4,7 @@
 - **Phạm vi:** Giao diện SNOTE v2.
 - **Người chịu trách nhiệm:** Chủ sản phẩm.
 - **Ngày cập nhật:** 2026-11-05.
-- **Nguồn quyết định:** Các xác nhận trực tiếp của chủ sản phẩm trong phiên rà soát ngày 2026-11-05; pull request đưa tệp này vào `s_note_v2` ghi phạm vi thay đổi.
+- **Nguồn quyết định:** Các xác nhận trực tiếp của chủ sản phẩm trong phiên rà soát ngày 2026-11-05; [PR #6](https://github.com/naverisme/snote/pull/6) đưa tệp này vào `s_note_v2` ghi phạm vi thay đổi.
 
 Định nghĩa lớp, nhóm và workspace ở [khái niệm sản phẩm](../product/concepts.md); phạm vi dữ liệu và quyền ở [quy tắc nghiệp vụ](../requirements/verified-business-rules.md). Tài liệu này chưa thay thế wireframe hoặc hợp đồng tương tác chi tiết.
 
