@@ -4,7 +4,7 @@
 | --- | --- |
 | Phạm vi | Phân cấp tính năng và cách xem trong workspace, phạm vi cá nhân và lớp |
 | Trạng thái | Đã đối chiếu ở mức được nói rõ; **chưa duyệt wireframe hay hợp đồng lệnh** |
-| Nguồn | [Hồ sơ nguồn](../../review/provenance.md), SRC-03 đến SRC-08; [PR #6](https://github.com/naverisme/snote/pull/6) |
+| Nguồn | [Hồ sơ nguồn](../../review/provenance.md), SRC-03 đến SRC-10; [PR #6](https://github.com/naverisme/snote/pull/6) |
 
 ## Cấp tính năng
 
@@ -16,6 +16,8 @@ Trong một workspace, **Công việc | Lịch | Thư viện** là các mục ng
 
 ## Chế độ xem công việc
 
-**Gantt** là chế độ mặc định. **Danh sách** là chế độ cùng cấp để xem tổng quan và quản lý nhiều việc, gồm lưu trữ hoặc xóa hàng loạt theo quyền. Các chế độ cùng quan sát các việc trong phạm vi đang chọn. Người dùng có thể lọc theo Hôm nay, Ngày mai, Quan trọng và thay đổi cách sắp xếp mặc định. Hôm nay và Ngày mai gồm việc có hạn hoặc lịch làm riêng trong ngày tương ứng và không lặp một việc trong cùng bộ lọc. Mức quan trọng gồm Cao, Vừa, Thấp. Cách sắp xếp chi tiết, biểu diễn thanh Gantt, khả năng chỉnh sửa trên trục và các hành động chi tiết chưa được duyệt.
+**Gantt** là chế độ mặc định ở cả “Việc của tôi” và Công việc workspace. **Danh sách** là chế độ cùng cấp để xem tổng quan và quản lý nhiều việc, gồm lưu trữ hoặc xóa hàng loạt theo quyền. Bản đầu mở chi tiết việc để sửa, chưa sửa bằng kéo thả thanh trên Gantt. Lịch làm riêng chỉ người sở hữu thấy, kể cả khi xem việc trong workspace. Các chế độ cùng quan sát các việc trong phạm vi đang chọn. Người dùng có thể lọc theo Hôm nay, Ngày mai, Quan trọng và thay đổi cách sắp xếp mặc định. Hôm nay và Ngày mai gồm việc có hạn hoặc lịch làm riêng trong ngày tương ứng và không lặp một việc trong cùng bộ lọc. Mức quan trọng gồm Cao, Vừa, Thấp. Thứ tự mặc định của “Việc tiếp theo” là quá hạn chưa xong → đến hạn hôm nay → có buổi làm hôm nay; trong từng nhóm xét hạn gần rồi mức quan trọng. Biểu diễn thanh Gantt và các hành động chi tiết chưa được duyệt.
+
+Bản đầu dùng web trên máy tính và điện thoại. Lưu nhanh qua giao diện web; tích hợp nhận chia sẻ trực tiếp từ ứng dụng khác cần đặc tả sau.
 
 **Giới hạn:** vị trí và số lượng các nút khác, loại thành phần, lệnh/API từng nút, cách chọn ngày/tuần/tháng, trạng thái tải/trống/lỗi và wireframe chi tiết cần được xác nhận riêng. Không áp dụng các bản vẽ giao diện trong lịch sử Git. Xem [hồ sơ rà soát](../../review/unresolved.md).
