@@ -1,6 +1,16 @@
 # SNOTE v2 — Chỉ mục tài liệu
 
-**Quy ước đã chốt:** xem [phân loại bảy nhóm và quy tắc duyệt](DOCUMENTATION_POLICY.md). Các thư mục đích chỉ được tạo khi có tài liệu tương ứng. Nội dung dưới đây là **danh mục tài liệu cũ cần thẩm định lại**, không xác nhận yêu cầu, sơ đồ, hợp đồng, kế hoạch hay trạng thái sẵn sàng coding. Xem trạng thái và bằng chứng duyệt của từng tài liệu trước khi sử dụng.
+**Quy ước đã chốt:** xem [phân loại bảy nhóm và quy tắc duyệt](DOCUMENTATION_POLICY.md). Các tài liệu mới bên dưới ghi đúng **phạm vi đã được chủ sản phẩm xác nhận**. Các tệp trong danh mục cũ tiếp tục là đầu vào cần thẩm định; không suy ra yêu cầu, sơ đồ, hợp đồng, kế hoạch hay trạng thái sẵn sàng coding đã được duyệt.
+
+## Nội dung đã xác nhận trong đợt rà soát
+
+| Nhóm | Tài liệu | Phạm vi |
+| --- | --- | --- |
+| Sản phẩm | [Khái niệm và phạm vi](product/concepts.md) | Người dùng, lớp, workspace/nhóm, Thư viện, Việc của tôi và Lịch của tôi. |
+| Yêu cầu | [Quy tắc nghiệp vụ đã xác nhận](requirements/verified-business-rules.md) | Quyền, tham gia, công việc, lịch, bài giao, tiến độ và nộp bài. |
+| Trải nghiệm | [Điều hướng và chế độ xem](ux/validated-navigation.md) | Ba tính năng của workspace, Gantt mặc định và các phạm vi xem; chưa phải wireframe hoàn chỉnh. |
+
+Các thuật ngữ và quy tắc mới được ưu tiên trong đúng phạm vi đã xác nhận; nếu một tệp cũ mâu thuẫn hoặc nêu chi tiết chưa được duyệt, cần rà lại theo [quy ước tài liệu](DOCUMENTATION_POLICY.md) trước khi dùng.
 
 ## Danh mục hiện có (chưa duyệt lại)
 
