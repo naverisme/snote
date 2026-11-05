@@ -4,7 +4,7 @@
 - **Phạm vi:** SNOTE v2.
 - **Người chịu trách nhiệm:** Chủ sản phẩm.
 - **Ngày cập nhật:** 2026-11-05.
-- **Nguồn quyết định:** Các xác nhận trực tiếp của chủ sản phẩm trong phiên rà soát ngày 2026-11-05; thay đổi và đối chiếu được ghi trong pull request đưa tài liệu này vào `s_note_v2`.
+- **Nguồn quyết định:** Các xác nhận trực tiếp của chủ sản phẩm trong phiên rà soát ngày 2026-11-05; thay đổi và đối chiếu được ghi trong [PR #6](https://github.com/naverisme/snote/pull/6) đưa tài liệu này vào `s_note_v2`.
 
 ## Bài toán và người dùng
 
@@ -36,6 +36,6 @@ Tư cách thành viên lớp và tư cách thành viên workspace nhóm là hai 
 
 **Việc của tôi** tổng hợp việc cá nhân và việc được giao mà người dùng còn quyền đọc từ mọi workspace. Công việc bên trong một workspace chỉ hiển thị việc của workspace đó.
 
-**Lịch của tôi** tổng hợp các buổi làm riêng, hạn việc và sự kiện liên quan đến người dùng từ mọi workspace. Lịch workspace hiển thị nội dung chung thuộc phạm vi workspace. Lịch lớp có sự kiện lớp và hạn bài giao; sự kiện lớp cũng xuất hiện trong Lịch của tôi và Lịch của các workspace nhóm liên quan theo quyền. Một sự kiện xuất hiện từ nhiều đường xem vẫn là một sự kiện gốc. Lịch còn chứa sự kiện không gắn công việc, như lịch học, lịch thi hoặc cuộc hẹn riêng.
+**Lịch của tôi** tổng hợp các buổi làm riêng, hạn việc và sự kiện liên quan đến người dùng từ mọi workspace. Lịch workspace hiển thị nội dung chung thuộc phạm vi workspace. Lịch lớp có sự kiện lớp và hạn bài giao; sự kiện lớp cũng xuất hiện trong Lịch của tôi và Lịch của các workspace nhóm liên quan theo quyền. Một sự kiện có thể được mở từ nhiều phạm vi xem mà không hiển thị trùng trong cùng một màn. Lịch còn chứa sự kiện không gắn công việc, như lịch học, lịch thi hoặc cuộc hẹn riêng.
 
 Các quy tắc hành động, phạm vi quyền và ngoại lệ được ghi tại [quy tắc nghiệp vụ đã xác nhận](../requirements/verified-business-rules.md). Hành vi điều hướng đã xác nhận nằm tại [cấu trúc giao diện](../ux/validated-navigation.md).
