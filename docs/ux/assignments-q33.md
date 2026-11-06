@@ -3,8 +3,8 @@
 | Trường | Giá trị |
 | --- | --- |
 | Phạm vi | Bài giao trong lớp, nhóm nhận bài, phiên bản nộp và cài đặt hạn |
-| Trạng thái | D1–D2 và E8 được chủ sản phẩm chốt; thành phần khác còn ở [phiếu rà soát](../../review/blocked/ux-q33-assignments.md) |
-| Nguồn | [SRC-19, SRC-21](../../review/provenance.md), [ASG-01–15](../requirements/assignments-and-submissions.md), [NAV-08](validated-navigation.md) |
+| Trạng thái | D1–D2, E8 và F9 được chủ sản phẩm chốt; thành phần khác còn ở [phiếu rà soát](../../review/blocked/ux-q33-assignments.md) |
+| Nguồn | [SRC-19, SRC-21/22](../../review/provenance.md), [ASG-01–15](../requirements/assignments-and-submissions.md), [NAV-08](validated-navigation.md) |
 
 | Mã | Cấp, vị trí | Số lượng, loại | Hành vi đã chốt |
 | --- | --- | --- | --- |
@@ -14,5 +14,6 @@
 | CUXD-04 | Biểu mẫu Nộp hoặc Sửa bản nộp của người có quyền trong nhóm | Nội dung có thể gồm văn bản, đường dẫn, tệp; tối thiểu 1 loại có giá trị | Không tạo phiên bản mới khi cả ba trống hoặc tệp chưa đủ; khi lỗi/xung đột giữ bản đã ghi và áp dụng [ASG-12/14](../requirements/assignments-and-submissions.md). |
 | CUXD-05 | Chi tiết bài giao sau khi chọn nhóm trong bảng giáo viên, hoặc phần nộp của nhóm mình | 1 vùng bản nộp hiện hành trước; 1 lối mở lịch sử phiên bản và nhận xét | Mặc định xem bản hiện hành; chọn nhóm rồi mới mở lịch sử phiên bản và nhận xét đúng nhóm ấy. Không phơi các nhóm khác ngoài quyền. |
 | CUXD-06 | Khi bản hiện hành thay đổi trong lúc gửi | 1 trạng thái xung đột với lối xem bản hiện hành | Người gửi phải xem bản hiện hành trước khi quyết định gửi lại; bản đã ghi vẫn nguyên, không tạo phiên bản từ dữ liệu cũ theo [ASG-12](../requirements/assignments-and-submissions.md). |
+| CUXD-07 | Khi chọn một phiên bản nộp trong lịch sử | 1 vùng chi tiết của đúng phiên bản đã chọn | Hiện người nộp, thời điểm, trạng thái đúng/muộn, nội dung lúc gửi và nhận xét của giáo viên gắn với phiên bản đó. [ASG-04/08/09](../requirements/assignments-and-submissions.md) |
 
 Quyền Nộp, khóa/mở sau hạn, lịch sử và nhận xét theo phiên bản tra ở [yêu cầu bài giao](../requirements/assignments-and-submissions.md). Dạng và vị trí cụ thể của bảng lịch sử, trạng thái chi tiết theo vai trò, cách thu hồi một bản, giới hạn tệp và mẫu bài đầy đủ còn ở [R-04/R-05/R-07/R-09](../../review/unresolved.md).

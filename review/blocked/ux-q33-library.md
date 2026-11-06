@@ -2,7 +2,7 @@
 
 | Trường | Giá trị |
 | --- | --- |
-| Trạng thái | B1–B3 và E7 đã chuyển vào [đặc tả được duyệt](../../docs/ux/library-q33.md) và [LIB-06/07](../../docs/requirements/library.md); các chi tiết khác còn đề xuất |
+| Trạng thái | B1–B3, E7 và F8 đã chuyển vào [đặc tả được duyệt](../../docs/ux/library-q33.md) và [LIB-06/07](../../docs/requirements/library.md); các chi tiết khác còn đề xuất |
 | Phạm vi | Thư viện của workspace cá nhân mặc định, workspace cộng tác và nhóm trong lớp |
 | Quy tắc nguồn | [LIB-01 đến LIB-05](../../docs/requirements/library.md), [ACC-06](../../docs/requirements/accounts-and-workspaces.md), [PER-01, PER-02, PER-07](../../docs/requirements/permissions.md), [Q32](../../docs/ux/workspace-gantt.md) |
 
@@ -33,6 +33,6 @@ Thư viện là **một mục ngang cấp** với Công việc và Lịch trình
 
 ## Điểm còn mở
 
-B1–B3 và E7 đã chốt bố cục, lưu nhanh/tìm, quyền thư mục và chỉ xóa thư mục rỗng. Chưa chốt mục “Tất cả”, điều khiển Lọc/Sắp xếp, vị trí Sao chép ở chi tiết mục, thư mục con và giới hạn tệp. LIB-04 chỉ chốt hành vi sao chép giữ bản nguồn, không quyết định vị trí nút.
+B1–B3, E7 và F8 đã chốt bố cục, lưu nhanh/tìm, quyền thư mục và chỉ xóa thư mục khi không có mục lẫn thư mục con. Chưa chốt mục “Tất cả”, điều khiển Lọc/Sắp xếp, vị trí Sao chép ở chi tiết mục và giới hạn tệp. LIB-04 chỉ chốt hành vi sao chép giữ bản nguồn, không quyết định vị trí nút.
 
 Loại tệp, hạn mức và định dạng ghi chú vẫn theo [R-07](../../review/unresolved.md); không suy ra từ bố trí màn.

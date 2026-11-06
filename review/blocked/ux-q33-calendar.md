@@ -2,7 +2,7 @@
 
 | Trường | Giá trị |
 | --- | --- |
-| Trạng thái | A1–A3 và E6 đã chuyển vào [đặc tả được duyệt](../../docs/ux/calendar-q33.md); các chi tiết khác còn đề xuất |
+| Trạng thái | A1–A3, E6 và F10 đã chuyển vào [đặc tả được duyệt](../../docs/ux/calendar-q33.md); các chi tiết khác còn đề xuất |
 | Phạm vi | “Lịch của tôi” xuyên workspace, Lịch trình của một workspace, và đề xuất màn lịch trong lớp; sự kiện lớp có lối tạo theo quyền |
 | Quy tắc nguồn | [CAL-01 đến CAL-06](../../docs/requirements/calendar.md), [TASK-05 đến TASK-07](../../docs/requirements/tasks.md), [NAV-03–05](../../docs/ux/validated-navigation.md), [Q32](../../docs/ux/workspace-gantt.md) |
 
@@ -17,7 +17,7 @@ Trong workspace, giữ nguyên bộ chọn và ba mục tính năng đã duyệt
 | CUX-05 | Trong vùng điều khiển Lịch; vị trí chính xác còn đề xuất | 1 điều khiển Lọc ba nhóm sự kiện, buổi làm, mốc hạn việc/bài giao | Lọc các mục người xem được phép thấy; không sửa dữ liệu. Việc tách sự kiện riêng/chung thành hai công tắc vẫn đề xuất. | A2, CAL-01–05 |
 | CUX-06 | Vùng nội dung chính | 1 lưới thời gian; số ô và số mục theo khoảng đã chọn | Ba lịch hiển thị theo múi giờ người xem [CAL-07](../../docs/requirements/calendar.md); Lịch workspace chỉ lấy dữ liệu workspace, sự kiện lớp theo phạm vi nhận. Buổi làm riêng của người khác không hiện. Kiểu lưới cụ thể vẫn đề xuất. | CAL-01/03/05/07, Q33-A3 |
 | CUX-07 | Trên một ô sự kiện hoặc mục đến hạn | 1 lối mở chi tiết trên mỗi mục | Mở chi tiết tương ứng, không mở ghi chú ngoài phạm vi lịch. | Đề xuất UX |
-| CUX-08 | Cạnh lưới trên máy tính; màn riêng trên điện thoại | 1 vùng chi tiết khi chọn | Xem nội dung, thời gian, phạm vi nhận và người chỉnh theo quyền; mở sửa nếu có quyền. | CAL-04/06, PER-02; trường chi tiết còn chờ duyệt |
+| CUX-08 | Cạnh lưới trên máy tính; màn riêng trên điện thoại | 1 vùng chi tiết khi chọn | Theo F10: tiêu đề, khoảng thời gian, phạm vi nhận, nội dung; nút Sửa theo quyền. Người chỉnh nếu thêm vào là đề xuất. | CAL-04/06, PER-02, F10 |
 | CUX-09 | Khi tạo/sửa sự kiện | 1 biểu mẫu theo phạm vi | Nhập thông tin sự kiện; nếu là sự kiện lớp, giáo viên chọn cả lớp hoặc nhóm nhận. Khi trùng giờ, cảnh báo và vẫn cho lưu. Sửa sự kiện đã gửi cập nhật cho người nhận đúng phạm vi. | CAL-03, CAL-06 |
 
 ## Trạng thái và màn nhỏ
@@ -32,6 +32,6 @@ Trong workspace, giữ nguyên bộ chọn và ba mục tính năng đã duyệt
 
 ## Điểm còn mở
 
-A1–A3 và E6 đã chốt ba cách xem, nhóm lọc, đích tạo, múi giờ, Trước/Hôm nay/Sau và vị trí chi tiết theo thiết bị tại [đặc tả Lịch](../../docs/ux/calendar-q33.md). Kiểu lưới từng chế độ, trường chi tiết và trường biểu mẫu còn mở.
+A1–A3, E6 và F10 đã chốt ba cách xem, nhóm lọc, đích tạo, múi giờ, Trước/Hôm nay/Sau, vị trí chi tiết theo thiết bị và bốn trường chi tiết cùng nút Sửa theo quyền tại [đặc tả Lịch](../../docs/ux/calendar-q33.md). Kiểu lưới từng chế độ và trường bắt buộc khi tạo còn mở.
 
 Chưa đưa nút sự kiện lặp vì [CAL-06](../../docs/requirements/calendar.md) để đặc tả tính năng lặp ở lượt sau. Không tự giả định khả năng sửa sự kiện của người không có quyền.

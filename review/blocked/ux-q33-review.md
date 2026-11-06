@@ -2,7 +2,7 @@
 
 | Trường | Giá trị |
 | --- | --- |
-| Trạng thái | Chủ sản phẩm đã chốt C1–C5, A1–A3, B1–B3, D1–D2 và E1–E8 (E1–E2 có sửa) tại SRC-19–21; các chi tiết khác **chưa được duyệt** |
+| Trạng thái | Chủ sản phẩm đã chốt C1–C5, A1–A3, B1–B3, D1–D2, E1–E8 (E1–E2 có sửa) và F1–F10 tại SRC-19–22; các chi tiết khác **chưa được duyệt** |
 | Nền đã chốt | [Q32 khung workspace/Gantt](../../docs/ux/workspace-gantt.md), [quy tắc nghiệp vụ](../../docs/requirements/README.md) |
 | Mục tiêu | Phân biệt mệnh đề đã chuyển vào `docs/` với các thành phần còn đề xuất |
 
@@ -10,10 +10,10 @@
 
 | Màn | Phần đã duyệt | Phần còn rà soát |
 | --- | --- | --- |
-| Lịch trình | [A1–A3, E6](../../docs/ux/calendar-q33.md): ba chế độ, lọc, đích sự kiện, múi giờ, điều hướng thời gian | [CUX còn mở](ux-q33-calendar.md) |
-| Thư viện | [B1–B3, E7](../../docs/ux/library-q33.md): bố cục, lưu/tìm, quyền thư mục và điều kiện xóa | [LUX còn mở](ux-q33-library.md) |
-| Lớp học | [C1–C5, E1–E5](../../docs/ux/class-navigation.md): bảng Thành viên, vai trò, hàng nhóm, ba vùng thành viên, Cài đặt | [CLUX còn mở](ux-q33-class.md) |
-| Bài giao/nộp | [D1–D2, E8](../../docs/ux/assignments-q33.md): tạo bài, hai quyền sau hạn, bảng nhóm và bản nộp | [AUX còn mở](ux-q33-assignments.md) |
+| Lịch trình | [A1–A3, E6, F10](../../docs/ux/calendar-q33.md): ba chế độ, lọc, đích sự kiện, múi giờ, điều hướng và chi tiết sự kiện | [CUX còn mở](ux-q33-calendar.md) |
+| Thư viện | [B1–B3, E7, F8](../../docs/ux/library-q33.md): bố cục, lưu/tìm, quyền thư mục và điều kiện xóa | [LUX còn mở](ux-q33-library.md) |
+| Lớp học | [C1–C5, E1–E5, F1–F7](../../docs/ux/class-navigation.md): bảng Thành viên, vai trò, yêu cầu, hàng nhóm, Cài đặt và lưu trữ | [CLUX còn mở](ux-q33-class.md) |
+| Bài giao/nộp | [D1–D2, E8, F9](../../docs/ux/assignments-q33.md): tạo bài, hai quyền sau hạn, bảng nhóm và phiên bản bản nộp | [AUX còn mở](ux-q33-assignments.md) |
 
 ## Bố cục ở mức vùng — còn là bản nháp ngoài các mục đã chốt
 
@@ -28,7 +28,7 @@ Bảng này giữ phương án đầy đủ để rà soát; không chuyển to�
 
 ## Những lựa chọn có ảnh hưởng đến bố trí
 
-Mỗi dòng dưới đây ghi lại **đúng phần đã chốt** của lượt 13 câu hỏi. Các chi tiết không có trong dòng trả lời vẫn nằm trong các bản nháp và [sổ câu hỏi](../unresolved.md).
+Mỗi dòng dưới đây ghi lại **đúng phần đã chốt** của các lượt Q33. Các chi tiết không có trong dòng trả lời vẫn nằm trong các bản nháp và [sổ câu hỏi](../unresolved.md).
 
 | Mã | Chủ đề | Nội dung đã chốt và nơi tra cứu |
 | --- | --- | --- |
@@ -41,5 +41,9 @@ Mỗi dòng dưới đây ghi lại **đúng phần đã chốt** của lượt 
 | Q33-A1–A3 | Lịch | Tháng/Tuần/Ngày, mặc định Tuần/Ngày theo thiết bị; lọc sự kiện, buổi làm, mốc hạn; chọn đích khi tạo; hiển thị theo múi giờ người xem, hạn bài tính theo lớp. [Chi tiết](../../docs/ux/calendar-q33.md) |
 | Q33-B1–B3 | Thư viện | Ba vùng trên máy tính, luồng màn riêng trên điện thoại; Lưu nhanh ba loại, Hộp thu cá nhân, tìm tiêu đề/URL/văn bản nhập; quyền quản lý/chuyển thư mục. [Chi tiết](../../docs/ux/library-q33.md) · [quy tắc thư mục](../../docs/requirements/library.md) |
 | Q33-D1–D2 | Bài giao | Tạo bài cần tiêu đề và nhóm nhận; mô tả/hạn tùy chọn; hai quyền sau hạn ba trạng thái; bảng ba nguồn tiến độ theo nhóm; nộp cần ít nhất một loại nội dung. [Chi tiết](../../docs/ux/assignments-q33.md) · [quy tắc bài giao](../../docs/requirements/assignments-and-submissions.md) |
+| Q33-F1–F7 | Lớp và quyền | Bảng quyền theo vai trò nằm trong phần Quyền lớp trưởng; vai trò cấp lớp Member/Lớp trưởng; chỉ chủ lớp đổi vai trò có lưu dấu; bảng ba cột chính; tách loại yêu cầu và thao tác theo quyền; điện thoại cuộn bảng giữ cột Người học; lớp lưu trữ chỉ đọc, chủ lớp khôi phục trong Cài đặt. [UX](../../docs/ux/class-navigation.md) · [quyền](../../docs/requirements/permissions.md) |
+| Q33-F8 | Thư viện | Chỉ xóa thư mục khi không còn mục và thư mục con; xử lý riêng các mục và thư mục con trước. [LIB-07](../../docs/requirements/library.md) |
+| Q33-F9 | Bản nộp | Chi tiết phiên bản đã chọn hiển thị người nộp, thời điểm, đúng/muộn, bản chụp nội dung đã nộp và phản hồi tương ứng. [UX](../../docs/ux/assignments-q33.md) |
+| Q33-F10 | Lịch | Chi tiết sự kiện gồm tiêu đề, thời gian, phạm vi nhận, nội dung và nút Sửa theo quyền; trường bắt buộc khi tạo vẫn mở. [UX](../../docs/ux/calendar-q33.md) |
 
-**Chưa chốt:** các cột ngoài danh tính/vai trò, bảng điện thoại, vị trí nút Sao chép trong Thư viện, cách lọc loại/sắp xếp, thứ tự và biểu tượng các mục lớp, trường chi tiết Cài đặt/Lịch, dạng bảng phiên bản và các trạng thái biên. Không tự nâng những hàng còn lại trong bản nháp thành yêu cầu coding.
+**Chưa chốt:** cột bổ sung/lọc bảng Thành viên, vị trí Sao chép và cách lọc/sắp xếp Thư viện, thứ tự/biểu tượng mục lớp, trường biểu mẫu Cài đặt và khi tạo sự kiện, kiểu lưới Lịch, dạng bảng phiên bản và các trạng thái biên. Không tự nâng những hàng còn lại trong bản nháp thành yêu cầu coding.
