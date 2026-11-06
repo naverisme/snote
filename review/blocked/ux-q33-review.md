@@ -2,7 +2,7 @@
 
 | Trường | Giá trị |
 | --- | --- |
-| Trạng thái | Chủ sản phẩm đã chốt C1–C5, A1–A3, B1–B3, D1–D2, E1–E8 (E1–E2 có sửa) và F1–F10 tại SRC-19–22; các chi tiết khác **chưa được duyệt** |
+| Trạng thái | Chủ sản phẩm đã chốt C1–C5, A1–A3, B1–B3, D1–D2, E1–E8 (E1–E2 có sửa) và F1–F10 tại SRC-19–22; G1–G12 **tạm duyệt** ở [phiếu G](ux-q33-g-provisional.md), chưa khóa thành đặc tả triển khai |
 | Nền đã chốt | [Q32 khung workspace/Gantt](../../docs/ux/workspace-gantt.md), [quy tắc nghiệp vụ](../../docs/requirements/README.md) |
 | Mục tiêu | Phân biệt mệnh đề đã chuyển vào `docs/` với các thành phần còn đề xuất |
 
@@ -46,4 +46,4 @@ Mỗi dòng dưới đây ghi lại **đúng phần đã chốt** của các lư
 | Q33-F9 | Bản nộp | Chi tiết phiên bản đã chọn hiển thị người nộp, thời điểm, đúng/muộn, bản chụp nội dung đã nộp và phản hồi tương ứng. [UX](../../docs/ux/assignments-q33.md) |
 | Q33-F10 | Lịch | Chi tiết sự kiện gồm tiêu đề, thời gian, phạm vi nhận, nội dung và nút Sửa theo quyền; trường bắt buộc khi tạo vẫn mở. [UX](../../docs/ux/calendar-q33.md) |
 
-**Chưa chốt:** cột bổ sung/lọc bảng Thành viên, vị trí Sao chép và cách lọc/sắp xếp Thư viện, thứ tự/biểu tượng mục lớp, trường biểu mẫu Cài đặt và khi tạo sự kiện, kiểu lưới Lịch, dạng bảng phiên bản và các trạng thái biên. Không tự nâng những hàng còn lại trong bản nháp thành yêu cầu coding.
+**Còn để rà soát:** G1–G12 đã [tạm duyệt](ux-q33-g-provisional.md) cho danh sách lớp, thứ tự mục lớp, tìm/lọc Thành viên, khung bảng quyền, lưới/tạo sự kiện, lọc và Sao chép Thư viện, lịch sử/trạng thái bản nộp, trạng thái màn và chuyển động. Các thông số, quyền từng ô và ngoại lệ nêu trong phiếu G vẫn mở. Không tự nâng phương án tạm duyệt thành yêu cầu coding.
