@@ -1,23 +1,28 @@
-# SNOTE v2 — Điều hướng đã xác nhận
+# Điều hướng và phạm vi màn đã xác nhận
 
 | Trường | Giá trị |
 | --- | --- |
-| Phạm vi | Phân cấp tính năng và cách xem trong workspace, phạm vi cá nhân và lớp |
-| Trạng thái | Đã đối chiếu ở mức được nói rõ; **chưa duyệt wireframe hay hợp đồng lệnh** |
-| Nguồn | [Hồ sơ nguồn](../../review/provenance.md), SRC-03 đến SRC-10; [PR #6](https://github.com/naverisme/snote/pull/6) |
+| Mục đích | Chỉ rõ thứ bậc các mục và nội dung xuất hiện khi đổi phạm vi |
+| Phạm vi | Lối vào cá nhân, Lớp học và điều hướng trong workspace |
+| Kiểm định | DCA-checked cho phân cấp, điều kiện xuất hiện và hành vi đã duyệt |
+| Bằng chứng duyệt | [SRC-03, SRC-04, SRC-07, SRC-08, Q19 và Q20](../../review/provenance.md) |
 
-## Cấp tính năng
+## Lối vào theo tài khoản
 
-Khi đăng ký, người dùng tự chọn một hoặc nhiều cách dùng: Quản lý cá nhân, Người học, Giáo viên; có thể thay đổi sau. Mọi tài khoản có workspace cá nhân mặc định. Chọn Giáo viên làm xuất hiện lối vào Lớp học và thao tác tạo lớp, nhưng không yêu cầu tạo lớp ngay khi đăng ký; Giáo viên vẫn dùng workspace cá nhân. Chọn Người học làm xuất hiện phạm vi các lớp đang học. Quyền thao tác bên trong lớp và workspace còn phụ thuộc vai trò trong chính phạm vi đó. Vị trí chính xác của các lối vào này chưa được duyệt.
+| Mã | Điều kiện và phạm vi | Hành vi đã chốt | Nguồn |
+| --- | --- | --- | --- |
+| NAV-01 | Chọn Giáo viên | Có lối vào Lớp học và thao tác tạo lớp khi cần. Workspace cá nhân có sẵn sau đăng ký. | SRC-07, SRC-08 |
+| NAV-02 | Chọn Người học | Có phạm vi các lớp đang học. Hành động trong lớp và workspace theo quyền tại phạm vi đó. | SRC-07, SRC-08 |
+| NAV-03 | Phạm vi cá nhân | “Việc của tôi” và “Lịch của tôi” tổng hợp xuyên workspace theo quyền truy cập. | SRC-03, SRC-04 |
 
-Trong một workspace, **Công việc | Lịch | Thư viện** là các mục ngang cấp, đứng gần nhau. **Thư viện ở cạnh Lịch** để người dùng mở bất cứ khi nào cần. Khi xem Công việc hoặc Lịch, vùng nội dung chính chỉ trình bày tính năng được chọn, không đồng thời hiện ghi chú gây xao nhãng. Thư viện chứa Hộp thu (ở workspace cá nhân mặc định), thư mục và các mục văn bản/ghi chú, đường dẫn, tệp.
+## Các thành phần đã chốt trong workspace
 
-“Việc của tôi” và “Lịch của tôi” là phạm vi tổng hợp xuyên workspace; Công việc và Lịch bên trong một workspace chỉ theo workspace đó. Sự kiện lớp còn hiện trong Lịch của tôi và Lịch của những workspace nhóm liên quan.
+| Mã | Thành phần | Số trong nhóm | Loại và cấp | Khi người dùng thao tác |
+| --- | --- | --- | --- | --- |
+| NAV-04 | Công việc, Lịch, Thư viện | 3 mục | Điều hướng ngang cấp trong cùng workspace. Thư viện đặt cạnh Lịch. | Chọn một mục để chuyển nội dung sang đúng tính năng trong workspace đang mở. |
+| NAV-05 | Vùng nội dung chính | 1 vùng theo mục được chọn | Vùng hiển thị của workspace | Hiện nội dung của Công việc, Lịch hoặc Thư viện theo mục đang chọn. |
+| NAV-06 | Hộp thu | 1 phần trong phạm vi đã chốt | Thành phần của Thư viện trong workspace cá nhân mặc định | Hiện các mục lưu nhanh chưa phân loại của chủ tài khoản khi truy cập Hộp thu. |
 
-## Chế độ xem công việc
+NAV-04 đến NAV-06 dùng SRC-03 và các quyết định về Hộp thu trong SRC-07, SRC-08. Số lượng trên chỉ áp dụng cho các nhóm đã xác nhận. Kiểu điều khiển cụ thể, vị trí các lối vào cấp ứng dụng và trạng thái màn nằm trong [R-05](../../review/unresolved.md). [Hồ sơ nguồn](../../review/provenance.md)
 
-**Gantt** là chế độ mặc định ở cả “Việc của tôi” và Công việc workspace. **Danh sách** là chế độ cùng cấp để xem tổng quan và quản lý nhiều việc, gồm lưu trữ hoặc xóa hàng loạt theo quyền. Bản đầu mở chi tiết việc để sửa, chưa sửa bằng kéo thả thanh trên Gantt. Lịch làm riêng chỉ người sở hữu thấy, kể cả khi xem việc trong workspace. Các chế độ cùng quan sát các việc trong phạm vi đang chọn. Người dùng có thể lọc theo Hôm nay, Ngày mai, Quan trọng và thay đổi cách sắp xếp mặc định. Hôm nay và Ngày mai gồm việc có hạn hoặc lịch làm riêng trong ngày tương ứng và không lặp một việc trong cùng bộ lọc. Mức quan trọng gồm Cao, Vừa, Thấp. Thứ tự mặc định của “Việc tiếp theo” là quá hạn chưa xong → đến hạn hôm nay → có buổi làm hôm nay; trong từng nhóm xét hạn gần rồi mức quan trọng. Biểu diễn thanh Gantt và các hành động chi tiết chưa được duyệt.
-
-Bản đầu dùng web trên máy tính và điện thoại. Lưu nhanh qua giao diện web; tích hợp nhận chia sẻ trực tiếp từ ứng dụng khác cần đặc tả sau.
-
-**Giới hạn:** vị trí và số lượng các nút khác, loại thành phần, lệnh/API từng nút, cách chọn ngày/tuần/tháng, trạng thái tải/trống/lỗi và wireframe chi tiết cần được xác nhận riêng. Không áp dụng các bản vẽ giao diện trong lịch sử Git. Xem [hồ sơ rà soát](../../review/unresolved.md).
+Phạm vi dữ liệu của mỗi màn tra ở [Công việc](../requirements/tasks.md), [Lịch](../requirements/calendar.md) và [Thư viện](../requirements/library.md). Bản đầu dùng web trên máy tính và điện thoại. [Q20](../../review/provenance.md)

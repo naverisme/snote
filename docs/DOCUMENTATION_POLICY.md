@@ -15,7 +15,7 @@
 | `ux/` | Điều hướng, thứ bậc và hành vi thành phần, trạng thái màn hình, wireframe khi đã được duyệt trong đúng phạm vi. | Hình vẽ không thay thế quy tắc quyền. |
 | `architecture/` | Ranh giới hệ thống, module, dữ liệu, bảo mật, triển khai ở mức thiết kế và quyết định kiến trúc khi có bằng chứng duyệt. | Không suy diễn cấu trúc hệ thống chỉ từ yêu cầu nghiệp vụ. |
 | `contracts/` | Hợp đồng giao tiếp, schema, lỗi và ví dụ giữa các thành phần khi đã thống nhất. | Quyền nghiệp vụ bắt nguồn từ `requirements/`. |
-| `verification/` | Phương pháp, ca và tiêu chí kiểm chứng đã xác nhận. | Kết quả một lần chạy nằm trong hệ thống thực thi/báo cáo. |
+| `quality/` | Tiêu chí nghiệm thu, yêu cầu phi chức năng và phương pháp kiểm chứng đã xác nhận. | Kết quả một lần chạy nằm trong hệ thống thực thi/báo cáo. |
 | `operations/` | Thiết kế và quy trình môi trường, phát hành, sao lưu, phục hồi, giám sát khi được xác nhận. | Không thay thế tài liệu kiến trúc. |
 
 Mỗi tài liệu nêu rõ phần nào đã được chủ sản phẩm chấp thuận, bằng chứng quyết định và giới hạn chưa được chốt. Trạng thái tự ghi trong file hay việc merge PR không tự chứng minh sự chấp thuận nội dung. Khi nguồn xung đột hoặc chỉ là đề xuất, đặt vấn đề ở [hồ sơ rà soát](../review/unresolved.md); không đưa mệnh đề ấy vào tài liệu đang dùng.
