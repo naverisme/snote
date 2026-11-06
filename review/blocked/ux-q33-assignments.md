@@ -3,14 +3,14 @@
 | Trường | Giá trị |
 | --- | --- |
 | Trạng thái | Bản rà soát, chưa được chủ sản phẩm duyệt; không dùng làm yêu cầu coding |
-| Phạm vi | Đề xuất mục Bài giao ở vùng tính năng của lớp, màn bài giao của giáo viên và màn nhận bài của một nhóm |
+| Phạm vi | Mục Bài giao đã chốt ở vùng tính năng của lớp; bố trí màn bài giao của giáo viên và màn nhận bài của một nhóm còn là đề xuất |
 | Quy tắc nguồn | [ASG-01 đến ASG-12](../../docs/requirements/assignments-and-submissions.md), [PER-03/05](../../docs/requirements/permissions.md), [CAL-03](../../docs/requirements/calendar.md), [Q33-C](ux-q33-class.md) |
 
-Mỗi bài giao thuộc **lớp**, được gửi cho cả lớp hoặc những nhóm được chọn. Mỗi nhóm có tiến độ, bản nộp và phản hồi riêng. Giáo viên có màn so sánh nhóm; người học trong nhóm chỉ thấy phần của nhóm mình, trừ quyền liên nhóm do giáo viên cấp. Đề xuất đặt Bài giao trong **vùng tính năng của lớp thay cho ba mục tính năng workspace**, không thêm tab cạnh tiêu đề lớp. Màn này không tự hiển thị Công việc hoặc Thư viện của các nhóm khác.
+Mỗi bài giao thuộc **lớp**, được gửi cho cả lớp hoặc những nhóm được chọn. Mỗi nhóm có tiến độ, bản nộp và phản hồi riêng. Giáo viên có màn so sánh nhóm; người học trong nhóm chỉ thấy phần của nhóm mình, trừ quyền liên nhóm do giáo viên cấp. Bài giao thuộc **vùng tính năng của lớp thay cho ba mục tính năng workspace**, không thêm tab cạnh tiêu đề lớp. Màn này không tự hiển thị Công việc hoặc Thư viện của các nhóm khác.
 
 | Mã | Cấp, vị trí, thành phần cùng nhóm | Số lượng, loại đề xuất | Hành động hoặc thông tin hiển thị | Nguồn/ràng buộc |
 | --- | --- | --- | --- | --- |
-| AUX-01 | Vùng chính khi chọn mục Bài giao đề xuất ở thanh tính năng của lớp | 1 danh sách bài, một hàng mỗi bài; 1 nút Tạo bài khi có quyền | Chọn bài để mở; giáo viên tạo bài cho cả lớp hoặc nhóm chọn. Người học thấy bài gửi đến nhóm mình. | ASG-01, PER-05, NAV-08 |
+| AUX-01 | Vùng chính khi chọn mục Bài giao đã chốt ở thanh tính năng của lớp | Đề xuất 1 danh sách bài, một hàng mỗi bài; 1 nút Tạo bài khi có quyền | Chọn bài để mở; giáo viên tạo bài cho cả lớp hoặc nhóm chọn. Người học thấy bài gửi đến nhóm mình. | ASG-01, PER-05, NAV-08 |
 | AUX-02 | Đầu màn chi tiết bài giao | 1 tiêu đề, 1 nhãn trạng thái và hạn, 1 lối về danh sách | Cho biết bài nào, lớp nào, hạn đang áp dụng và quyền của người xem. | ASG-01/05/07 |
 | AUX-03 | Dưới đầu bài, nhóm nội dung bài | 1 vùng mô tả, 1 nhóm đính kèm nếu có | Hiện yêu cầu của giáo viên. Trường mô tả/đính kèm cụ thể cần xác nhận; không giả định mẫu bài. | R-09 |
 | AUX-04 | Màn giáo viên, vùng nhận bài | 1 bộ chọn phạm vi Cả lớp/Nhóm chọn khi tạo; 1 danh sách nhóm nhận | Gửi bài cho đúng nhóm, theo dõi từng nhóm. | ASG-01 |
