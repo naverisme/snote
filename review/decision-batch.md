@@ -27,7 +27,7 @@ Các câu hỏi tiếp nối Q01–Q20 đã được ghi ở PR #10. Mỗi hàng
 
 | Mã | Cần quyết định | Phương án để duyệt | Liên quan |
 | --- | --- | --- | --- |
-| Q32 | Duyệt bố trí workspace và Gantt theo thành phần nào? | **Chưa chốt**. Bản vẽ của chủ sản phẩm được đối chiếu với bản Gantt cũ; phản biện theo từng thành phần tại [đề xuất theo bản vẽ](blocked/ux-workspace-gantt.md). | R-05 |
+| Q32 | Duyệt bố trí workspace và Gantt theo thành phần nào? | **Chưa chốt tổng thể**. Chủ sản phẩm đã sửa nghĩa UXR-03–06: cụm workspace xếp lớp/bung ngang/đổi danh sách, Tạo workspace ở đầu trái, Mục lưu ý xem trước, 1 nút Chế độ xem Gantt/Danh sách. Các thành phần và chi tiết còn mở ở [bản đánh giá](blocked/ux-workspace-gantt.md). | R-05 |
 | Q33 | Phạm vi tiếp theo của đặc tả màn nào cần có trước khi bàn giao thiết kế? | Áp dụng cùng mẫu số lượng, kiểu, vị trí, cấp và thao tác cho Lịch, Thư viện, Lớp học và bài nộp. Trình duyệt theo màn để giữ ranh giới giữa các tính năng. | R-05, R-08 |
 | Q34 | Có ràng buộc bắt buộc về công nghệ, tự lưu trữ hoặc quy mô không? | Chủ sản phẩm đưa bộ React/TypeScript/Vite/Tailwind, NestJS, PostgreSQL/Prisma, REST, GitHub, Docker Compose; đồng ý điều chỉnh xác thực theo đề xuất. Đối chiếu và phương án lưu trữ trong [hồ sơ kỹ thuật để duyệt](blocked/storage-proposal.md). Chưa có số liệu quy mô hoặc quyết định nơi lưu tệp. | R-06, R-15 |
 | Q35 | Hợp đồng bản đầu phục vụ ai? | **Đã duyệt hướng**: đặc tả giao tiếp cho web v2 trước; chỉ đặc tả thêm ứng dụng khác khi phạm vi ấy được chốt. Endpoint/trường/lỗi vẫn cần thiết kế. | R-06, R-07, R-15 |
