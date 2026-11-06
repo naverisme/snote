@@ -5,7 +5,7 @@
 | Mục đích | Tra quyền mặc định, quyền cần cấp riêng và phạm vi áp dụng |
 | Phạm vi | Các hành động trong lớp, workspace nhóm và workspace cộng tác độc lập đã được xác nhận |
 | Kiểm định | DCA-checked cho các ô có căn cứ bên dưới |
-| Bằng chứng duyệt | [SRC-02, SRC-05, SRC-08 đến SRC-10, SRC-15, SRC-20, SRC-22, Q01, Q02, Q05, Q08, Q12, Q22, E2, F1–F3](../../review/provenance.md) |
+| Bằng chứng duyệt | [SRC-02, SRC-05, SRC-08 đến SRC-10, SRC-15, SRC-20, SRC-22, SRC-24, Q01, Q02, Q05, Q08, Q12, Q22, E2, F1–F3, H1–H10](../../review/provenance.md) |
 
 | Mã | Chủ thể và phạm vi | Quyền mặc định hoặc điều kiện đã duyệt | Nguồn |
 | --- | --- | --- | --- |
@@ -20,6 +20,9 @@
 | PER-09 | Vai trò và quyền trong lớp | Người học mới gia nhập có vai trò cấp lớp **Member** theo CLS-13. Giáo viên chọn vai trò cấp lớp khác cho từng người ngay tại hàng của người đó trong bảng Thành viên. Quyền mặc định theo vai trò và các cài đặt quyền khác do giáo viên quản lý trong **Cài đặt lớp**, không sửa tại ô vai trò. Vai trò cấp lớp không tự đổi vai trò quản lý workspace nhóm. Giáo viên chủ lớp vẫn theo PER-01 và việc chuyển chủ theo CLS-10. | E2, SRC-20 |
 | PER-10 | Danh mục vai trò cấp lớp bản đầu | Người học có thể mang vai trò **Member** hoặc **Lớp trưởng** do giáo viên chọn trong bảng Thành viên. Giáo viên chủ lớp là chủ sở hữu, không phải lựa chọn trong ô vai trò. **Trưởng nhóm** thuộc workspace nhóm. Quyền ủy quyền theo chức năng không tạo vai trò cấp lớp mới. | F2, SRC-22 |
 | PER-11 | Thay vai trò cấp lớp | Chỉ giáo viên chủ lớp thay vai trò cấp lớp trong hàng thành viên. Quyền mới áp dụng cho thao tác tiếp theo; ghi người đổi và thời điểm. Ô vai trò không dùng để chuyển chủ lớp, việc ấy theo CLS-10. | F3, SRC-22 |
+| PER-12 | Cấp quyền cá nhân | Giáo viên chủ lớp cấp quyền theo chức năng, giới hạn ở lớp, nhóm hoặc bài giao cụ thể. Người được cấp không ủy quyền tiếp; thu hồi chỉ chặn thao tác mới và ghi lịch sử. Quyền Nộp bài được cấp riêng theo ASG-03. | H9, SRC-24 |
+| PER-13 | Nhiều tư cách và ranh giới | Hợp các quyền hợp lệ trong đúng phạm vi lớp/nhóm/bài. Tắt quyền Lớp trưởng không xóa quyền Trưởng nhóm của chính nhóm đó. Tư cách đã hết, dữ liệu riêng và lớp lưu trữ là giới hạn phải kiểm trước thao tác. Không có quyền khớp thì từ chối; kiểm quyền thực tế khi thực hiện, kể cả giao diện còn nút cũ. | H10, SRC-24 |
+| PER-14 | Quyền lớp trưởng theo hành động | Mặc định xem/sửa việc, lịch và ghi chú văn bản chung của mọi nhóm theo PER-02. Tạo và xóa nội dung, quản lý thành viên, truy cập tệp/đường dẫn chung của nhóm khác là các quyền riêng; không suy từ quyền sửa. | H3, SRC-24 |
 
 Quyền theo hành động còn có tại các tài liệu sở hữu quy tắc tương ứng.
 
@@ -29,5 +32,5 @@ Quyền theo hành động còn có tại các tài liệu sở hữu quy tắc 
 - [Tư cách Nộp và sửa bản nộp](assignments-and-submissions.md).
 - [Chia sẻ tài liệu và phạm vi Hộp thu](library.md).
 
-Ma trận đầy đủ theo trường, các quyền được cấp thêm và tổ hợp vai trò đồng thời còn ở [R-02](../../review/unresolved.md). Bảng trên chỉ kết luận những quyền có nguồn xác nhận.
+Các hành động và phạm vi đã chốt được tách ở [ma trận quyền H1–H10](permission-matrix.md). Ô quyền Cài đặt chưa nêu giá trị, ngoại lệ theo trường và thao tác thay trưởng nhóm vẫn còn ở [R-02](../../review/unresolved.md). Bảng trên chỉ kết luận những quyền có nguồn xác nhận.
 Điều kiện bàn giao khi người tạo workspace độc lập muốn rời hoặc chuyển quản lý còn ở [R-14](../../review/unresolved.md).
