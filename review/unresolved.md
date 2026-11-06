@@ -1,20 +1,25 @@
-# Điểm chưa chốt — SNOTE v2
+# Các điểm chưa chốt — SNOTE v2
 
-Các mục dưới đây là **câu hỏi cần quyết định**, không phải đặc tả hay danh sách việc đã giao. Nguồn đối chiếu và phạm vi kiểm kê ở [provenance](provenance.md). Không dùng nội dung lịch sử Git để tự điền câu trả lời.
+Mã R giữ dấu vết từ mốc PR #10 và bổ sung những điều kiện cần cho bộ tài liệu. Các phương án trả lời nằm trong [phiếu duyệt gộp](decision-batch.md). Xem [hồ sơ nguồn](provenance.md) để đối chiếu phần đã chốt.
 
-| Mã | Loại | Phần thiếu hoặc xung đột | Phần bị chặn |
-| --- | --- | --- | --- |
-| R-01 | Chưa xác nhận một phần | Hôm nay/Ngày mai tính theo hạn hoặc buổi làm riêng, không lặp; “Việc tiếp theo” có thứ tự nhóm mặc định. Còn thiếu cách phá hòa hoàn toàn và ứng xử khi một việc thuộc nhiều nhóm con. | Sắp xếp và ca nghiệm thu biên. |
-| R-02 | Chưa xác nhận một phần | Đã chốt lớp trưởng mặc định không xóa và không sửa bài giao cấp lớp, một trưởng nhóm chính, người quản lý thêm không tự được Nộp, thu hồi quyền có hiệu lực ngay. Còn thiếu ma trận từng hành động, thủ tục thay trưởng nhóm và cách xử lý quyền khi người nhận không còn hiệu lực. | Ma trận quyền và API thực thi. |
-| R-03 | Chưa xác nhận một phần | Đã chốt hiển thị riêng số việc xong/tổng, checklist từng việc và cập nhật văn bản, chưa có phần trăm chung. Còn thiếu quyền cập nhật văn bản và quyền đọc bài ở nhóm khác. | Bảng tiến độ lớp và hợp đồng dữ liệu. |
-| R-04 | Chưa xác nhận một phần | Phản hồi gắn phiên bản; đổi hạn sau nộp giữ trạng thái lúc nộp; bài có tiến độ/bản nộp chỉ lưu trữ/ngừng giao ở bản đầu. Còn thiếu cách xử lý xóa/thu hồi riêng bản nộp, nhiều người cùng có quyền Nộp và giới hạn tệp. | Luồng nộp đầy đủ và hợp đồng phiên bản. |
-| R-05 | Chưa xác nhận một phần | Gantt mặc định ở Việc của tôi và workspace, bản đầu mở chi tiết để sửa chứ chưa kéo thả; web dùng được trên máy tính và điện thoại. Còn thiếu thành phần/số lượng/vị trí/lệnh từng nút, cách vẽ Gantt, bố cục màn hình hẹp và trạng thái tải/trống/lỗi. | Wireframe và đặc tả UX chi tiết. |
-| R-06 | Chưa xác nhận | Ranh giới module, schema dữ liệu, lựa chọn công nghệ, API, mã lỗi, phân trang, đồng bộ và triển khai. | `architecture/` và `contracts/`. |
-| R-07 | Chưa xác nhận một phần | Đã chốt mục nhóm mặc định chung, sao chép rõ ràng từ cá nhân sang nhóm; lưu nhanh qua web bản đầu. Còn thiếu loại/giới hạn tệp, metadata bắt buộc, chia sẻ trực tiếp từ ứng dụng khác, lưu toàn văn web và quy tắc đổi workspace mặc định của Hộp thu. | Thư viện và hợp đồng lưu trữ. |
-| R-08 | Chưa xác nhận một phần | Bản đầu gồm cá nhân, cộng tác workspace, lớp cơ bản và web máy tính/điện thoại; còn thiếu ranh giới từng tính năng, ca nghiệm thu đầy đủ, mục tiêu phi chức năng, môi trường, lịch triển khai và sở hữu tệp khi coding song song. | `verification/`, `operations/` và phân công coding. |
-| R-09 | Đề xuất chưa xác nhận phạm vi | Mẫu bài giao, bảng so sánh tiến độ nhiều nhóm và nhắc hạn được nêu là tính năng giai đoạn sau; chưa chốt từng hành vi và mốc phát hành. Lưu trữ lớp đã được chốt ở mức hành vi, chi tiết còn thiếu. | Phạm vi sản phẩm và đặc tả giáo viên. |
-| R-10 | Chưa xác nhận | Sau khi người học rời lớp, lịch sử việc và bản nộp được giữ; phạm vi người đã rời còn được đọc nội dung cũ, cách chuyển chủ lớp khi chưa có người nhận, điều kiện khôi phục lớp lưu trữ chưa chốt. | Luồng rời lớp, chuyển chủ lớp và quyền đọc lịch sử. |
-| R-11 | Chưa xác nhận | Tần suất lặp, xử lý xung đột thời gian và quyền sửa sự kiện sau khi gửi; quyền cập nhật tiến độ dạng văn bản vẫn chưa chốt. | Lịch nhóm/lớp và tiến độ. |
-| R-12 | Chưa xác nhận | Ai duyệt yêu cầu đổi người phụ trách, thao tác chia việc/checklist giữa nhiều người, quyền sửa từng trường và chi tiết lịch sử mở lại việc chưa chốt. | Công việc và ma trận quyền. |
+| Mã | Chủ đề cần quyết định | Phần tài liệu phụ thuộc |
+| --- | --- | --- |
+| R-01 | Việc thuộc nhiều nhóm trong “Việc tiếp theo”, cách sắp khi thiếu hạn hoặc bằng nhau, quy tắc theo ngày lọc. | Công việc, truy vấn và nghiệm thu biên |
+| R-02 | Ma trận từng hành động và từng trường, phạm vi lớp trưởng với mục Thư viện ngoài ghi chú, quyền đồng thời, thu hồi khi tư cách hết hiệu lực, thay trưởng nhóm. | Quyền, UX theo vai trò và hợp đồng thực thi |
+| R-03 | Ai gửi cập nhật tiến độ bằng văn bản và ai được đọc bài, tiến độ, bản nộp giữa các nhóm. | Bảng tiến độ và quyền bài giao |
+| R-04 | Thu hồi riêng một bản nộp, xung đột khi nhiều người Nộp, giới hạn tệp và trường hợp nộp không trọn vẹn. | Luồng phiên bản, hợp đồng và kiểm chứng |
+| R-05 | Số, loại, vị trí và hành động của thành phần màn, cách vẽ Gantt, điện thoại, trạng thái tải, trống và lỗi. | Wireframe và đặc tả UX |
+| R-06 | Ranh giới module, cách lưu dữ liệu, công nghệ, giao tiếp, lỗi, phân trang, đồng bộ và thiết kế triển khai. | `architecture/` và `contracts/` |
+| R-07 | Trường thông tin bắt buộc, loại và giới hạn tệp, đổi workspace mặc định của Hộp thu, lưu toàn văn và nhận chia sẻ từ ứng dụng khác. | Thư viện, Hộp thu và hợp đồng lưu trữ |
+| R-08 | Ranh giới phát hành từng tính năng, nghiệm thu đầy đủ, mục tiêu chất lượng, môi trường, mốc và phạm vi sở hữu tệp. | `quality/`, `operations/` và cổng giao việc |
+| R-09 | Mẫu bài giao, so sánh nhiều nhóm, nhắc hạn và hành vi chi tiết khi lớp lưu trữ. | Phạm vi sản phẩm và UX giáo viên |
+| R-10 | Phạm vi còn đọc sau khi rời lớp, bàn giao khi chưa có người nhận, điều kiện khôi phục lớp lưu trữ. | Vòng đời lớp và quyền đọc lịch sử |
+| R-11 | Múi giờ cho ngày lọc và hiển thị lịch, lặp, xung đột thời gian và quyền sửa sau khi gửi. | Lịch, Công việc và ca biên |
+| R-12 | Việc chưa giao người, ai duyệt đổi người phụ trách, quyền checklist theo mục và lịch sử mở lại. | Công việc, quyền và phiên bản thay đổi |
+| R-13 | Lời mời đã vô hiệu khi người học rời nhóm, yêu cầu gia nhập đang chờ và giới hạn giảm dưới số nhóm hiện có. | Luồng nhóm và điều kiện dữ liệu |
+| R-14 | Chủ sở hữu và quyền mặc định ở workspace độc lập. Workspace cá nhân mặc định không cho chia sẻ đã chốt tại ACC-06. | Tài khoản và quyền |
+| R-15 | Ràng buộc chọn công nghệ, đối tượng dùng hợp đồng và quy mô dự kiến. | Thiết kế, hợp đồng và tiêu chí chất lượng |
+| R-16 | Bổ sung ca nghiệm thu và mục tiêu chất lượng cần đo; 12 ca nền Q36 đã duyệt. | `quality/` |
+| R-17 | Thử nghiệm riêng hay phát hành rộng, môi trường và mục tiêu sao lưu/phục hồi. | `operations/` |
 
-Nguồn xung đột cũ gồm [quyết định](https://github.com/naverisme/snote/blob/80c14b10b73d21b2e00ee9539953091d0f67351d/docs/requirements/decisions.md), [mô hình dữ liệu](https://github.com/naverisme/snote/blob/80c14b10b73d21b2e00ee9539953091d0f67351d/docs/architecture/data-model.md) và [giao diện](https://github.com/naverisme/snote/blob/80c14b10b73d21b2e00ee9539953091d0f67351d/docs/architecture/frontend-information-architecture.md). Phần nào đã có quyết định mới nằm trong `docs/`; các câu hỏi còn lại ở bảng trên.
+Nguồn lịch sử và khác biệt với tài liệu cũ được ghi tại [hồ sơ nguồn](provenance.md). Quyết định đã chốt được tra tại [chỉ mục docs](../docs/README.md).
