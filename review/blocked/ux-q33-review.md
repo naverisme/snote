@@ -1,21 +1,23 @@
-# Phiếu duyệt Q33 — Bốn màn còn lại
+# Phiếu đối chiếu Q33 — Bốn màn
 
 | Trường | Giá trị |
 | --- | --- |
-| Trạng thái | Chủ sản phẩm đã chốt phân cấp điều hướng và tên/số lượng năm mục lớp tại NAV-07/08; các hành vi chi tiết Q33 còn là đề xuất |
+| Trạng thái | Chủ sản phẩm đã chốt C1–C5, A1–A3, B1–B3, D1–D2 tại SRC-19; các chi tiết khác trong các bản nháp liên kết **chưa được duyệt** |
 | Nền đã chốt | [Q32 khung workspace/Gantt](../../docs/ux/workspace-gantt.md), [quy tắc nghiệp vụ](../../docs/requirements/README.md) |
-| Mục tiêu | Duyệt cấp màn, số lượng, kiểu, vị trí và hành động từng thành phần trước khi đưa vào `docs/ux/` |
+| Mục tiêu | Phân biệt mệnh đề đã chuyển vào `docs/` với các thành phần còn đề xuất |
 
 ## Xem từng màn
 
-| Màn | Phạm vi chính | Đề xuất chi tiết |
+| Màn | Phần đã duyệt | Phần còn rà soát |
 | --- | --- | --- |
-| Lịch trình | “Lịch của tôi” hoặc Lịch của workspace; sự kiện lớp theo đối tượng nhận | [Q33-A — CUX-01–09](ux-q33-calendar.md) |
-| Thư viện | Văn bản, link, tệp, thư mục và Hộp thu cá nhân | [Q33-B — LUX-01–09](ux-q33-library.md) |
-| Lớp học | Lớp trên workspace nhóm, vai trò, tư cách và cài đặt | [Q33-C — CLUX-01–10](ux-q33-class.md) |
-| Bài giao/nộp | Một bài cấp lớp, mỗi nhóm có tiến độ và bản nộp riêng | [Q33-D — AUX-01–12](ux-q33-assignments.md) |
+| Lịch trình | [A1–A3](../../docs/ux/calendar-q33.md): ba chế độ, lọc, đích sự kiện, múi giờ | [CUX còn mở](ux-q33-calendar.md) |
+| Thư viện | [B1–B3](../../docs/ux/library-q33.md): bố cục, lưu/tìm và quyền thư mục | [LUX còn mở](ux-q33-library.md) |
+| Lớp học | [C1–C5](../../docs/ux/class-navigation.md): chọn lớp, quyền hiện mục, mở nhóm, điện thoại | [CLUX còn mở](ux-q33-class.md) |
+| Bài giao/nộp | [D1–D2](../../docs/ux/assignments-q33.md): tạo bài, hai quyền sau hạn, bảng nhóm và bản nộp | [AUX còn mở](ux-q33-assignments.md) |
 
-## Bố cục ở mức vùng
+## Bố cục ở mức vùng — còn là bản nháp ngoài các mục đã chốt
+
+Bảng này giữ phương án đầy đủ để rà soát; không chuyển toàn bộ thành tài liệu chính thức từ việc duyệt 13 câu hỏi.
 
 | Màn | Điều hướng/phạm vi ở ngoài vùng chính | Đầu vùng chính | Vùng chính | Khi chọn một mục |
 | --- | --- | --- | --- | --- |
@@ -26,19 +28,13 @@
 
 ## Những lựa chọn có ảnh hưởng đến bố trí
 
-Mỗi dòng có câu trả lời đề xuất. Có thể duyệt theo mã hoặc sửa trực tiếp mã thành phần trong tài liệu. Chỉ phương án được bạn xác nhận mới được chuyển vào `docs/ux/`; quy tắc nghiệp vụ và giới hạn tệp còn mở vẫn ở `review/unresolved.md`.
+Mỗi dòng dưới đây ghi lại **đúng phần đã chốt** của lượt 13 câu hỏi. Các chi tiết không có trong dòng trả lời vẫn nằm trong các bản nháp và [sổ câu hỏi](../unresolved.md).
 
-| Mã | Cần chốt | Đề xuất trả lời |
+| Mã | Chủ đề | Nội dung đã chốt và nơi tra cứu |
 | --- | --- | --- |
-| Q33-A1 | Chế độ Lịch | Có Tháng, Tuần, Ngày. Mặc định Tuần trên máy tính và Ngày trên điện thoại. [CUX-03](ux-q33-calendar.md) |
-| Q33-A2 | Loại nội dung trong Lịch | Có lọc sự kiện riêng/chung, buổi làm riêng và dấu mốc hạn việc/bài; chỉ hiện mục người xem có quyền. [CUX-05/06](ux-q33-calendar.md) |
-| Q33-A3 | Tạo sự kiện và múi giờ | Từ Lịch của tôi chọn đích riêng hoặc workspace; từ workspace mặc định đích hiện tại. Lịch workspace/lớp hiển thị theo múi giờ người xem, hạn bài vẫn tính theo múi giờ lớp. [CUX-04/06/09](ux-q33-calendar.md) |
-| Q33-B1 | Bố cục Thư viện | Máy tính có cây thư mục bên trái, danh sách mục ở giữa, chi tiết bên phải. Điện thoại mở thư mục qua bảng chọn và chi tiết màn riêng. [LUX-03/06/07](ux-q33-library.md) |
-| Q33-B2 | Lưu nhanh và tìm | Nút Lưu nhanh chọn văn bản/link/tệp. Trong nhóm lưu thẳng mục chung, Hộp thu chỉ ở workspace cá nhân mặc định. Tìm tiêu đề/URL/văn bản người dùng nhập; không tìm nội dung tệp ở bản đầu. [LUX-02/04/05](ux-q33-library.md) |
-| Q33-B3 | Thư mục và sao chép | Chủ/người có quyền quản lý workspace tạo, đổi tên, xóa thư mục; người có quyền sửa mục chuyển mục vào thư mục. Sao chép cá nhân → nhóm từ chi tiết mục, chọn workspace đích còn quyền; giữ bản nguồn. [LUX-03/08](ux-q33-library.md) |
-| Q33-C1 | Cấp Lớp học | **Đã chốt:** lối Lớp học ngang cấp bộ chọn workspace; vùng tính năng đổi theo ngữ cảnh và gồm năm mục Nhóm, Bài giao, Lịch lớp, Thành viên, Cài đặt khi mở lớp. **Đề xuất tiếp:** một lối mở danh sách lớp; kiểu điều khiển, thứ tự và cách hiện Cài đặt theo quyền cần duyệt. [CLUX-01/05](ux-q33-class.md) |
-| Q33-C2 | Nhóm và lời mời | Mở nhóm vào workspace nhóm với Công việc là mục đầu; có lối về lớp. Mục Thành viên chia lời mời của mình và yêu cầu chờ duyệt thành hai vùng. [CLUX-06/07](ux-q33-class.md) |
-| Q33-D1 | Tạo bài giao | Đề xuất bắt buộc tiêu đề và ít nhất một nhóm nhận; mô tả và hạn là tùy chọn. Trên từng bài, hai cài đặt sau hạn có ba trạng thái riêng Kế thừa lớp/Cho phép/Khóa. [AUX-03–05](ux-q33-assignments.md) |
-| Q33-D2 | Tiến độ và Nộp | Giáo viên thấy bảng ba nguồn tiến độ theo nhóm; bấm nhóm mới xem phiên bản/nhận xét. Bản nộp cần ít nhất một trong văn bản/link/tệp; giữ phiên bản cũ nếu lỗi hoặc xung đột. [AUX-06–11](ux-q33-assignments.md) |
+| Q33-C1–C5 | Điều hướng lớp | Một lối lớp cạnh workspace mở danh sách lớp; năm mục lớp thay ba mục workspace, ẩn Cài đặt nếu không có quyền; không hiện Mục lưu ý trong lớp; bấm nhóm mở Công việc, về lớp qua lối lớp; điện thoại dùng menu dọc thu gọn. [Chi tiết](../../docs/ux/class-navigation.md) |
+| Q33-A1–A3 | Lịch | Tháng/Tuần/Ngày, mặc định Tuần/Ngày theo thiết bị; lọc sự kiện, buổi làm, mốc hạn; chọn đích khi tạo; hiển thị theo múi giờ người xem, hạn bài tính theo lớp. [Chi tiết](../../docs/ux/calendar-q33.md) |
+| Q33-B1–B3 | Thư viện | Ba vùng trên máy tính, luồng màn riêng trên điện thoại; Lưu nhanh ba loại, Hộp thu cá nhân, tìm tiêu đề/URL/văn bản nhập; quyền quản lý/chuyển thư mục. [Chi tiết](../../docs/ux/library-q33.md) · [quy tắc thư mục](../../docs/requirements/library.md) |
+| Q33-D1–D2 | Bài giao | Tạo bài cần tiêu đề và nhóm nhận; mô tả/hạn tùy chọn; hai quyền sau hạn ba trạng thái; bảng ba nguồn tiến độ theo nhóm; nộp cần ít nhất một loại nội dung. [Chi tiết](../../docs/ux/assignments-q33.md) · [quy tắc bài giao](../../docs/requirements/assignments-and-submissions.md) |
 
-Các dòng Q33-B3 và Q33-D1 ảnh hưởng quy tắc nghiệp vụ chưa được chốt. Nếu bạn chỉ duyệt **bố cục** mà không duyệt quyền/thông tin bắt buộc, hai phần ấy vẫn nằm trong `review/` và không được ghi thành yêu cầu sản phẩm.
+**Chưa chốt:** vị trí nút Sao chép trong Thư viện, cách lọc loại/sắp xếp, thứ tự và biểu tượng các mục lớp, nội dung chi tiết màn Thành viên/Cài đặt, thanh thời gian và chi tiết Lịch, cách trình bày phiên bản nộp và các trạng thái biên ngoài 13 câu hỏi. Không tự nâng những hàng còn lại trong bản nháp thành yêu cầu coding.

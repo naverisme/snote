@@ -5,7 +5,7 @@
 | Mục đích | Xác định cách giao bài cho nhóm, theo dõi tiến độ, nộp và nhận xét |
 | Phạm vi | Bài giao cấp lớp, bản nộp của nhóm và cài đặt hạn |
 | Kiểm định | DCA-checked theo các quyết định về bài giao và phiên bản |
-| Bằng chứng duyệt | [SRC-05, SRC-07, SRC-09, SRC-10, SRC-15, Q15 đến Q18, Q28, Q29](../../review/provenance.md) |
+| Bằng chứng duyệt | [SRC-05, SRC-07, SRC-09, SRC-10, SRC-15, SRC-19, Q15 đến Q18, Q28, Q29, Q33-D1/D2](../../review/provenance.md) |
 
 ## Giao bài và theo dõi
 
@@ -17,6 +17,8 @@
 | ASG-04 | Bản nộp gồm văn bản, đường dẫn và tệp. Khi nộp, nội dung được giữ theo đúng phiên bản đã gửi. Thay đổi mục trong Thư viện sau đó giữ nguyên phiên bản đã nộp. Mỗi lần sửa bản nộp ghi phiên bản, người sửa và thời điểm. | SRC-05, Q15 |
 | ASG-11 | Trưởng nhóm chính hoặc người được giáo viên cấp quyền có thể gửi cập nhật tiến độ bằng văn bản. Giáo viên và thành viên nhóm nhận bài xem tiến độ và bản nộp của nhóm ấy. Xem dữ liệu của nhóm khác cần quyền riêng do giáo viên cấp. | Q28 |
 | ASG-12 | Khi nhiều người thao tác Nộp cùng lúc, nếu phiên bản hiện hành đã thay đổi thì người đang gửi phải xem lại trước khi tạo phiên bản tiếp theo. Chỉ ghi phiên bản mới sau khi các phần gửi, kể cả tệp, đầy đủ; lỗi tải tệp không thay thế bản đã ghi. Mỗi lần sửa hợp lệ tạo phiên bản mới theo quyền và hạn, giữ các phiên bản cũ để tra cứu. | Q29 |
+| ASG-13 | Khi tạo bài giao cần có tiêu đề và ít nhất một nhóm nhận bài. Mô tả và hạn bài có thể để trống. Đối tượng cả lớp hoặc nhóm được chọn vẫn theo ASG-01; không gửi bài nếu chưa có nhóm nhận nào. | Q33-D1, SRC-19 |
+| ASG-14 | Bản nộp lần đầu và mỗi phiên bản sửa cần ít nhất một nội dung có giá trị thuộc văn bản, đường dẫn hoặc tệp. Có thể kết hợp nhiều loại. Trường hợp nội dung/tệp chưa đủ không tạo phiên bản mới; bản đã ghi giữ nguyên theo ASG-12. | Q33-D2, SRC-19 |
 
 ## Hạn và hai quyền sau hạn
 
@@ -26,6 +28,7 @@
 | ASG-06 | Với từng cài đặt, giá trị tường minh trên bài giao được ưu tiên. Khi bài giao chưa đặt giá trị, dùng mặc định lớp cho cài đặt tương ứng. | SRC-05 |
 | ASG-07 | Hạn bài có thể là ngày kèm giờ hoặc chỉ ngày. Hạn chỉ ngày kết thúc vào cuối ngày ấy theo múi giờ lớp. | SRC-05 |
 | ASG-08 | Đổi hạn sau khi có bản nộp được ghi lịch sử. Trạng thái đúng hạn hoặc muộn của bản đã nộp dựa trên hạn có hiệu lực lúc nộp. Hạn mới áp dụng cho hành động tiếp theo. | Q17 |
+| ASG-15 | Hai quyền sau hạn trên từng bài được đặt **riêng**, mỗi quyền chọn một trong ba trạng thái: Kế thừa lớp, Cho phép, Khóa. Kế thừa lớp dùng giá trị lớp của quyền tương ứng; Cho phép/Khóa trên bài là giá trị tường minh và ưu tiên hơn giá trị lớp theo ASG-06. | Q33-D1, SRC-19 |
 
 | Cài đặt có hiệu lực sau hạn | Nộp lần đầu | Sửa bản đã nộp |
 | --- | --- | --- |

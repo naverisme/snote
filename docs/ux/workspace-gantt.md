@@ -19,7 +19,7 @@
 | Nội dung Công việc | Phần lớn vùng chính | Lọc, Sắp xếp, điều hướng trục, Gantt hoặc Danh sách, chi tiết khi chọn việc | Thao tác theo quyền và tập việc của workspace đang mở. |
 
 Thư viện và Lịch trình đứng cạnh nhau trong thanh bên để chuyển nhanh. Vùng Công việc không đặt nội dung ghi chú hay lịch trình khác vào Gantt; “Mục lưu ý” chỉ hiện bản xem trước ngắn theo quy tắc UXR-05.
-Ba mục Công việc, Lịch trình và Thư viện là **tính năng của workspace đang mở**. Khi chuyển sang lớp, chính vùng điều hướng tính năng này thay bằng năm mục Nhóm, Bài giao, Lịch lớp, Thành viên, Cài đặt theo [NAV-08](validated-navigation.md); đặc tả chi tiết màn lớp thuộc [Q33](../../review/blocked/ux-q33-review.md).
+Ba mục Công việc, Lịch trình và Thư viện là **tính năng của workspace đang mở**. Khi chuyển sang lớp, chính vùng điều hướng tính năng này thay bằng năm mục Nhóm, Bài giao, Lịch lớp, Thành viên, Cài đặt theo [NAV-08](validated-navigation.md). “Mục lưu ý” của workspace không hiển thị trong ngữ cảnh lớp theo [Q33-C3](class-navigation.md).
 
 ## Danh mục thành phần Q32
 
@@ -75,4 +75,4 @@ Sơ đồ chỉ mô tả thay đổi góc nhìn và lựa chọn workspace. Kéo
 | Hết quyền workspace | Hiện thông báo không thể xem và lối chọn workspace còn quyền. |
 | Điện thoại | Tên workspace đứng bên phải icon; bộ chọn bung ngang có thể giữ-kéo; Gantt cuộn ngang trong lưới; chi tiết việc mở thành màn riêng. Ba mục Công việc, Lịch trình, Thư viện vẫn cùng cấp. |
 
-Màn Lịch trình, Thư viện, Lớp học và bài giao cần đặc tả riêng theo [Q33](../../review/decision-batch.md). Thứ tự ưu tiên giữa các dòng “Mục lưu ý”, quy cách biểu tượng và thông số chuyển động chi tiết thuộc bước thiết kế trực quan, không tạo thêm hành vi nghiệp vụ từ tài liệu này.
+Các phần Q33 đã chốt của Lịch trình, Thư viện, Lớp học và bài giao có đặc tả riêng trong [chỉ mục UX](README.md); phần chưa chốt tra [phiếu Q33](../../review/blocked/ux-q33-review.md). Thứ tự ưu tiên giữa các dòng “Mục lưu ý” của workspace, quy cách biểu tượng và thông số chuyển động chi tiết chưa ấn định từ tài liệu này.
