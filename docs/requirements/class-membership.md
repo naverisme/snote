@@ -5,7 +5,7 @@
 | Mục đích | Mô tả đường vào lớp, đường vào nhóm và điều kiện rời hoặc bàn giao |
 | Phạm vi | Lớp và các workspace nhóm thuộc lớp |
 | Kiểm định | DCA-checked theo quyết định về tư cách và giới hạn nhóm |
-| Bằng chứng duyệt | [SRC-01, SRC-02, SRC-07 đến SRC-10, SRC-15, SRC-20, SRC-22, SRC-24, Q02 đến Q04, Q23, Q24, E2, F7, H2/H8](../../review/provenance.md) |
+| Bằng chứng duyệt | [SRC-01, SRC-02, SRC-07 đến SRC-10, SRC-15, SRC-20, SRC-22, SRC-24/25, Q02 đến Q04, Q23, Q24, E2, F7, H2/H8, I5](../../review/provenance.md) |
 
 ## Tạo và vào lớp
 
@@ -60,5 +60,6 @@ flowchart TD
 | CLS-12 | Người học rời lớp thì quyền đọc dữ liệu chung của lớp và các nhóm thuộc lớp chấm dứt, lịch sử vẫn ở lớp. Nếu người rời đang giữ vai trò cần bàn giao mà chưa có người nhận, giáo viên chỉ định người nhận trước khi rời có hiệu lực. Lớp lưu trữ cho phép đọc lịch sử theo quyền; chủ lớp có thể khôi phục lớp. | Q24 |
 | CLS-14 | Khi lớp đang lưu trữ, người có quyền chỉ đọc lịch sử trong phạm vi được phép; không tạo hoặc sửa nội dung mới trong lớp hay các workspace nhóm thuộc lớp. Chủ lớp có thể khôi phục lớp trước khi tiếp tục thao tác. | F7, SRC-22 |
 | CLS-15 | Giáo viên chủ lớp và người có quyền quản lý workspace nhóm được mời hoặc đề nghị đưa người ra khỏi nhóm. Lớp trưởng chỉ làm việc này khi giáo viên bật quyền tương ứng. Người được mời phải chấp nhận trước khi vào. Trước khi rời hoặc bị đưa ra, trưởng nhóm/người đang phụ trách việc cần bàn giao; việc và lịch sử ở lại workspace. Quyền quản lý nhóm không cho phép đổi vai trò hay cấu hình cấp lớp. | H2/H8, SRC-24 |
+| CLS-16 | Workspace nhóm luôn thuộc lớp của nó, không chuyển thành workspace độc lập. Giáo viên chủ lớp được lưu trữ hoặc khôi phục riêng một nhóm; nhóm lưu trữ chỉ đọc theo quyền. Lịch sử bài giao và bản nộp liên quan vẫn gắn với lớp. | I5, SRC-25 |
 
 Xem [ma trận quyền](permission-matrix.md) để phân biệt phạm vi lớp và nhóm. Lớp lưu trữ chỉ đọc theo CLS-14; chi tiết quyền từng trường và biểu diễn trạng thái lưu trữ còn ở [R-02 và R-09](../../review/unresolved.md).

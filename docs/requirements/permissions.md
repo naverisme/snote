@@ -33,4 +33,4 @@ Quyền theo hành động còn có tại các tài liệu sở hữu quy tắc 
 - [Chia sẻ tài liệu và phạm vi Hộp thu](library.md).
 
 Các hành động và phạm vi đã chốt được tách ở [ma trận quyền H1–H10](permission-matrix.md). Ô quyền Cài đặt chưa nêu giá trị, ngoại lệ theo trường và thao tác thay trưởng nhóm vẫn còn ở [R-02](../../review/unresolved.md). Bảng trên chỉ kết luận những quyền có nguồn xác nhận.
-Điều kiện bàn giao khi người tạo workspace độc lập muốn rời hoặc chuyển quản lý còn ở [R-14](../../review/unresolved.md).
+Chuyển quyền chủ và bàn giao khi rời workspace độc lập đã chốt tại [ACC-08/09](accounts-and-workspaces.md).

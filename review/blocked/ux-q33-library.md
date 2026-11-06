@@ -2,7 +2,7 @@
 
 | Trường | Giá trị |
 | --- | --- |
-| Trạng thái | B1–B3, E7 và F8 đã chuyển vào [đặc tả được duyệt](../../docs/ux/library-q33.md) và [LIB-06/07](../../docs/requirements/library.md); các chi tiết khác còn đề xuất |
+| Trạng thái | B1–B3, E7, F8 và I6–I13 đã chuyển vào [đặc tả được duyệt](../../docs/ux/library-q33.md) và [LIB-06–15](../../docs/requirements/library.md); các chi tiết khác còn đề xuất |
 | Phạm vi | Thư viện của workspace cá nhân mặc định, workspace cộng tác và nhóm trong lớp |
 | Quy tắc nguồn | [LIB-01 đến LIB-05](../../docs/requirements/library.md), [ACC-06](../../docs/requirements/accounts-and-workspaces.md), [PER-01, PER-02, PER-07](../../docs/requirements/permissions.md), [Q32](../../docs/ux/workspace-gantt.md) |
 
@@ -18,7 +18,7 @@ Thư viện là **một mục ngang cấp** với Công việc và Lịch trình
 | LUX-06 | Vùng chính | 1 danh sách mục; số hàng theo dữ liệu | Mỗi hàng hiện biểu tượng loại, tên/đại diện nội dung và thư mục; bấm mở một mục. Không tự trộn mục của workspace khác. | LIB-01/03 |
 | LUX-07 | Bên phải danh sách trên máy tính, màn riêng trên điện thoại | 1 vùng chi tiết khi chọn mục | Xem nội dung văn bản, URL hoặc thông tin tệp. Tải tệp theo quyền; mở URL khi người dùng chọn. | LIB-01, quyền theo workspace |
 | LUX-08 | Trong vùng chi tiết, theo quyền | 1 nhóm hành động của một mục | Chỉnh nội dung/phân loại nếu có quyền; riêng thao tác **Sao chép sang workspace** giữ bản nguồn và tạo bản đích theo quyền đích. Không gọi đây là chuyển/xóa bản nguồn. | LIB-04; quyền sửa/xóa cụ thể còn R-02 |
-| LUX-09 | Khi tạo hoặc sửa mục | 1 biểu mẫu theo loại Văn bản/Đường dẫn/Tệp | Bắt buộc có nội dung đúng loại; tiêu đề, thư mục tùy chọn trong luồng lưu nhanh. Tệp lỗi không tạo mục hoàn chỉnh; giới hạn loại/dung lượng chưa đặt. | LIB-05, R-07 |
+| LUX-09 | Khi tạo hoặc sửa mục | 1 biểu mẫu theo loại Văn bản/Đường dẫn/Tệp | Bắt buộc có nội dung đúng loại; tiêu đề, thư mục tùy chọn trong luồng lưu nhanh. Tệp lỗi không tạo mục hoàn chỉnh; loại tệp và hạn mức thử nghiệm theo LIB-11. Các bố trí biểu mẫu ngoài CUXB-07–09 vẫn là đề xuất. | LIB-05/11/15, CUXB-07–09 |
 
 ## Trạng thái và màn nhỏ
 
@@ -33,6 +33,6 @@ Thư viện là **một mục ngang cấp** với Công việc và Lịch trình
 
 ## Điểm còn mở
 
-B1–B3, E7 và F8 đã chốt bố cục, lưu nhanh/tìm, quyền thư mục và chỉ xóa thư mục khi không có mục lẫn thư mục con. Chưa chốt mục “Tất cả”, điều khiển Lọc/Sắp xếp, vị trí Sao chép ở chi tiết mục và giới hạn tệp. LIB-04 chỉ chốt hành vi sao chép giữ bản nguồn, không quyết định vị trí nút.
+B1–B3, E7, F8 và I6–I13 đã chốt bố cục, lưu nhanh/tìm, quyền thư mục, trình soạn, bản sao độc lập, lịch sử ghi đè, Thùng rác, loại tệp/hạn mức thử nghiệm và trạng thái tải. Chưa chốt mục “Tất cả”, điều khiển Lọc/Sắp xếp, vị trí Sao chép ở chi tiết mục và giá trị hạn mức sau khi chọn máy chủ. LIB-12 chốt hành vi sao chép độc lập, không quyết định vị trí nút.
 
-Loại tệp, hạn mức và định dạng ghi chú vẫn theo [R-07](../../review/unresolved.md); không suy ra từ bố trí màn.
+Cách tính dung lượng bản sao/phiên bản, metadata ảnh bìa và nhận chia sẻ từ ứng dụng khác vẫn theo [R-07](../../review/unresolved.md); không suy ra từ bố trí màn.

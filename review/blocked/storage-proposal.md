@@ -10,8 +10,8 @@
 
 | Loại | Nơi lưu đề xuất | Lưu ý |
 | --- | --- | --- |
-| Văn bản/ghi chú | PostgreSQL: nội dung và thông tin mục | Chưa tự suy ra trình soạn thảo hay định dạng rich text. |
-| Đường dẫn | PostgreSQL: URL và thông tin người dùng nhập | Chưa có quyết định tải nội dung trang web, lưu bản chụp hoặc kiểm tra link còn sống. |
+| Văn bản/ghi chú | PostgreSQL: nội dung và thông tin mục | I6 đã chốt hành vi danh sách tự động, nhận URL và thẻ xem trước đầu tiên; cách lưu biểu diễn và cách lấy metadata là thiết kế còn mở. |
+| Đường dẫn | PostgreSQL: URL và thông tin người dùng nhập | I7 đã chốt nhận URL thiếu giao thức và không lưu toàn văn trang ở bản đầu; cách lấy ảnh bìa và kiểm tra link còn sống chưa chốt. |
 | Thư mục và Hộp thu | PostgreSQL: quan hệ thư mục, mục, workspace, người sở hữu, phạm vi riêng/chung | Hộp thu trong workspace cá nhân mặc định, chỉ người đó có quyền. |
 | Tệp | Nội dung nhị phân ở kho tệp bền vững; PostgreSQL giữ khóa kho, tên gốc, loại, kích thước, dấu kiểm tra và quan hệ mục | Backend xét quyền hiện hành trước khi đọc/tải. Không công khai thư mục tệp. |
 | Bản nộp | PostgreSQL giữ phiên bản và tham chiếu không thay đổi tới nội dung đã nộp | Sửa/xóa mục ở Thư viện không được làm mất bản nộp lịch sử. |
@@ -38,8 +38,8 @@
 ## Thông tin còn thiếu để chốt
 
 - Một máy chủ tự quản hay đám mây; ước lượng số người, số tệp và tổng dung lượng.
-- Loại tệp được nhận; dung lượng tối đa mỗi tệp và tổng theo tài khoản/workspace.
-- Văn bản thuần hay có định dạng; URL chỉ lưu đường dẫn hay thêm bản chụp trang đích.
+- Loại tệp và mức thử nghiệm đã chốt ở LIB-11; còn cách tính bản sao/phiên bản trong 1 GB/workspace, hạn mức chính thức theo máy chủ và ngân sách.
+- Cách lưu danh sách tự động trong văn bản, lấy ảnh bìa URL và bảo vệ quá trình lấy metadata; toàn văn trang đích không lưu trong bản đầu.
 - Chọn volume máy chủ hay dịch vụ lưu đối tượng cho bản đầu; mức dự phòng, vị trí và chu kỳ sao lưu.
 
 Nguồn kỹ thuật: [PostgreSQL sao lưu](https://www.postgresql.org/docs/current/backup.html) · [Docker volume](https://docs.docker.com/engine/storage/volumes/) · [NestJS tải tệp](https://docs.nestjs.com/techniques/file-upload) · [AWS S3 URL tạm](https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html) · [MinIO pháp lý và vòng đời](https://www.min.io/legal) · [AIStor Free](https://www.min.io/pricing) · [OWASP tệp tải lên](https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html).

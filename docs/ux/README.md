@@ -7,7 +7,7 @@
 | [Khung workspace và màn Công việc/Gantt](workspace-gantt.md) | Q32 đã chốt: vị trí, kiểu, số lượng, hành động, chuyển workspace, Mục lưu ý và trạng thái màn |
 | [Chọn lớp và điều hướng lớp](class-navigation.md) | Q33-C1–C5, E1–E5, F1–F7: bảng Thành viên, vai trò, nhóm, Cài đặt và lớp lưu trữ |
 | [Lịch trình và Lịch lớp](calendar-q33.md) | Q33-A1–A3, E6, F10: chế độ xem, lọc, điều hướng và chi tiết sự kiện |
-| [Thư viện](library-q33.md) | Q33-B1–B3, E7, F8: ba vùng, Lưu nhanh, tìm và chỉ xóa thư mục không còn mục/thư mục con |
+| [Thư viện](library-q33.md) | Q33-B1–B3, E7, F8, I6–I13: ba vùng, lưu/tìm, trình soạn văn bản, ghi đè/tạo bản sao và trạng thái tải tệp |
 | [Bài giao và Nộp](assignments-q33.md) | Q33-D1–D2, E8, F9: tạo bài, quyền sau hạn, tiến độ và chi tiết phiên bản nộp |
 
 Quyền và hành vi nghiệp vụ tra ở [yêu cầu](../requirements/README.md). Những thành phần Q33 chưa được duyệt hoặc chưa có đủ thông tin nằm ở [phiếu rà soát Q33](../../review/blocked/ux-q33-review.md) và [R-05](../../review/unresolved.md), không được suy ra từ các màn đã chốt.

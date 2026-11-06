@@ -14,7 +14,7 @@
 | --- | --- | --- |
 | PM-01 | Tư cách lớp/nhóm còn hiệu lực | Khi tư cách chấm dứt, quyền chỉ phát sinh từ tư cách ấy dừng cho thao tác mới; việc kiêm nhiệm không mở dữ liệu ngoài phạm vi của từng tư cách. [PER-08](permissions.md) |
 | PM-02 | Hộp thu và buổi làm riêng | Chỉ chủ dữ liệu xem; quyền giáo viên hoặc quản lý nội dung chung không mở dữ liệu riêng. [LIB-02](library.md), [TASK-07](tasks.md) |
-| PM-03 | Lớp lưu trữ | Chỉ đọc lịch sử theo quyền; không tạo hoặc sửa nội dung trong lớp và các workspace nhóm cho tới khi chủ lớp khôi phục. [CLS-14](class-membership.md) |
+| PM-03 | Lớp hoặc workspace đang lưu trữ | Chỉ đọc lịch sử theo quyền; không tạo hoặc sửa nội dung trong phạm vi lưu trữ. Lớp lưu trữ khóa các nhóm; workspace nhóm có thể lưu trữ riêng; workspace độc lập có thể lưu trữ theo quyền chủ. [CLS-14/16](class-membership.md), [ACC-10](accounts-and-workspaces.md) |
 | PM-04 | Không tìm thấy quyền hợp lệ cho đúng hành động và đối tượng | Từ chối thao tác. Kiểm lại quyền khi thực hiện, dù giao diện còn hiển thị nút từ trạng thái cũ. H10 |
 | PM-05 | Nhiều tư cách đồng thời | Hợp các quyền hợp lệ trong **đúng phạm vi**; tắt quyền Lớp trưởng không xóa quyền Trưởng nhóm trong nhóm họ quản lý. Ranh giới PM-01–04 luôn áp dụng. H10 |
 
