@@ -5,7 +5,7 @@
 | Mục đích | Xác định việc thuộc phạm vi nào, cách giao việc, hạn và thứ tự theo dõi |
 | Phạm vi | Công việc cá nhân và công việc được giao trong workspace |
 | Kiểm định | DCA-checked cho quy tắc công việc và thời gian |
-| Bằng chứng duyệt | [SRC-03, SRC-04, SRC-07, SRC-10, SRC-15, Q06 đến Q10, Q25 đến Q27](../../review/provenance.md) |
+| Bằng chứng duyệt | [SRC-03, SRC-04, SRC-07, SRC-10, SRC-15, SRC-24, Q06 đến Q10, Q25 đến Q27, H4–H5](../../review/provenance.md) |
 
 ## Phạm vi và người phụ trách
 
@@ -16,6 +16,8 @@
 | TASK-03 | Giao việc cho một thành viên có hiệu lực ngay và người nhận được thông báo. Người nhận có thể yêu cầu đổi người phụ trách. | Q07 |
 | TASK-04 | Người giao hoặc người có quyền quản lý việc được giao sửa hạn và mức quan trọng. Người nhận cập nhật checklist, trạng thái và lịch làm riêng. Quyền sửa việc chung của lớp trưởng áp dụng theo PER-02. Mỗi lần đổi hạn được ghi lịch sử. | SRC-02, Q08 |
 | TASK-13 | Khi người nhận yêu cầu đổi người phụ trách, người giao hoặc người có quyền quản lý quyết định. Người hiện tại tiếp tục chịu trách nhiệm đến khi quyết định giao lại có hiệu lực. | Q26 |
+| TASK-14 | Thành viên có thể tạo việc chung **chờ phân công** trong workspace nhóm mình. Giáo viên, trưởng nhóm hoặc người có quyền quản lý việc chọn người phụ trách. Việc người dùng tạo không tự cho phép họ đổi hạn, mức quan trọng hoặc xóa việc sau khi đã giao. Lớp trưởng muốn tạo việc ở nhóm khác cần quyền tạo riêng. | H3–H4, SRC-24 |
+| TASK-15 | Người phụ trách và người quản lý việc được thêm, sửa, xóa và đánh dấu mục checklist của việc. Thành viên khác chỉ xem theo quyền. Mỗi thay đổi mục checklist ghi người thao tác và thời điểm. Quyền sửa trường chung của việc không tự cấp quyền sửa checklist. | H5, SRC-24 |
 
 ## Thời gian và hoàn thành
 
@@ -35,4 +37,4 @@
 | TASK-11 | “Việc tiếp theo” mặc định chia theo thứ tự quá hạn chưa xong → hạn hôm nay → buổi làm hôm nay; mỗi việc chỉ nằm ở nhóm ưu tiên đầu tiên mà nó thỏa. Nhóm quá hạn xếp hạn cũ nhất trước; nhóm hạn hôm nay xếp hạn gần nhất trước; việc thiếu hạn nhưng có buổi làm hôm nay xếp buổi làm sớm nhất trước. Khi mốc bằng nhau xét mức quan trọng, sau đó giữ thứ tự ổn định. Người dùng có thể đổi thứ tự mặc định. | SRC-07, Q09, Q25 |
 | TASK-12 | Mức quan trọng gồm Cao, Vừa và Thấp. Đổi mức giữ nguyên hạn và lịch làm. Chủ việc cá nhân sửa mức của việc mình. Quyền sửa việc được giao theo TASK-04. | SRC-07, Q08 |
 
-Chi tiết thứ tự ổn định khi mọi khóa bằng nhau và trường hợp việc không có hạn hoặc buổi làm vẫn ở [R-01](../../review/unresolved.md). Tư cách sửa từng mục checklist và lịch sử mở lại ở [R-12](../../review/unresolved.md).
+Chi tiết thứ tự ổn định khi mọi khóa bằng nhau và trường hợp việc không có hạn hoặc buổi làm vẫn ở [R-01](../../review/unresolved.md). Quyền checklist theo TASK-15; các chi tiết lịch sử mở lại ngoài người/thời điểm đã chốt ở TASK-09 và hình thức lịch sử theo [R-12](../../review/unresolved.md). Xem [ma trận quyền](permission-matrix.md) cho hành động và phạm vi.

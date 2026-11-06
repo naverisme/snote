@@ -5,7 +5,7 @@
 | Mục đích | Xác định loại nội dung, đích lưu nhanh, thư mục và phạm vi chia sẻ |
 | Phạm vi | Thư viện của workspace, Hộp thu cá nhân và sao chép vào nhóm |
 | Kiểm định | DCA-checked theo các quyết định lưu và chia sẻ |
-| Bằng chứng duyệt | [SRC-03, SRC-07, SRC-08, SRC-10, SRC-15, SRC-19, SRC-21/22, Q13, Q14, Q20, Q30, Q33-B3, E7, F8](../../review/provenance.md) |
+| Bằng chứng duyệt | [SRC-03, SRC-07, SRC-08, SRC-10, SRC-15, SRC-19, SRC-21/22, SRC-24, Q13, Q14, Q20, Q30, Q33-B3, E7, F8, H7](../../review/provenance.md) |
 
 | Mã | Quy tắc | Nguồn |
 | --- | --- | --- |
@@ -16,5 +16,6 @@
 | LIB-05 | Mục Thư viện cần nội dung hợp với loại văn bản, đường dẫn hoặc tệp đã chọn. Khi lưu nhanh, tiêu đề và thư mục có thể để trống; mục chưa phân loại vào Hộp thu theo LIB-02. | Q30 |
 | LIB-06 | Chủ workspace hoặc người có quyền quản lý workspace được tạo, đổi tên và xóa thư mục trong workspace đó. Người có quyền sửa một mục Thư viện được chuyển mục ấy giữa các thư mục **trong cùng workspace**. Quyền sửa mục không tự cấp quyền quản lý thư mục. | Q33-B3, SRC-19 |
 | LIB-07 | Chỉ xóa thư mục khi không còn **mục hoặc thư mục con**. Nếu còn mục, người dùng phải chuyển mục ra trước; nếu còn thư mục con, phải chuyển hoặc xóa riêng thư mục con trước. Không xóa dây chuyền các mục hoặc thư mục con. | E7, F8, SRC-21/22 |
+| LIB-08 | Thành viên nhóm được tạo mục Thư viện chung trong nhóm mình và sửa/xóa mục mình tạo. Sửa/xóa mục của người khác cần quyền quản lý workspace hoặc cấp riêng; giáo viên chủ lớp có quyền với nội dung chung theo PER-01. Bảng quyền tách ghi chú văn bản khỏi tệp và đường dẫn; Lớp trưởng mặc định được sửa ghi chú chung của mọi nhóm, còn tệp/đường dẫn ở nhóm khác cần cấp riêng. Tạo mục ở nhóm khác cũng cần quyền riêng. | H3/H7, SRC-24 |
 
-Danh sách định dạng tệp, giới hạn mỗi tệp và tổng dung lượng, định dạng văn bản, nhận chia sẻ trực tiếp từ ứng dụng khác và khả năng đổi workspace mặc định còn ở [R-07](../../review/unresolved.md).
+Danh sách định dạng tệp, giới hạn mỗi tệp và tổng dung lượng, định dạng văn bản, nhận chia sẻ trực tiếp từ ứng dụng khác và khả năng đổi workspace mặc định còn ở [R-07](../../review/unresolved.md). Xem [ma trận quyền](permission-matrix.md) để tách quyền đối với văn bản, đường dẫn, tệp và thư mục.
