@@ -4,7 +4,7 @@
 | --- | --- |
 | Mốc nguồn | `s_note_v2` tại `583435b35811ab4285447b3afb9aafbad04f6d82`, sau PR #10 |
 | Đã đọc | Toàn bộ 9 tệp tại mốc nguồn và các quyết định trong cuộc trao đổi |
-| Đã tổ chức | 11 tài liệu theo chủ đề ở ba nhóm có căn cứ, cùng chỉ mục và hồ sơ rà soát |
+| Đã tổ chức | Tài liệu theo chủ đề ở `product/`, `requirements/`, `ux/`, `quality/` cùng chỉ mục và hồ sơ rà soát; Q32 đã bổ sung đặc tả Gantt |
 | Bằng chứng | [Hồ sơ nguồn](provenance.md) |
 
 ## Khung tám bước và phần tài liệu tương ứng
@@ -14,7 +14,7 @@
 | 1. Chốt bài toán và phạm vi | [Khái niệm](../docs/product/concepts.md) và [phạm vi bản đầu](../docs/product/first-release.md) | Đã ghi đối tượng, luồng chính và phạm vi web. Chi tiết phát hành theo R-08 và R-09. |
 | 2. Chốt luồng nghiệp vụ | [Yêu cầu](../docs/requirements/README.md) theo bảy chủ đề | Đã mô tả các đường vào lớp và nhóm, giao việc, Thư viện, lịch và nộp. Các trường hợp biên nằm trong sổ câu hỏi. |
 | 3. Chốt quy tắc và quyền | [Vai trò và quyền](../docs/requirements/permissions.md) cùng quy tắc ở từng chủ đề | Có quyền mặc định và quyền cấp riêng theo phạm vi. Còn ma trận từng hành động, vai trò đồng thời và một số ngoại lệ. |
-| 4. Duyệt kiến trúc giao diện | [Điều hướng và cách xem việc](../docs/ux/README.md), [bản Gantt để duyệt](blocked/ux-workspace-gantt.md) | Phân cấp và mặc định đã đối chiếu. Bố trí và hành động chi tiết đang chờ duyệt. |
+| 4. Duyệt kiến trúc giao diện | [Điều hướng và cách xem việc](../docs/ux/README.md), [Gantt Q32](../docs/ux/workspace-gantt.md) | Khung workspace và màn Công việc/Gantt đã duyệt. Lịch trình, Thư viện, Lớp học, bài giao còn theo Q33. |
 | 5. Chốt mô hình hệ thống và dữ liệu | Nhóm `architecture/` | Chờ thiết kế có căn cứ, kể cả ranh giới module và mô hình lưu trữ. |
 | 6. Khóa hợp đồng triển khai | Nhóm `contracts/` | Chờ cấu trúc hệ thống, quyền liên quan và quy tắc giao tiếp. |
 | 7. Thiết kế nghiệm thu trước khi giao việc | Nhóm `quality/`, [12 ca đã duyệt](../docs/quality/acceptance-scenarios.md) | Ca nền truy về mã quy tắc đã được duyệt ở Q36. Ngưỡng đo và phương pháp thực thi vẫn mở. |

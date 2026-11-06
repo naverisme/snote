@@ -4,5 +4,6 @@
 | --- | --- |
 | [Điều hướng và phạm vi màn](validated-navigation.md) | Lối vào theo cách dùng tài khoản, ba mục ngang cấp của workspace và vùng nội dung theo mục đang chọn |
 | [Gantt và Danh sách](task-views.md) | Mặc định, phạm vi dữ liệu, cách sửa qua chi tiết và thao tác hàng loạt |
+| [Khung workspace và màn Công việc/Gantt](workspace-gantt.md) | Q32 đã chốt: vị trí, kiểu, số lượng, hành động, chuyển workspace, Mục lưu ý và trạng thái màn |
 
-Bố trí từng thành phần, vị trí trên máy tính và điện thoại, cùng hành vi khi tải, trống hoặc lỗi được xem trong [bản Gantt để duyệt](../../review/blocked/ux-workspace-gantt.md). Quyền và hành vi nghiệp vụ tra ở [yêu cầu](../requirements/README.md).
+Quyền và hành vi nghiệp vụ tra ở [yêu cầu](../requirements/README.md). Bố trí Lịch trình, Thư viện, Lớp học và bài giao sẽ được duyệt theo màn; [Q33](../../review/decision-batch.md).
