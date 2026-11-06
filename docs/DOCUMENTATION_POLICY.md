@@ -8,6 +8,8 @@
 
 `docs/` chứa tài liệu tham chiếu dài hạn đã nêu rõ mục đích, phạm vi, nguồn và trạng thái. Chỉ tạo thư mục khi có nội dung đã được đối chiếu đủ căn cứ cho thư mục đó. Chỉ mục ở [README](README.md) cho biết tài liệu nào hiện được dùng.
 
+**Nguồn của v2:** Không tái sử dụng nội dung SNOTE v1 cho `docs/`, `review/`, thiết kế hoặc coding v2. Nguồn hợp lệ là phát biểu/duyệt của chủ sản phẩm về v2 và tài liệu v2 đã được đối chiếu trong đúng phạm vi. Khi còn thiếu dữ kiện, giữ điểm đó mở để xác minh; sự tồn tại của dữ liệu ở v1 không lấp được khoảng trống.
+
 | Nhóm | Nội dung được phép đặt ở đây | Ranh giới |
 | --- | --- | --- |
 | `product/` | Bài toán, người dùng, mục tiêu, phạm vi và thuật ngữ sản phẩm. | Không chứa bố cục màn hình hoặc công việc đang chạy. |
@@ -20,4 +22,4 @@
 
 Mỗi tài liệu nêu rõ phần nào đã được chủ sản phẩm chấp thuận, bằng chứng quyết định và giới hạn chưa được chốt. Trạng thái tự ghi trong file hay việc merge PR không tự chứng minh sự chấp thuận nội dung. Khi nguồn xung đột hoặc chỉ là đề xuất, đặt vấn đề ở [hồ sơ rà soát](../review/unresolved.md); không đưa mệnh đề ấy vào tài liệu đang dùng.
 
-Ghi chép thô, bản vẽ chưa duyệt và dấu vết đối chiếu ở ngoài `docs/`. Công việc đang chạy và phân công được quản lý trong issue/project hoặc công cụ điều phối đã chọn; mã nguồn, kiểm thử thực thi và cấu hình ở khu vực mã nguồn tương ứng. Lịch sử Git giữ bản cũ để truy nguyên, không cấp hiệu lực cho chúng. Cấu trúc này là quy ước nội bộ của SNOTE, không phải tuyên bố tuân thủ một tiêu chuẩn bên ngoài.
+Ghi chép thô v2, bản vẽ chưa duyệt và dấu vết đối chiếu ở ngoài `docs/`. Công việc đang chạy và phân công được quản lý trong issue/project hoặc công cụ điều phối đã chọn; mã nguồn, kiểm thử thực thi và cấu hình ở khu vực mã nguồn tương ứng. Lịch sử Git của v2 giữ bản cũ để truy nguyên quá trình thay đổi, không cấp hiệu lực cho chúng. Cấu trúc này là quy ước nội bộ của SNOTE, không phải tuyên bố tuân thủ một tiêu chuẩn bên ngoài.
