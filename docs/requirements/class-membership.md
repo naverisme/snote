@@ -5,7 +5,7 @@
 | Mục đích | Mô tả đường vào lớp, đường vào nhóm và điều kiện rời hoặc bàn giao |
 | Phạm vi | Lớp và các workspace nhóm thuộc lớp |
 | Kiểm định | DCA-checked theo quyết định về tư cách và giới hạn nhóm |
-| Bằng chứng duyệt | [SRC-01, SRC-02, SRC-07 đến SRC-10, SRC-15, Q02 đến Q04, Q23, Q24](../../review/provenance.md) |
+| Bằng chứng duyệt | [SRC-01, SRC-02, SRC-07 đến SRC-10, SRC-15, SRC-20, Q02 đến Q04, Q23, Q24, E2](../../review/provenance.md) |
 
 ## Tạo và vào lớp
 
@@ -14,6 +14,7 @@
 | CLS-01 | Tài khoản chọn Giáo viên có thể tạo lớp. Lớp mới mặc định không công khai. Lớp là cấp trên các workspace nhóm thuộc lớp. | SRC-01, SRC-07, SRC-08 |
 | CLS-02 | Với lời mời do giáo viên gửi, chấp nhận của người học là bước cuối để tư cách thành viên lớp có hiệu lực. | SRC-08 |
 | CLS-03 | Với mã lớp, người học gửi yêu cầu. Giáo viên duyệt thì tư cách thành viên lớp có hiệu lực. | SRC-07, SRC-08 |
+| CLS-13 | Khi tư cách tham gia lớp của người học có hiệu lực theo CLS-02 hoặc CLS-03, vai trò cấp lớp ban đầu là **Member**. Giáo viên có thể chọn vai trò khác riêng cho từng người trong bảng thành viên của lớp. Chủ lớp do giáo viên tạo lớp theo CLS-01 không đi qua bước gia nhập này. | E2, SRC-20 |
 
 Luồng gia nhập lớp thể hiện hai đường thành công trong CLS-02 và CLS-03.
 

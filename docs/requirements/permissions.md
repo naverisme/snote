@@ -5,7 +5,7 @@
 | Mục đích | Tra quyền mặc định, quyền cần cấp riêng và phạm vi áp dụng |
 | Phạm vi | Các hành động trong lớp, workspace nhóm và workspace cộng tác độc lập đã được xác nhận |
 | Kiểm định | DCA-checked cho các ô có căn cứ bên dưới |
-| Bằng chứng duyệt | [SRC-02, SRC-05, SRC-08 đến SRC-10, SRC-15, Q01, Q02, Q05, Q08, Q12, Q22](../../review/provenance.md) |
+| Bằng chứng duyệt | [SRC-02, SRC-05, SRC-08 đến SRC-10, SRC-15, SRC-20, Q01, Q02, Q05, Q08, Q12, Q22, E2](../../review/provenance.md) |
 
 | Mã | Chủ thể và phạm vi | Quyền mặc định hoặc điều kiện đã duyệt | Nguồn |
 | --- | --- | --- | --- |
@@ -17,6 +17,7 @@
 | PER-06 | Ủy quyền và thu hồi | Giáo viên chủ lớp có thể cấp quyền theo chức năng. Bản đầu chưa có vai trò đồng giáo viên riêng. Thu hồi có hiệu lực ngay với thao tác mới và giữ lịch sử thao tác hợp lệ trước đó. | Q02, Q05 |
 | PER-07 | Workspace cộng tác không thuộc lớp | Người tạo workspace quản lý thành viên và cấp quyền quản lý trong workspace đó. Thành viên thao tác với việc được giao theo quyền của việc. Workspace cá nhân mặc định không cho chia sẻ theo ACC-06. | Q22, SRC-11 |
 | PER-08 | Quyền gắn với tư cách thành viên | Khi tư cách trong lớp hoặc workspace hết hiệu lực, các quyền chỉ có từ tư cách đó dừng cho thao tác mới; lịch sử thao tác đã hợp lệ được giữ. | Q22, Q24 |
+| PER-09 | Vai trò và quyền trong lớp | Người học mới gia nhập có vai trò cấp lớp **Member** theo CLS-13. Giáo viên chọn vai trò cấp lớp khác cho từng người ngay tại hàng của người đó trong bảng Thành viên. Quyền mặc định theo vai trò và các cài đặt quyền khác do giáo viên quản lý trong **Cài đặt lớp**, không sửa tại ô vai trò. Vai trò cấp lớp không tự đổi vai trò quản lý workspace nhóm. Giáo viên chủ lớp vẫn theo PER-01 và việc chuyển chủ theo CLS-10. | E2, SRC-20 |
 
 Quyền theo hành động còn có tại các tài liệu sở hữu quy tắc tương ứng.
 
