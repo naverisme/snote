@@ -5,7 +5,7 @@
 | Mục đích | Mô tả đường vào lớp, đường vào nhóm và điều kiện rời hoặc bàn giao |
 | Phạm vi | Lớp và các workspace nhóm thuộc lớp |
 | Kiểm định | DCA-checked theo quyết định về tư cách và giới hạn nhóm |
-| Bằng chứng duyệt | [SRC-01, SRC-02, SRC-07 đến SRC-10, Q02 đến Q04](../../review/provenance.md) |
+| Bằng chứng duyệt | [SRC-01, SRC-02, SRC-07 đến SRC-10, SRC-15, Q02 đến Q04, Q23, Q24](../../review/provenance.md) |
 
 ## Tạo và vào lớp
 
@@ -35,6 +35,7 @@ flowchart TD
 | CLS-05 | Khi được mời hoặc xếp vào nhóm, chấp nhận của người học là bước cuối để tư cách nhóm có hiệu lực. Khi tự gửi yêu cầu, quyết định duyệt của người có quyền là bước cuối. | SRC-01, SRC-02, SRC-08 |
 | CLS-06 | Mặc định mỗi người học có tối đa một nhóm đang hoạt động trong cùng lớp. Giáo viên có thể chỉnh giới hạn của lớp. | SRC-02, SRC-07 |
 | CLS-07 | Có thể có nhiều lời mời đang chờ. Khi lớp giới hạn một nhóm và người học đã vào một nhóm, các lời mời đang chờ đến nhóm khác trong cùng lớp hết hiệu lực, rời danh sách chờ và được lưu trữ làm lịch sử. | SRC-10, Q04 |
+| CLS-11 | Lời mời đã vô hiệu và lưu trữ theo CLS-07 không tự có hiệu lực lại khi người học rời nhóm. Yêu cầu vào nhóm do người học gửi chỉ được duyệt khi giới hạn hiện hành còn cho phép. Khi giáo viên giảm giới hạn xuống thấp hơn số nhóm đang có, giữ nguyên tư cách đã có và chặn gia nhập mới đến khi đáp ứng giới hạn. | Q23 |
 
 Luồng nhóm áp dụng khi gia nhập thành công theo giới hạn đang dùng. Người duyệt mặc định và cách chỉnh quyền nằm tại [PER-04](permissions.md).
 
@@ -55,5 +56,6 @@ flowchart TD
 | CLS-08 | Thành viên có thể tự rời nhóm. Trưởng nhóm hoặc người đang phụ trách việc hoàn tất bàn giao trước khi rời. Công việc và lịch sử vẫn thuộc workspace. | SRC-02 |
 | CLS-09 | Người học có thể tự rời lớp sau khi rời các nhóm thuộc lớp và bàn giao vai trò hoặc việc đang phụ trách. Lịch sử công việc và bản nộp vẫn được giữ. | SRC-09 |
 | CLS-10 | Giáo viên có thể lưu trữ lớp. Chủ lớp muốn rời lớp đang hoạt động thì bàn giao quyền chủ lớp cho một tài khoản Giáo viên khác và người nhận chấp nhận. | Q03 |
+| CLS-12 | Người học rời lớp thì quyền đọc dữ liệu chung của lớp và các nhóm thuộc lớp chấm dứt, lịch sử vẫn ở lớp. Nếu người rời đang giữ vai trò cần bàn giao mà chưa có người nhận, giáo viên chỉ định người nhận trước khi rời có hiệu lực. Lớp lưu trữ cho phép đọc lịch sử theo quyền; chủ lớp có thể khôi phục lớp. | Q24 |
 
-Xem [R-02, R-10 và R-13](../../review/unresolved.md) về quyền sau rời lớp, giới hạn khi cấu hình đổi, thủ tục bàn giao và trạng thái lưu trữ.
+Xem [vai trò và quyền](permissions.md) để phân biệt quyền hiện hành với lịch sử đã tạo. Các chi tiết quyền theo từng trường và cách hiển thị lớp lưu trữ còn ở [R-02 và R-09](../../review/unresolved.md).

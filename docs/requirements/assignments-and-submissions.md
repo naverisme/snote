@@ -5,7 +5,7 @@
 | Mục đích | Xác định cách giao bài cho nhóm, theo dõi tiến độ, nộp và nhận xét |
 | Phạm vi | Bài giao cấp lớp, bản nộp của nhóm và cài đặt hạn |
 | Kiểm định | DCA-checked theo các quyết định về bài giao và phiên bản |
-| Bằng chứng duyệt | [SRC-05, SRC-07, SRC-09, SRC-10, Q15 đến Q18](../../review/provenance.md) |
+| Bằng chứng duyệt | [SRC-05, SRC-07, SRC-09, SRC-10, SRC-15, Q15 đến Q18, Q28, Q29](../../review/provenance.md) |
 
 ## Giao bài và theo dõi
 
@@ -15,6 +15,8 @@
 | ASG-02 | Giáo viên xem ba phần riêng gồm số việc hoàn thành trên tổng số việc, checklist từng việc và cập nhật bằng văn bản của nhóm. Tỷ lệ tổng hợp của cả nhóm chờ chốt cách tính. | SRC-07 |
 | ASG-03 | Trưởng nhóm chính mặc định được Nộp và sửa bản nộp. Giáo viên có thể cấp riêng cho thành viên khác. Người quản lý thêm cần quyền Nộp riêng. | SRC-05, SRC-09 |
 | ASG-04 | Bản nộp gồm văn bản, đường dẫn và tệp. Khi nộp, nội dung được giữ theo đúng phiên bản đã gửi. Thay đổi mục trong Thư viện sau đó giữ nguyên phiên bản đã nộp. Mỗi lần sửa bản nộp ghi phiên bản, người sửa và thời điểm. | SRC-05, Q15 |
+| ASG-11 | Trưởng nhóm chính hoặc người được giáo viên cấp quyền có thể gửi cập nhật tiến độ bằng văn bản. Giáo viên và thành viên nhóm nhận bài xem tiến độ và bản nộp của nhóm ấy. Xem dữ liệu của nhóm khác cần quyền riêng do giáo viên cấp. | Q28 |
+| ASG-12 | Khi nhiều người thao tác Nộp cùng lúc, nếu phiên bản hiện hành đã thay đổi thì người đang gửi phải xem lại trước khi tạo phiên bản tiếp theo. Chỉ ghi phiên bản mới sau khi các phần gửi, kể cả tệp, đầy đủ; lỗi tải tệp không thay thế bản đã ghi. Mỗi lần sửa hợp lệ tạo phiên bản mới theo quyền và hạn, giữ các phiên bản cũ để tra cứu. | Q29 |
 
 ## Hạn và hai quyền sau hạn
 
@@ -41,4 +43,4 @@ Bảng áp dụng với người có quyền theo ASG-03. Cột “Nộp lần �
 | ASG-09 | Giáo viên nhận xét theo từng phiên bản nộp. Bản đầu dùng nhận xét, điểm số và thang điểm ở ngoài phạm vi. | Q16 |
 | ASG-10 | Giáo viên có thể lưu trữ hoặc ngừng giao bài đã có tiến độ hoặc bản nộp, vẫn giữ lịch sử để tra cứu. Xóa vĩnh viễn trường hợp này ở ngoài phạm vi bản đầu. | Q18 |
 
-Quyền cập nhật tiến độ, quyền đọc giữa các nhóm, thu hồi bản nộp và trường hợp nhiều người thao tác cùng lúc ở [R-03 và R-04](../../review/unresolved.md).
+Quyền cập nhật và đọc theo nhóm đã chốt tại ASG-11; xử lý phiên bản xung đột và tệp lỗi tại ASG-12. Thao tác thu hồi riêng một bản nộp, giới hạn tệp và cách khôi phục khi tệp được tải đầy đủ nhưng ghi dữ liệu không thành công còn ở [R-04](../../review/unresolved.md).
