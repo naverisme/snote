@@ -6,11 +6,11 @@
 | Phạm vi | “Lịch của tôi” xuyên workspace, Lịch trình của một workspace, và đề xuất màn lịch trong lớp; sự kiện lớp có lối tạo theo quyền |
 | Quy tắc nguồn | [CAL-01 đến CAL-06](../../docs/requirements/calendar.md), [TASK-05 đến TASK-07](../../docs/requirements/tasks.md), [NAV-03–05](../../docs/ux/validated-navigation.md), [Q32](../../docs/ux/workspace-gantt.md) |
 
-Trong workspace, giữ nguyên bộ chọn và ba mục tính năng đã duyệt ở Q32. Khi chọn **Lịch trình**, chỉ nội dung lịch xuất hiện trong vùng chính. Khi vào lớp, vùng tính năng đổi theo NAV-08; **Lịch lớp** là tên mục đề xuất, không phải mục thứ tư cạnh Công việc/Lịch trình/Thư viện. “Lịch của tôi” là phạm vi tổng hợp cấp ứng dụng; tiêu đề phải phân biệt rõ ba phạm vi.
+Trong workspace, giữ nguyên bộ chọn và ba mục tính năng đã duyệt ở Q32. Khi chọn **Lịch trình**, chỉ nội dung lịch xuất hiện trong vùng chính. Khi vào lớp, vùng tính năng đổi theo NAV-08; **Lịch lớp** là một trong năm tên mục đã chốt, không phải mục thứ tư cạnh Công việc/Lịch trình/Thư viện. “Lịch của tôi” là phạm vi tổng hợp cấp ứng dụng; tiêu đề phải phân biệt rõ ba phạm vi.
 
 | Mã | Cấp, vị trí, thành phần cùng nhóm | Số lượng, loại đề xuất | Hành động hoặc thông tin hiển thị | Nguồn/ràng buộc |
 | --- | --- | --- | --- | --- |
-| CUX-01 | Đầu vùng nội dung Lịch; thuộc phạm vi đang mở | 1 tiêu đề tương ứng: “Lịch của tôi”, “Lịch trình · [workspace]” hoặc “Lịch lớp · [lớp]” | Chỉ hiển thị, không đổi phạm vi khi bấm. Tên mục lớp là đề xuất. | CAL-01, Q32, NAV-08 |
+| CUX-01 | Đầu vùng nội dung Lịch; thuộc phạm vi đang mở | 1 tiêu đề tương ứng: “Lịch của tôi”, “Lịch trình · [workspace]” hoặc “Lịch lớp · [lớp]” | Chỉ hiển thị, không đổi phạm vi khi bấm. Tên **mục** Lịch lớp đã chốt; định dạng tiêu đề ở đây còn là đề xuất. | CAL-01, Q32, NAV-08 |
 | CUX-02 | Cạnh tiêu đề, nhóm điều hướng thời gian | 3 nút Trước, Hôm nay, Sau; 1 nhãn khoảng | Đổi khoảng thời gian đang nhìn thấy, không sửa sự kiện. | Đề xuất UX |
 | CUX-03 | Cạnh CUX-02, cùng nhóm điều khiển lịch | 3 lựa chọn Tháng, Tuần, Ngày, chỉ một lựa chọn tại một thời điểm | Đổi cách nhìn cùng tập sự kiện. | Đề xuất UX, chưa có quy tắc nghiệp vụ về các chế độ này |
 | CUX-04 | Bên phải thanh công cụ Lịch | 1 nút Tạo sự kiện theo quyền | Mở biểu mẫu, cho chọn sự kiện riêng hoặc chung theo phạm vi được phép; chỉ ghi khi xác nhận. | CAL-02, CAL-04; lớp trưởng cần quyền tạo riêng |

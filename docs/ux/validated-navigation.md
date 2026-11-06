@@ -5,7 +5,7 @@
 | Mục đích | Chỉ rõ thứ bậc các mục và nội dung xuất hiện khi đổi phạm vi |
 | Phạm vi | Lối vào cá nhân, Lớp học và điều hướng trong workspace |
 | Kiểm định | DCA-checked cho phân cấp, điều kiện xuất hiện và hành vi đã duyệt |
-| Bằng chứng duyệt | [SRC-03, SRC-04, SRC-07, SRC-08, SRC-16, Q19 và Q20](../../review/provenance.md) |
+| Bằng chứng duyệt | [SRC-03, SRC-04, SRC-07, SRC-08, SRC-16, SRC-17, Q19 và Q20](../../review/provenance.md) |
 
 ## Lối vào theo tài khoản
 
@@ -30,6 +30,6 @@ NAV-04 đến NAV-06 dùng SRC-03 và các quyết định về Hộp thu trong 
 | Mã | Thành phần | Cấp và vị trí | Hành vi đã xác nhận | Nguồn |
 | --- | --- | --- | --- | --- |
 | NAV-07 | Lối tắt Lớp học | Cùng cấp với lối chọn workspace ở vùng chọn ngữ cảnh; không nằm trong ba mục tính năng của workspace | Chọn để đi vào phạm vi lớp. Lớp vẫn là cấp dữ liệu bao trùm các workspace nhóm; việc đứng cạnh workspace chỉ nói về vị trí lối vào giao diện. | SRC-16 |
-| NAV-08 | Nhóm điều hướng tính năng theo ngữ cảnh | Trong workspace hiện ba mục Công việc, Lịch trình, Thư viện; khi mở lớp thì thay bằng các mục phù hợp với lớp ở cùng vùng điều hướng | Vùng nội dung chính chỉ hiện tính năng đang chọn của ngữ cảnh hiện hành. Danh mục cụ thể của lớp và hành động từng mục đang ở [Q33](../../review/blocked/ux-q33-review.md). | SRC-16 |
+| NAV-08 | Nhóm điều hướng tính năng theo ngữ cảnh | Trong workspace hiện ba mục Công việc, Lịch trình, Thư viện; khi mở lớp, cùng vùng điều hướng hiển thị năm mục Nhóm, Bài giao, Lịch lớp, Thành viên, Cài đặt thay cho ba mục workspace | Vùng nội dung chính chỉ hiện tính năng đang chọn của ngữ cảnh hiện hành. Thứ tự, dạng điều khiển, hành động chi tiết và cách hiển thị theo quyền của năm mục lớp đang ở [Q33](../../review/blocked/ux-q33-review.md). | SRC-16, SRC-17 |
 
 Phạm vi dữ liệu của mỗi màn tra ở [Công việc](../requirements/tasks.md), [Lịch](../requirements/calendar.md) và [Thư viện](../requirements/library.md). Bản đầu dùng web trên máy tính và điện thoại. [Q20](../../review/provenance.md)

@@ -19,7 +19,7 @@
 | Nội dung Công việc | Phần lớn vùng chính | Lọc, Sắp xếp, điều hướng trục, Gantt hoặc Danh sách, chi tiết khi chọn việc | Thao tác theo quyền và tập việc của workspace đang mở. |
 
 Thư viện và Lịch trình đứng cạnh nhau trong thanh bên để chuyển nhanh. Vùng Công việc không đặt nội dung ghi chú hay lịch trình khác vào Gantt; “Mục lưu ý” chỉ hiện bản xem trước ngắn theo quy tắc UXR-05.
-Ba mục Công việc, Lịch trình và Thư viện là **tính năng của workspace đang mở**. Khi chuyển sang lớp, chính vùng điều hướng tính năng này hiển thị các mục phù hợp với lớp theo [NAV-08](validated-navigation.md); đặc tả chi tiết màn lớp thuộc [Q33](../../review/blocked/ux-q33-review.md).
+Ba mục Công việc, Lịch trình và Thư viện là **tính năng của workspace đang mở**. Khi chuyển sang lớp, chính vùng điều hướng tính năng này thay bằng năm mục Nhóm, Bài giao, Lịch lớp, Thành viên, Cài đặt theo [NAV-08](validated-navigation.md); đặc tả chi tiết màn lớp thuộc [Q33](../../review/blocked/ux-q33-review.md).
 
 ## Danh mục thành phần Q32
 
