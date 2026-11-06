@@ -5,7 +5,7 @@
 | Mục đích | Xác định loại nội dung, đích lưu nhanh, thư mục và phạm vi chia sẻ |
 | Phạm vi | Thư viện của workspace, Hộp thu cá nhân và sao chép vào nhóm |
 | Kiểm định | DCA-checked theo các quyết định lưu và chia sẻ |
-| Bằng chứng duyệt | [SRC-03, SRC-07, SRC-08, SRC-10, SRC-15, SRC-19, Q13, Q14, Q20, Q30, Q33-B3](../../review/provenance.md) |
+| Bằng chứng duyệt | [SRC-03, SRC-07, SRC-08, SRC-10, SRC-15, SRC-19, SRC-21, Q13, Q14, Q20, Q30, Q33-B3, E7](../../review/provenance.md) |
 
 | Mã | Quy tắc | Nguồn |
 | --- | --- | --- |
@@ -15,5 +15,6 @@
 | LIB-04 | Đưa mục từ cá nhân sang nhóm bằng thao tác sao chép. Bản gốc riêng vẫn ở nguồn và bản sao chịu quyền của workspace đích. | Q14 |
 | LIB-05 | Mục Thư viện cần nội dung hợp với loại văn bản, đường dẫn hoặc tệp đã chọn. Khi lưu nhanh, tiêu đề và thư mục có thể để trống; mục chưa phân loại vào Hộp thu theo LIB-02. | Q30 |
 | LIB-06 | Chủ workspace hoặc người có quyền quản lý workspace được tạo, đổi tên và xóa thư mục trong workspace đó. Người có quyền sửa một mục Thư viện được chuyển mục ấy giữa các thư mục **trong cùng workspace**. Quyền sửa mục không tự cấp quyền quản lý thư mục. | Q33-B3, SRC-19 |
+| LIB-07 | Chỉ xóa thư mục khi thư mục rỗng. Nếu còn mục bên trong, người dùng phải chuyển các mục ấy sang nơi khác trước khi xóa; không xóa các mục theo thao tác xóa thư mục. | E7, SRC-21 |
 
-Danh sách định dạng tệp, giới hạn mỗi tệp và tổng dung lượng, định dạng văn bản, nhận chia sẻ trực tiếp từ ứng dụng khác, khả năng đổi workspace mặc định và xử lý các mục con khi xóa thư mục còn ở [R-07](../../review/unresolved.md).
+Danh sách định dạng tệp, giới hạn mỗi tệp và tổng dung lượng, định dạng văn bản, nhận chia sẻ trực tiếp từ ứng dụng khác, khả năng đổi workspace mặc định và cách xử lý **thư mục con** khi xóa thư mục còn ở [R-07](../../review/unresolved.md).
