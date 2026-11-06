@@ -4,7 +4,7 @@
 | --- | --- |
 | Mục đích | Quy định cấp, vị trí, số lượng, kiểu và hành vi các thành phần trong khung workspace và màn Công việc |
 | Phạm vi | Web trên máy tính và điện thoại; workspace hiện tại, Gantt và Danh sách công việc |
-| Trạng thái | Q32 được chủ sản phẩm chốt sau bản vẽ và các sửa đổi UXR-03–06; [SRC-12 đến SRC-14](../../review/provenance.md) |
+| Trạng thái | Q32 được chủ sản phẩm chốt sau bản vẽ và các sửa đổi UXR-03–06; lối tắt lớp cùng cấp với workspace được làm rõ tại [SRC-16](../../review/provenance.md) |
 | Nguồn nghiệp vụ | [Điều hướng](validated-navigation.md), [chế độ xem việc](task-views.md), [quy tắc công việc](../requirements/tasks.md), [workspace mặc định](../requirements/accounts-and-workspaces.md) |
 
 ## Phân cấp và vùng màn
@@ -12,12 +12,14 @@
 | Cấp | Vị trí | Gồm những gì | Vùng chịu tác động |
 | --- | --- | --- | --- |
 | Ứng dụng | Đầu thanh bên | Nút Snote về “Việc của tôi” | Mở phạm vi tổng hợp xuyên workspace. |
+| Chọn ngữ cảnh | Đầu vùng chính | Cụm workspace và lối tắt Lớp học cùng cấp | Chọn workspace hoặc đi vào phạm vi lớp; lớp vẫn bao trùm các workspace nhóm ở cấp dữ liệu. |
 | Workspace | Trên vùng chính, cùng khung ứng dụng | Cụm chọn workspace, Tạo workspace khi bung, nút đổi góc nhìn workspace | Đổi workspace đang mở và dữ liệu của vùng chính. |
 | Tính năng trong workspace | Thanh bên, ba mục cùng cấp | Công việc, Lịch trình, Thư viện; Mục lưu ý ở dưới | Chỉ nội dung của mục và workspace đang chọn xuất hiện trong vùng chính. |
 | Chế độ trong Công việc | Đầu vùng Công việc | Nút Chế độ xem chuyển Gantt/Danh sách | Thay cách xem cùng tập việc. Danh sách việc khác danh sách workspace. |
 | Nội dung Công việc | Phần lớn vùng chính | Lọc, Sắp xếp, điều hướng trục, Gantt hoặc Danh sách, chi tiết khi chọn việc | Thao tác theo quyền và tập việc của workspace đang mở. |
 
 Thư viện và Lịch trình đứng cạnh nhau trong thanh bên để chuyển nhanh. Vùng Công việc không đặt nội dung ghi chú hay lịch trình khác vào Gantt; “Mục lưu ý” chỉ hiện bản xem trước ngắn theo quy tắc UXR-05.
+Ba mục Công việc, Lịch trình và Thư viện là **tính năng của workspace đang mở**. Khi chuyển sang lớp, chính vùng điều hướng tính năng này hiển thị các mục phù hợp với lớp theo [NAV-08](validated-navigation.md); đặc tả chi tiết màn lớp thuộc [Q33](../../review/blocked/ux-q33-review.md).
 
 ## Danh mục thành phần Q32
 
