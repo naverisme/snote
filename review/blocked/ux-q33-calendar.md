@@ -2,7 +2,7 @@
 
 | Trường | Giá trị |
 | --- | --- |
-| Trạng thái | A1–A3 đã chuyển vào [đặc tả được duyệt](../../docs/ux/calendar-q33.md); các chi tiết khác trong bảng là đề xuất, không dùng làm yêu cầu coding |
+| Trạng thái | A1–A3 và E6 đã chuyển vào [đặc tả được duyệt](../../docs/ux/calendar-q33.md); các chi tiết khác còn đề xuất |
 | Phạm vi | “Lịch của tôi” xuyên workspace, Lịch trình của một workspace, và đề xuất màn lịch trong lớp; sự kiện lớp có lối tạo theo quyền |
 | Quy tắc nguồn | [CAL-01 đến CAL-06](../../docs/requirements/calendar.md), [TASK-05 đến TASK-07](../../docs/requirements/tasks.md), [NAV-03–05](../../docs/ux/validated-navigation.md), [Q32](../../docs/ux/workspace-gantt.md) |
 
@@ -32,6 +32,6 @@ Trong workspace, giữ nguyên bộ chọn và ba mục tính năng đã duyệt
 
 ## Điểm còn mở
 
-A1–A3 đã chốt ba cách xem, nhóm lọc, đích tạo và múi giờ tại [đặc tả Lịch](../../docs/ux/calendar-q33.md). Trục điều hướng Trước/Hôm nay/Sau, vị trí chi tiết sự kiện, kiểu lưới từng chế độ và các trường biểu mẫu CUX-02/07–09 chưa được duyệt chỉ nhờ A1–A3.
+A1–A3 và E6 đã chốt ba cách xem, nhóm lọc, đích tạo, múi giờ, Trước/Hôm nay/Sau và vị trí chi tiết theo thiết bị tại [đặc tả Lịch](../../docs/ux/calendar-q33.md). Kiểu lưới từng chế độ, trường chi tiết và trường biểu mẫu còn mở.
 
 Chưa đưa nút sự kiện lặp vì [CAL-06](../../docs/requirements/calendar.md) để đặc tả tính năng lặp ở lượt sau. Không tự giả định khả năng sửa sự kiện của người không có quyền.
