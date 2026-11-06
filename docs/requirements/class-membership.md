@@ -5,7 +5,7 @@
 | Mục đích | Mô tả đường vào lớp, đường vào nhóm và điều kiện rời hoặc bàn giao |
 | Phạm vi | Lớp và các workspace nhóm thuộc lớp |
 | Kiểm định | DCA-checked theo quyết định về tư cách và giới hạn nhóm |
-| Bằng chứng duyệt | [SRC-01, SRC-02, SRC-07 đến SRC-10, SRC-15, SRC-20, Q02 đến Q04, Q23, Q24, E2](../../review/provenance.md) |
+| Bằng chứng duyệt | [SRC-01, SRC-02, SRC-07 đến SRC-10, SRC-15, SRC-20, SRC-22, Q02 đến Q04, Q23, Q24, E2, F7](../../review/provenance.md) |
 
 ## Tạo và vào lớp
 
@@ -58,5 +58,6 @@ flowchart TD
 | CLS-09 | Người học có thể tự rời lớp sau khi rời các nhóm thuộc lớp và bàn giao vai trò hoặc việc đang phụ trách. Lịch sử công việc và bản nộp vẫn được giữ. | SRC-09 |
 | CLS-10 | Giáo viên có thể lưu trữ lớp. Chủ lớp muốn rời lớp đang hoạt động thì bàn giao quyền chủ lớp cho một tài khoản Giáo viên khác và người nhận chấp nhận. | Q03 |
 | CLS-12 | Người học rời lớp thì quyền đọc dữ liệu chung của lớp và các nhóm thuộc lớp chấm dứt, lịch sử vẫn ở lớp. Nếu người rời đang giữ vai trò cần bàn giao mà chưa có người nhận, giáo viên chỉ định người nhận trước khi rời có hiệu lực. Lớp lưu trữ cho phép đọc lịch sử theo quyền; chủ lớp có thể khôi phục lớp. | Q24 |
+| CLS-14 | Khi lớp đang lưu trữ, người có quyền chỉ đọc lịch sử trong phạm vi được phép; không tạo hoặc sửa nội dung mới trong lớp hay các workspace nhóm thuộc lớp. Chủ lớp có thể khôi phục lớp trước khi tiếp tục thao tác. | F7, SRC-22 |
 
-Xem [vai trò và quyền](permissions.md) để phân biệt quyền hiện hành với lịch sử đã tạo. Các chi tiết quyền theo từng trường và cách hiển thị lớp lưu trữ còn ở [R-02 và R-09](../../review/unresolved.md).
+Xem [vai trò và quyền](permissions.md) để phân biệt quyền hiện hành với lịch sử đã tạo. Lớp lưu trữ chỉ đọc theo CLS-14; chi tiết quyền từng trường và biểu diễn trạng thái lưu trữ còn ở [R-02 và R-09](../../review/unresolved.md).

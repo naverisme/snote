@@ -2,7 +2,7 @@
 
 | Trường | Giá trị |
 | --- | --- |
-| Trạng thái | C1–C5 và E1–E5 đã chuyển vào [điều hướng lớp được duyệt](../../docs/ux/class-navigation.md); các cột bổ sung và kiểu chi tiết khác còn đề xuất |
+| Trạng thái | C1–C5, E1–E5, F1–F7 đã chuyển vào [điều hướng lớp được duyệt](../../docs/ux/class-navigation.md); các cột bổ sung và kiểu chi tiết khác còn đề xuất |
 | Phạm vi | Danh sách lớp, lớp đang mở, nhóm (workspace thuộc lớp), thành viên và cài đặt theo quyền |
 | Quy tắc nguồn | [CLS-01 đến CLS-12](../../docs/requirements/class-membership.md), [PER-01 đến PER-08](../../docs/requirements/permissions.md), [ASG-01](../../docs/requirements/assignments-and-submissions.md), [NAV-01/02](../../docs/ux/validated-navigation.md) |
 
@@ -17,7 +17,7 @@
 | CLUX-05 | **Cùng vùng tính năng ở thanh bên** nơi workspace hiện Công việc/Lịch trình/Thư viện; thay ba mục ấy khi lớp đang mở | 5 mục Nhóm, Bài giao, Lịch lớp, Thành viên, Cài đặt; **ẩn Cài đặt** nếu không có quyền quản lý lớp | Chỉ một vùng tính năng cấp lớp hiện theo mục được chọn. Thứ tự, icon và trạng thái chọn còn đề xuất; không đặt thêm hàng tab dưới tiêu đề lớp. | C2, CUXC-02 |
 | CLUX-06 | Vùng Nhóm của lớp | 1 danh sách, mỗi nhóm 1 hàng; nút Tạo nhóm khi có quyền còn đề xuất | Mỗi hàng chỉ hiện tên nhóm, trưởng nhóm, tư cách của mình; chọn vào workspace nhóm với Công việc là mục đầu. | C4, E3 |
 | CLUX-07 | Vùng Thành viên, phần lời mời và yêu cầu | 1 nhóm lời mời đến cho chính mình; 1 nhóm yêu cầu chờ duyệt nếu có quyền | Người học Chấp nhận/Từ chối lời mời trước khi tư cách hiệu lực. Yêu cầu qua mã lớp do giáo viên duyệt; yêu cầu vào nhóm do người có quyền theo PER-04 duyệt khi còn chỗ. | CLS-02/03/05/11, PER-04 |
-| CLUX-08 | Vùng Thành viên, bảng người của lớp | 1 bảng dạng lưới như bảng tính, mỗi thành viên một hàng; 1 ô vai trò trong mỗi hàng | Vai trò ban đầu khi người học gia nhập là Member; giáo viên chọn vai trò khác trực tiếp ở hàng tương ứng. Các quyền mặc định theo vai trò và cấu hình khác thuộc **Cài đặt**, không chỉnh ở bảng. Những cột khác và xử lý bảng trên điện thoại chưa được chốt. Trưởng nhóm quản lý workspace nhóm, không nhờ vai trò đó mà quản trị lớp. | E1–E2, CLS-13, PER-09 |
+| CLUX-08 | Vùng Thành viên, bảng người của lớp | 1 bảng dạng lưới như bảng tính, mỗi thành viên một hàng; ba cột chính và cách cuộn điện thoại đã chốt | Người học, Vai trò, Nhóm đang tham gia theo CUXC-07/11. Chỉ chủ lớp đổi Member/Lớp trưởng trực tiếp và lưu dấu; quyền mặc định chỉnh trong Cài đặt. Cột bổ sung, lọc và sắp xếp còn mở. Trưởng nhóm quản lý workspace nhóm, không nhờ vai trò đó mà quản trị lớp. | E1–E2, F2–F4, F6, CUXC-07/11 |
 | CLUX-09 | Vùng Cài đặt lớp theo quyền giáo viên | 4 phần: giới hạn nhóm; quyền tạo/duyệt nhóm; quyền lớp trưởng; hai mặc định sau hạn. Mỗi lần mở một phần | Giáo viên chỉnh quyền mặc định theo vai trò và cấu hình lớp tại đây; chi tiết trường/biểu mẫu chưa duyệt. | E2, E5, PER-09, CLS-06/11 |
 | CLUX-10 | Phần quản lý vòng đời lớp theo quyền chủ lớp | 1 nút Lưu trữ; khi lớp lưu trữ có nút Khôi phục theo quyền | Lưu trữ lớp vẫn giữ lịch sử; chủ lớp khôi phục. Chuyển chủ lớp hoạt động cần Giáo viên khác chấp nhận. | CLS-10/12 |
 
@@ -29,11 +29,11 @@
 | Lớp chưa có nhóm, bài giao hoặc sự kiện | Thông báo trong đúng mục Nhóm, Bài giao hoặc Lịch lớp, không trộn nội dung các mục. |
 | Lời mời chờ chấp nhận | Hiện trạng thái chờ, không coi người học đã là thành viên. |
 | Hết chỗ theo giới hạn nhóm | Tắt/không cho hoàn tất duyệt và giải thích giới hạn; lời mời cũ hết hiệu lực theo CLS-07/11. |
-| Lớp đã lưu trữ | Hiện nhãn lưu trữ, chỉ những thao tác phù hợp với trạng thái và quyền; chi tiết khả năng chỉnh sửa khi lưu trữ còn R-09. |
+| Lớp đã lưu trữ | Chỉ đọc lịch sử theo quyền; khóa tạo/sửa mới; chủ lớp có nút Khôi phục trong Cài đặt theo F7. |
 | Điện thoại | Năm mục lớp (trừ Cài đặt khi không có quyền) trong danh sách thu gọn mở dọc; chọn mục thì đóng và hiển thị một màn. Cách trình bày các hàng lớp/nhóm còn đề xuất. |
 
 ## Điểm còn mở
 
-C1–C5 và E1–E5 đã chốt điều hướng lớp, bảng Thành viên, hàng nhóm, ba vùng Thành viên và bốn phần Cài đặt. Còn kiểu icon/trạng thái chọn, các cột phụ và cách trình bày bảng trên điện thoại, danh sách nhiều lớp, thứ tự/biểu tượng năm mục, chi tiết biểu mẫu Cài đặt. Những chi tiết ngoài phần đã chốt trong CLUX-02–04 và CLUX-07–10 chỉ là bản xem trước.
+C1–C5, E1–E5 và F1–F7 đã chốt điều hướng lớp, bảng Thành viên ba cột chính (điện thoại cuộn ngang giữ cột Người học), hàng nhóm, các vùng yêu cầu, vai trò và lưu trữ. Còn kiểu icon/trạng thái chọn, các cột phụ/lọc, danh sách nhiều lớp, thứ tự/biểu tượng năm mục và chi tiết biểu mẫu Cài đặt. Những chi tiết ngoài phần đã chốt trong CLUX-02–04 và CLUX-07–10 chỉ là bản xem trước.
 
 Không tự đặt quyền đọc mọi tệp/đường dẫn của lớp trưởng; [PER-02](../../docs/requirements/permissions.md) yêu cầu cấp riêng. Không coi trưởng nhóm là người quản trị lớp.

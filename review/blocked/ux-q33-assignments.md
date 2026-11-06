@@ -2,7 +2,7 @@
 
 | Trường | Giá trị |
 | --- | --- |
-| Trạng thái | D1–D2 và E8 đã chuyển vào [đặc tả được duyệt](../../docs/ux/assignments-q33.md) và [ASG-12–15](../../docs/requirements/assignments-and-submissions.md); phần còn lại là đề xuất |
+| Trạng thái | D1–D2, E8 và F9 đã chuyển vào [đặc tả được duyệt](../../docs/ux/assignments-q33.md) và [ASG-12–15](../../docs/requirements/assignments-and-submissions.md); phần còn lại là đề xuất |
 | Phạm vi | Mục Bài giao đã chốt ở vùng tính năng của lớp; bố trí màn bài giao của giáo viên và màn nhận bài của một nhóm còn là đề xuất |
 | Quy tắc nguồn | [ASG-01 đến ASG-12](../../docs/requirements/assignments-and-submissions.md), [PER-03/05](../../docs/requirements/permissions.md), [CAL-03](../../docs/requirements/calendar.md), [Q33-C](ux-q33-class.md) |
 
@@ -37,6 +37,6 @@ Mỗi bài giao thuộc **lớp**, được gửi cho cả lớp hoặc những 
 
 ## Điểm còn mở
 
-D1–D2 và E8 đã chốt biểu mẫu tối thiểu, ba trạng thái của hai quyền sau hạn, bảng ba nguồn, bản nộp hiện hành trước, lịch sử/nhận xét sau khi chọn nhóm và xem bản hiện hành trước khi gửi lại do xung đột. Chưa chốt dạng bảng phiên bản, chi tiết biểu mẫu và màn lưu trữ. Giới hạn tệp còn ở R-07.
+D1–D2, E8 và F9 đã chốt biểu mẫu tối thiểu, ba trạng thái của hai quyền sau hạn, bảng ba nguồn, bản nộp hiện hành trước, lịch sử/nhận xét sau khi chọn nhóm, xem bản hiện hành trước khi gửi lại do xung đột và năm thông tin của phiên bản đã chọn. Chưa chốt dạng bảng phiên bản, chi tiết biểu mẫu và màn lưu trữ. Giới hạn tệp còn ở R-07.
 
 Thao tác thu hồi riêng một bản nộp còn mở tại [R-04](../../review/unresolved.md), nên chưa đặt nút Thu hồi. Điểm số vẫn ngoài phạm vi bản đầu theo [ASG-09](../../docs/requirements/assignments-and-submissions.md).
