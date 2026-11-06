@@ -12,8 +12,8 @@
 | Bước đã thống nhất | Tài liệu kiểm soát | Trạng thái ở mốc này |
 | --- | --- | --- |
 | 1. Chốt bài toán và phạm vi | [Khái niệm](../docs/product/concepts.md) và [phạm vi bản đầu](../docs/product/first-release.md) | Đã ghi đối tượng, luồng chính và phạm vi web. Chi tiết phát hành theo R-08 và R-09. |
-| 2. Chốt luồng nghiệp vụ | [Yêu cầu](../docs/requirements/README.md) theo bảy chủ đề | Đã mô tả các đường vào lớp và nhóm, giao việc, Thư viện, lịch và nộp. Các trường hợp biên nằm trong sổ câu hỏi. |
-| 3. Chốt quy tắc và quyền | [Vai trò và quyền](../docs/requirements/permissions.md) cùng quy tắc ở từng chủ đề | Có quyền mặc định và quyền cấp riêng theo phạm vi. Còn ma trận từng hành động, vai trò đồng thời và một số ngoại lệ. |
+| 2. Chốt luồng nghiệp vụ | [Yêu cầu](../docs/requirements/README.md) theo bảy chủ đề | Có đường vào/rời lớp và nhóm, chờ phân công, cập nhật tiến độ và các trường hợp biên Q22–Q31. Phần còn thiếu được tách ở sổ câu hỏi. |
+| 3. Chốt quy tắc và quyền | [Vai trò và quyền](../docs/requirements/permissions.md) cùng quy tắc ở từng chủ đề | Đã rõ chủ workspace độc lập, quyền lớp trưởng, ngừng quyền khi rời, quyền đọc/cập nhật bài theo nhóm. Ma trận từng hành động và vai trò đồng thời còn mở. |
 | 4. Duyệt kiến trúc giao diện | [Điều hướng và cách xem việc](../docs/ux/README.md), [Gantt Q32](../docs/ux/workspace-gantt.md) | Khung workspace và màn Công việc/Gantt đã duyệt. Lịch trình, Thư viện, Lớp học, bài giao còn theo Q33. |
 | 5. Chốt mô hình hệ thống và dữ liệu | Nhóm `architecture/` | Chờ thiết kế có căn cứ, kể cả ranh giới module và mô hình lưu trữ. |
 | 6. Khóa hợp đồng triển khai | Nhóm `contracts/` | Chờ cấu trúc hệ thống, quyền liên quan và quy tắc giao tiếp. |
