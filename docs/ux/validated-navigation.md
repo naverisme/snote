@@ -23,6 +23,6 @@
 | NAV-05 | Vùng nội dung chính | 1 vùng theo mục được chọn | Vùng hiển thị của workspace | Hiện nội dung của Công việc, Lịch hoặc Thư viện theo mục đang chọn. |
 | NAV-06 | Hộp thu | 1 phần trong phạm vi đã chốt | Thành phần của Thư viện trong workspace cá nhân mặc định | Hiện các mục lưu nhanh chưa phân loại của chủ tài khoản khi truy cập Hộp thu. |
 
-NAV-04 đến NAV-06 dùng SRC-03 và các quyết định về Hộp thu trong SRC-07, SRC-08. Số lượng trên chỉ áp dụng cho các nhóm đã xác nhận. Kiểu điều khiển cụ thể, vị trí các lối vào cấp ứng dụng và trạng thái màn nằm trong [R-05](../../review/unresolved.md). [Hồ sơ nguồn](../../review/provenance.md)
+NAV-04 đến NAV-06 dùng SRC-03 và các quyết định về Hộp thu trong SRC-07, SRC-08. [Q32](../../review/provenance.md) đã chốt kiểu điều khiển và trạng thái của khung workspace cùng màn Công việc tại [đặc tả Gantt](workspace-gantt.md). Các màn khác còn theo [R-05](../../review/unresolved.md).
 
 Phạm vi dữ liệu của mỗi màn tra ở [Công việc](../requirements/tasks.md), [Lịch](../requirements/calendar.md) và [Thư viện](../requirements/library.md). Bản đầu dùng web trên máy tính và điện thoại. [Q20](../../review/provenance.md)

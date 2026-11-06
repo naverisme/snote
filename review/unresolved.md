@@ -8,7 +8,7 @@ Mã R giữ dấu vết từ mốc PR #10 và bổ sung những điều kiện c
 | R-02 | Ma trận từng hành động và từng trường, phạm vi lớp trưởng với mục Thư viện ngoài ghi chú, quyền đồng thời, thu hồi khi tư cách hết hiệu lực, thay trưởng nhóm. | Quyền, UX theo vai trò và hợp đồng thực thi |
 | R-03 | Ai gửi cập nhật tiến độ bằng văn bản và ai được đọc bài, tiến độ, bản nộp giữa các nhóm. | Bảng tiến độ và quyền bài giao |
 | R-04 | Thu hồi riêng một bản nộp, xung đột khi nhiều người Nộp, giới hạn tệp và trường hợp nộp không trọn vẹn. | Luồng phiên bản, hợp đồng và kiểm chứng |
-| R-05 | Số, loại, vị trí và hành động của thành phần màn, cách vẽ Gantt, điện thoại, trạng thái tải, trống và lỗi. | Wireframe và đặc tả UX |
+| R-05 | Q32 đã chốt khung workspace và màn Công việc/Gantt. Còn bố trí từng thành phần cho Lịch trình, Thư viện, Lớp học, bài giao; thông số chuyển động và hình ảnh cụ thể của Gantt nếu cần thiết kế bổ sung. | Wireframe và đặc tả UX cho các màn còn lại |
 | R-06 | Ranh giới module, cách lưu dữ liệu, công nghệ, giao tiếp, lỗi, phân trang, đồng bộ và thiết kế triển khai. | `architecture/` và `contracts/` |
 | R-07 | Trường thông tin bắt buộc, loại và giới hạn tệp, đổi workspace mặc định của Hộp thu, lưu toàn văn và nhận chia sẻ từ ứng dụng khác. | Thư viện, Hộp thu và hợp đồng lưu trữ |
 | R-08 | Ranh giới phát hành từng tính năng, nghiệm thu đầy đủ, mục tiêu chất lượng, môi trường, mốc và phạm vi sở hữu tệp. | `quality/`, `operations/` và cổng giao việc |

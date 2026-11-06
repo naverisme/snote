@@ -6,7 +6,7 @@
 | [Độ phủ của bộ tài liệu](coverage.md) | Kiểm tra bảy nhóm tài liệu và đầu ra của tám bước đã thống nhất |
 | [Các điểm chưa chốt](unresolved.md) | Tìm khoảng trống theo mã và phần tài liệu phụ thuộc |
 | [Phiếu duyệt gộp Q21–Q37](decision-batch.md) | Trả lời một lượt các câu hỏi về nghiệp vụ, UX và đầu vào kỹ thuật |
-| [Bố trí workspace và Gantt](blocked/ux-workspace-gantt.md) | Xem phương án về số lượng, vị trí, kiểu và hành động của từng thành phần |
+| [Khung workspace và Gantt đã duyệt](../docs/ux/workspace-gantt.md) | Tra số lượng, vị trí, cấp, kiểu và hành động của từng thành phần Q32 |
 | [Ca nghiệm thu đã duyệt](../docs/quality/acceptance-scenarios.md) | Xem 12 tình huống nền và kết quả cần quan sát; ngưỡng định lượng còn mở |
 | [Phương án lưu trữ để duyệt](blocked/storage-proposal.md) | So sánh nơi lưu text, link, tệp và phương án sao lưu |
 

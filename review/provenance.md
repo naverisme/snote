@@ -27,6 +27,7 @@ Các câu trích ngắn là phát biểu của chủ sản phẩm trong chuỗi 
 | SRC-11 | Chủ sản phẩm trả lời Q21 “không chia sẻ workspace mặc định (cá nhân)”. | Workspace cá nhân mặc định không thêm thành viên và không chia sẻ quyền truy cập. Chưa quyết định có được đổi workspace mặc định hay không. | `docs/product/concepts.md`, `docs/requirements/accounts-and-workspaces.md` |
 | SRC-12 | Chủ sản phẩm nói “duyệt q35 36 37”, “q32 chưa chốt” và đồng ý đổi công nghệ theo đề xuất; cung cấp bản vẽ Gantt, yêu cầu đánh giá từng thành phần và tìm giải pháp lưu trữ. | Duyệt phạm vi hợp đồng web trước và ca nghiệm thu mẫu, tiếp tục làm rõ mục tiêu vận hành; Q32 cùng phương án lưu trữ vẫn ở vùng rà soát. Các tên công nghệ là đầu vào thiết kế, chưa tự suy ra hợp đồng hay ngưỡng vận hành. | `review/decision-batch.md`, `review/blocked/ux-workspace-gantt.md`, `review/blocked/storage-proposal.md` |
 | SRC-13 | Chủ sản phẩm sửa UXR-03 đến UXR-06: “tối đa 2”, máy tính hiện tên khi hover, điện thoại hiện tên cạnh icon; bung ngang, tạo workspace ở đầu trái, đổi sang danh sách và giữ-kéo; “mục lưu ý” xem trước nội dung quan trọng; “chế độ xem” đổi Gantt/Danh sách. | Diễn giải chính xác ý đồ bản vẽ cho bốn thành phần. Bố trí Q32 tổng thể và các chi tiết chưa mô tả vẫn mở. | `review/blocked/ux-workspace-gantt.md`, `review/decision-batch.md` |
+| SRC-14 | Sau bản đánh giá UXR-01–14 và bảng bốn lựa chọn cuối cùng (danh sách workspace, Mục lưu ý, Gantt còn lại và nút Snote), chủ sản phẩm nói “chốt q32”. | Duyệt Q32: danh sách workspace hiện tên/lớp/trạng thái; kéo chỉ cuộn và bấm mới chọn; Mục lưu ý theo workspace tối đa ba dòng và mở mục nguồn; UXR-07–14; nút Snote về Việc của tôi. Các quy tắc UXR-03–06 đã được chủ sản phẩm sửa ở SRC-13. | `docs/ux/workspace-gantt.md`, `review/decision-batch.md` |
 
 ### Sổ quyết định của lượt hỏi gộp (SRC-10)
 
@@ -84,7 +85,7 @@ Ví dụ xung đột có thể kiểm tra ở [quyết định cũ](https://gith
 | Sự kiện và quyền hiển thị lịch | SRC-04, Q11, Q12, Q19, CAL-01 đến CAL-05 | [Lịch](../docs/requirements/calendar.md) |
 | Hộp thu, tệp, đường dẫn, văn bản, sao chép | SRC-03, SRC-07, SRC-08, Q13, Q14, Q20, LIB-01 đến LIB-04 | [Thư viện](../docs/requirements/library.md) |
 | Tiến độ, quyền nộp, cấu hình quá hạn, bản nộp và phản hồi | SRC-05, SRC-07 đến SRC-10, Q15 đến Q18, ASG-01 đến ASG-10 | [Bài giao và nộp](../docs/requirements/assignments-and-submissions.md) |
-| Điều hướng workspace, lối vào tài khoản và cách xem việc | SRC-03, SRC-04, SRC-07, SRC-08, Q09, Q19, Q20, NAV-01 đến NAV-06, VIEW-01 đến VIEW-04 | [Điều hướng](../docs/ux/validated-navigation.md), [chế độ xem việc](../docs/ux/task-views.md) |
+| Điều hướng workspace, lối vào tài khoản và cách xem việc | SRC-03, SRC-04, SRC-07, SRC-08, SRC-13, SRC-14, Q09, Q19, Q20, NAV-01 đến NAV-06, VIEW-01 đến VIEW-04, UXR-01 đến UXR-14 | [Điều hướng](../docs/ux/validated-navigation.md), [chế độ xem việc](../docs/ux/task-views.md), [Gantt Q32](../docs/ux/workspace-gantt.md) |
 
 Tệp `docs/requirements/verified-business-rules.md` giữ lối vào tới chỉ mục chủ đề. Nội dung gốc để so sánh nằm tại [mốc PR #10](https://github.com/naverisme/snote/blob/583435b35811ab4285447b3afb9aafbad04f6d82/docs/requirements/verified-business-rules.md). Mã mới dùng để dẫn chiếu tài liệu. Nghiệp vụ được kiểm theo nguồn trên. Các khoảng trống và đề xuất nằm ở [sổ câu hỏi](unresolved.md).
 
