@@ -2,7 +2,7 @@
 
 | Trường | Giá trị |
 | --- | --- |
-| Trạng thái | Chủ sản phẩm đã chốt C1–C5, A1–A3, B1–B3, D1–D2, E1–E8 (E1–E2 có sửa) và F1–F10 tại SRC-19–22; G1–G12 **tạm duyệt** ở [phiếu G](ux-q33-g-provisional.md), chưa khóa thành đặc tả triển khai |
+| Trạng thái | Chủ sản phẩm đã chốt C1–C5, A1–A3, B1–B3, D1–D2, E1–E8 (E1–E2 có sửa), F1–F10 và Thư viện I6–I13 tại SRC-19–22/25; G1–G12 **tạm duyệt** ở [phiếu G](ux-q33-g-provisional.md), chưa khóa thành đặc tả triển khai |
 | Nền đã chốt | [Q32 khung workspace/Gantt](../../docs/ux/workspace-gantt.md), [quy tắc nghiệp vụ](../../docs/requirements/README.md) |
 | Mục tiêu | Phân biệt mệnh đề đã chuyển vào `docs/` với các thành phần còn đề xuất |
 
@@ -11,7 +11,7 @@
 | Màn | Phần đã duyệt | Phần còn rà soát |
 | --- | --- | --- |
 | Lịch trình | [A1–A3, E6, F10](../../docs/ux/calendar-q33.md): ba chế độ, lọc, đích sự kiện, múi giờ, điều hướng và chi tiết sự kiện | [CUX còn mở](ux-q33-calendar.md) |
-| Thư viện | [B1–B3, E7, F8](../../docs/ux/library-q33.md): bố cục, lưu/tìm, quyền thư mục và điều kiện xóa | [LUX còn mở](ux-q33-library.md) |
+| Thư viện | [B1–B3, E7, F8, I6–I13](../../docs/ux/library-q33.md): bố cục, lưu/tìm, quyền thư mục, trình soạn, ghi đè/tạo bản sao và tải tệp | [LUX còn mở](ux-q33-library.md) |
 | Lớp học | [C1–C5, E1–E5, F1–F7](../../docs/ux/class-navigation.md): bảng Thành viên, vai trò, yêu cầu, hàng nhóm, Cài đặt và lưu trữ | [CLUX còn mở](ux-q33-class.md) |
 | Bài giao/nộp | [D1–D2, E8, F9](../../docs/ux/assignments-q33.md): tạo bài, hai quyền sau hạn, bảng nhóm và phiên bản bản nộp | [AUX còn mở](ux-q33-assignments.md) |
 

@@ -7,7 +7,7 @@ Các câu hỏi tiếp nối Q01–Q20 đã được ghi ở PR #10. Từng hàn
 | Mã | Cần quyết định | Kết quả hoặc phương án còn mở | Liên quan |
 | --- | --- | --- | --- |
 | Q21 | Workspace cá nhân mặc định có thể thêm thành viên hoặc đổi sang workspace khác không? | **Đã duyệt phần chia sẻ**: không cho chia sẻ workspace mặc định, tạo workspace khác để cộng tác [ACC-06](../docs/requirements/accounts-and-workspaces.md). Khả năng đổi workspace mặc định và đích Hộp thu vẫn mở. | R-07 |
-| Q22 | Quyền mặc định ở workspace độc lập và phạm vi lớp trưởng được áp dụng thế nào? | **Đã chốt**: người tạo quản lý thành viên/cấp quyền trong workspace độc lập; thành viên thao tác việc được giao theo quyền; lớp trưởng mặc định xem/sửa công việc, lịch, ghi chú chung, cần quyền riêng cho tệp/đường dẫn; quyền theo tư cách dừng khi tư cách hết hiệu lực. [PER-02, PER-07, PER-08](../docs/requirements/permissions.md). | R-02, R-14 còn bàn giao chủ workspace độc lập |
+| Q22 | Quyền mặc định ở workspace độc lập và phạm vi lớp trưởng được áp dụng thế nào? | **Đã chốt**: người tạo quản lý thành viên/cấp quyền trong workspace độc lập; thành viên thao tác việc được giao theo quyền; lớp trưởng mặc định xem/sửa công việc, lịch, ghi chú chung, cần quyền riêng cho tệp/đường dẫn; quyền theo tư cách dừng khi tư cách hết hiệu lực. [PER-02, PER-07, PER-08](../docs/requirements/permissions.md). Bàn giao chủ workspace độc lập chốt sau tại [ACC-08/09](../docs/requirements/accounts-and-workspaces.md). | R-02 còn các ô quyền cụ thể |
 | Q23 | Khi đã ở một nhóm, hệ thống xử lý yêu cầu chờ, lời mời cũ và thay đổi giới hạn ra sao? | **Đã chốt**: lời mời lưu trữ không hồi sinh khi rời; duyệt yêu cầu theo chỗ còn; giảm giới hạn giữ tư cách hiện có và chặn người vào mới. [CLS-11](../docs/requirements/class-membership.md). | CLS-11 |
 | Q24 | Rời lớp, thiếu người nhận bàn giao và lưu trữ lớp xử lý thế nào? | **Đã chốt**: ngừng quyền đọc dữ liệu chung sau rời, giữ lịch sử, giáo viên chỉ định người nhận bàn giao trước khi rời; lớp lưu trữ đọc lịch sử theo quyền và chủ lớp có thể khôi phục. [CLS-12](../docs/requirements/class-membership.md). | R-09 |
 
@@ -20,7 +20,7 @@ Các câu hỏi tiếp nối Q01–Q20 đã được ghi ở PR #10. Từng hàn
 | Q27 | Dùng múi giờ nào cho ngày lọc và hiển thị lịch? | **Đã chốt**: lọc Hôm nay/Ngày mai và Lịch của tôi theo múi giờ người xem; hạn bài theo múi giờ lớp; hạn việc chỉ ngày giữ múi giờ lúc đặt. [TASK-06, TASK-10](../docs/requirements/tasks.md), [CAL-01](../docs/requirements/calendar.md). | R-11 còn sự kiện lặp |
 | Q28 | Ai gửi cập nhật tiến độ bằng văn bản và ai xem bài, tiến độ, bản nộp? | **Đã chốt**: trưởng nhóm/người được cấp quyền gửi; giáo viên và thành viên nhóm nhận bài đọc; đọc liên nhóm cần quyền riêng do giáo viên cấp. [ASG-11](../docs/requirements/assignments-and-submissions.md). | ASG-11 |
 | Q29 | Nhiều người nộp cùng lúc, tải tệp lỗi hoặc muốn thu hồi bản nộp thì sao? | **Đã chốt phần phiên bản/xung đột**: bản đã ghi giữ nguyên khi lỗi tải, người gửi phiên bản cũ cần xem lại, chỉ tạo phiên bản khi đủ phần, sửa bằng phiên bản mới theo quyền và hạn. **Thu hồi riêng bản nộp chưa được mô tả trong phương án**, vẫn mở. [ASG-12](../docs/requirements/assignments-and-submissions.md). | R-04 |
-| Q30 | Thông tin tối thiểu, loại tệp và giới hạn lưu là gì? | **Đã chốt phần đầu**: cần nội dung theo loại văn bản/link/tệp; lưu nhanh cho phép thiếu tiêu đề và thư mục. **Định dạng và hạn mức tệp chưa có giá trị**. [LIB-05](../docs/requirements/library.md). | R-07 |
+| Q30 | Thông tin tối thiểu, loại tệp và giới hạn lưu là gì? | **Đã chốt phần đầu**: cần nội dung theo loại văn bản/link/tệp; lưu nhanh cho phép thiếu tiêu đề và thư mục. I8–I9 sau đó chốt loại tệp và mức **thử nghiệm** 25 MB/tệp, 1 GB/workspace tại [LIB-11](../docs/requirements/library.md); cách tính hạn mức và giá trị chính thức theo máy chủ còn R-07. | R-07, SRC-25 |
 | Q31 | Sự kiện trùng giờ, lặp lại và sửa sau khi gửi xử lý ra sao? | **Đã chốt**: cho trùng giờ và cảnh báo; người có quyền sửa, người nhận thấy cập nhật đúng phạm vi; sự kiện lặp đặc tả sau. [CAL-06](../docs/requirements/calendar.md). | R-11 còn tính năng lặp |
 
 ## UX và đầu vào kỹ thuật
@@ -33,5 +33,12 @@ Các câu hỏi tiếp nối Q01–Q20 đã được ghi ở PR #10. Từng hàn
 | Q35 | Hợp đồng bản đầu phục vụ ai? | **Đã duyệt hướng**: đặc tả giao tiếp cho web v2 trước; chỉ đặc tả thêm ứng dụng khác khi phạm vi ấy được chốt. Endpoint/trường/lỗi vẫn cần thiết kế. | R-06, R-07, R-15 |
 | Q36 | Các ca nào dùng làm nền nghiệm thu và cần đo chất lượng gì? | **Đã duyệt hướng và 12 ca nền** [tại `quality/`](../docs/quality/acceptance-scenarios.md). Quy mô thử, thời gian đáp ứng và mục tiêu phục hồi chưa có giá trị cụ thể. | R-08, R-16 |
 | Q37 | Bản đầu thử nghiệm riêng hay phát hành rộng, cần môi trường và phục hồi ở mức nào? | **Đã duyệt trình tự làm rõ**: chọn đối tượng thử rồi xác định môi trường, quyền truy cập và mục tiêu sao lưu/phục hồi. Đối tượng, mức mất dữ liệu và thời gian khôi phục chưa được nêu nên vẫn mở. | R-08, R-17 |
+
+## Quyết định sau Q33
+
+| Mã | Phạm vi | Kết quả và nơi tra cứu |
+| --- | --- | --- |
+| I1–I5 | Workspace | Đã chốt Hộp thu cố định ở workspace cá nhân mặc định, chuyển chủ/rời/lưu trữ workspace độc lập và nhóm không tách khỏi lớp. [Tài khoản/workspace](../docs/requirements/accounts-and-workspaces.md) · [lớp/nhóm](../docs/requirements/class-membership.md) · [SRC-25](provenance.md). |
+| I6–I13 | Thư viện và tệp | Đã chốt trình soạn danh sách tự động, URL và thẻ bìa đầu tiên, loại tệp và hạn mức thử nghiệm, bản sao độc lập, lựa chọn ghi đè có lịch sử/tạo bản sao, Thùng rác 30 ngày và trạng thái tải. [Yêu cầu](../docs/requirements/library.md) · [UX](../docs/ux/library-q33.md) · [SRC-25](provenance.md). |
 
 Các câu chưa chốt có thể trả lời theo mã, ví dụ `duyệt Q22–Q24, sửa Q25 ...`. Các phần để mở tiếp tục nằm ở hồ sơ rà soát; không mặc định được duyệt chỉ vì Q32 đã chốt.
