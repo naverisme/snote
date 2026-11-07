@@ -1,0 +1,58 @@
+name: Foundation
+on:
+  push:
+    branches: [feat/v2/foundation]
+  pull_request:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17.7
+        env:
+          POSTGRES_USER: snote
+          POSTGRES_PASSWORD: snote_dev_only
+          POSTGRES_DB: snote
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U snote -d snote" --health-interval 5s --health-timeout 3s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm install --global npm@11.15.0
+      - run: npm ci
+      - run: npm run contract:generate
+      - run: git diff --exit-code -- docs/contracts/openapi.yaml packages/contracts/src/schema.ts
+      - run: npm run build
+      - run: npm run contract:http
+      - run: npm --workspace @snote/api test
+      - run: npx prisma validate --schema apps/api/prisma/schema.prisma
+        env:
+          DATABASE_URL: postgresql://snote:snote_dev_only@localhost:5432/snote?schema=public
+      - run: npx prisma migrate deploy --schema apps/api/prisma/schema.prisma
+        env:
+          DATABASE_URL: postgresql://snote:snote_dev_only@localhost:5432/snote?schema=public
+      - run: npx prisma generate --schema apps/api/prisma/schema.prisma
+        env:
+          DATABASE_URL: postgresql://snote:snote_dev_only@localhost:5432/snote?schema=public
+      - run: npm --workspace @snote/api run seed
+        env:
+          DATABASE_URL: postgresql://snote:snote_dev_only@localhost:5432/snote?schema=public
+      - run: npm --workspace @snote/api run check:db
+        env:
+          DATABASE_URL: postgresql://snote:snote_dev_only@localhost:5432/snote?schema=public
+      - run: npx prisma migrate reset --force --skip-seed --schema apps/api/prisma/schema.prisma
+        env:
+          DATABASE_URL: postgresql://snote:snote_dev_only@localhost:5432/snote?schema=public
+      - run: npx prisma migrate deploy --schema apps/api/prisma/schema.prisma
+        env:
+          DATABASE_URL: postgresql://snote:snote_dev_only@localhost:5432/snote?schema=public
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r tools/requirements.txt
+      - run: python tools/validate_contract.py
+      - run: python -m openapi_spec_validator docs/contracts/openapi.yaml

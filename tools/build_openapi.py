@@ -28,17 +28,19 @@ S = {
  "InvitationCreate": obj({"inviteeId": ID}, ("inviteeId",)),
  "JoinClass": obj({"code": ID}, ("code",)),
  "JoinCode": obj({"enabled":{"type":"boolean"}}, ("enabled",)),
+ "JoinCodeState": obj({"classId":ID,"enabled":{"type":"boolean"},"code":ID,"version":{"type":"integer"}}, ("classId","enabled","version")),
  "DueDate": obj({"date":DATE,"timeZone":ID}, ("date","timeZone")),
  "GroupCreate": obj({"name": string(minLength=1), "leaderId": ID}, ("name",)),
  "Transfer": obj({"recipientId": ID}, ("recipientId",)),
  "LeaderChange": obj({"leaderId": ID}, ("leaderId",)),
+ "ClassRoleChange": obj({"role": string(enum=["member","monitor"])}, ("role",)),
  "GrantInput": obj({"principalId": ID, "action": ID, "scopeType": string(enum=["class","workspace","assignment"]), "scopeId": ID}, ("principalId","action","scopeType","scopeId")),
  "Policy": obj({"groupLimit": {"type":"integer","minimum":1}, "roleActions": {"type":"object","additionalProperties": arr(ID)}, "lateFirst": string(enum=["allow","lock"]), "lateRevision": string(enum=["allow","lock"])}, ()),
  "Handover": obj({"handoverTo": ID}, ()),
  "RemoveMember": obj({"memberId":ID,"handoverTo":ID}, ("memberId",)),
  "TaskCreate": obj({"title": string(minLength=1), "dueAt": TIME,"dueDate":ref("DueDate"), "importance": string(enum=["high","medium","low"]), "assigneeId": ID}, ("title",)),
  "TaskUpdate": obj({"title": STR, "dueAt": TIME,"dueDate":ref("DueDate"), "importance": string(enum=["high","medium","low"]), "status": string(enum=["todo","doing","done"])}, ()),
- "BulkTasks": obj({"ids":arr(ID),"action":string(enum=["archive","trash"])}, ("ids","action")),
+ "BulkTasks": obj({"items":arr(obj({"id":ID,"version":{"type":"integer","minimum":1}}, ("id","version"))),"action":string(enum=["archive","trash"])}, ("items","action")),
  "Reassign": obj({"assigneeId": ID}, ("assigneeId",)),
  "Checklist": obj({"text": string(minLength=1), "done": {"type":"boolean"}}, ("text",)),
  "WorkSession": obj({"taskId": ID, "startAt": TIME, "endAt": TIME}, ("taskId","startAt","endAt")),
@@ -59,19 +61,28 @@ S = {
  "Operation": obj({"status":string(enum=["pending","succeeded","failed"]),"receipt": {"type":"object","additionalProperties":True},"requestId":ID}, ("status","requestId")),
 }
 actions=["class.manage","class.role_change","group.create","group.approve","member.invite","member.remove",
-         "workspace.manage","task.create","task.assign","task.edit_common","task.checklist","task.delete",
-         "event.create","event.edit","event.cancel","library.create","library.edit_text","library.edit_file",
-         "library.delete","folder.manage","assignment.create","assignment.edit","progress.update",
-         "submission.send","submission.feedback"]
+         "workspace.manage","task.read","task.create","task.assign","task.edit_common","task.checklist","task.delete",
+         "event.read","event.create","event.edit","event.cancel","library.read_text","library.read_link","library.read_file",
+         "library.create","library.edit_text","library.edit_link","library.edit_file","library.delete","folder.manage",
+         "assignment.read","assignment.create","assignment.edit","progress.read","progress.update",
+         "submission.read","submission.send","submission.feedback"]
 S["Action"]={"type":"string","enum":actions}
+S["CommandAcknowledgement"] = obj({"accepted": {"type":"boolean"}}, ("accepted",))
+S["CommandResult"] = obj({"data":ref("CommandAcknowledgement"),"requestId":ID}, ("data","requestId"))
+S["PolicyResult"] = obj({"data":ref("Policy"),"requestId":ID}, ("data","requestId"))
+S["JoinCodeResult"] = obj({"data":ref("JoinCodeState"),"requestId":ID}, ("data","requestId"))
+S["JoinCodeState"]["allOf"] = [
+    {"if":{"properties":{"enabled":{"const":True}}},"then":{"required":["code"]}},
+    {"if":{"properties":{"enabled":{"const":False}}},"then":{"not":{"required":["code"]}}},
+]
 S["GrantInput"]["properties"]["action"]=ref("Action")
 S["Policy"]["properties"]["roleActions"]["additionalProperties"] = arr(ref("Action"))
 
 entities={
- "account": obj({"id":ID,"usages":arr(string(enum=["student","teacher","personal"])),"version":{"type":"integer"}}, ("id","usages","version")),
+ "account": obj({"id":ID,"usages":arr(string(enum=["student","teacher","personal"])),"timeZone":ID,"version":{"type":"integer"}}, ("id","usages","timeZone","version")),
  "class": obj({"id":ID,"name":STR,"ownerId":ID,"timeZone":ID,"status":string(enum=["active","archived"]),"version":{"type":"integer"}}, ("id","name","ownerId","timeZone","status","version")),
  "membership": obj({"id":ID,"classId":ID,"workspaceId":ID,"memberId":ID,"role":string(enum=["member","monitor","leader"]),"status":string(enum=["pending","active","declined","invalidated","ended"]),"version":{"type":"integer"}}, ("id","memberId","status","version")),
- "workspace": obj({"id":ID,"classId":ID,"ownerId":ID,"kind":string(enum=["default","independent","class_group"]),"status":string(enum=["active","archived"]),"timeZone":ID,"version":{"type":"integer"}}, ("id","kind","status","timeZone","version")),
+ "workspace": obj({"id":ID,"name":string(minLength=1),"classId":ID,"ownerId":ID,"kind":string(enum=["default","independent","class_group"]),"status":string(enum=["active","archived"]),"timeZone":ID,"version":{"type":"integer"}}, ("id","name","kind","status","timeZone","version")),
  "grant": obj({"id":ID,"principalId":ID,"action":ID,"scopeType":ID,"scopeId":ID,"version":{"type":"integer"}}, ("id","principalId","action","scopeType","scopeId","version")),
  "task": obj({"id":ID,"workspaceId":ID,"title":STR,"assigneeId":ID,"importance":string(enum=["high","medium","low"]),"status":string(enum=["todo","doing","done"]),"dueAt":TIME,"version":{"type":"integer"}}, ("id","workspaceId","title","importance","status","version")),
  "event": obj({"id":ID,"title":STR,"scope":ref("Scope"),"allDay":ref("AllDay"),"timed":ref("Timed"),"status":string(enum=["active","cancelled"]),"version":{"type":"integer"}}, ("id","title","scope","status","version")),
@@ -79,19 +90,24 @@ entities={
  "upload": obj({"id":ID,"scopeId":ID,"status":string(enum=["staged","verified","committed","aborted"]),"size":{"type":"integer"}}, ("id","status","size")),
  "assignment": obj({"id":ID,"classId":ID,"title":STR,"recipientWorkspaceIds":arr(ID),"deadline":TIME,"version":{"type":"integer"}}, ("id","classId","title","recipientWorkspaceIds","version")),
  "submission": obj({"id":ID,"recipientId":ID,"version":{"type":"integer"},"acceptedAt":TIME,"timeliness":string(enum=["on_time","late"]),"submittedBy":ID}, ("id","recipientId","version","acceptedAt","timeliness","submittedBy")),
- "recipient": obj({"id":ID,"assignmentId":ID,"workspaceId":ID,"submissionVersion":{"type":"integer"},"progressText":STR}, ("id","assignmentId","workspaceId")),
- "worksession": obj({"id":ID,"taskId":ID,"ownerId":ID,"startAt":TIME,"endAt":TIME}, ("id","taskId","ownerId","startAt","endAt")),
- "folder": obj({"id":ID,"workspaceId":ID,"name":STR,"parentId":ID}, ("id","workspaceId","name")),
+ "recipient": obj({"id":ID,"assignmentId":ID,"workspaceId":ID,"submissionVersion":{"type":"integer"},"progressText":STR,"version":{"type":"integer"}}, ("id","assignmentId","workspaceId","version")),
+ "worksession": obj({"id":ID,"taskId":ID,"ownerId":ID,"startAt":TIME,"endAt":TIME,"version":{"type":"integer"}}, ("id","taskId","ownerId","startAt","endAt","version")),
+ "folder": obj({"id":ID,"workspaceId":ID,"name":STR,"parentId":ID,"version":{"type":"integer"}}, ("id","workspaceId","name","version")),
  "download": obj({"url":ID,"expiresAt":TIME}, ("url","expiresAt")),
+ "ownershipTransfer": obj({"id":ID,"targetType":string(enum=["class","workspace"]),"targetId":ID,"initiatorId":ID,"recipientId":ID,"status":string(enum=["pending","accepted","declined","invalidated"]),"acceptedAt":TIME,"version":{"type":"integer"}}, ("id","targetType","targetId","initiatorId","recipientId","status","version")),
+ "invitation": obj({"id":ID,"targetType":string(enum=["class","workspace"]),"targetId":ID,"initiatorId":ID,"recipientId":ID,"status":string(enum=["pending","accepted","declined","invalidated","expired"]),"expiresAt":TIME,"acceptedAt":TIME,"version":{"type":"integer"}}, ("id","targetType","targetId","initiatorId","recipientId","status","version")),
+ "joinRequest": obj({"id":ID,"targetType":string(enum=["class","workspace"]),"targetId":ID,"initiatorId":ID,"status":string(enum=["pending","approved","declined","invalidated"]),"acceptedAt":TIME,"version":{"type":"integer"}}, ("id","targetType","targetId","initiatorId","status","version")),
 }
 for family,entity in entities.items():
-    label=family.title()
+    label=family[0].upper()+family[1:]
     S[label]=entity
     S[label+"Result"]=obj({"data":ref(label),"requestId":ID}, ("data","requestId"))
     S[label+"ListResult"]=obj({"data":arr(ref(label)),"nextCursor":STR,"requestId":ID}, ("data","requestId"))
+S["AuthSessionResult"]=obj({"data":ref("Account"),"csrfToken":ID,"requestId":ID}, ("data","csrfToken","requestId"))
 S["UsageUpdate"]["properties"]["usages"]["minItems"]=1
 S["Register"]["properties"]["usages"]["minItems"]=1
 S["AssignmentInput"]["properties"]["recipientWorkspaceIds"]["minItems"]=1
+S["BulkTasks"]["properties"]["items"]["minItems"]=1
 for name, left, right in (("TaskCreate","dueAt","dueDate"),("TaskUpdate","dueAt","dueDate"),("AssignmentInput","deadline","deadlineDate")):
     S[name]["not"]={"required":[left,right]}
 S["SubmissionInput"]["properties"]["text"]={"type":"string","minLength":1}
@@ -101,8 +117,8 @@ S["SubmissionInput"]["anyOf"]=[{"required":[x]} for x in ("text","links","upload
 
 # method, path, request schema, response shape, permission family.
 O = [
- ("post","/auth/register","Register","AccountResult","auth"),
- ("post","/auth/login","Login","AccountResult","auth"),
+ ("post","/auth/register","Register","AuthSessionResult","auth"),
+ ("post","/auth/login","Login","AuthSessionResult","auth"),
  ("post","/auth/logout",None,"Result","auth"),
  ("post","/auth/password-reset-request","PasswordResetRequest","Result","auth"),
  ("post","/auth/password-reset","PasswordReset","Result","auth"),
@@ -111,6 +127,7 @@ O = [
  ("get","/me/events",None,"EventListResult","event"),
  ("get","/classes",None,"ListResult","class"), ("post","/classes","ClassCreate","Result","class"),
  ("get","/classes/{classId}",None,"Result","class"), ("get","/classes/{classId}/members",None,"ListResult","class"),
+ ("patch","/classes/{classId}/members/{membershipId}/role","ClassRoleChange","MembershipResult","membership"),
  ("get","/classes/{classId}/join-requests",None,"ListResult","membership"),
  ("get","/me/invitations",None,"ListResult","membership"),
  ("post","/classes/{classId}/archive",None,"Result","class"), ("post","/classes/{classId}/restore",None,"Result","class"),
@@ -123,6 +140,7 @@ O = [
  ("post","/class-join-requests/{requestId}/decline",None,"Result","membership"),
  ("get","/classes/{classId}/groups",None,"ListResult","membership"),
  ("post","/classes/{classId}/groups","GroupCreate","Result","membership"),
+ ("get","/groups/{groupId}/members",None,"MembershipListResult","membership"),
  ("post","/groups/{groupId}/invitations","InvitationCreate","Result","membership"),
  ("post","/groups/{groupId}/join-requests",None,"Result","membership"),
  ("get","/groups/{groupId}/join-requests",None,"ListResult","membership"),
@@ -137,11 +155,17 @@ O = [
  ("patch","/groups/{groupId}/leader","LeaderChange","Result","membership"),
  ("get","/workspaces",None,"ListResult","workspace"), ("post","/workspaces","GroupCreate","Result","workspace"),
  ("get","/workspaces/{workspaceId}",None,"Result","workspace"),
+ ("get","/workspaces/{workspaceId}/members",None,"MembershipListResult","membership"),
+ ("post","/workspaces/{workspaceId}/invitations","InvitationCreate","InvitationResult","membership"),
+ ("post","/workspace-invitations/{invitationId}/accept",None,"InvitationResult","membership"),
+ ("post","/workspace-invitations/{invitationId}/decline",None,"InvitationResult","membership"),
+ ("post","/workspaces/{workspaceId}/leave","Handover","MembershipResult","membership"),
  ("post","/workspaces/{workspaceId}/archive",None,"Result","workspace"),
  ("post","/workspaces/{workspaceId}/restore",None,"Result","workspace"),
  ("post","/workspaces/{workspaceId}/ownership-transfers","Transfer","Result","workspace"),
  ("post","/classes/{classId}/ownership-transfers","Transfer","Result","class"),
  ("post","/ownership-transfers/{transferId}/accept",None,"Result","workspace"),
+ ("get","/me/ownership-transfers",None,"ListResult","ownershipTransfer"),
  ("get","/classes/{classId}/policy",None,"Result","grant"),
  ("patch","/classes/{classId}/policy","Policy","Result","grant"),
  ("post","/grants","GrantInput","Result","grant"), ("delete","/grants/{grantId}",None,"Result","grant"),
@@ -194,28 +218,92 @@ O = [
 ]
 
 def operation(method, path, request, response, family):
+    required_version = (method, path) in {
+        ("patch", "/me/usages"),
+        ("patch", "/classes/{classId}/policy"),
+        ("patch", "/groups/{groupId}/leader"),
+        ("patch", "/classes/{classId}/members/{membershipId}/role"),
+        ("post", "/ownership-transfers/{transferId}/accept"),
+        ("post", "/classes/{classId}/join-code"),
+        ("post", "/classes/{classId}/archive"),
+        ("post", "/classes/{classId}/restore"),
+        ("post", "/workspaces/{workspaceId}/archive"),
+        ("post", "/workspaces/{workspaceId}/restore"),
+        ("patch", "/tasks/{taskId}"),
+        ("post", "/tasks/{taskId}/reassign"),
+        ("post", "/tasks/{taskId}/complete"),
+        ("post", "/tasks/{taskId}/reopen"),
+        ("post", "/tasks/{taskId}/checklist-items"),
+        ("patch", "/tasks/{taskId}/checklist-items/{itemId}"),
+        ("delete", "/tasks/{taskId}/checklist-items/{itemId}"),
+        ("patch", "/me/work-sessions/{sessionId}"),
+        ("delete", "/me/work-sessions/{sessionId}"),
+        ("patch", "/events/{eventId}"),
+        ("post", "/events/{eventId}/cancel"),
+        ("patch", "/library/items/{itemId}"),
+        ("post", "/library/items/{itemId}/revisions"),
+        ("post", "/library/items/{itemId}/trash"),
+        ("post", "/library/items/{itemId}/restore"),
+        ("patch", "/folders/{folderId}"),
+        ("delete", "/folders/{folderId}"),
+        ("patch", "/assignments/{assignmentId}"),
+        ("post", "/assignments/{assignmentId}/archive"),
+        ("post", "/assignment-recipients/{recipientId}/updates"),
+        ("delete", "/grants/{grantId}"),
+        ("post", "/class-invitations/{invitationId}/accept"),
+        ("post", "/class-invitations/{invitationId}/decline"),
+        ("post", "/group-invitations/{invitationId}/accept"),
+        ("post", "/group-invitations/{invitationId}/decline"),
+        ("post", "/workspace-invitations/{invitationId}/accept"),
+        ("post", "/workspace-invitations/{invitationId}/decline"),
+        ("post", "/class-join-requests/{requestId}/approve"),
+        ("post", "/class-join-requests/{requestId}/decline"),
+        ("post", "/group-join-requests/{requestId}/approve"),
+        ("post", "/group-join-requests/{requestId}/decline"),
+        ("post", "/classes/{classId}/leave"),
+        ("post", "/groups/{groupId}/leave"),
+        ("post", "/workspaces/{workspaceId}/leave"),
+        ("post", "/classes/{classId}/remove-member"),
+        ("post", "/groups/{groupId}/remove-member"),
+    }
     params=[]
     for part in path.split("/"):
         if part.startswith("{"):
             params.append({"name":part[1:-1],"in":"path","required":True,"schema":ID})
-    typed=(family.title()+response) if family in entities and response in ("Result","ListResult") else response
+    typed=(family[0].upper()+family[1:]+response) if family in entities and response in ("Result","ListResult") else response
     special={"/classes/{classId}/members":"MembershipListResult",
              "/classes/{classId}/groups":"WorkspaceListResult",
              "/classes/{classId}/groups#post":"WorkspaceResult",
-             "/classes/{classId}/policy":"Result",
+             "/classes/{classId}/policy":"PolicyResult",
              "/assignments/{assignmentId}/recipients":"RecipientListResult",
              "/assignment-recipients/{recipientId}/updates":"RecipientResult",
              "/me/work-sessions":"WorksessionListResult",
              "/workspaces/{workspaceId}/folders":"FolderListResult",
              "/library/items/{itemId}/download":"DownloadResult"}
+    if path=="/classes/{classId}/join-code": typed="JoinCodeResult"
+    if "invitations" in path:
+        typed="InvitationListResult" if method=="get" else "InvitationResult"
+    if "join-requests" in path:
+        typed="JoinRequestListResult" if method=="get" else "JoinRequestResult"
+    if path.endswith("/ownership-transfers") or path=="/ownership-transfers/{transferId}/accept":
+        typed="OwnershipTransferResult" if method=="post" else typed
     if path=="/tasks/bulk-actions": typed="TaskListResult"
     typed=special.get(path+"#"+method,special.get(path,typed))
+    if typed == "Result": typed = "CommandResult"
+    if typed == "ListResult": raise ValueError(f"Unresolved list response: {method} {path}")
     if path.startswith("/me/work-sessions/") or (path=="/me/work-sessions" and method=="post"):
         typed="WorksessionResult"
     if path.startswith("/folders/") or (path=="/workspaces/{workspaceId}/folders" and method=="post"):
         typed="FolderResult"
     op={"operationId":family+method.title()+"".join(x.strip("{}").title() for x in path.split("/") if x),
         "tags":[family],"responses":{"200":{"description":"Committed result", "content":{"application/json":{"schema":ref(typed)}}}}}
+    if path in ("/auth/register", "/auth/login", "/auth/logout"):
+        op["responses"]["200"].setdefault("headers", {})["Set-Cookie"]={"description":"snote_session HttpOnly Secure SameSite=Lax; Max-Age=0 on logout", "schema":STR}
+    if method in ("get", "patch", "put", "post"):
+        op["responses"]["200"].setdefault("headers", {})["ETag"]={"description":"Version of returned resource when applicable", "schema":STR}
+    for status, description in (("400","Invalid input"),("401","Unauthenticated"),("403","Forbidden"),("404","Not found or hidden by scope"),("429","Rate limited"),("503","Retryable service failure")):
+        op["responses"][status]={"description":description,"content":{"application/json":{"schema":ref("Error")}}}
+    op["responses"]["429"]["headers"]={"Retry-After":{"schema":STR}}
     if params:op["parameters"]=params
     if method=="get" and response=="ListResult":
         op.setdefault("parameters",[]).extend([{"name":"cursor","in":"query","schema":STR},{"name":"limit","in":"query","schema":{"type":"integer","minimum":1,"maximum":100}}])
@@ -229,12 +317,14 @@ def operation(method, path, request, response, family):
         op["responses"]["409"]={"description":"Domain conflict", "content":{"application/json":{"schema":ref("Error")}}}
     if method in ("post","patch","put") and (family in ("submission","library","task","grant","assignment")):
         op["responses"]["412"]={"description":"Version conflict", "content":{"application/json":{"schema":ref("Error")}}}
+    if required_version:
+        op["responses"]["412"]={"description":"Missing or stale If-Match version", "content":{"application/json":{"schema":ref("Error")}}}
     if method=="post" and path.endswith("/submissions"):
         op.setdefault("parameters",[]).append({"name":"Idempotency-Key","in":"header","required":True,"schema":ID})
     if method in ("post","patch","put","delete") and (not path.startswith("/auth/") or path=="/auth/logout"):
         op.setdefault("parameters",[]).append({"name":"X-CSRF-Token","in":"header","required":True,"schema":ID,"description":"Required for cookie authenticated mutations"})
-    if method=="patch" or path.endswith("/revisions") or path.endswith("/submissions"):
-        op.setdefault("parameters",[]).append({"name":"If-Match","in":"header","required":False,"schema":STR,"description":"Required when changing an existing revision; omitted on first submission"})
+    if required_version or method=="patch" or path.endswith("/revisions") or path.endswith("/submissions"):
+        op.setdefault("parameters",[]).append({"name":"If-Match","in":"header","required":required_version,"schema":STR,"description":"Required for versioned updates; omitted on first submission"})
     return op
 
 paths={}
