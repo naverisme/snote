@@ -14,7 +14,7 @@ Tất cả worktree là **thư mục anh em của `SNOTE`**, không nằm trong 
 | Thư mục bên cạnh `SNOTE` | Nhánh | Vai trò | Trạng thái 2026-11-08 |
 | --- | --- | --- | --- |
 | `snote-v2-worktree-layout` | `docs/v2/fullstack-worktrees` | Kế hoạch, sở hữu tệp, bảng điều phối | PR #41 đã merge thành `54d06f68`; worktree sạch đã được gỡ |
-| `snote-v2-foundation` | `feat/v2/foundation` | Contract, schema/migration, core và build chung #28 | PR #39 draft; PostgreSQL 17.7 CI đạt trên `bf26488`, PostgreSQL 18.6 cục bộ đạt; còn rà contract/server fixture và review |
+| `snote-v2-foundation` | `feat/v2/foundation` | Contract, schema/migration, core và build chung #28 | PR #39 draft; PostgreSQL 17.7 CI đạt trên các head trước, PostgreSQL 18.6 và HTTP fixture cục bộ đạt; kiểm CI đúng head hiện tại và còn rà contract/review |
 | `snote-v2-api-a` | `feat/v2/api-a` | Lát cắt Ngữ cảnh #29, gồm phần UI #33/#34; giữ tên cũ để bảo toàn PR #40 | PR #40 draft; mới có service backend, chưa có luồng API → UI hoàn chỉnh |
 | `snote-v2-planning` | `feat/v2/planning` | Công việc/Lịch #31 + UI việc/lịch #34 | Chưa tạo; chờ Foundation merge |
 | `snote-v2-library` | `feat/v2/library` | Thư viện #35 + UI #30 | Chưa tạo; chờ Foundation merge |
@@ -29,7 +29,7 @@ Tất cả worktree là **thư mục anh em của `SNOTE`**, không nằm trong 
 | --- | --- | --- | --- |
 | N1 — xong | Chốt nội dung PR #41 trong `snote-v2-worktree-layout`: rà tên thư mục, bảng owner, liên kết, `git diff --check` | Đã merge vào `s_note_v2` tại `54d06f68` | Foundation, CI, môi trường PostgreSQL |
 | N2 | Hoàn thiện #28 trong `snote-v2-foundation`: sửa khoảng trống contract/schema có bằng chứng, sinh lại client, kiểm diff sinh ổn định | SHA contract/schema, fixture client/server, kết quả validator/build/test | PR #41 merge hoặc API-A hoàn thành |
-| N3 — vòng đầu đạt | Chạy migration DB trắng, reset/migrate và kiểm constraint thật cho #28; chạy lại ở mỗi head đổi schema | PostgreSQL 17.7 CI đạt tại `bf26488`; PostgreSQL 18.6 cục bộ đạt sau AA-F02; còn kiểm transaction nghiệp vụ theo lát cắt | Không cần lệnh mới; CI đã hoạt động lại |
+| N3 — vòng đầu đạt | Chạy migration DB trắng, reset/migrate và kiểm constraint thật cho #28; chạy lại ở mỗi head đổi schema | PostgreSQL 17.7 CI đạt trên các head trước; PostgreSQL 18.6 cục bộ đạt trên thay đổi schema hiện tại; còn kiểm transaction nghiệp vụ theo lát cắt | Không cần lệnh mới; CI đã hoạt động lại |
 | N4 | Rà ma trận quyền, ca đồng thời/lỗi giữa chừng và khoảng trống đầu vào #29–35 trong `review/` hoặc issue tương ứng; dựng fixture theo OpenAPI trong vùng sở hữu khi phù hợp | Yêu cầu thay contract gửi owner #28, bộ ca kiểm; không gọi là feature hoàn chỉnh | Foundation merge; không thêm route/type tạm trái hợp đồng |
 | N5 | Chuẩn bị checklist tích hợp #36 từ QA-01–14 và `review/unresolved.md`; ghi rõ môi trường/đo đạc cần thu sau này | Danh sách phép kiểm và dữ liệu giả, không ghi kết quả chưa chạy | Bốn lát cắt merge |
 
