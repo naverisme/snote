@@ -1,6 +1,6 @@
 # Điều phối worktree để coding SNOTE v2
 
-Tài liệu điều phối mã nguồn này nằm **ngoài `docs/`**. Chỉ dùng `s_note_v2` hoặc nhánh tách từ đúng nhánh ấy. Cấm đọc/cherry-pick/copy mã, thiết kế, tài liệu v1. [AGENTS.md](AGENTS.md) là lối vào chung; [đặc tả](docs/README.md), [OpenAPI](docs/contracts/openapi.yaml), [lược đồ](docs/architecture/physical-schema.md), [ca kiểm](docs/quality/README.md) là nguồn hiện hành. Issues #28–36 là gói việc, không phải bằng chứng tính năng đã chạy.
+Tài liệu điều phối mã nguồn này nằm **ngoài `docs/`**. Chỉ dùng `s_note_v2` hoặc nhánh tách từ đúng nhánh ấy. Cấm đọc/cherry-pick/copy mã, thiết kế, tài liệu v1. [AGENTS.md](AGENTS.md) là lối vào chung; [kế hoạch xây dựng](IMPLEMENTATION_PLAN.md) chia các mốc; [đặc tả](docs/README.md), [OpenAPI](docs/contracts/openapi.yaml), [lược đồ](docs/architecture/physical-schema.md), [ca kiểm](docs/quality/README.md) là nguồn hiện hành. Issues #28–36 là gói việc, không phải bằng chứng tính năng đã chạy.
 
 ## Cổng bắt đầu và thứ tự
 
