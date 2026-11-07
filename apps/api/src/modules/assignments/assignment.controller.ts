@@ -11,7 +11,10 @@ import {
   HttpStatus,
   Req,
 } from '@nestjs/common';
-import type { Request } from 'express';
+interface RequestLike {
+  headers: Record<string, string | string[] | undefined>;
+  user?: { accountId: string };
+}
 import { DomainError } from '../../core/authorization';
 import { requestId, success } from '../../core/http';
 import { AssignmentService } from './assignment.service';
@@ -27,7 +30,7 @@ import type {
 export class AssignmentController {
   constructor(private readonly assignmentService: AssignmentService) {}
 
-  private extractActorId(req: Request): string {
+  private extractActorId(req: RequestLike): string {
     // In actual auth middleware, actorId is set on req.user or session
     // For test / fallback support, extract from header or session
     return (req as any).user?.accountId || (req.headers['x-actor-id'] as string) || 'teacher-default';
@@ -38,7 +41,7 @@ export class AssignmentController {
     @Param('classId') classId: string,
     @Body() body: AssignmentInputDto,
     @Headers('x-csrf-token') csrfToken: string | undefined,
-    @Req() req: Request
+    @Req() req: RequestLike
   ): Promise<AssignmentResultDto> {
     const reqId = requestId();
     const actorId = this.extractActorId(req);
@@ -65,7 +68,7 @@ export class AssignmentController {
     @Param('classId') classId: string,
     @Query('cursor') cursor?: string,
     @Query('limit') limit?: string,
-    @Req() req?: Request
+    @Req() req?: RequestLike
   ): Promise<AssignmentListResultDto> {
     const reqId = requestId();
     const actorId = req ? this.extractActorId(req) : 'teacher-default';
@@ -98,7 +101,7 @@ export class AssignmentController {
   @Get('/assignments/:assignmentId')
   async getAssignment(
     @Param('assignmentId') assignmentId: string,
-    @Req() req: Request
+    @Req() req: RequestLike
   ): Promise<AssignmentResultDto> {
     const reqId = requestId();
     const actorId = this.extractActorId(req);
@@ -126,7 +129,7 @@ export class AssignmentController {
     @Body() body: AssignmentInputDto,
     @Headers('if-match') ifMatch: string | undefined,
     @Headers('x-csrf-token') csrfToken: string | undefined,
-    @Req() req: Request
+    @Req() req: RequestLike
   ): Promise<AssignmentResultDto> {
     const reqId = requestId();
     const actorId = this.extractActorId(req);
@@ -153,7 +156,7 @@ export class AssignmentController {
     @Param('assignmentId') assignmentId: string,
     @Headers('if-match') ifMatch: string | undefined,
     @Headers('x-csrf-token') csrfToken: string | undefined,
-    @Req() req: Request
+    @Req() req: RequestLike
   ): Promise<CommandResultDto> {
     const reqId = requestId();
     const actorId = this.extractActorId(req);
@@ -180,7 +183,7 @@ export class AssignmentController {
     @Param('assignmentId') assignmentId: string,
     @Query('cursor') cursor?: string,
     @Query('limit') limit?: string,
-    @Req() req?: Request
+    @Req() req?: RequestLike
   ): Promise<RecipientListResultDto> {
     const reqId = requestId();
     const actorId = req ? this.extractActorId(req) : 'teacher-default';
