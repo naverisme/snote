@@ -61,10 +61,11 @@ S = {
  "Operation": obj({"status":string(enum=["pending","succeeded","failed"]),"receipt": {"type":"object","additionalProperties":True},"requestId":ID}, ("status","requestId")),
 }
 actions=["class.manage","class.role_change","group.create","group.approve","member.invite","member.remove",
-         "workspace.manage","task.create","task.assign","task.edit_common","task.checklist","task.delete",
-         "event.create","event.edit","event.cancel","library.create","library.edit_text","library.edit_file",
-         "library.delete","folder.manage","assignment.create","assignment.edit","progress.update",
-         "submission.send","submission.feedback"]
+         "workspace.manage","task.read","task.create","task.assign","task.edit_common","task.checklist","task.delete",
+         "event.read","event.create","event.edit","event.cancel","library.read_text","library.read_link","library.read_file",
+         "library.create","library.edit_text","library.edit_link","library.edit_file","library.delete","folder.manage",
+         "assignment.read","assignment.create","assignment.edit","progress.read","progress.update",
+         "submission.read","submission.send","submission.feedback"]
 S["Action"]={"type":"string","enum":actions}
 S["CommandAcknowledgement"] = obj({"accepted": {"type":"boolean"}}, ("accepted",))
 S["CommandResult"] = obj({"data":ref("CommandAcknowledgement"),"requestId":ID}, ("data","requestId"))

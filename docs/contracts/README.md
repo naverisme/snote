@@ -27,6 +27,8 @@
 
 **Biên chung:** JSON thành công `{ "data": ..., "requestId": "..." }`; danh sách `{ "data": [...], "nextCursor": "...", "requestId": "..." }`. Lỗi `{ "error": { "code": "...", "message": "...", "details": {} }, "requestId": "..." }`. `details` chỉ mô tả trường/điều kiện hợp lệ mà người gọi được xem; không tiết lộ nội dung tenant khác. Dùng `If-Match` với ETag cho cập nhật phiên bản; 412 khi bản nền cũ, trả đường đọc bản hiện hành trong đúng scope. Nộp còn cần `Idempotency-Key` tạo ở client cho mỗi lần bấm, gắn nội dung, principal, recipient và hành động; cùng key+cùng nội dung trả biên nhận cũ, khác nội dung trả 409.
 
+**Quyền đọc riêng:** `Action` có `task.read`, `event.read`, `library.read_text`, `library.read_link`, `library.read_file`, `assignment.read`, `progress.read`, `submission.read`; sửa link dùng `library.edit_link`, tách khỏi sửa tệp. Quyền đọc tệp/link của nhóm khác và quyền đọc tiến độ/bản nộp nhóm khác phải được cấp đúng action + scope theo STR-11–13, PM-07/08; không suy từ quyền sửa, vai trò Lớp trưởng, nút UI hoặc ID. Endpoint trả danh sách phải lọc quyền **trước** phân trang/tổng hợp; endpoint chi tiết kiểm loại đối tượng và quyền tại lần đọc. `GrantInput.action` dùng enum chung này; #29 phải cập nhật ma trận `domains` và phép kiểm trước khi tích hợp.
+
 | HTTP | Mã lỗi | Tình huống và hành động của UI |
 | --- | --- | --- |
 | 400/422 | `INVALID_INPUT`, `FILE_TYPE`, `FILE_TOO_LARGE` | Sửa trường hoặc tệp; không tạo mục/phiên bản hoàn chỉnh |

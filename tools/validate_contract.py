@@ -7,6 +7,7 @@ root = Path(__file__).resolve().parents[1]
 doc = yaml.safe_load((root / "docs/contracts/openapi.yaml").read_text())
 assert doc["openapi"].startswith("3.1.")
 schemas = doc["components"]["schemas"]
+assert {"task.read", "event.read", "library.read_text", "library.read_link", "library.read_file", "library.edit_link", "assignment.read", "progress.read", "submission.read"}.issubset(set(schemas["Action"]["enum"]))
 operations, refs = [], []
 
 def walk(value):
