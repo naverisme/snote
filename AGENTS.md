@@ -40,6 +40,14 @@ eview/inbox/ hoặc WORK_QUEUE.md còn task tiếp theo trong phân vùng sở h
          3. [CIRCUIT-BREAKER]: Toàn bộ Agent cạn kiệt Quota và hệ thống đã tự động đóng băng an toàn (`winwork freeze`).
      * Nghiêm cấm can thiệp hạ tầng giao diện: Tuyệt đối không tự ý chạy các lệnh quản trị cửa sổ cấp thấp như `wezterm cli kill-pane`, `split-pane` hay tự động tái cấu trúc layout; chỉ sử dụng các lệnh chuẩn của `winwork`.
      * Giao thức đóng băng & khôi phục (Freeze/Resume): Khi cạn kiệt Quota hoặc cần tạm dừng hệ thống, lệnh `winwork freeze` (hoặc `winwork pause`) tự động tạo commit WIP snapshot bảo toàn mọi thay đổi dở dang trên tất cả worktree và ghi hồ sơ trạng thái vào `review/freeze-state.json`. Khi quota hồi phục hoặc sẵn sàng tiếp tục, lệnh `winwork resume` (hoặc `winwork unfreeze`) sẽ tự động đánh thức các agent tiếp quản công việc từ commit WIP và tiếp tục hoàn thiện task trong `review/inbox/`.
+     * Giao thức Tự chủ Động & Ma trận Phân quyền (Dynamic Autonomy & Permission Matrix):
+       - Chế độ vận hành kép (Dual-Mode):
+         + Chế độ Tự Hành (Autopilot): Kích hoạt bằng /goal trong chat hoặc chạy winwork auto ở Terminal phụ. Bộ chỉ huy chủ động 100% điều phối theo WORK_QUEUE.md, tự động verify, tự động giao việc tiếp theo, tự động nudge phím Enter và failover quota cho đến khi xong việc hoặc chạm blocker.
+         + Chế độ Điều phối (Co-Pilot - Mặc định): Bộ chỉ huy dừng lại sau mỗi mốc, đề xuất phương án và chờ người dùng ra lệnh/duyệt kế hoạch.
+       - Ma trận 3 Vùng Quyền Lực (The Permission Matrix):
+         + VÙNG XANH (Tự quyết 100% - Green): Nghiệm thu task đạt test (winwork verify), giao việc tiếp theo từ WORK_QUEUE.md, yêu cầu sửa lỗi build/test/lint, tự động Nudge Enter, tự động failover quota (gy -> codex). Bộ chỉ huy tự làm ngay không cần xin phép.
+         + VÙNG VÀNG (Tự làm & Thông báo - Yellow): Tự động đóng băng an toàn (winwork freeze), yêu cầu mở Pull Request, chạy kiểm thử tích hợp E2E #36. Bộ chỉ huy tự làm và gửi thông báo ngắn gọn.
+         + VÙNG ĐỎ (Bắt buộc dừng hỏi người dùng - Red): Sửa đổi schema Prisma/OpenAPI cốt lõi phá vỡ hợp đồng liên nhóm, xóa worktree/branch, ra quyết định môi trường máy chủ thực tế (ENV-01 đến ENV-06), merge PR vào production. Bộ chỉ huy BẮT BUỘC dừng lại xin phê duyệt từ người dùng.
      * Giao thức luân chuyển Agent & Cầu dao đóng băng (Failover Chain & Circuit Breaker):
        - Khi một Agent gặp sự cố hạn ngạch (Quota Exceeded / Rate Limit), chạy `winwork failover <tên_nhánh>` (hoặc đổi chủ động bằng `winwork switch <tên_nhánh> <agent_mới>`) để chuyển giao sang Agent kế tiếp trong chuỗi luân chuyển (mặc định: `agy -> codex`).
        - Agent mới tự động nhận prompt tiếp quản: đọc lại `git status`, `git log -1` và `review/inbox/` để hoàn thiện tiếp phần việc dở dang.
