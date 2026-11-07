@@ -15,7 +15,7 @@ Tất cả worktree là **thư mục anh em của `SNOTE`**, không nằm trong 
 | --- | --- | --- | --- |
 | `snote-v2-worktree-layout` | `docs/v2/fullstack-worktrees` | Kế hoạch, sở hữu tệp, bảng điều phối | PR #41 đã merge thành `54d06f68`; worktree sạch đã được gỡ |
 | `snote-v2-foundation` | `feat/v2/foundation` | Contract, schema/migration, core và build chung #28 | PR #39 đã merge vào `s_note_v2` tại `bc8e6ff`; hoàn tất F1–F6 và AA-F01–09; worktree đã gỡ |
-| `snote-v2-api-a` | `feat/v2/api-a` | Lát cắt Ngữ cảnh #29, gồm phần UI #33/#34; giữ tên cũ để bảo toàn PR #40 | Đang triển khai [TASK-20261108-025345]: HTTP controllers (auth, me, classes, workspaces), App Shell & Context switcher; 25 tests pass |
+| `snote-v2-api-a` | `feat/v2/api-a` | Lát cắt Ngữ cảnh #29, gồm phần UI #33/#34; giữ tên cũ để bảo toàn PR #40 | HOÀN THÀNH [TASK-20261108-025345] tại `3009974`: pass 31 API tests (QA-01–04), web App Shell Vite build pass; đã nghiệm thu VERIFIED |
 | `snote-v2-planning` | `feat/v2/planning` | Công việc/Lịch #31 + UI việc/lịch #34 | HOÀN THÀNH [TASK-20261108-025402] tại `ca8b976`: pass 14 API + 6 Web tests; đã nghiệm thu VERIFIED |
 | `snote-v2-library` | `feat/v2/library` | Thư viện #35 + UI #30 | HOÀN THÀNH [TASK-20261108-025353] tại `ca3c96a`: pass 20 API + 3 Web tests, contract:validate đạt chuẩn; đã nghiệm thu VERIFIED |
 | `snote-v2-assignments` | `feat/v2/assignments` | Bài giao/Nộp #32 + UI bài giao #33 | HOÀN THÀNH [TASK-20261108-025411] tại `ea0e2f4`: pass 22 API tests (QA-08, QA-09, QA-13), web build pass; đã nghiệm thu VERIFIED |
