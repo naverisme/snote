@@ -17,7 +17,10 @@
      * Khi nhận được tín hiệu có mã `[TASK-ID]`: Đọc kỹ mô tả và file đính kèm, chỉ sửa đổi trong phạm vi vùng tệp sở hữu tại [WORKTREES.md](WORKTREES.md).
      * Khi hoàn thành: Commit mã nguồn lấy commit SHA và bắt buộc chạy lệnh:
        `winwork resolve <TASK_ID> -Sha <COMMIT_SHA> -Note "<mô tả kiểm thử>"`
+       *(Lệnh này tự động cập nhật review/inbox và kích hoạt tín hiệu Reverse PTY báo cáo thẳng về Bộ chỉ huy).*
      * Khi cần báo cáo nhánh chính hoặc bị nghẽn (blocker): Bắt buộc dùng `winwork send main "<nội dung báo cáo/nhờ giúp>"` để gửi thông báo về Bộ chỉ huy.
      * Khi cần trao đổi với nhánh phụ khác: Dùng `winwork send <tên_nhánh> "<nội dung>"`.
+     * Khi Bộ chỉ huy nghiệm thu: Chạy `winwork verify <TASK_ID> -Note "<kết quả>"`, hệ thống tự động lưu vết vào `review/archive/completed-tasks.md` và bắn tín hiệu xác nhận về lại worker.
+     * Nghiêm cấm can thiệp hạ tầng giao diện: Tuyệt đối không tự ý chạy các lệnh quản trị cửa sổ cấp thấp như `wezterm cli kill-pane`, `split-pane` hay tự động tái cấu trúc layout; chỉ sử dụng các lệnh chuẩn của `winwork`.
 
 Mô tả hệ thống, hợp đồng giao tiếp, tiêu chí nghiệm thu và quy trình vận hành có hiệu lực theo trạng thái trong chỉ mục. Quyết định về nghiệp vụ được lưu ở `docs/requirements/` và dẫn chiếu từ những tài liệu sử dụng nó.
