@@ -11,10 +11,23 @@ model Account {
   id           String   @id @default(uuid()) @db.Uuid
   email        String   @unique
   passwordHash String
+  timeZone     String
   version      Int      @default(1)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   usages       AccountUsage[]
+  resetTokens  PasswordResetToken[]
+}
+
+model PasswordResetToken {
+  id String @id @default(uuid()) @db.Uuid
+  accountId String @db.Uuid
+  tokenHash String @unique
+  expiresAt DateTime
+  consumedAt DateTime?
+  createdAt DateTime @default(now())
+  account Account @relation(fields: [accountId], references: [id])
+  @@index([accountId, expiresAt])
 }
 
 model AccountUsage {

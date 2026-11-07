@@ -1621,6 +1621,7 @@ export interface components {
         Account: {
             id: string;
             usages: ("student" | "teacher" | "personal")[];
+            timeZone: string;
             version: number;
         };
         AccountResult: {
@@ -1952,6 +1953,11 @@ export interface components {
             nextCursor?: string;
             requestId: string;
         };
+        AuthSessionResult: {
+            data: components["schemas"]["Account"];
+            csrfToken: string;
+            requestId: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -1977,12 +1983,14 @@ export interface operations {
             /** @description Committed result */
             200: {
                 headers: {
+                    /** @description snote_session HttpOnly Secure SameSite=Lax; Max-Age=0 on logout */
+                    "Set-Cookie"?: string;
                     /** @description Version of returned resource when applicable */
                     ETag?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AccountResult"];
+                    "application/json": components["schemas"]["AuthSessionResult"];
                 };
             };
             /** @description Invalid input */
@@ -2067,12 +2075,14 @@ export interface operations {
             /** @description Committed result */
             200: {
                 headers: {
+                    /** @description snote_session HttpOnly Secure SameSite=Lax; Max-Age=0 on logout */
+                    "Set-Cookie"?: string;
                     /** @description Version of returned resource when applicable */
                     ETag?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AccountResult"];
+                    "application/json": components["schemas"]["AuthSessionResult"];
                 };
             };
             /** @description Invalid input */
@@ -2156,6 +2166,8 @@ export interface operations {
             /** @description Committed result */
             200: {
                 headers: {
+                    /** @description snote_session HttpOnly Secure SameSite=Lax; Max-Age=0 on logout */
+                    "Set-Cookie"?: string;
                     /** @description Version of returned resource when applicable */
                     ETag?: string;
                     [name: string]: unknown;

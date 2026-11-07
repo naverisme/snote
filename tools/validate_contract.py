@@ -46,6 +46,13 @@ assert accepts("FolderInput", {"name":"Nguồn"})
 assert not accepts("FolderInput", {"id":"f1"})
 assert accepts("Workspace", {"id":"w1", "name":"Nhóm thử", "kind":"independent", "status":"active", "timeZone":"Asia/Bangkok", "version":1})
 assert not accepts("Workspace", {"id":"w1", "kind":"independent", "status":"active", "timeZone":"Asia/Bangkok", "version":1})
+assert accepts("Account", {"id":"a1", "usages":["student"], "timeZone":"Asia/Bangkok", "version":1})
+assert not accepts("Account", {"id":"a1", "usages":["student"], "version":1})
+for route in ("/auth/register", "/auth/login"):
+    op = doc["paths"][route]["post"]
+    assert op["responses"]["200"]["content"]["application/json"]["schema"]["$ref"].endswith("/AuthSessionResult")
+    assert "Set-Cookie" in op["responses"]["200"]["headers"]
+assert "Set-Cookie" in doc["paths"]["/auth/logout"]["post"]["responses"]["200"]["headers"]
 for method, route in (("patch", "/me/usages"), ("patch", "/classes/{classId}/policy"), ("patch", "/groups/{groupId}/leader"), ("patch", "/classes/{classId}/members/{membershipId}/role"), ("post", "/ownership-transfers/{transferId}/accept")):
     op = doc["paths"][route][method]
     assert "412" in op["responses"], (method, route)

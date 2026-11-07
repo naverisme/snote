@@ -78,7 +78,7 @@ S["GrantInput"]["properties"]["action"]=ref("Action")
 S["Policy"]["properties"]["roleActions"]["additionalProperties"] = arr(ref("Action"))
 
 entities={
- "account": obj({"id":ID,"usages":arr(string(enum=["student","teacher","personal"])),"version":{"type":"integer"}}, ("id","usages","version")),
+ "account": obj({"id":ID,"usages":arr(string(enum=["student","teacher","personal"])),"timeZone":ID,"version":{"type":"integer"}}, ("id","usages","timeZone","version")),
  "class": obj({"id":ID,"name":STR,"ownerId":ID,"timeZone":ID,"status":string(enum=["active","archived"]),"version":{"type":"integer"}}, ("id","name","ownerId","timeZone","status","version")),
  "membership": obj({"id":ID,"classId":ID,"workspaceId":ID,"memberId":ID,"role":string(enum=["member","monitor","leader"]),"status":string(enum=["pending","active","declined","invalidated","ended"]),"version":{"type":"integer"}}, ("id","memberId","status","version")),
  "workspace": obj({"id":ID,"name":string(minLength=1),"classId":ID,"ownerId":ID,"kind":string(enum=["default","independent","class_group"]),"status":string(enum=["active","archived"]),"timeZone":ID,"version":{"type":"integer"}}, ("id","name","kind","status","timeZone","version")),
@@ -102,6 +102,7 @@ for family,entity in entities.items():
     S[label]=entity
     S[label+"Result"]=obj({"data":ref(label),"requestId":ID}, ("data","requestId"))
     S[label+"ListResult"]=obj({"data":arr(ref(label)),"nextCursor":STR,"requestId":ID}, ("data","requestId"))
+S["AuthSessionResult"]=obj({"data":ref("Account"),"csrfToken":ID,"requestId":ID}, ("data","csrfToken","requestId"))
 S["UsageUpdate"]["properties"]["usages"]["minItems"]=1
 S["Register"]["properties"]["usages"]["minItems"]=1
 S["AssignmentInput"]["properties"]["recipientWorkspaceIds"]["minItems"]=1
@@ -114,8 +115,8 @@ S["SubmissionInput"]["anyOf"]=[{"required":[x]} for x in ("text","links","upload
 
 # method, path, request schema, response shape, permission family.
 O = [
- ("post","/auth/register","Register","AccountResult","auth"),
- ("post","/auth/login","Login","AccountResult","auth"),
+ ("post","/auth/register","Register","AuthSessionResult","auth"),
+ ("post","/auth/login","Login","AuthSessionResult","auth"),
  ("post","/auth/logout",None,"Result","auth"),
  ("post","/auth/password-reset-request","PasswordResetRequest","Result","auth"),
  ("post","/auth/password-reset","PasswordReset","Result","auth"),
@@ -253,8 +254,10 @@ def operation(method, path, request, response, family):
         typed="FolderResult"
     op={"operationId":family+method.title()+"".join(x.strip("{}").title() for x in path.split("/") if x),
         "tags":[family],"responses":{"200":{"description":"Committed result", "content":{"application/json":{"schema":ref(typed)}}}}}
+    if path in ("/auth/register", "/auth/login", "/auth/logout"):
+        op["responses"]["200"].setdefault("headers", {})["Set-Cookie"]={"description":"snote_session HttpOnly Secure SameSite=Lax; Max-Age=0 on logout", "schema":STR}
     if method in ("get", "patch", "put", "post"):
-        op["responses"]["200"]["headers"]={"ETag":{"description":"Version of returned resource when applicable", "schema":STR}}
+        op["responses"]["200"].setdefault("headers", {})["ETag"]={"description":"Version of returned resource when applicable", "schema":STR}
     for status, description in (("400","Invalid input"),("401","Unauthenticated"),("403","Forbidden"),("404","Not found or hidden by scope"),("429","Rate limited"),("503","Retryable service failure")):
         op["responses"][status]={"description":description,"content":{"application/json":{"schema":ref("Error")}}}
     op["responses"]["429"]["headers"]={"Retry-After":{"schema":STR}}

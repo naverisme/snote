@@ -9,7 +9,7 @@
 
 | Phạm vi | Thao tác chính | Điều kiện và hiệu lực |
 | --- | --- | --- |
-| Tài khoản | `GET/PATCH /me`, `GET/PATCH /me/usages` | Chọn/bật/tắt Sinh viên/Giáo viên; tắt Teacher chặn tạo lớp mới nhưng không bỏ quyền chủ lớp đã có |
+| Tài khoản | `POST /auth/register|login|logout`, `GET /me`, `PATCH /me/usages` | Đăng ký lưu `timeZone`; login/register trả Account + `csrfToken` trong body và session cookie HttpOnly/Secure, logout xóa cookie. Client gửi cookie cùng `X-CSRF-Token` cho mutation; tắt Teacher chặn tạo lớp mới nhưng không bỏ quyền chủ lớp đã có |
 | Lớp | `POST /classes`, `GET /classes`, `GET /classes/{id}`, `POST /classes/{id}/archive`, `POST /classes/{id}/restore` | Tạo cần usage Teacher; đọc/khôi phục theo tư cách; archive chặn ghi ở lớp và nhóm |
 | Tư cách | `POST /classes/{id}/join-requests`, `POST /class-invitations/{id}/accept`, `POST /class-join-requests/{id}/approve`, `POST /group-invitations/{id}/accept`, `POST /group-join-requests/{id}/approve` | Chấp nhận hoặc duyệt là điểm kích hoạt; kiểm giới hạn và trạng thái lúc đó; lưu trữ thì không kích hoạt yêu cầu chờ |
 | Workspace | `GET/POST /workspaces`, `GET /workspaces/{id}`, `POST /workspaces/{id}/archive`, `POST /workspaces/{id}/restore` | Nhóm có classId bất biến; mặc định không chia sẻ/chuyển chủ/lưu trữ; chuyển chủ theo luồng có người nhận chấp nhận |
