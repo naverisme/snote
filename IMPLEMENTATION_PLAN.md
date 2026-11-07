@@ -52,7 +52,7 @@ Sau khi #28 merge, tạo bốn worktree độc lập từ cùng head `s_note_v2`
 
 **Nhánh API-A đang có:** `feat/v2/api-a` và PR nháp #40 chứa service phía backend chuẩn bị sớm từ Foundation chưa merge. Đây là đầu vào của worktree Ngữ cảnh, chưa đạt lát cắt hoàn chỉnh. Giữ nhánh/PR này, sau khi Foundation đạt cổng thì cập nhật từ head mới, bổ sung UI lớp/workspace và kiểm luồng thật; đổi tên PR theo phạm vi cuối. Không tạo nhánh Ngữ cảnh thứ hai hoặc gọi #29 hoàn tất từ các test service hiện có.
 
-## 4. Ghép toàn hệ thống — issue #36
+## 3. Ghép toàn hệ thống — issue #36
 
 Chỉ bắt đầu cổng tích hợp đầy đủ sau khi bốn PR lát cắt cần thiết merge. Worktree integration sở hữu `tests/e2e/**`, `infra/**`, CI/release; lỗi ở API/UI của lát cắt được trả về cùng owner. Một PR riêng có thể bổ sung smoke tests sớm, nhưng không gọi hoàn thành #36 trước khi chạy luồng thật.
 
@@ -64,7 +64,7 @@ Chỉ bắt đầu cổng tích hợp đầy đủ sau khi bốn PR lát cắt c
 
 **Cổng phát hành thử:** tất cả lỗi quyền/toàn vẹn P0 đã xử lý; client/server cùng version contract; migration/rollback mã tương thích; backup restore và giám sát có bằng chứng. ENV-01–05 cần giá trị môi trường thực trước pilot, ENV-06 cần nhà cung cấp email trước khi dùng reset mật khẩu thực. Nếu chưa có hosting hoặc nhóm thử, có thể kết thúc kiểm bằng dữ liệu giả và ghi trạng thái **pilot blocked**.
 
-## 5. Theo dõi tiến độ và thay đổi
+## 4. Theo dõi tiến độ và thay đổi
 
 | Mốc | Báo cáo khi hoàn tất | Không được tuyên bố trước bằng chứng |
 | --- | --- | --- |
