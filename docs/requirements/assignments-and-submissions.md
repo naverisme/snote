@@ -5,7 +5,7 @@
 | Mục đích | Xác định cách giao bài cho nhóm, theo dõi tiến độ, nộp và nhận xét |
 | Phạm vi | Bài giao cấp lớp, bản nộp của nhóm và cài đặt hạn |
 | Kiểm định | DCA-checked theo các quyết định về bài giao và phiên bản |
-| Bằng chứng duyệt | [SRC-05, SRC-07, SRC-09, SRC-10, SRC-15, SRC-19, Q15 đến Q18, Q28, Q29, Q33-D1/D2](../../review/provenance.md) |
+| Bằng chứng duyệt | [SRC-05, SRC-07, SRC-09, SRC-10, SRC-15, SRC-19, SRC-26, Q15 đến Q18, Q28, Q29, Q33-D1/D2, J4–J6](../../review/provenance.md) |
 
 ## Giao bài và theo dõi
 
@@ -19,6 +19,8 @@
 | ASG-12 | Khi nhiều người thao tác Nộp cùng lúc, nếu phiên bản hiện hành đã thay đổi thì người đang gửi phải xem lại trước khi tạo phiên bản tiếp theo. Chỉ ghi phiên bản mới sau khi các phần gửi, kể cả tệp, đầy đủ; lỗi tải tệp không thay thế bản đã ghi. Mỗi lần sửa hợp lệ tạo phiên bản mới theo quyền và hạn, giữ các phiên bản cũ để tra cứu. | Q29 |
 | ASG-13 | Khi tạo bài giao cần có tiêu đề và ít nhất một nhóm nhận bài. Mô tả và hạn bài có thể để trống. Đối tượng cả lớp hoặc nhóm được chọn vẫn theo ASG-01; không gửi bài nếu chưa có nhóm nhận nào. | Q33-D1, SRC-19 |
 | ASG-14 | Bản nộp lần đầu và mỗi phiên bản sửa cần ít nhất một nội dung có giá trị thuộc văn bản, đường dẫn hoặc tệp. Có thể kết hợp nhiều loại. Trường hợp nội dung/tệp chưa đủ không tạo phiên bản mới; bản đã ghi giữ nguyên theo ASG-12. | Q33-D2, SRC-19 |
+| ASG-16 | Tệp đề bài và bản nộp dùng danh sách loại tệp tại LIB-11, cùng mức thử nghiệm 25 MB/tệp. Tệp nhóm nộp tính vào workspace nhóm theo LIB-16. Tệp giáo viên đính kèm đề bài tính vào hạn mức riêng của lớp, thử nghiệm 1 GB/lớp. | J4, SRC-26 |
+| ASG-17 | Nếu tệp tải xong nhưng ghi phiên bản nộp thất bại, không tạo phiên bản, không đổi bản hiện hành và không tính vào hạn mức. Báo lỗi để gửi lại, dọn tệp tạm; chỉ báo thành công khi cả tệp và bản ghi phiên bản hoàn tất. | J5, SRC-26 |
 
 ## Hạn và hai quyền sau hạn
 
@@ -45,5 +47,6 @@ Bảng áp dụng với người có quyền theo ASG-03. Cột “Nộp lần �
 | --- | --- | --- |
 | ASG-09 | Giáo viên nhận xét theo từng phiên bản nộp. Bản đầu dùng nhận xét, điểm số và thang điểm ở ngoài phạm vi. | Q16 |
 | ASG-10 | Giáo viên có thể lưu trữ hoặc ngừng giao bài đã có tiến độ hoặc bản nộp, vẫn giữ lịch sử để tra cứu. Xóa vĩnh viễn trường hợp này ở ngoài phạm vi bản đầu. | Q18 |
+| ASG-18 | Bản đầu không có nút Thu hồi bản nộp. Người có quyền gửi phiên bản sửa theo hạn và hai cài đặt sau hạn; bản cũ luôn còn trong lịch sử để giáo viên đối chiếu. | J6, SRC-26 |
 
-Quyền cập nhật và đọc theo nhóm đã chốt tại ASG-11; xử lý phiên bản xung đột và tệp lỗi tại ASG-12. Thao tác thu hồi riêng một bản nộp, giới hạn tệp và cách khôi phục khi tệp được tải đầy đủ nhưng ghi dữ liệu không thành công còn ở [R-04](../../review/unresolved.md).
+Quyền cập nhật và đọc theo nhóm đã chốt tại ASG-11; xử lý phiên bản xung đột và tệp lỗi tại ASG-12. Tệp, lỗi ghi và phạm vi thu hồi đã chốt tại ASG-16–18. Mất phản hồi sau khi đã ghi, gửi lại và thời điểm xác nhận nộp sát hạn còn ở [R-04](../../review/unresolved.md), với đề xuất tại [EC-05/06](../../review/edge-case-audit.md).

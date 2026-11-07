@@ -34,4 +34,4 @@ Trong workspace, giữ nguyên bộ chọn và ba mục tính năng đã duyệt
 
 A1–A3, E6 và F10 đã chốt ba cách xem, nhóm lọc, đích tạo, múi giờ, Trước/Hôm nay/Sau, vị trí chi tiết theo thiết bị và bốn trường chi tiết cùng nút Sửa theo quyền tại [đặc tả Lịch](../../docs/ux/calendar-q33.md). Kiểu lưới từng chế độ và trường bắt buộc khi tạo còn mở.
 
-Chưa đưa nút sự kiện lặp vì [CAL-06](../../docs/requirements/calendar.md) để đặc tả tính năng lặp ở lượt sau. Không tự giả định khả năng sửa sự kiện của người không có quyền.
+J8 đã chốt sự kiện lặp ngoài phạm vi bản đầu tại [CAL-10](../../docs/requirements/calendar.md), nên không có điều khiển sự kiện lặp. Không tự giả định khả năng sửa sự kiện của người không có quyền.

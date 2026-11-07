@@ -6,7 +6,7 @@
 
 1. Đọc [chỉ mục tài liệu](docs/README.md) và [quy ước](docs/DOCUMENTATION_POLICY.md). Chọn tài liệu chủ đề theo nhiệm vụ. Xác định phạm vi và phiên bản quyết định trước khi dùng.
 2. Tra mã quy tắc ở tài liệu chủ đề. Kiểm bằng chứng trong [hồ sơ nguồn](review/provenance.md) khi có hai cách hiểu, ảnh hưởng liên nhóm hoặc cần xác minh một quyết định.
-3. Dùng [sổ câu hỏi](review/unresolved.md) để nhận diện điều kiện còn thiếu. Khi một tác vụ phụ thuộc phần chưa duyệt, ghi cụ thể mã câu hỏi và ảnh hưởng. Gom các câu hỏi cần chủ sản phẩm quyết định trước lượt cập nhật GitHub.
+3. Chủ động rà tình huống bình thường, ngoại lệ, đồng thời và lỗi giữa chừng; dự đoán hậu quả, phản biện phương án của mình và nêu đề xuất cụ thể theo yêu cầu SRC-26. Dùng [sổ câu hỏi](review/unresolved.md) và [hồ sơ tình huống](review/edge-case-audit.md), ghi nguồn, điều kiện, rủi ro, lựa chọn và kết quả kiểm chứng mong đợi. Tự hoàn thiện phần phân tích đã được giao; chỉ gom những quyết định sản phẩm còn thiếu để chủ sản phẩm cân nhắc. Quyền chủ động phân tích/cập nhật GitHub không tự biến đề xuất mới thành yêu cầu đã duyệt.
 4. Xếp bản thô v2, bản vẽ đề xuất và dấu vết vào khu vực [rà soát](review/README.md). Không đưa nguồn v1 vào khu vực này. Lịch sử Git của v2 chỉ phục vụ kiểm kê thay đổi và không cấp hiệu lực cho bản cũ.
 5. Khi thay tài liệu, cập nhật chỉ mục và liên kết chịu ảnh hưởng. Khi nhận việc coding, dùng phạm vi sở hữu tệp và hợp đồng phối hợp của công việc đã được giao.
 
