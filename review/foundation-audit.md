@@ -10,4 +10,6 @@ Nguồn: issue #28, `IMPLEMENTATION_PLAN.md` F1–F6, `docs/architecture/physica
 | Bytes upload xong nhưng DB commit thất bại | Tệp lạc và UI báo thành công giả | `StoragePort` tách staging/verify; module #35 chốt ref sau xác minh | QA-06 kiểm không có item hoàn chỉnh khi thất bại |
 | Migration chạy trên DB trắng và reset | SQL CHECK/partial unique lỗi ở PostgreSQL thật | CI dùng PostgreSQL 17.7, deploy rồi reset/migrate | Job foundation xanh và truy vấn DB kiểm ràng buộc |
 
-Giới hạn môi trường hiện tại: máy Windows không có Docker/PostgreSQL, nên chưa có kết quả migration hoặc constraint trên DB thật. CI được cấu hình nhưng chưa chạy trên remote. Seed chỉ có `fixture@example.invalid`, không có người thật.
+Giới hạn môi trường hiện tại: máy Windows không có Docker/PostgreSQL, nên chưa có kết quả migration hoặc constraint trên DB thật. Seed chỉ có `fixture@example.invalid`, không có người thật.
+
+Sau khi mở PR #39, GitHub Actions trả `failure` trước khi tạo runner/bước chạy. Annotation của check run `128443560482`: "The job was not started because your account is locked due to a billing issue." Chưa có kết quả migration từ CI; cần xử lý trạng thái thanh toán GitHub rồi chạy lại job hoặc dùng PostgreSQL local để có bằng chứng F4/F6.
