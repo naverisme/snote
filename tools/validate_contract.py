@@ -68,6 +68,10 @@ for route, method, result in (
     ("/classes/{classId}/join-requests", "get", "JoinRequestListResult"),
     ("/classes/{classId}/join-requests", "post", "JoinRequestResult"),
     ("/class-join-requests/{requestId}/approve", "post", "JoinRequestResult"),
+    ("/workspaces/{workspaceId}/members", "get", "MembershipListResult"),
+    ("/workspaces/{workspaceId}/invitations", "post", "InvitationResult"),
+    ("/workspace-invitations/{invitationId}/accept", "post", "InvitationResult"),
+    ("/workspaces/{workspaceId}/leave", "post", "MembershipResult"),
 ):
     assert doc["paths"][route][method]["responses"]["200"]["content"]["application/json"]["schema"]["$ref"].endswith("/" + result), route
 for route in ("/classes/{classId}/ownership-transfers", "/workspaces/{workspaceId}/ownership-transfers", "/ownership-transfers/{transferId}/accept"):
