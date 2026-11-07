@@ -16,8 +16,8 @@ export class PrismaQuotaStore implements QuotaStore {
     });
 
     const revisionIds = items
-      .map((it) => it.currentRevisionId)
-      .filter((id): id is string => id !== null);
+      .map((it: { currentRevisionId: string | null }) => it.currentRevisionId)
+      .filter((id: string | null): id is string => id !== null);
 
     const blobMap = new Map<string, bigint>();
     if (revisionIds.length > 0) {
@@ -27,7 +27,7 @@ export class PrismaQuotaStore implements QuotaStore {
       });
 
       const blobIds = Array.from(
-        new Set(revisions.map((r) => r.blobId).filter((b): b is string => b !== null)),
+        new Set(revisions.map((r: { blobId: string | null }) => r.blobId).filter((b: string | null): b is string => b !== null)),
       );
 
       if (blobIds.length > 0) {
@@ -49,8 +49,8 @@ export class PrismaQuotaStore implements QuotaStore {
     });
 
     const refBlobIds = references
-      .map((r) => r.blobId)
-      .filter((id) => !blobMap.has(id));
+      .map((r: { blobId: string }) => r.blobId)
+      .filter((id: string) => !blobMap.has(id));
 
     if (refBlobIds.length > 0) {
       const extraBlobs = await this.prisma.blob.findMany({
@@ -76,7 +76,7 @@ export class PrismaQuotaStore implements QuotaStore {
       select: { bytes: true },
     });
 
-    return reservations.reduce((acc, curr) => acc + curr.bytes, 0n);
+    return reservations.reduce((acc: bigint, curr: { bytes: bigint }) => acc + curr.bytes, 0n);
   }
 
   public async createReservation(

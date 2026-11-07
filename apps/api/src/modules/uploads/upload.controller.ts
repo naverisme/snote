@@ -1,5 +1,5 @@
 import { Body, Controller, Headers, HttpException, Param, Post, Put, Req } from '@nestjs/common';
-import type { Request } from 'express';
+import type { IncomingMessage } from 'node:http';
 import { DomainError } from '../../core/authorization';
 import { requestId, success } from '../../core/http';
 import { UploadService, type UploadStart } from './upload-service';
@@ -11,7 +11,7 @@ export class UploadController {
   @Post()
   async startUpload(
     @Body() body: UploadStart,
-    @Headers('X-CSRF-Token') csrfToken?: string,
+    @Headers('X-CSRF-Token') _csrfToken?: string,
     @Headers('x-actor-id') actorId?: string,
   ) {
     const reqId = requestId();
@@ -36,8 +36,8 @@ export class UploadController {
   @Put(':uploadId/content')
   async uploadContent(
     @Param('uploadId') uploadId: string,
-    @Req() req: Request,
-    @Headers('X-CSRF-Token') csrfToken?: string,
+    @Req() req: IncomingMessage,
+    @Headers('X-CSRF-Token') _csrfToken?: string,
     @Headers('x-actor-id') actorId?: string,
   ) {
     const reqId = requestId();
