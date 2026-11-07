@@ -39,4 +39,4 @@ Mỗi bài giao thuộc **lớp**, được gửi cho cả lớp hoặc những 
 
 D1–D2, E8 và F9 đã chốt biểu mẫu tối thiểu, ba trạng thái của hai quyền sau hạn, bảng ba nguồn, bản nộp hiện hành trước, lịch sử/nhận xét sau khi chọn nhóm, xem bản hiện hành trước khi gửi lại do xung đột và năm thông tin của phiên bản đã chọn. Chưa chốt dạng bảng phiên bản, chi tiết biểu mẫu và màn lưu trữ. Giới hạn tệp còn ở R-07.
 
-Thao tác thu hồi riêng một bản nộp còn mở tại [R-04](../../review/unresolved.md), nên chưa đặt nút Thu hồi. Điểm số vẫn ngoài phạm vi bản đầu theo [ASG-09](../../docs/requirements/assignments-and-submissions.md).
+J6 đã chốt bản đầu không có nút Thu hồi tại [ASG-18](../../docs/requirements/assignments-and-submissions.md); sửa bằng phiên bản mới theo quyền và hạn. R-04 còn ca mất phản hồi và nộp sát hạn. Điểm số vẫn ngoài phạm vi bản đầu theo [ASG-09](../../docs/requirements/assignments-and-submissions.md).

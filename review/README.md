@@ -2,10 +2,12 @@
 
 | Mục | Dùng để làm gì |
 | --- | --- |
+| [Tình huống biên, rủi ro và phản biện](edge-case-audit.md) | 24 ca có nguồn, hậu quả dự kiến, khuyến nghị và kết quả cần kiểm chứng; phân biệt đề xuất với quyết định đã duyệt |
+| [Đề xuất toàn vẹn dữ liệu](blocked/data-integrity-proposal.md) | Mô hình phiên bản/tệp, gửi chống trùng, quota và dọn dữ liệu; chưa duyệt kiến trúc |
 | [Dấu vết nguồn](provenance.md) | Đối chiếu quyết định người dùng, PR và nơi lưu quy tắc |
 | [Độ phủ của bộ tài liệu](coverage.md) | Kiểm tra bảy nhóm tài liệu và đầu ra của tám bước đã thống nhất |
 | [Các điểm chưa chốt](unresolved.md) | Tìm khoảng trống theo mã và phần tài liệu phụ thuộc |
-| [Phiếu duyệt gộp Q21–Q37](decision-batch.md) | Trả lời một lượt các câu hỏi về nghiệp vụ, UX và đầu vào kỹ thuật |
+| [Sổ quyết định Q21–Q37 và I/J](decision-batch.md) | Tra nội dung đã chốt, phần còn mở và liên kết tới quy tắc theo chủ đề |
 | [Khung workspace và Gantt đã duyệt](../docs/ux/workspace-gantt.md) | Tra số lượng, vị trí, cấp, kiểu và hành động của từng thành phần Q32 |
 | [Phiếu Q33 và phần còn mở](blocked/ux-q33-review.md) | Đối chiếu các quyết định C–F đã chốt với thành phần còn rà soát trong bốn màn |
 | [Phiếu G1–G12 tạm duyệt](blocked/ux-q33-g-provisional.md) | Rà các phương án giao diện đang dùng để tiếp tục thiết kế, chưa khóa thành yêu cầu coding |
