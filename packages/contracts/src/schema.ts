@@ -1332,6 +1332,12 @@ export interface components {
         JoinCode: {
             enabled: boolean;
         };
+        JoinCodeState: {
+            classId: string;
+            enabled: boolean;
+            code?: string;
+            version: number;
+        } & (unknown & unknown);
         DueDate: {
             /** Format: date */
             date: string;
@@ -1526,6 +1532,10 @@ export interface components {
         };
         PolicyResult: {
             data: components["schemas"]["Policy"];
+            requestId: string;
+        };
+        JoinCodeResult: {
+            data: components["schemas"]["JoinCodeState"];
             requestId: string;
         };
         Account: {
@@ -3496,6 +3506,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 classId: string;
@@ -3516,7 +3528,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ClassResult"];
+                    "application/json": components["schemas"]["JoinCodeResult"];
                 };
             };
             /** @description Invalid input */
@@ -3557,6 +3569,15 @@ export interface operations {
             };
             /** @description Domain conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Missing or stale If-Match version */
+            412: {
                 headers: {
                     [name: string]: unknown;
                 };

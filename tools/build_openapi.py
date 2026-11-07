@@ -28,6 +28,7 @@ S = {
  "InvitationCreate": obj({"inviteeId": ID}, ("inviteeId",)),
  "JoinClass": obj({"code": ID}, ("code",)),
  "JoinCode": obj({"enabled":{"type":"boolean"}}, ("enabled",)),
+ "JoinCodeState": obj({"classId":ID,"enabled":{"type":"boolean"},"code":ID,"version":{"type":"integer"}}, ("classId","enabled","version")),
  "DueDate": obj({"date":DATE,"timeZone":ID}, ("date","timeZone")),
  "GroupCreate": obj({"name": string(minLength=1), "leaderId": ID}, ("name",)),
  "Transfer": obj({"recipientId": ID}, ("recipientId",)),
@@ -68,6 +69,11 @@ S["Action"]={"type":"string","enum":actions}
 S["CommandAcknowledgement"] = obj({"accepted": {"type":"boolean"}}, ("accepted",))
 S["CommandResult"] = obj({"data":ref("CommandAcknowledgement"),"requestId":ID}, ("data","requestId"))
 S["PolicyResult"] = obj({"data":ref("Policy"),"requestId":ID}, ("data","requestId"))
+S["JoinCodeResult"] = obj({"data":ref("JoinCodeState"),"requestId":ID}, ("data","requestId"))
+S["JoinCodeState"]["allOf"] = [
+    {"if":{"properties":{"enabled":{"const":True}}},"then":{"required":["code"]}},
+    {"if":{"properties":{"enabled":{"const":False}}},"then":{"not":{"required":["code"]}}},
+]
 S["GrantInput"]["properties"]["action"]=ref("Action")
 S["Policy"]["properties"]["roleActions"]["additionalProperties"] = arr(ref("Action"))
 
@@ -207,6 +213,7 @@ def operation(method, path, request, response, family):
         ("patch", "/groups/{groupId}/leader"),
         ("patch", "/classes/{classId}/members/{membershipId}/role"),
         ("post", "/ownership-transfers/{transferId}/accept"),
+        ("post", "/classes/{classId}/join-code"),
     }
     params=[]
     for part in path.split("/"):
@@ -222,6 +229,7 @@ def operation(method, path, request, response, family):
              "/me/work-sessions":"WorksessionListResult",
              "/workspaces/{workspaceId}/folders":"FolderListResult",
              "/library/items/{itemId}/download":"DownloadResult"}
+    if path=="/classes/{classId}/join-code": typed="JoinCodeResult"
     if path.endswith("/ownership-transfers") or path=="/ownership-transfers/{transferId}/accept":
         typed="OwnershipTransferResult" if method=="post" else typed
     if path=="/tasks/bulk-actions": typed="TaskListResult"

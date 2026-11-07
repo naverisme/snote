@@ -34,6 +34,17 @@ CREATE TABLE "Class" (
 );
 
 -- CreateTable
+CREATE TABLE "ClassJoinCode" (
+    "classId" UUID NOT NULL,
+    "codeHash" TEXT,
+    "enabled" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "ClassJoinCode_pkey" PRIMARY KEY ("classId")
+);
+
+-- CreateTable
 CREATE TABLE "ClassMembership" (
     "id" UUID NOT NULL,
     "classId" UUID NOT NULL,
@@ -523,11 +534,14 @@ ALTER TABLE "AccountUsage" ADD CONSTRAINT "AccountUsage_accountId_fkey" FOREIGN 
 -- AddForeignKey
 ALTER TABLE "ClassMembership" ADD CONSTRAINT "ClassMembership_classId_fkey" FOREIGN KEY ("classId") REFERENCES "Class"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
+ALTER TABLE "ClassJoinCode" ADD CONSTRAINT "ClassJoinCode_classId_fkey" FOREIGN KEY ("classId") REFERENCES "Class"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
 -- AddForeignKey
 ALTER TABLE "Workspace" ADD CONSTRAINT "Workspace_classId_fkey" FOREIGN KEY ("classId") REFERENCES "Class"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- Constraints that Prisma cannot express directly. Keep these in the owner migration.
 CREATE UNIQUE INDEX "ClassMembership_active_unique" ON "ClassMembership" ("classId", "accountId") WHERE "status" = 'active';
+CREATE UNIQUE INDEX "ClassJoinCode_codeHash_key" ON "ClassJoinCode" ("codeHash");
 CREATE UNIQUE INDEX "ClassMembership_monitor_unique" ON "ClassMembership" ("classId") WHERE "status" = 'active' AND "role" = 'monitor';
 CREATE UNIQUE INDEX "WorkspaceMembership_active_unique" ON "WorkspaceMembership" ("workspaceId", "accountId") WHERE "status" = 'active';
 CREATE UNIQUE INDEX "Workspace_default_owner_unique" ON "Workspace" ("ownerId") WHERE "kind" = 'default';
@@ -536,6 +550,7 @@ CREATE UNIQUE INDEX "Grant_active_unique" ON "Grant" ("principalId", "scopeType"
 ALTER TABLE "Workspace" ADD CONSTRAINT "Workspace_kind_scope_check" CHECK (("kind" = 'class_group' AND "classId" IS NOT NULL) OR ("kind" IN ('default','independent') AND "classId" IS NULL));
 ALTER TABLE "Class" ADD CONSTRAINT "Class_group_limit_check" CHECK ("groupLimit" > 0);
 ALTER TABLE "ClassMembership" ADD CONSTRAINT "ClassMembership_role_check" CHECK ("role" IN ('member','monitor'));
+ALTER TABLE "ClassJoinCode" ADD CONSTRAINT "ClassJoinCode_enabled_hash_check" CHECK (("enabled" AND "codeHash" IS NOT NULL) OR (NOT "enabled" AND "codeHash" IS NULL));
 ALTER TABLE "TransferRequest" ADD CONSTRAINT "TransferRequest_target_check" CHECK ("targetType" IN ('class','workspace'));
 ALTER TABLE "Event" ADD CONSTRAINT "Event_time_shape_check" CHECK (("kind" = 'timed' AND "timedStart" IS NOT NULL AND "timedEnd" > "timedStart" AND "allDayStart" IS NULL AND "allDayEndExclusive" IS NULL) OR ("kind" = 'all_day' AND "allDayStart" IS NOT NULL AND "allDayEndExclusive" > "allDayStart" AND "timedStart" IS NULL AND "timedEnd" IS NULL));
 ALTER TABLE "PrivateWorkSession" ADD CONSTRAINT "WorkSession_time_check" CHECK ("endAt" > "startAt");

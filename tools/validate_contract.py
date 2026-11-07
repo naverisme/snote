@@ -52,6 +52,11 @@ for method, route in (("patch", "/me/usages"), ("patch", "/classes/{classId}/pol
     assert any(p["name"] == "If-Match" and p["in"] == "header" and p["required"] for p in op.get("parameters", [])), (method, route)
 assert accepts("ClassRoleChange", {"role":"monitor"})
 assert not accepts("ClassRoleChange", {"role":"leader"})
+assert accepts("JoinCodeState", {"classId":"c1", "enabled":True, "code":"new-code", "version":2})
+assert not accepts("JoinCodeState", {"classId":"c1", "enabled":True, "version":2})
+assert accepts("JoinCodeState", {"classId":"c1", "enabled":False, "version":3})
+assert not accepts("JoinCodeState", {"classId":"c1", "enabled":False, "code":"old-code", "version":3})
+assert doc["paths"]["/classes/{classId}/join-code"]["post"]["responses"]["200"]["content"]["application/json"]["schema"]["$ref"].endswith("/JoinCodeResult")
 assert accepts("OwnershipTransfer", {"id":"t1", "targetType":"class", "targetId":"c1", "initiatorId":"a1", "recipientId":"a2", "status":"pending", "version":1})
 assert not accepts("OwnershipTransfer", {"id":"t1", "targetType":"other", "targetId":"c1", "initiatorId":"a1", "recipientId":"a2", "status":"pending", "version":1})
 for route in ("/classes/{classId}/ownership-transfers", "/workspaces/{workspaceId}/ownership-transfers", "/ownership-transfers/{transferId}/accept"):

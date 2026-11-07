@@ -46,7 +46,17 @@ model Class {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   memberships ClassMembership[]
+  joinCode ClassJoinCode?
   workspaces  Workspace[]
+}
+
+model ClassJoinCode {
+  classId String @id @db.Uuid
+  codeHash String? @unique
+  enabled Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  class Class @relation(fields: [classId], references: [id])
 }
 
 model ClassMembership {

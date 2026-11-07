@@ -15,6 +15,11 @@ async function main() {
   const classId = randomUUID();
   await db.$executeRaw`INSERT INTO "Account" ("id","email","passwordHash","updatedAt") VALUES (${accountId}::uuid, ${`check-${accountId}@example.invalid`}, 'unusable', CURRENT_TIMESTAMP)`;
   await db.$executeRaw`INSERT INTO "Class" ("id","ownerId","name","timeZone","updatedAt") VALUES (${classId}::uuid, ${accountId}::uuid, 'Fixture class', 'UTC', CURRENT_TIMESTAMP)`;
+  await db.$executeRaw`INSERT INTO "ClassJoinCode" ("classId","codeHash","enabled","updatedAt") VALUES (${classId}::uuid, 'fixture-hash', true, CURRENT_TIMESTAMP)`;
+  const secondClassId = randomUUID();
+  await db.$executeRaw`INSERT INTO "Class" ("id","ownerId","name","timeZone","updatedAt") VALUES (${secondClassId}::uuid, ${accountId}::uuid, 'Second fixture class', 'UTC', CURRENT_TIMESTAMP)`;
+  await expectConstraint(() => db.$executeRaw`INSERT INTO "ClassJoinCode" ("classId","enabled","updatedAt") VALUES (${secondClassId}::uuid, true, CURRENT_TIMESTAMP)`, '23514');
+  await expectConstraint(() => db.$executeRaw`INSERT INTO "ClassJoinCode" ("classId","codeHash","enabled","updatedAt") VALUES (${secondClassId}::uuid, 'fixture-hash', true, CURRENT_TIMESTAMP)`, '23505');
   await db.$executeRaw`INSERT INTO "ClassMembership" ("id","classId","accountId","status","updatedAt") VALUES (${randomUUID()}::uuid, ${classId}::uuid, ${accountId}::uuid, 'active', CURRENT_TIMESTAMP)`;
   await expectConstraint(() => db.$executeRaw`INSERT INTO "ClassMembership" ("id","classId","accountId","status","updatedAt") VALUES (${randomUUID()}::uuid, ${classId}::uuid, ${accountId}::uuid, 'active', CURRENT_TIMESTAMP)`, '23505');
   const monitorId = randomUUID();
@@ -42,6 +47,6 @@ async function main() {
   await expectConstraint(() => db.$executeRaw`INSERT INTO "Workspace" ("id","kind","ownerId","timeZone","updatedAt") VALUES (${randomUUID()}::uuid, 'independent', ${accountId}::uuid, 'UTC', CURRENT_TIMESTAMP)`, '23502');
   await expectConstraint(() => db.$executeRaw`INSERT INTO "Workspace" ("id","name","kind","timeZone","updatedAt") VALUES (${randomUUID()}::uuid, 'Sai scope', 'class_group', 'UTC', CURRENT_TIMESTAMP)`, '23514');
   await expectConstraint(() => db.$executeRaw`INSERT INTO "Event" ("id","scopeType","scopeId","kind","title","updatedAt") VALUES (${randomUUID()}::uuid, 'class', ${classId}::uuid, 'all_day', 'Invalid', CURRENT_TIMESTAMP)`, '23514');
-  console.log('PASS: membership/monitor unique, role, workspace name/scope, grant/transfer versions, transfer target, event time shape');
+  console.log('PASS: join code hash/state, membership/monitor unique, role, workspace name/scope, grant/transfer versions, transfer target, event time shape');
 }
 main().finally(() => db.$disconnect());
