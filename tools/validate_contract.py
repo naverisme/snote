@@ -59,6 +59,17 @@ assert not accepts("JoinCodeState", {"classId":"c1", "enabled":False, "code":"ol
 assert doc["paths"]["/classes/{classId}/join-code"]["post"]["responses"]["200"]["content"]["application/json"]["schema"]["$ref"].endswith("/JoinCodeResult")
 assert accepts("OwnershipTransfer", {"id":"t1", "targetType":"class", "targetId":"c1", "initiatorId":"a1", "recipientId":"a2", "status":"pending", "version":1})
 assert not accepts("OwnershipTransfer", {"id":"t1", "targetType":"other", "targetId":"c1", "initiatorId":"a1", "recipientId":"a2", "status":"pending", "version":1})
+assert accepts("Invitation", {"id":"i1", "targetType":"class", "targetId":"c1", "initiatorId":"a1", "recipientId":"a2", "status":"pending", "version":1})
+assert accepts("JoinRequest", {"id":"j1", "targetType":"class", "targetId":"c1", "initiatorId":"a2", "status":"pending", "version":1})
+for route, method, result in (
+    ("/me/invitations", "get", "InvitationListResult"),
+    ("/classes/{classId}/invitations", "post", "InvitationResult"),
+    ("/class-invitations/{invitationId}/accept", "post", "InvitationResult"),
+    ("/classes/{classId}/join-requests", "get", "JoinRequestListResult"),
+    ("/classes/{classId}/join-requests", "post", "JoinRequestResult"),
+    ("/class-join-requests/{requestId}/approve", "post", "JoinRequestResult"),
+):
+    assert doc["paths"][route][method]["responses"]["200"]["content"]["application/json"]["schema"]["$ref"].endswith("/" + result), route
 for route in ("/classes/{classId}/ownership-transfers", "/workspaces/{workspaceId}/ownership-transfers", "/ownership-transfers/{transferId}/accept"):
     assert doc["paths"][route]["post"]["responses"]["200"]["content"]["application/json"]["schema"]["$ref"].endswith("/OwnershipTransferResult"), route
 assert accepts("EventInput", {"title":"Thi", "scope":{"type":"class","id":"c1"}, "allDay":{"startDate":"2026-11-10","endDateExclusive":"2026-11-11","timeZone":"Asia/Ho_Chi_Minh"}})

@@ -1827,6 +1827,51 @@ export interface components {
             nextCursor?: string;
             requestId: string;
         };
+        Invitation: {
+            id: string;
+            /** @enum {string} */
+            targetType: "class" | "workspace";
+            targetId: string;
+            initiatorId: string;
+            recipientId: string;
+            /** @enum {string} */
+            status: "pending" | "accepted" | "declined" | "invalidated" | "expired";
+            /** Format: date-time */
+            expiresAt?: string;
+            /** Format: date-time */
+            acceptedAt?: string;
+            version: number;
+        };
+        InvitationResult: {
+            data: components["schemas"]["Invitation"];
+            requestId: string;
+        };
+        InvitationListResult: {
+            data: components["schemas"]["Invitation"][];
+            nextCursor?: string;
+            requestId: string;
+        };
+        JoinRequest: {
+            id: string;
+            /** @enum {string} */
+            targetType: "class" | "workspace";
+            targetId: string;
+            initiatorId: string;
+            /** @enum {string} */
+            status: "pending" | "approved" | "declined" | "invalidated";
+            /** Format: date-time */
+            acceptedAt?: string;
+            version: number;
+        };
+        JoinRequestResult: {
+            data: components["schemas"]["JoinRequest"];
+            requestId: string;
+        };
+        JoinRequestListResult: {
+            data: components["schemas"]["JoinRequest"][];
+            nextCursor?: string;
+            requestId: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -3083,7 +3128,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MembershipListResult"];
+                    "application/json": components["schemas"]["JoinRequestListResult"];
                 };
             };
             /** @description Invalid input */
@@ -3169,7 +3214,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MembershipResult"];
+                    "application/json": components["schemas"]["JoinRequestResult"];
                 };
             };
             /** @description Invalid input */
@@ -3258,7 +3303,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MembershipListResult"];
+                    "application/json": components["schemas"]["InvitationListResult"];
                 };
             };
             /** @description Invalid input */
@@ -3632,7 +3677,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MembershipResult"];
+                    "application/json": components["schemas"]["InvitationResult"];
                 };
             };
             /** @description Invalid input */
@@ -3723,7 +3768,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MembershipResult"];
+                    "application/json": components["schemas"]["InvitationResult"];
                 };
             };
             /** @description Invalid input */
@@ -3814,7 +3859,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MembershipResult"];
+                    "application/json": components["schemas"]["InvitationResult"];
                 };
             };
             /** @description Invalid input */
@@ -3905,7 +3950,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MembershipResult"];
+                    "application/json": components["schemas"]["JoinRequestResult"];
                 };
             };
             /** @description Invalid input */
@@ -3996,7 +4041,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MembershipResult"];
+                    "application/json": components["schemas"]["JoinRequestResult"];
                 };
             };
             /** @description Invalid input */
@@ -4268,7 +4313,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MembershipResult"];
+                    "application/json": components["schemas"]["InvitationResult"];
                 };
             };
             /** @description Invalid input */
@@ -4359,7 +4404,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MembershipListResult"];
+                    "application/json": components["schemas"]["JoinRequestListResult"];
                 };
             };
             /** @description Invalid input */
@@ -4441,7 +4486,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MembershipResult"];
+                    "application/json": components["schemas"]["JoinRequestResult"];
                 };
             };
             /** @description Invalid input */
@@ -4532,7 +4577,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MembershipResult"];
+                    "application/json": components["schemas"]["InvitationResult"];
                 };
             };
             /** @description Invalid input */
@@ -4623,7 +4668,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MembershipResult"];
+                    "application/json": components["schemas"]["InvitationResult"];
                 };
             };
             /** @description Invalid input */
@@ -4714,7 +4759,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MembershipResult"];
+                    "application/json": components["schemas"]["JoinRequestResult"];
                 };
             };
             /** @description Invalid input */
@@ -4805,7 +4850,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MembershipResult"];
+                    "application/json": components["schemas"]["JoinRequestResult"];
                 };
             };
             /** @description Invalid input */

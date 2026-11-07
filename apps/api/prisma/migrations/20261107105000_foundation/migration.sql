@@ -124,6 +124,7 @@ CREATE TABLE "Invitation" (
     "initiatorId" UUID NOT NULL,
     "recipientId" UUID NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'pending',
+    "version" INTEGER NOT NULL DEFAULT 1,
     "expiresAt" TIMESTAMP(3),
     "acceptedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -139,6 +140,7 @@ CREATE TABLE "JoinRequest" (
     "targetId" UUID NOT NULL,
     "initiatorId" UUID NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'pending',
+    "version" INTEGER NOT NULL DEFAULT 1,
     "acceptedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -552,6 +554,8 @@ ALTER TABLE "Class" ADD CONSTRAINT "Class_group_limit_check" CHECK ("groupLimit"
 ALTER TABLE "ClassMembership" ADD CONSTRAINT "ClassMembership_role_check" CHECK ("role" IN ('member','monitor'));
 ALTER TABLE "ClassJoinCode" ADD CONSTRAINT "ClassJoinCode_enabled_hash_check" CHECK (("enabled" AND "codeHash" IS NOT NULL) OR (NOT "enabled" AND "codeHash" IS NULL));
 ALTER TABLE "TransferRequest" ADD CONSTRAINT "TransferRequest_target_check" CHECK ("targetType" IN ('class','workspace'));
+ALTER TABLE "Invitation" ADD CONSTRAINT "Invitation_target_check" CHECK ("targetType" IN ('class','workspace'));
+ALTER TABLE "JoinRequest" ADD CONSTRAINT "JoinRequest_target_check" CHECK ("targetType" IN ('class','workspace'));
 ALTER TABLE "Event" ADD CONSTRAINT "Event_time_shape_check" CHECK (("kind" = 'timed' AND "timedStart" IS NOT NULL AND "timedEnd" > "timedStart" AND "allDayStart" IS NULL AND "allDayEndExclusive" IS NULL) OR ("kind" = 'all_day' AND "allDayStart" IS NOT NULL AND "allDayEndExclusive" > "allDayStart" AND "timedStart" IS NULL AND "timedEnd" IS NULL));
 ALTER TABLE "PrivateWorkSession" ADD CONSTRAINT "WorkSession_time_check" CHECK ("endAt" > "startAt");
 ALTER TABLE "Blob" ADD CONSTRAINT "Blob_size_check" CHECK ("size" > 0);

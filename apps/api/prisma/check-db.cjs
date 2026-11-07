@@ -44,9 +44,21 @@ async function main() {
   assert.equal(transfer.version, 1);
   assert.equal(transfer.targetType, 'class');
   await expectConstraint(() => db.$executeRaw`INSERT INTO "TransferRequest" ("id","targetType","targetId","initiatorId","recipientId","updatedAt") VALUES (${randomUUID()}::uuid, 'other', ${workspaceId}::uuid, ${accountId}::uuid, ${monitorId}::uuid, CURRENT_TIMESTAMP)`, '23514');
+  const invitationId = randomUUID();
+  await db.$executeRaw`INSERT INTO "Invitation" ("id","targetType","targetId","initiatorId","recipientId","updatedAt") VALUES (${invitationId}::uuid, 'class', ${classId}::uuid, ${accountId}::uuid, ${secondMonitorId}::uuid, CURRENT_TIMESTAMP)`;
+  const [invitation] = await db.$queryRaw`SELECT "version","status" FROM "Invitation" WHERE "id" = ${invitationId}::uuid`;
+  assert.equal(invitation.version, 1);
+  assert.equal(invitation.status, 'pending');
+  const joinRequestId = randomUUID();
+  await db.$executeRaw`INSERT INTO "JoinRequest" ("id","targetType","targetId","initiatorId","updatedAt") VALUES (${joinRequestId}::uuid, 'class', ${classId}::uuid, ${secondMonitorId}::uuid, CURRENT_TIMESTAMP)`;
+  const [joinRequest] = await db.$queryRaw`SELECT "version","status" FROM "JoinRequest" WHERE "id" = ${joinRequestId}::uuid`;
+  assert.equal(joinRequest.version, 1);
+  assert.equal(joinRequest.status, 'pending');
+  await expectConstraint(() => db.$executeRaw`INSERT INTO "Invitation" ("id","targetType","targetId","initiatorId","recipientId","updatedAt") VALUES (${randomUUID()}::uuid, 'other', ${classId}::uuid, ${accountId}::uuid, ${secondMonitorId}::uuid, CURRENT_TIMESTAMP)`, '23514');
+  await expectConstraint(() => db.$executeRaw`INSERT INTO "JoinRequest" ("id","targetType","targetId","initiatorId","updatedAt") VALUES (${randomUUID()}::uuid, 'other', ${classId}::uuid, ${secondMonitorId}::uuid, CURRENT_TIMESTAMP)`, '23514');
   await expectConstraint(() => db.$executeRaw`INSERT INTO "Workspace" ("id","kind","ownerId","timeZone","updatedAt") VALUES (${randomUUID()}::uuid, 'independent', ${accountId}::uuid, 'UTC', CURRENT_TIMESTAMP)`, '23502');
   await expectConstraint(() => db.$executeRaw`INSERT INTO "Workspace" ("id","name","kind","timeZone","updatedAt") VALUES (${randomUUID()}::uuid, 'Sai scope', 'class_group', 'UTC', CURRENT_TIMESTAMP)`, '23514');
   await expectConstraint(() => db.$executeRaw`INSERT INTO "Event" ("id","scopeType","scopeId","kind","title","updatedAt") VALUES (${randomUUID()}::uuid, 'class', ${classId}::uuid, 'all_day', 'Invalid', CURRENT_TIMESTAMP)`, '23514');
-  console.log('PASS: join code hash/state, membership/monitor unique, role, workspace name/scope, grant/transfer versions, transfer target, event time shape');
+  console.log('PASS: join code, memberships/roles, workspace, grant/transfer, invitation/request versions and targets, event shape');
 }
 main().finally(() => db.$disconnect());

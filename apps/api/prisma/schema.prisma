@@ -129,6 +129,7 @@ model Invitation {
   initiatorId String @db.Uuid
   recipientId String @db.Uuid
   status String @default("pending")
+  version Int @default(1)
   expiresAt DateTime?
   acceptedAt DateTime?
   createdAt DateTime @default(now())
@@ -142,6 +143,7 @@ model JoinRequest {
   targetId String @db.Uuid
   initiatorId String @db.Uuid
   status String @default("pending")
+  version Int @default(1)
   acceptedAt DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

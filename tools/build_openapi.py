@@ -94,6 +94,8 @@ entities={
  "folder": obj({"id":ID,"workspaceId":ID,"name":STR,"parentId":ID}, ("id","workspaceId","name")),
  "download": obj({"url":ID,"expiresAt":TIME}, ("url","expiresAt")),
  "ownershipTransfer": obj({"id":ID,"targetType":string(enum=["class","workspace"]),"targetId":ID,"initiatorId":ID,"recipientId":ID,"status":string(enum=["pending","accepted","declined","invalidated"]),"acceptedAt":TIME,"version":{"type":"integer"}}, ("id","targetType","targetId","initiatorId","recipientId","status","version")),
+ "invitation": obj({"id":ID,"targetType":string(enum=["class","workspace"]),"targetId":ID,"initiatorId":ID,"recipientId":ID,"status":string(enum=["pending","accepted","declined","invalidated","expired"]),"expiresAt":TIME,"acceptedAt":TIME,"version":{"type":"integer"}}, ("id","targetType","targetId","initiatorId","recipientId","status","version")),
+ "joinRequest": obj({"id":ID,"targetType":string(enum=["class","workspace"]),"targetId":ID,"initiatorId":ID,"status":string(enum=["pending","approved","declined","invalidated"]),"acceptedAt":TIME,"version":{"type":"integer"}}, ("id","targetType","targetId","initiatorId","status","version")),
 }
 for family,entity in entities.items():
     label=family[0].upper()+family[1:]
@@ -230,6 +232,10 @@ def operation(method, path, request, response, family):
              "/workspaces/{workspaceId}/folders":"FolderListResult",
              "/library/items/{itemId}/download":"DownloadResult"}
     if path=="/classes/{classId}/join-code": typed="JoinCodeResult"
+    if "invitations" in path:
+        typed="InvitationListResult" if method=="get" else "InvitationResult"
+    if "join-requests" in path:
+        typed="JoinRequestListResult" if method=="get" else "JoinRequestResult"
     if path.endswith("/ownership-transfers") or path=="/ownership-transfers/{transferId}/accept":
         typed="OwnershipTransferResult" if method=="post" else typed
     if path=="/tasks/bulk-actions": typed="TaskListResult"
