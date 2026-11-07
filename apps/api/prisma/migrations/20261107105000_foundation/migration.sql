@@ -240,6 +240,7 @@ CREATE TABLE "PrivateWorkSession" (
     "ownerId" UUID NOT NULL,
     "startAt" TIMESTAMP(3) NOT NULL,
     "endAt" TIMESTAMP(3) NOT NULL,
+    "version" INTEGER NOT NULL DEFAULT 1,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -293,6 +294,7 @@ CREATE TABLE "Folder" (
     "workspaceId" UUID NOT NULL,
     "parentId" UUID,
     "name" TEXT NOT NULL,
+    "version" INTEGER NOT NULL DEFAULT 1,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -397,6 +399,7 @@ CREATE TABLE "AssignmentRecipient" (
     "assignmentId" UUID NOT NULL,
     "workspaceId" UUID NOT NULL,
     "progressText" TEXT,
+    "version" INTEGER NOT NULL DEFAULT 1,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 

@@ -230,6 +230,7 @@ model PrivateWorkSession {
   ownerId String @db.Uuid
   startAt DateTime
   endAt DateTime
+  version Int @default(1)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@index([ownerId, startAt, id])
@@ -274,6 +275,7 @@ model Folder {
   workspaceId String @db.Uuid
   parentId String? @db.Uuid
   name String
+  version Int @default(1)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@index([workspaceId, parentId])
@@ -361,6 +363,7 @@ model AssignmentRecipient {
   assignmentId String @db.Uuid
   workspaceId String @db.Uuid
   progressText String?
+  version Int @default(1)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@unique([assignmentId, workspaceId])

@@ -388,6 +388,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/groups/{groupId}/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["membershipGetGroupsGroupidMembers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/groups/{groupId}/invitations": {
         parameters: {
             query?: never;
@@ -1481,7 +1497,10 @@ export interface components {
             status?: "todo" | "doing" | "done";
         };
         BulkTasks: {
-            ids: string[];
+            items: {
+                id: string;
+                version: number;
+            }[];
             /** @enum {string} */
             action: "archive" | "trash";
         };
@@ -1829,6 +1848,7 @@ export interface components {
             workspaceId: string;
             submissionVersion?: number;
             progressText?: string;
+            version: number;
         };
         RecipientResult: {
             data: components["schemas"]["Recipient"];
@@ -1847,6 +1867,7 @@ export interface components {
             startAt: string;
             /** Format: date-time */
             endAt: string;
+            version: number;
         };
         WorksessionResult: {
             data: components["schemas"]["Worksession"];
@@ -1862,6 +1883,7 @@ export interface components {
             workspaceId: string;
             name: string;
             parentId?: string;
+            version: number;
         };
         FolderResult: {
             data: components["schemas"]["Folder"];
@@ -3461,6 +3483,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 classId: string;
@@ -3518,6 +3542,15 @@ export interface operations {
             };
             /** @description Domain conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Missing or stale If-Match version */
+            412: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3552,6 +3585,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 classId: string;
@@ -3609,6 +3644,15 @@ export interface operations {
             };
             /** @description Domain conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Missing or stale If-Match version */
+            412: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3844,6 +3888,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 invitationId: string;
@@ -3901,6 +3947,15 @@ export interface operations {
             };
             /** @description Domain conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Missing or stale If-Match version */
+            412: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3935,6 +3990,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 invitationId: string;
@@ -3999,6 +4056,15 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
+            /** @description Missing or stale If-Match version */
+            412: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
             /** @description Rate limited */
             429: {
                 headers: {
@@ -4026,6 +4092,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 requestId: string;
@@ -4083,6 +4151,15 @@ export interface operations {
             };
             /** @description Domain conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Missing or stale If-Match version */
+            412: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4117,6 +4194,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 requestId: string;
@@ -4174,6 +4253,15 @@ export interface operations {
             };
             /** @description Domain conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Missing or stale If-Match version */
+            412: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4351,6 +4439,85 @@ export interface operations {
             };
             /** @description Domain conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Rate limited */
+            429: {
+                headers: {
+                    "Retry-After"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Retryable service failure */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    membershipGetGroupsGroupidMembers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Committed result */
+            200: {
+                headers: {
+                    /** @description Version of returned resource when applicable */
+                    ETag?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MembershipListResult"];
+                };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unauthenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Not found or hidden by scope */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4653,6 +4820,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 invitationId: string;
@@ -4710,6 +4879,15 @@ export interface operations {
             };
             /** @description Domain conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Missing or stale If-Match version */
+            412: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4744,6 +4922,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 invitationId: string;
@@ -4808,6 +4988,15 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
+            /** @description Missing or stale If-Match version */
+            412: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
             /** @description Rate limited */
             429: {
                 headers: {
@@ -4835,6 +5024,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 requestId: string;
@@ -4892,6 +5083,15 @@ export interface operations {
             };
             /** @description Domain conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Missing or stale If-Match version */
+            412: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4926,6 +5126,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 requestId: string;
@@ -4990,6 +5192,15 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
+            /** @description Missing or stale If-Match version */
+            412: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
             /** @description Rate limited */
             429: {
                 headers: {
@@ -5017,6 +5228,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 groupId: string;
@@ -5078,6 +5291,15 @@ export interface operations {
             };
             /** @description Domain conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Missing or stale If-Match version */
+            412: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5112,6 +5334,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 classId: string;
@@ -5180,6 +5404,15 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
+            /** @description Missing or stale If-Match version */
+            412: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
             /** @description Rate limited */
             429: {
                 headers: {
@@ -5207,6 +5440,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 classId: string;
@@ -5275,6 +5510,15 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
+            /** @description Missing or stale If-Match version */
+            412: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
             /** @description Rate limited */
             429: {
                 headers: {
@@ -5302,6 +5546,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 groupId: string;
@@ -5363,6 +5609,15 @@ export interface operations {
             };
             /** @description Domain conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Missing or stale If-Match version */
+            412: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5929,6 +6184,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 invitationId: string;
@@ -5986,6 +6243,15 @@ export interface operations {
             };
             /** @description Domain conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Missing or stale If-Match version */
+            412: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6020,6 +6286,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 invitationId: string;
@@ -6084,6 +6352,15 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
+            /** @description Missing or stale If-Match version */
+            412: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
             /** @description Rate limited */
             429: {
                 headers: {
@@ -6111,6 +6388,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 workspaceId: string;
@@ -6179,6 +6458,15 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
+            /** @description Missing or stale If-Match version */
+            412: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
             /** @description Rate limited */
             429: {
                 headers: {
@@ -6206,6 +6494,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 workspaceId: string;
@@ -6263,6 +6553,15 @@ export interface operations {
             };
             /** @description Domain conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Missing or stale If-Match version */
+            412: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6297,6 +6596,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 workspaceId: string;
@@ -6354,6 +6655,15 @@ export interface operations {
             };
             /** @description Domain conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Missing or stale If-Match version */
+            412: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7047,6 +7357,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 grantId: string;
@@ -7102,6 +7414,15 @@ export interface operations {
             };
             /** @description Domain conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Missing or stale If-Match version */
+            412: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7402,7 +7723,7 @@ export interface operations {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
                 /** @description Required for versioned updates; omitted on first submission */
-                "If-Match"?: string;
+                "If-Match": string;
             };
             path: {
                 taskId: string;
@@ -7471,7 +7792,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Version conflict */
+            /** @description Missing or stale If-Match version */
             412: {
                 headers: {
                     [name: string]: unknown;
@@ -7609,6 +7930,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 taskId: string;
@@ -7677,7 +8000,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Version conflict */
+            /** @description Missing or stale If-Match version */
             412: {
                 headers: {
                     [name: string]: unknown;
@@ -7713,6 +8036,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 taskId: string;
@@ -7777,7 +8102,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Version conflict */
+            /** @description Missing or stale If-Match version */
             412: {
                 headers: {
                     [name: string]: unknown;
@@ -7813,6 +8138,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 taskId: string;
@@ -7877,7 +8204,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Version conflict */
+            /** @description Missing or stale If-Match version */
             412: {
                 headers: {
                     [name: string]: unknown;
@@ -7913,6 +8240,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 taskId: string;
@@ -7981,7 +8310,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Version conflict */
+            /** @description Missing or stale If-Match version */
             412: {
                 headers: {
                     [name: string]: unknown;
@@ -8017,6 +8346,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 taskId: string;
@@ -8080,6 +8411,15 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
+            /** @description Missing or stale If-Match version */
+            412: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
             /** @description Rate limited */
             429: {
                 headers: {
@@ -8108,7 +8448,7 @@ export interface operations {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
                 /** @description Required for versioned updates; omitted on first submission */
-                "If-Match"?: string;
+                "If-Match": string;
             };
             path: {
                 taskId: string;
@@ -8178,7 +8518,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Version conflict */
+            /** @description Missing or stale If-Match version */
             412: {
                 headers: {
                     [name: string]: unknown;
@@ -8396,6 +8736,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 sessionId: string;
@@ -8458,6 +8800,15 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
+            /** @description Missing or stale If-Match version */
+            412: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
             /** @description Rate limited */
             429: {
                 headers: {
@@ -8486,7 +8837,7 @@ export interface operations {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
                 /** @description Required for versioned updates; omitted on first submission */
-                "If-Match"?: string;
+                "If-Match": string;
             };
             path: {
                 sessionId: string;
@@ -8555,7 +8906,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Version conflict */
+            /** @description Missing or stale If-Match version */
             412: {
                 headers: {
                     [name: string]: unknown;
@@ -8848,7 +9199,7 @@ export interface operations {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
                 /** @description Required for versioned updates; omitted on first submission */
-                "If-Match"?: string;
+                "If-Match": string;
             };
             path: {
                 eventId: string;
@@ -8917,6 +9268,15 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
+            /** @description Missing or stale If-Match version */
+            412: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
             /** @description Rate limited */
             429: {
                 headers: {
@@ -8944,6 +9304,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 eventId: string;
@@ -9001,6 +9363,15 @@ export interface operations {
             };
             /** @description Domain conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Missing or stale If-Match version */
+            412: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -9301,7 +9672,7 @@ export interface operations {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
                 /** @description Required for versioned updates; omitted on first submission */
-                "If-Match"?: string;
+                "If-Match": string;
             };
             path: {
                 itemId: string;
@@ -9370,7 +9741,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Version conflict */
+            /** @description Missing or stale If-Match version */
             412: {
                 headers: {
                     [name: string]: unknown;
@@ -9509,7 +9880,7 @@ export interface operations {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
                 /** @description Required for versioned updates; omitted on first submission */
-                "If-Match"?: string;
+                "If-Match": string;
             };
             path: {
                 itemId: string;
@@ -9578,7 +9949,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Version conflict */
+            /** @description Missing or stale If-Match version */
             412: {
                 headers: {
                     [name: string]: unknown;
@@ -9718,6 +10089,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 itemId: string;
@@ -9782,7 +10155,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Version conflict */
+            /** @description Missing or stale If-Match version */
             412: {
                 headers: {
                     [name: string]: unknown;
@@ -9818,6 +10191,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 itemId: string;
@@ -9882,7 +10257,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Version conflict */
+            /** @description Missing or stale If-Match version */
             412: {
                 headers: {
                     [name: string]: unknown;
@@ -10183,6 +10558,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 folderId: string;
@@ -10245,6 +10622,15 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
+            /** @description Missing or stale If-Match version */
+            412: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
             /** @description Rate limited */
             429: {
                 headers: {
@@ -10273,7 +10659,7 @@ export interface operations {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
                 /** @description Required for versioned updates; omitted on first submission */
-                "If-Match"?: string;
+                "If-Match": string;
             };
             path: {
                 folderId: string;
@@ -10342,7 +10728,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Version conflict */
+            /** @description Missing or stale If-Match version */
             412: {
                 headers: {
                     [name: string]: unknown;
@@ -10832,7 +11218,7 @@ export interface operations {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
                 /** @description Required for versioned updates; omitted on first submission */
-                "If-Match"?: string;
+                "If-Match": string;
             };
             path: {
                 assignmentId: string;
@@ -10901,7 +11287,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Version conflict */
+            /** @description Missing or stale If-Match version */
             412: {
                 headers: {
                     [name: string]: unknown;
@@ -10937,6 +11323,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 assignmentId: string;
@@ -11001,7 +11389,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Version conflict */
+            /** @description Missing or stale If-Match version */
             412: {
                 headers: {
                     [name: string]: unknown;
@@ -11119,6 +11507,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 recipientId: string;
@@ -11187,7 +11577,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Version conflict */
+            /** @description Missing or stale If-Match version */
             412: {
                 headers: {
                     [name: string]: unknown;

@@ -58,6 +58,20 @@ for method, route in (("patch", "/me/usages"), ("patch", "/classes/{classId}/pol
     op = doc["paths"][route][method]
     assert "412" in op["responses"], (method, route)
     assert any(p["name"] == "If-Match" and p["in"] == "header" and p["required"] for p in op.get("parameters", [])), (method, route)
+for method, route in (("post", "/classes/{classId}/archive"), ("post", "/tasks/{taskId}/complete"), ("delete", "/tasks/{taskId}/checklist-items/{itemId}"), ("patch", "/me/work-sessions/{sessionId}"), ("post", "/library/items/{itemId}/revisions"), ("delete", "/folders/{folderId}"), ("post", "/assignment-recipients/{recipientId}/updates")):
+    op = doc["paths"][route][method]
+    assert "412" in op["responses"], (method, route)
+    assert any(p["name"] == "If-Match" and p["in"] == "header" and p["required"] for p in op.get("parameters", [])), (method, route)
+assert accepts("BulkTasks", {"items":[{"id":"t1","version":1}], "action":"archive"})
+assert not accepts("BulkTasks", {"ids":["t1"], "action":"archive"})
+assert not accepts("BulkTasks", {"items":[], "action":"archive"})
+for name, payload in (
+    ("Folder", {"id":"f1", "workspaceId":"w1", "name":"Nguồn", "version":1}),
+    ("Worksession", {"id":"s1", "taskId":"t1", "ownerId":"a1", "startAt":"2026-11-08T01:00:00Z", "endAt":"2026-11-08T02:00:00Z", "version":1}),
+    ("Recipient", {"id":"r1", "assignmentId":"as1", "workspaceId":"w1", "version":1}),
+):
+    assert accepts(name, payload), name
+    assert not accepts(name, {key:value for key,value in payload.items() if key != "version"}), name
 assert accepts("ClassRoleChange", {"role":"monitor"})
 assert not accepts("ClassRoleChange", {"role":"leader"})
 assert accepts("JoinCodeState", {"classId":"c1", "enabled":True, "code":"new-code", "version":2})
@@ -77,6 +91,7 @@ for route, method, result in (
     ("/classes/{classId}/join-requests", "post", "JoinRequestResult"),
     ("/class-join-requests/{requestId}/approve", "post", "JoinRequestResult"),
     ("/workspaces/{workspaceId}/members", "get", "MembershipListResult"),
+    ("/groups/{groupId}/members", "get", "MembershipListResult"),
     ("/workspaces/{workspaceId}/invitations", "post", "InvitationResult"),
     ("/workspace-invitations/{invitationId}/accept", "post", "InvitationResult"),
     ("/workspaces/{workspaceId}/leave", "post", "MembershipResult"),

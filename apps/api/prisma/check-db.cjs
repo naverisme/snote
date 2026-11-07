@@ -38,6 +38,22 @@ async function main() {
   await db.$executeRaw`INSERT INTO "Workspace" ("id","name","kind","ownerId","timeZone","updatedAt") VALUES (${workspaceId}::uuid, 'Nhóm thử', 'independent', ${accountId}::uuid, 'UTC', CURRENT_TIMESTAMP)`;
   const [workspace] = await db.$queryRaw`SELECT "name" FROM "Workspace" WHERE "id" = ${workspaceId}::uuid`;
   assert.equal(workspace.name, 'Nhóm thử');
+  const folderId = randomUUID();
+  await db.$executeRaw`INSERT INTO "Folder" ("id","workspaceId","name","updatedAt") VALUES (${folderId}::uuid, ${workspaceId}::uuid, 'Nguồn', CURRENT_TIMESTAMP)`;
+  const [folder] = await db.$queryRaw`SELECT "version" FROM "Folder" WHERE "id" = ${folderId}::uuid`;
+  assert.equal(folder.version, 1);
+  const taskId = randomUUID();
+  await db.$executeRaw`INSERT INTO "Task" ("id","workspaceId","title","updatedAt") VALUES (${taskId}::uuid, ${workspaceId}::uuid, 'Việc thử', CURRENT_TIMESTAMP)`;
+  const sessionId = randomUUID();
+  await db.$executeRaw`INSERT INTO "PrivateWorkSession" ("id","taskId","ownerId","startAt","endAt","updatedAt") VALUES (${sessionId}::uuid, ${taskId}::uuid, ${accountId}::uuid, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + INTERVAL '1 hour', CURRENT_TIMESTAMP)`;
+  const [session] = await db.$queryRaw`SELECT "version" FROM "PrivateWorkSession" WHERE "id" = ${sessionId}::uuid`;
+  assert.equal(session.version, 1);
+  const assignmentId = randomUUID();
+  await db.$executeRaw`INSERT INTO "Assignment" ("id","classId","title","updatedAt") VALUES (${assignmentId}::uuid, ${classId}::uuid, 'Bài thử', CURRENT_TIMESTAMP)`;
+  const recipientId = randomUUID();
+  await db.$executeRaw`INSERT INTO "AssignmentRecipient" ("id","assignmentId","workspaceId","updatedAt") VALUES (${recipientId}::uuid, ${assignmentId}::uuid, ${workspaceId}::uuid, CURRENT_TIMESTAMP)`;
+  const [recipient] = await db.$queryRaw`SELECT "version" FROM "AssignmentRecipient" WHERE "id" = ${recipientId}::uuid`;
+  assert.equal(recipient.version, 1);
   const grantId = randomUUID();
   await db.$executeRaw`INSERT INTO "Grant" ("id","principalId","scopeType","scopeId","action") VALUES (${grantId}::uuid, ${accountId}::uuid, 'workspace', ${workspaceId}::uuid, 'task.create')`;
   const [grant] = await db.$queryRaw`SELECT "version" FROM "Grant" WHERE "id" = ${grantId}::uuid`;
@@ -63,6 +79,6 @@ async function main() {
   await expectConstraint(() => db.$executeRaw`INSERT INTO "Workspace" ("id","kind","ownerId","timeZone","updatedAt") VALUES (${randomUUID()}::uuid, 'independent', ${accountId}::uuid, 'UTC', CURRENT_TIMESTAMP)`, '23502');
   await expectConstraint(() => db.$executeRaw`INSERT INTO "Workspace" ("id","name","kind","timeZone","updatedAt") VALUES (${randomUUID()}::uuid, 'Sai scope', 'class_group', 'UTC', CURRENT_TIMESTAMP)`, '23514');
   await expectConstraint(() => db.$executeRaw`INSERT INTO "Event" ("id","scopeType","scopeId","kind","title","updatedAt") VALUES (${randomUUID()}::uuid, 'class', ${classId}::uuid, 'all_day', 'Invalid', CURRENT_TIMESTAMP)`, '23514');
-  console.log('PASS: account timezone/reset token, join code, memberships/roles, workspace, grant/transfer, invitation/request, event shape');
+  console.log('PASS: account/reset, join code, memberships, versioned folder/session/recipient, workspace, grants/transfers, invitation/request, event');
 }
 main().finally(() => db.$disconnect());
