@@ -22,23 +22,28 @@ export interface PolicyFacts {
   roleActions?: { member?: readonly Action[]; monitor?: readonly Action[] };
 }
 
-const monitorDefaults: readonly Action[] = ['group.approve', 'task.edit_common', 'event.edit', 'library.edit_text'];
-const memberDefaults: readonly Action[] = ['task.create', 'library.create'];
+const monitorDefaults: readonly Action[] = ['group.approve', 'task.edit_common', 'event.edit', 'library.edit_text', 'library.edit_link'];
+const memberDefaults: readonly Action[] = ['task.read', 'task.create', 'event.read', 'library.read_text', 'library.read_link', 'library.read_file', 'library.create'];
 const management: readonly Action[] = ['workspace.manage', 'group.approve', 'member.invite', 'member.remove',
-  'task.create', 'task.assign', 'task.edit_common', 'task.checklist', 'task.delete', 'event.create',
-  'event.edit', 'event.cancel', 'library.create', 'library.edit_text', 'library.edit_file', 'library.delete', 'folder.manage'];
+  'task.read', 'task.create', 'task.assign', 'task.edit_common', 'task.checklist', 'task.delete', 'event.read', 'event.create',
+  'event.edit', 'event.cancel', 'library.read_text', 'library.read_link', 'library.read_file', 'library.create',
+  'library.edit_text', 'library.edit_link', 'library.edit_file', 'library.delete', 'folder.manage',
+  'assignment.read', 'progress.read', 'submission.read'];
 
 // Every generated action has an explicit domain. Unknown/new actions deny until reviewed.
 const domains: Record<Action, readonly Scope['type'][]> = {
   'class.manage': ['class'], 'class.role_change': ['class'], 'group.create': ['class'],
   'group.approve': ['workspace'], 'member.invite': ['workspace'], 'member.remove': ['workspace'],
-  'workspace.manage': ['workspace'], 'task.create': ['workspace'], 'task.assign': ['workspace'],
+  'workspace.manage': ['workspace'],
+  'task.read': ['workspace'], 'task.create': ['workspace'], 'task.assign': ['workspace'],
   'task.edit_common': ['workspace'], 'task.checklist': ['workspace'], 'task.delete': ['workspace'],
-  'event.create': ['class', 'workspace'], 'event.edit': ['class', 'workspace'], 'event.cancel': ['class', 'workspace'],
-  'library.create': ['workspace'], 'library.edit_text': ['workspace'], 'library.edit_file': ['workspace'],
-  'library.delete': ['workspace'], 'folder.manage': ['workspace'], 'assignment.create': ['class'],
-  'assignment.edit': ['assignment'], 'progress.update': ['assignment'], 'submission.send': ['assignment'],
-  'submission.feedback': ['assignment'],
+  'event.read': ['class', 'workspace'], 'event.create': ['class', 'workspace'], 'event.edit': ['class', 'workspace'], 'event.cancel': ['class', 'workspace'],
+  'library.read_text': ['workspace'], 'library.read_link': ['workspace'], 'library.read_file': ['workspace'],
+  'library.create': ['workspace'], 'library.edit_text': ['workspace'], 'library.edit_link': ['workspace'], 'library.edit_file': ['workspace'],
+  'library.delete': ['workspace'], 'folder.manage': ['workspace'],
+  'assignment.read': ['class', 'assignment'], 'assignment.create': ['class'], 'assignment.edit': ['assignment'],
+  'progress.read': ['class', 'assignment'], 'progress.update': ['assignment'],
+  'submission.read': ['class', 'assignment'], 'submission.send': ['assignment'], 'submission.feedback': ['assignment'],
 };
 
 /** STR-11–14, PM-01–24: facts must be freshly loaded in the mutation transaction. */
