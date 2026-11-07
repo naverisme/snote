@@ -1,0 +1,6 @@
+{
+  "request": {"title": "Bài giao thử", "recipientWorkspaceIds": ["w_1"], "lateFirst": "inherit", "lateRevision": "lock"},
+  "success": {"data": {"id": "as_1", "classId": "c_1", "title": "Bài giao thử", "recipientWorkspaceIds": ["w_1"], "version": 1}, "requestId": "req_a1"},
+  "conflict": {"error": {"code": "ARCHIVED", "message": "Class is archived", "details": {}}, "requestId": "req_a2"},
+  "stale": {"error": {"code": "VERSION_CONFLICT", "message": "Read current version", "details": {}}, "requestId": "req_a3"}
+}

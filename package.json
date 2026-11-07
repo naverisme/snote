@@ -1,0 +1,15 @@
+{
+  "name": "snote-v2",
+  "private": true,
+  "packageManager": "npm@11.15.0",
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "contract:generate": "openapi-typescript docs/contracts/openapi.yaml -o packages/contracts/src/schema.ts",
+    "contract:validate": "python tools/validate_contract.py"
+  },
+  "devDependencies": {
+    "openapi-typescript": "7.10.1",
+    "typescript": "5.9.3"
+  }
+}

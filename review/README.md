@@ -3,6 +3,7 @@
 | Mục | Dùng để làm gì |
 | --- | --- |
 | [Tình huống biên, rủi ro và phản biện](edge-case-audit.md) | 24 ca có nguồn, hậu quả dự kiến, khuyến nghị và kết quả cần kiểm chứng; phân biệt đề xuất với quyết định đã duyệt |
+| [Rà Foundation #28](foundation-audit.md) | Giới hạn môi trường, rủi ro giao dịch và kết quả cần kiểm trên PostgreSQL |
 | [Đề xuất toàn vẹn dữ liệu](blocked/data-integrity-proposal.md) | Mô hình phiên bản/tệp, gửi chống trùng, quota và dọn dữ liệu; chưa duyệt kiến trúc |
 | [Dấu vết nguồn](provenance.md) | Đối chiếu quyết định người dùng, PR và nơi lưu quy tắc |
 | [Độ phủ của bộ tài liệu](coverage.md) | Kiểm tra bảy nhóm tài liệu và đầu ra của tám bước đã thống nhất |

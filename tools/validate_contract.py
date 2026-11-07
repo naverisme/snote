@@ -21,6 +21,8 @@ for route, methods in doc["paths"].items():
     for method, op in methods.items():
         operations.append(op["operationId"])
         assert "200" in op["responses"], route
+        success_ref = op["responses"]["200"]["content"]["application/json"]["schema"].get("$ref")
+        assert success_ref not in ("#/components/schemas/Result", "#/components/schemas/ListResult"), route
         path_names = {p[1:-1] for p in route.split("/") if p.startswith("{")}
         named = {p["name"] for p in op.get("parameters", []) if p["in"] == "path"}
         assert named == path_names, route
@@ -44,4 +46,18 @@ assert accepts("FolderInput", {"name":"Nguồn"})
 assert not accepts("FolderInput", {"id":"f1"})
 assert accepts("EventInput", {"title":"Thi", "scope":{"type":"class","id":"c1"}, "allDay":{"startDate":"2026-11-10","endDateExclusive":"2026-11-11","timeZone":"Asia/Ho_Chi_Minh"}})
 assert not accepts("EventInput", {"title":"Thi", "scope":{"type":"class","id":"c1"}, "allDay":{"startDate":"2026-11-10","endDateExclusive":"2026-11-11","timeZone":"Asia/Ho_Chi_Minh"}, "timed":{"startsAt":"2026-11-10T10:00:00Z","endsAt":"2026-11-10T11:00:00Z"}})
+import json
+for family, input_schema, result_schema in (
+    ("assignment", "AssignmentInput", "AssignmentResult"),
+    ("submission", "SubmissionInput", "SubmissionResult"),
+):
+    fixture = json.loads((root / f"packages/contracts/fixtures/{family}.json").read_text(encoding="utf-8"))
+    for name, schema in (("request", input_schema), ("success", result_schema), ("conflict", "Error"), ("stale", "Error")):
+        assert accepts(schema, fixture[name]), (family, name, schema)
+    route = ("/classes/{classId}/assignments" if family == "assignment"
+             else "/assignment-recipients/{recipientId}/submissions")
+    op = doc["paths"][route]["post"]
+    assert op["requestBody"]["content"]["application/json"]["schema"]["$ref"].endswith("/" + input_schema)
+    for status, schema in (("200", result_schema), ("409", "Error"), ("412", "Error")):
+        assert op["responses"][status]["content"]["application/json"]["schema"]["$ref"].endswith("/" + schema), (family, status)
 print(f"PASS: {len(doc['paths'])} paths, {len(operations)} unique operations, {len(refs)} resolved refs")
