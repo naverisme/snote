@@ -48,6 +48,10 @@ eview/inbox/ hoặc WORK_QUEUE.md còn task tiếp theo trong phân vùng sở h
          + VÙNG XANH (Tự quyết 100% - Green): Nghiệm thu task đạt test (winwork verify), giao việc tiếp theo từ WORK_QUEUE.md, yêu cầu sửa lỗi build/test/lint, tự động Nudge Enter, tự động failover quota (gy -> codex). Bộ chỉ huy tự làm ngay không cần xin phép.
          + VÙNG VÀNG (Tự làm & Thông báo - Yellow): Tự động đóng băng an toàn (winwork freeze), yêu cầu mở Pull Request, chạy kiểm thử tích hợp E2E #36. Bộ chỉ huy tự làm và gửi thông báo ngắn gọn.
          + VÙNG ĐỎ (Bắt buộc dừng hỏi người dùng - Red): Sửa đổi schema Prisma/OpenAPI cốt lõi phá vỡ hợp đồng liên nhóm, xóa worktree/branch, ra quyết định môi trường máy chủ thực tế (ENV-01 đến ENV-06), merge PR vào production. Bộ chỉ huy BẮT BUỘC dừng lại xin phê duyệt từ người dùng.
+     * Vòng đời Worktree & Tái chế tại chỗ (Worktree Lifecycle & Zero-Restart Recycle):
+       - Khi một nhánh hoàn thành nhiệm vụ và PR đã được merge vào s_note_v2, worktree đó trở thành tài nguyên hoàn tất cần dọn dẹp.
+       - Dọn dẹp an toàn (winwork retire <tên_nhánh>): Tự động giải phóng file handle trên Windows, xóa worktree sạch sẽ và chuyển Pane đó sang chế độ [STANDBY (shell)] bảo toàn 100% cấu trúc cửa sổ WezTerm.
+       - Tái chế tức thì (winwork recycle <nhánh_cũ> <nhánh_mới>): Tự động gỡ worktree cũ, tạo worktree mới từ s_note_v2, đồng bộ AGENTS.md và tái kích hoạt ngay trên chính Pane cũ mà KHÔNG CẦN khởi động lại WezTerm hay làm gián đoạn các nhánh khác.
      * Giao thức luân chuyển Agent & Cầu dao đóng băng (Failover Chain & Circuit Breaker):
        - Khi một Agent gặp sự cố hạn ngạch (Quota Exceeded / Rate Limit), chạy `winwork failover <tên_nhánh>` (hoặc đổi chủ động bằng `winwork switch <tên_nhánh> <agent_mới>`) để chuyển giao sang Agent kế tiếp trong chuỗi luân chuyển (mặc định: `agy -> codex`).
        - Agent mới tự động nhận prompt tiếp quản: đọc lại `git status`, `git log -1` và `review/inbox/` để hoàn thiện tiếp phần việc dở dang.
