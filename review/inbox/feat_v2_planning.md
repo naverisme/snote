@@ -4,5 +4,5 @@
 - **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/planning (2026-11-08 02:54:02)
 - **Tep dinh kem:** none
 - **Ky duyet hoan thanh:**
-  - [ ] **RESOLVED by Implementer** (Commit SHA: _______)
-  - [ ] **VERIFIED by Requester** (Pass Test: _______)
+  - [x] **RESOLVED by Implementer** (Commit SHA: ca8b976, Hoan thanh lat cat Tasks & Calendar API + UI (#31, #34), pass 20 unit/integration tests bao phu QA-04, QA-10, QA-11, QA-13)
+  - [x] **VERIFIED by Requester** (Pass Test: Pass 14/14 API specs, 6/6 Web specs, builds clean, files strictly within ownership)
