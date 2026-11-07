@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import type { Folder, LibraryItemType } from '../types';
-
-export const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 MB (LIB-11)
-
-export const ALLOWED_EXTENSIONS = ['.pdf', '.png', '.jpg', '.jpeg', '.webp', '.txt', '.docx', '.xlsx', '.pptx', '.zip'];
+import { ALLOWED_EXTENSIONS, MAX_FILE_SIZE } from '../utils';
 
 export interface CreateItemModalProps {
   isOpen: boolean;

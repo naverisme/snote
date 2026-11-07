@@ -1,4 +1,5 @@
 export * from './types';
+export * from './utils';
 export * from './api';
 export * from './components/LibraryView';
 export * from './components/QuotaBar';

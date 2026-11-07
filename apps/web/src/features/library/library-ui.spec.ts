@@ -1,7 +1,6 @@
 import { test } from 'node:test';
 import { strict as assert } from 'node:assert';
-import { formatBytes } from './components/QuotaBar.tsx';
-import { ALLOWED_EXTENSIONS, MAX_FILE_SIZE } from './components/CreateItemModal.tsx';
+import { ALLOWED_EXTENSIONS, MAX_FILE_SIZE, formatBytes } from './utils.ts';
 
 test('formatBytes properly formats file sizes across orders of magnitude', () => {
   assert.equal(formatBytes(500), '500 B');

@@ -1,16 +1,10 @@
 import React from 'react';
 import type { QuotaInfo } from '../types';
+import { formatBytes } from '../utils';
 
 export interface QuotaBarProps {
   quota: QuotaInfo | null;
   loading?: boolean;
-}
-
-export function formatBytes(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
 export const QuotaBar: React.FC<QuotaBarProps> = ({ quota, loading }) => {
