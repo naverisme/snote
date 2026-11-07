@@ -39,4 +39,4 @@
 | TASK-12 | Mức quan trọng gồm Cao, Vừa và Thấp. Đổi mức giữ nguyên hạn và lịch làm. Chủ việc cá nhân sửa mức của việc mình. Quyền sửa việc được giao theo TASK-04. | SRC-07, Q08 |
 | TASK-17 | Trong Việc tiếp theo, việc không có hạn và không có buổi làm nằm ở nhóm Chưa lên lịch sau ba nhóm ưu tiên của TASK-11. Nhóm này xếp mức quan trọng Cao → Vừa → Thấp, rồi thời điểm tạo cũ trước; nếu vẫn bằng nhau dùng mã việc để giữ thứ tự ổn định. | J10, SRC-26 |
 
-Nhóm Chưa lên lịch đã chốt tại TASK-17; khóa phá hòa ba nhóm TASK-11 và việc có mốc tương lai còn ở [R-01](../../review/unresolved.md). Quyền checklist/giao lại theo TASK-15/16; hình thức lịch sử và buổi làm riêng khi giao lại còn ở [R-12](../../review/unresolved.md). Xem [ma trận quyền](permission-matrix.md) cho hành động và phạm vi.
+Nhóm Chưa lên lịch theo TASK-17; lối Sắp tới, checklist trống và buổi làm riêng khi giao lại theo [STR-18/19](structural-rules.md). Quyền checklist/giao lại theo TASK-15/16. Khóa phá hòa cho ba nhóm TASK-11 dùng mốc, mức quan trọng, thời điểm tạo rồi mã việc ổn định theo quyết định thiết kế SRC-27. Xem [ma trận quyền](permission-matrix.md) cho hành động và phạm vi.

@@ -1,4 +1,4 @@
-# Q33-G — Phương án giao diện được tạm duyệt
+# Q33-G — Phương án giao diện được tạm duyệt (lịch sử trước SRC-27)
 
 | Trường | Giá trị |
 | --- | --- |
@@ -6,7 +6,7 @@
 | Nguồn | [SRC-23](../provenance.md): chủ sản phẩm trả lời “tạm thời duyệt đi” cho bảng G1–G12 |
 | Phạm vi | Những chi tiết giao diện còn mở sau Q33 F1–F10; quyền nghiệp vụ đã chốt ở `docs/requirements/` tiếp tục có hiệu lực |
 
-Các mục dưới đây ghi đúng phương án được tạm duyệt. Khi có bản sửa, đối chiếu mã G trước khi chuyển nội dung sang tài liệu dùng để triển khai. Mọi giá trị quyền chưa được nói rõ vẫn chưa có hiệu lực.
+Sau [SRC-27](../provenance.md), [thiết kế UI/chuyển động](../../docs/ux/ui-and-motion.md) là tài liệu hiện hành trong phạm vi được giao tự quyết; phiếu này giữ lịch sử lựa chọn trước đó, không dùng làm hợp đồng mới. Các mục dưới đây ghi đúng phương án được tạm duyệt. Khi có bản sửa, đối chiếu mã G trước khi chuyển nội dung sang tài liệu dùng để triển khai. Mọi giá trị quyền chưa được nói rõ vẫn chưa có hiệu lực.
 
 | Mã | Cấp, vị trí, số lượng và kiểu | Hành vi phương án tạm duyệt | Giới hạn cần giữ |
 | --- | --- | --- | --- |

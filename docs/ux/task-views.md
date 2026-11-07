@@ -16,4 +16,4 @@
 
 Có **hai chế độ cùng cấp đã chốt**. Gantt và Danh sách cùng thuộc Công việc. Lịch và Thư viện là mục ngang cấp với Công việc ở cấp workspace. [SRC-03 và Q19](../../review/provenance.md)
 
-Chi tiết thành phần, trục thời gian, thao tác trên điện thoại và trạng thái màn đã được duyệt trong [khung workspace và màn Công việc/Gantt](workspace-gantt.md). [R-05](../../review/unresolved.md) còn theo dõi các màn khác và chi tiết hình ảnh/chuyển động chưa ấn định.
+Chi tiết thành phần, trục thời gian, thao tác trên điện thoại và trạng thái màn đã được duyệt trong [khung workspace và màn Công việc/Gantt](workspace-gantt.md). [Hệ giao diện/chuyển động](ui-and-motion.md) bổ sung trạng thái, cách xử lý dữ liệu dao động và lối Sắp tới theo STR-19.

@@ -5,11 +5,11 @@ Tài liệu được chia theo câu hỏi cần trả lời. Mỗi chủ đề c
 | Nhóm | Dùng để kiểm soát | Tài liệu hoặc trạng thái |
 | --- | --- | --- |
 | `product/` | SNOTE phục vụ ai, lớp và workspace là gì, bản đầu gồm luồng nào | [Khái niệm và phạm vi](product/README.md) |
-| `requirements/` | Ai được làm gì, trong điều kiện nào, kết quả nghiệp vụ là gì | [Bảy chủ đề nghiệp vụ](requirements/README.md) |
-| `ux/` | Mục nào cùng cấp, màn nào mở và hành vi từng thành phần đã duyệt | [Điều hướng, Gantt và Danh sách](ux/README.md) |
-| `architecture/` | Ranh giới hệ thống, module, dữ liệu, bảo mật, quyết định thiết kế | Chưa có thiết kế được duyệt. Có [đề xuất toàn vẹn dữ liệu](../review/blocked/data-integrity-proposal.md) để đánh giá; xem [đầu vào và đầu ra](../review/coverage.md). |
-| `contracts/` | Các bên trao đổi gì, quyền thực thi, lỗi và ví dụ | Chờ thiết kế và hành vi liên quan được duyệt. Xem [đầu vào và đầu ra](../review/coverage.md). |
-| `quality/` | Điều kiện đạt, ca kiểm chứng và cách đo | Có [12 ca nghiệm thu đã duyệt](quality/acceptance-scenarios.md); mục tiêu định lượng còn mở. |
-| `operations/` | Môi trường, phát hành, giám sát, sao lưu và phục hồi | Chờ yêu cầu vận hành được duyệt. Xem [đầu vào và đầu ra](../review/coverage.md). |
+| `requirements/` | Ai được làm gì, trong điều kiện nào, kết quả nghiệp vụ là gì | [Chỉ mục yêu cầu](requirements/README.md) và [cấu trúc/vòng đời](requirements/structural-rules.md) |
+| `ux/` | Mục nào cùng cấp, màn nào mở và hành vi từng thành phần đã duyệt | [Chỉ mục màn](ux/README.md) và [hệ giao diện/chuyển động](ux/ui-and-motion.md) |
+| `architecture/` | Ranh giới hệ thống, module, dữ liệu, bảo mật, quyết định thiết kế | [Kiến trúc v2](architecture/README.md) · [dữ liệu/giao dịch](architecture/data-and-transactions.md) · [quyền/bảo mật](architecture/security-boundaries.md) |
+| `contracts/` | Các bên trao đổi gì, quyền thực thi, lỗi và ví dụ | [Hợp đồng REST v2](contracts/README.md) |
+| `quality/` | Điều kiện đạt, ca kiểm chứng và cách đo | [Tiêu chí và ca biên](quality/README.md) · [12 ca nền](quality/acceptance-scenarios.md) |
+| `operations/` | Môi trường, phát hành, giám sát, sao lưu và phục hồi | [Vận hành pilot](operations/README.md) |
 
 **Tra theo việc cần làm.** Muốn hiểu lớp và nhóm, đọc [khái niệm](product/concepts.md) rồi đến [tư cách lớp và nhóm](requirements/class-membership.md). Muốn kiểm nút nào xuất hiện trong Công việc, đọc [đặc tả Q32](ux/workspace-gantt.md) cùng [chế độ xem việc](ux/task-views.md). Muốn xem quyết định còn thiếu, vào [hồ sơ rà soát](../review/README.md); [24 ca tình huống](../review/edge-case-audit.md) nêu rủi ro và đề xuất của tác nhân, chưa phải đặc tả đã duyệt.

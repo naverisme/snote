@@ -32,5 +32,5 @@ Quyền theo hành động còn có tại các tài liệu sở hữu quy tắc 
 - [Tư cách Nộp và sửa bản nộp](assignments-and-submissions.md).
 - [Chia sẻ tài liệu và phạm vi Hộp thu](library.md).
 
-Các hành động và phạm vi đã chốt được tách ở [ma trận quyền H1–H10](permission-matrix.md). Ô quyền Cài đặt chưa nêu giá trị, ngoại lệ theo trường và thao tác thay trưởng nhóm vẫn còn ở [R-02](../../review/unresolved.md). Bảng trên chỉ kết luận những quyền có nguồn xác nhận.
+Các hành động và phạm vi đã chốt được tách ở [ma trận quyền H1–H10](permission-matrix.md). Bảng quyền theo hành động/phạm vi và cách xét khi kiêm nhiệm tiếp nối ở [STR-11–14](structural-rules.md) sau SRC-27. Các quyền ở bảng này giữ nguồn xác nhận cũ.
 Chuyển quyền chủ và bàn giao khi rời workspace độc lập đã chốt tại [ACC-08/09](accounts-and-workspaces.md).

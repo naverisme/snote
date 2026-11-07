@@ -49,4 +49,4 @@ Bảng áp dụng với người có quyền theo ASG-03. Cột “Nộp lần �
 | ASG-10 | Giáo viên có thể lưu trữ hoặc ngừng giao bài đã có tiến độ hoặc bản nộp, vẫn giữ lịch sử để tra cứu. Xóa vĩnh viễn trường hợp này ở ngoài phạm vi bản đầu. | Q18 |
 | ASG-18 | Bản đầu không có nút Thu hồi bản nộp. Người có quyền gửi phiên bản sửa theo hạn và hai cài đặt sau hạn; bản cũ luôn còn trong lịch sử để giáo viên đối chiếu. | J6, SRC-26 |
 
-Quyền cập nhật và đọc theo nhóm đã chốt tại ASG-11; xử lý phiên bản xung đột và tệp lỗi tại ASG-12. Tệp, lỗi ghi và phạm vi thu hồi đã chốt tại ASG-16–18. Mất phản hồi sau khi đã ghi, gửi lại và thời điểm xác nhận nộp sát hạn còn ở [R-04](../../review/unresolved.md), với đề xuất tại [EC-05/06](../../review/edge-case-audit.md).
+Quyền cập nhật và đọc theo nhóm đã chốt tại ASG-11; xử lý phiên bản xung đột và tệp lỗi tại ASG-12. Tệp, lỗi ghi và phạm vi thu hồi đã chốt tại ASG-16–18. Mất phản hồi, gửi lại và thời điểm xác nhận nộp sát hạn theo [STR-16](structural-rules.md) và [hợp đồng](../contracts/README.md); ca biên tại [EC-05/06](../../review/edge-case-audit.md).
