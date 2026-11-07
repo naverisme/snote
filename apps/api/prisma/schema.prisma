@@ -1,0 +1,391 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique
+  passwordHash String
+  version      Int      @default(1)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  usages       AccountUsage[]
+}
+
+model AccountUsage {
+  accountId String @db.Uuid
+  usage     String
+  account   Account @relation(fields: [accountId], references: [id])
+  @@id([accountId, usage])
+}
+
+model Session {
+  id String @id @default(uuid()) @db.Uuid
+  accountId String @db.Uuid
+  tokenHash String @unique
+  csrfHash String
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([accountId, expiresAt])
+}
+
+model Class {
+  id         String   @id @default(uuid()) @db.Uuid
+  ownerId    String   @db.Uuid
+  name       String
+  timeZone   String
+  status     String   @default("active")
+  groupLimit Int      @default(1)
+  version    Int      @default(1)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  memberships ClassMembership[]
+  workspaces  Workspace[]
+}
+
+model ClassMembership {
+  id        String   @id @default(uuid()) @db.Uuid
+  classId   String   @db.Uuid
+  accountId String   @db.Uuid
+  role      String   @default("member")
+  status    String   @default("pending")
+  version   Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  class     Class    @relation(fields: [classId], references: [id])
+  @@index([classId, accountId, status])
+}
+
+model Workspace {
+  id        String   @id @default(uuid()) @db.Uuid
+  kind      String
+  ownerId   String?  @db.Uuid
+  classId   String?  @db.Uuid
+  timeZone  String
+  status    String   @default("active")
+  version   Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  class     Class?   @relation(fields: [classId], references: [id])
+  @@index([classId, status])
+}
+
+model OperationReceipt {
+  id          String   @id @default(uuid()) @db.Uuid
+  actorId     String   @db.Uuid
+  scopeType   String
+  scopeId     String
+  action      String
+  key         String
+  fingerprint String
+  status      String
+  result      Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@unique([actorId, scopeType, scopeId, action, key])
+}
+
+model OutboxEvent {
+  id          String   @id @default(uuid()) @db.Uuid
+  topic       String
+  payload     Json
+  deliveredAt DateTime?
+  createdAt   DateTime @default(now())
+}
+
+model WorkspaceMembership {
+  id String @id @default(uuid()) @db.Uuid
+  workspaceId String @db.Uuid
+  accountId String @db.Uuid
+  role String @default("member")
+  status String @default("active")
+  version Int @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([workspaceId, accountId, status])
+}
+
+model Invitation {
+  id String @id @default(uuid()) @db.Uuid
+  targetType String
+  targetId String @db.Uuid
+  initiatorId String @db.Uuid
+  recipientId String @db.Uuid
+  status String @default("pending")
+  expiresAt DateTime?
+  acceptedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([recipientId, status])
+}
+
+model JoinRequest {
+  id String @id @default(uuid()) @db.Uuid
+  targetType String
+  targetId String @db.Uuid
+  initiatorId String @db.Uuid
+  status String @default("pending")
+  acceptedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([targetType, targetId, status])
+}
+
+model TransferRequest {
+  id String @id @default(uuid()) @db.Uuid
+  targetType String
+  targetId String @db.Uuid
+  initiatorId String @db.Uuid
+  recipientId String @db.Uuid
+  status String @default("pending")
+  acceptedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([targetType, targetId, status])
+}
+
+model ClassPolicy {
+  classId String @id @db.Uuid
+  defaults Json
+  version Int @default(1)
+  updatedAt DateTime @updatedAt
+}
+
+model Grant {
+  id String @id @default(uuid()) @db.Uuid
+  principalId String @db.Uuid
+  scopeType String
+  scopeId String @db.Uuid
+  action String
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([principalId, scopeType, scopeId, action])
+}
+
+model Task {
+  id String @id @default(uuid()) @db.Uuid
+  workspaceId String @db.Uuid
+  assigneeId String? @db.Uuid
+  title String
+  dueAt DateTime?
+  dueDate DateTime? @db.Date
+  dueDateZone String?
+  importance String @default("medium")
+  status String @default("todo")
+  version Int @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([workspaceId, status, dueAt, id])
+}
+
+model ChecklistItem {
+  id String @id @default(uuid()) @db.Uuid
+  taskId String @db.Uuid
+  text String
+  done Boolean @default(false)
+  position Int
+  version Int @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([taskId, position])
+}
+
+model PrivateWorkSession {
+  id String @id @default(uuid()) @db.Uuid
+  taskId String @db.Uuid
+  ownerId String @db.Uuid
+  startAt DateTime
+  endAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([ownerId, startAt, id])
+}
+
+model TaskAudit {
+  id String @id @default(uuid()) @db.Uuid
+  taskId String @db.Uuid
+  actorId String @db.Uuid
+  change Json
+  at DateTime @default(now())
+}
+
+model Event {
+  id String @id @default(uuid()) @db.Uuid
+  scopeType String
+  scopeId String @db.Uuid
+  kind String
+  title String
+  timedStart DateTime?
+  timedEnd DateTime?
+  allDayStart DateTime? @db.Date
+  allDayEndExclusive DateTime? @db.Date
+  sourceZone String?
+  status String @default("active")
+  version Int @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([scopeType, scopeId, status, allDayStart, timedStart])
+}
+
+model EventAudience {
+  id String @id @default(uuid()) @db.Uuid
+  eventId String @db.Uuid
+  classId String? @db.Uuid
+  workspaceId String? @db.Uuid
+  @@index([eventId])
+}
+
+model Folder {
+  id String @id @default(uuid()) @db.Uuid
+  workspaceId String @db.Uuid
+  parentId String? @db.Uuid
+  name String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([workspaceId, parentId])
+}
+
+model LibraryItem {
+  id String @id @default(uuid()) @db.Uuid
+  workspaceId String @db.Uuid
+  folderId String? @db.Uuid
+  currentRevisionId String? @db.Uuid
+  type String
+  status String @default("active")
+  version Int @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([workspaceId, folderId, status, updatedAt, id])
+}
+
+model ContentRevision {
+  id String @id @default(uuid()) @db.Uuid
+  itemId String? @db.Uuid
+  blobId String? @db.Uuid
+  text String?
+  url String?
+  actorId String @db.Uuid
+  at DateTime @default(now())
+  @@index([itemId, at])
+}
+
+model Blob {
+  id String @id @default(uuid()) @db.Uuid
+  hash String
+  size BigInt
+  mediaType String
+  storageKey String @unique
+  status String @default("verified")
+  createdAt DateTime @default(now())
+}
+
+model TrashEntry {
+  itemId String @id @db.Uuid
+  deletedAt DateTime
+  purgeAfter DateTime
+}
+
+model QuotaReference {
+  id String @id @default(uuid()) @db.Uuid
+  scopeType String
+  scopeId String @db.Uuid
+  blobId String @db.Uuid
+  reason String
+  createdAt DateTime @default(now())
+  @@unique([scopeType, scopeId, blobId, reason])
+  @@index([scopeType, scopeId, blobId])
+}
+
+model QuotaReservation {
+  id String @id @default(uuid()) @db.Uuid
+  scopeType String
+  scopeId String @db.Uuid
+  bytes BigInt
+  expiresAt DateTime
+  operationKey String
+  createdAt DateTime @default(now())
+  @@unique([scopeType, scopeId, operationKey])
+}
+
+model Assignment {
+  id String @id @default(uuid()) @db.Uuid
+  classId String @db.Uuid
+  title String
+  deadline DateTime?
+  deadlineDate DateTime? @db.Date
+  deadlineZone String?
+  lateFirst String?
+  lateRevision String?
+  version Int @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([classId, id])
+}
+
+model AssignmentRecipient {
+  id String @id @default(uuid()) @db.Uuid
+  assignmentId String @db.Uuid
+  workspaceId String @db.Uuid
+  progressText String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([assignmentId, workspaceId])
+}
+
+model SubmissionRevision {
+  id String @id @default(uuid()) @db.Uuid
+  recipientId String @db.Uuid
+  version Int
+  actorId String @db.Uuid
+  acceptedAt DateTime
+  deadlineSnapshot DateTime?
+  latePolicySnapshot String
+  timeliness String
+  text String?
+  links Json
+  @@unique([recipientId, version])
+}
+
+model SubmissionAttachment {
+  id String @id @default(uuid()) @db.Uuid
+  submissionId String @db.Uuid
+  blobId String @db.Uuid
+  sourceRevisionId String? @db.Uuid
+  @@unique([submissionId, blobId])
+}
+
+model Feedback {
+  id String @id @default(uuid()) @db.Uuid
+  submissionId String @db.Uuid
+  teacherId String @db.Uuid
+  text String
+  createdAt DateTime @default(now())
+}
+
+model UploadStaging {
+  id String @id @default(uuid()) @db.Uuid
+  actorId String @db.Uuid
+  scopeType String
+  scopeId String @db.Uuid
+  storageKey String
+  status String @default("staged")
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AuditEvent {
+  id String @id @default(uuid()) @db.Uuid
+  actorId String @db.Uuid
+  scopeType String
+  scopeId String @db.Uuid
+  action String
+  targetId String @db.Uuid
+  at DateTime @default(now())
+}
