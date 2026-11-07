@@ -54,4 +54,10 @@ for family, input_schema, result_schema in (
     fixture = json.loads((root / f"packages/contracts/fixtures/{family}.json").read_text(encoding="utf-8"))
     for name, schema in (("request", input_schema), ("success", result_schema), ("conflict", "Error"), ("stale", "Error")):
         assert accepts(schema, fixture[name]), (family, name, schema)
+    route = ("/classes/{classId}/assignments" if family == "assignment"
+             else "/assignment-recipients/{recipientId}/submissions")
+    op = doc["paths"][route]["post"]
+    assert op["requestBody"]["content"]["application/json"]["schema"]["$ref"].endswith("/" + input_schema)
+    for status, schema in (("200", result_schema), ("409", "Error"), ("412", "Error")):
+        assert op["responses"][status]["content"]["application/json"]["schema"]["$ref"].endswith("/" + schema), (family, status)
 print(f"PASS: {len(doc['paths'])} paths, {len(operations)} unique operations, {len(refs)} resolved refs")
