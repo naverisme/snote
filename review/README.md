@@ -2,6 +2,7 @@
 
 | Mục | Dùng để làm gì |
 | --- | --- |
+| [Bản trình bày cách hiểu bộ tài liệu](document-understanding-presentation.md) | Xem bản tổng hợp ngắn theo nguồn hiện hành, phân biệt quyết định, thiết kế và điểm còn cần kiểm chứng |
 | [Tình huống biên, rủi ro và phản biện](edge-case-audit.md) | 24 ca có nguồn, hậu quả dự kiến, khuyến nghị và kết quả cần kiểm chứng; phân biệt đề xuất với quyết định đã duyệt |
 | [Rà Foundation #28](foundation-audit.md) | Giới hạn môi trường, rủi ro giao dịch và kết quả cần kiểm trên PostgreSQL |
 | [Đề xuất toàn vẹn dữ liệu](blocked/data-integrity-proposal.md) | Mô hình phiên bản/tệp, gửi chống trùng, quota và dọn dữ liệu; chưa duyệt kiến trúc |
