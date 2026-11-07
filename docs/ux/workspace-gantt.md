@@ -62,7 +62,7 @@ stateDiagram-v2
     DanhSachWorkspace --> ThuGon: Chọn dòng workspace
 ```
 
-Sơ đồ chỉ mô tả thay đổi góc nhìn và lựa chọn workspace. Kéo một mình không đổi workspace. Thời lượng, easing, độ mờ và ngưỡng nhận biết kéo thuộc thiết kế chuyển động, chưa ấn định số khi chưa có bản thử nghiệm.
+Sơ đồ chỉ mô tả thay đổi góc nhìn và lựa chọn workspace. Kéo một mình không đổi workspace. Thời lượng và trạng thái giảm chuyển động theo [hệ chuyển động](ui-and-motion.md); ngưỡng kéo cần kiểm bằng bản mẫu trên thiết bị thật.
 
 ## Trạng thái vùng Công việc và điện thoại
 
@@ -75,4 +75,4 @@ Sơ đồ chỉ mô tả thay đổi góc nhìn và lựa chọn workspace. Kéo
 | Hết quyền workspace | Hiện thông báo không thể xem và lối chọn workspace còn quyền. |
 | Điện thoại | Tên workspace đứng bên phải icon; bộ chọn bung ngang có thể giữ-kéo; Gantt cuộn ngang trong lưới; chi tiết việc mở thành màn riêng. Ba mục Công việc, Lịch trình, Thư viện vẫn cùng cấp. |
 
-Các phần Q33 đã chốt của Lịch trình, Thư viện, Lớp học và bài giao có đặc tả riêng trong [chỉ mục UX](README.md); phần chưa chốt tra [phiếu Q33](../../review/blocked/ux-q33-review.md). Thứ tự ưu tiên giữa các dòng “Mục lưu ý” của workspace, quy cách biểu tượng và thông số chuyển động chi tiết chưa ấn định từ tài liệu này.
+Các màn Q33 có đặc tả riêng trong [chỉ mục UX](README.md); thành phần và chuyển động chung theo [ui-and-motion.md](ui-and-motion.md). Bản thảo Q33 trước SRC-27 ở review chỉ dùng truy nguyên.

@@ -20,4 +20,4 @@
 
 **Ranh giới đã duyệt.** Bản đầu dùng nhận xét theo phiên bản. Điểm số và thang điểm ở ngoài phạm vi bản đầu. Không có nút Thu hồi bản nộp; sửa bằng phiên bản mới theo ASG-18. Sự kiện lặp ở ngoài phạm vi bản đầu theo CAL-10. Giáo viên chủ lớp ủy quyền từng chức năng, vai trò đồng giáo viên riêng ở ngoài phạm vi bản đầu. Tích hợp nhận chia sẻ trực tiếp từ ứng dụng khác được tách thành phần đặc tả sau. [Q02, Q16, Q19, Q20](../../review/provenance.md)
 
-Độ chi tiết của từng màn, mốc phát hành và các tính năng đề xuất tiếp theo nằm trong [hồ sơ rà soát](../../review/unresolved.md).
+Độ chi tiết màn và chuyển động theo [đặc tả UX](../ux/ui-and-motion.md); giải pháp dữ liệu, giao tiếp và vận hành theo [chỉ mục docs](../README.md). Giá trị máy chủ/chi phí/diễn tập phục hồi cần điền từ [môi trường thật](../../review/unresolved.md).

@@ -62,4 +62,4 @@ flowchart TD
 | CLS-15 | Giáo viên chủ lớp và người có quyền quản lý workspace nhóm được mời hoặc đề nghị đưa người ra khỏi nhóm. Lớp trưởng chỉ làm việc này khi giáo viên bật quyền tương ứng. Người được mời phải chấp nhận trước khi vào. Trước khi rời hoặc bị đưa ra, trưởng nhóm/người đang phụ trách việc cần bàn giao; việc và lịch sử ở lại workspace. Quyền quản lý nhóm không cho phép đổi vai trò hay cấu hình cấp lớp. | H2/H8, SRC-24 |
 | CLS-16 | Workspace nhóm luôn thuộc lớp của nó, không chuyển thành workspace độc lập. Giáo viên chủ lớp được lưu trữ hoặc khôi phục riêng một nhóm; nhóm lưu trữ chỉ đọc theo quyền. Lịch sử bài giao và bản nộp liên quan vẫn gắn với lớp. | I5, SRC-25 |
 
-Xem [ma trận quyền](permission-matrix.md) để phân biệt phạm vi lớp và nhóm. Lớp lưu trữ chỉ đọc theo CLS-14; chi tiết quyền từng trường và biểu diễn trạng thái lưu trữ còn ở [R-02 và R-09](../../review/unresolved.md).
+Xem [ma trận quyền](permission-matrix.md) để phân biệt phạm vi lớp và nhóm. Lớp lưu trữ chỉ đọc theo CLS-14; quy trình lời mời chờ/lưu trữ và khôi phục nhóm khi xung đột ở [STR-07–10](structural-rules.md).
