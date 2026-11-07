@@ -2,7 +2,7 @@
 
 Tài liệu điều phối mã nguồn này nằm **ngoài `docs/`**. Chỉ dùng `s_note_v2` hoặc nhánh tách từ đúng nhánh ấy. Cấm đọc/cherry-pick/copy mã, thiết kế, tài liệu v1. [AGENTS.md](AGENTS.md) là lối vào chung; [kế hoạch xây dựng](IMPLEMENTATION_PLAN.md) chia các mốc; [đặc tả](docs/README.md), [OpenAPI](docs/contracts/openapi.yaml), [lược đồ](docs/architecture/physical-schema.md), [ca kiểm](docs/quality/README.md) là nguồn hiện hành. Issues #28–36 là gói việc, không phải bằng chứng tính năng đã chạy.
 
-Phân công bốn worktree theo API + UI của từng luồng được cập nhật theo yêu cầu chủ sản phẩm ngày 2026-11-07; [kế hoạch](IMPLEMENTATION_PLAN.md) ghi trách nhiệm và thứ tự phụ thuộc.
+Phân công bốn worktree theo API + UI của từng luồng được cập nhật theo yêu cầu chủ sản phẩm ngày 2026-11-07; [kế hoạch](IMPLEMENTATION_PLAN.md) ghi trách nhiệm, [bảng điều phối](WORK_QUEUE.md) ghi tín hiệu để bắt đầu/nối/merge.
 
 ## Cổng bắt đầu và thứ tự
 

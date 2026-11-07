@@ -5,7 +5,7 @@
 | Phạm vi | Bản đầu theo [product/first-release](docs/product/first-release.md), chỉ nhánh `s_note_v2`; tuyệt đối không đọc hoặc tái sử dụng v1 |
 | Trạng thái | Kế hoạch thực thi; không phải báo cáo tính năng đã hoàn thành |
 | Nguồn đặc tả | [docs](docs/README.md), [OpenAPI](docs/contracts/openapi.yaml), [lược đồ](docs/architecture/physical-schema.md), [QA](docs/quality/README.md) |
-| Điều phối | [AGENTS.md](AGENTS.md), [WORKTREES.md](WORKTREES.md), Foundation #28, bốn lát cắt #29/#31/#35/#32, tích hợp #36; #30/#33/#34 là đầu việc UI nằm trong các lát cắt |
+| Điều phối | [AGENTS.md](AGENTS.md), [WORKTREES.md](WORKTREES.md), [bảng công việc](WORK_QUEUE.md), Foundation #28, bốn lát cắt #29/#31/#35/#32, tích hợp #36; #30/#33/#34 là đầu việc UI nằm trong các lát cắt |
 | Đơn vị hoàn thành | Một PR có build, kiểm tra liên quan, chứng cứ, phiên bản commit, người/vùng sở hữu; merge vào `s_note_v2` |
 
 Kế hoạch ở gốc repo vì nó mô tả **cách thực hiện và thứ tự công việc**; `docs/` giữ đặc tả sản phẩm/hệ thống phải đúng. Mọi ngày công, lịch và ngân sách chỉ được lập sau khi biết số người, môi trường và năng lực thực tế. Không điền con số giả. Có thể coding foundation bằng dữ liệu giả; không gọi pilot sẵn sàng khi chưa đóng các đầu vào môi trường trong [review/unresolved](review/unresolved.md).
@@ -37,7 +37,7 @@ Kế hoạch ở gốc repo vì nó mô tả **cách thực hiện và thứ t�
 
 ## 2. Bốn worktree tính năng, mỗi worktree sở hữu API và UI
 
-Sau khi #28 merge, tạo bốn worktree độc lập từ cùng head `s_note_v2` mới theo [WORKTREES.md](WORKTREES.md). Mỗi worktree giao một luồng người dùng có backend, frontend, trạng thái lỗi và phép kiểm của chính luồng ấy. Không tách một tính năng thành PR API và PR WEB riêng. #30, #33 và #34 vẫn là mã issue để truy vết yêu cầu màn hình, được thực hiện bởi worktree tương ứng dưới đây; không tạo ba worktree WEB riêng.
+Sau khi #28 merge, cập nhật worktree Ngữ cảnh đang có và tạo ba worktree còn lại từ cùng head `s_note_v2` mới theo [WORKTREES.md](WORKTREES.md). [Bảng điều phối](WORK_QUEUE.md) nêu rõ phần có thể chuẩn bị trước và tín hiệu để nối thật. Mỗi worktree giao một luồng người dùng có backend, frontend, trạng thái lỗi và phép kiểm của chính luồng ấy. Không tách một tính năng thành PR API và PR WEB riêng. #30, #33 và #34 vẫn là mã issue để truy vết yêu cầu màn hình, được thực hiện bởi worktree tương ứng dưới đây; không tạo ba worktree WEB riêng.
 
 | Worktree chính / issue | Phạm vi API → UI cùng sở hữu | Nghiệm thu lát cắt |
 | --- | --- | --- |

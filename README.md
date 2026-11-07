@@ -8,3 +8,4 @@ SNOTE hỗ trợ tổ chức công việc, lịch và tài liệu theo workspace
 - [Hướng dẫn tác nhân](AGENTS.md) chỉ đường đọc và dùng tài liệu khi nhận việc trên `s_note_v2`.
 - [Kế hoạch xây dựng](IMPLEMENTATION_PLAN.md) chia mốc foundation, tính năng, tích hợp và cổng phát hành thử.
 - [Luật worktree](WORKTREES.md) quy định nhánh, vùng tệp độc quyền, thứ tự phụ thuộc và lệnh tạo các checkout coding.
+- [Bảng điều phối công việc](WORK_QUEUE.md) cho biết thư mục nào đang có, việc làm được ngay và tín hiệu phải chờ trước khi nối hoặc merge.
