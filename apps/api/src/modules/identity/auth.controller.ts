@@ -1,8 +1,7 @@
 import { Body, Controller, Inject, Post, Req, Res } from '@nestjs/common';
-import type { Request, Response } from 'express';
 import type { components } from '@snote/contracts';
 import { IdentityService } from './identity.service';
-import { getSession, parseCookie, replyCommand, requireAuthAndCsrf } from './http-utils';
+import { getSession, parseCookie, replyCommand, requireAuthAndCsrf, type Request, type Response } from './http-utils';
 import type { SessionPort } from '../../core/http';
 
 type Register = components['schemas']['Register'];

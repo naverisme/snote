@@ -22,5 +22,11 @@
      * Khi cần trao đổi với nhánh phụ khác: Dùng `winwork send <tên_nhánh> "<nội dung>"`.
      * Khi Bộ chỉ huy nghiệm thu: Chạy `winwork verify <TASK_ID> -Note "<kết quả>"`, hệ thống tự động lưu vết vào `review/archive/completed-tasks.md` và bắn tín hiệu xác nhận về lại worker.
      * Nghiêm cấm can thiệp hạ tầng giao diện: Tuyệt đối không tự ý chạy các lệnh quản trị cửa sổ cấp thấp như `wezterm cli kill-pane`, `split-pane` hay tự động tái cấu trúc layout; chỉ sử dụng các lệnh chuẩn của `winwork`.
+     * Giao thức đóng băng & khôi phục (Freeze/Resume): Khi cạn kiệt Quota hoặc cần tạm dừng hệ thống, lệnh `winwork freeze` (hoặc `winwork pause`) tự động tạo commit WIP snapshot bảo toàn mọi thay đổi dở dang trên tất cả worktree và ghi hồ sơ trạng thái vào `review/freeze-state.json`. Khi quota hồi phục hoặc sẵn sàng tiếp tục, lệnh `winwork resume` (hoặc `winwork unfreeze`) sẽ tự động đánh thức các agent tiếp quản công việc từ commit WIP và tiếp tục hoàn thiện task trong `review/inbox/`.
+     * Giao thức luân chuyển Agent & Cầu dao đóng băng (Failover Chain & Circuit Breaker):
+       - Khi một Agent gặp sự cố hạn ngạch (Quota Exceeded / Rate Limit), chạy `winwork failover <tên_nhánh>` (hoặc đổi chủ động bằng `winwork switch <tên_nhánh> <agent_mới>`) để chuyển giao sang Agent kế tiếp trong chuỗi luân chuyển (mặc định: `agy -> codex`).
+       - Agent mới tự động nhận prompt tiếp quản: đọc lại `git status`, `git log -1` và `review/inbox/` để hoàn thiện tiếp phần việc dở dang.
+       - Khi toàn bộ Agent trong danh sách đều đã hết Quota, hệ thống lập tức tự động kích hoạt Cầu dao đóng băng (`winwork freeze`) bảo vệ toàn bộ tiến trình.
+       - Có thể dùng `winwork check-quota` (hoặc `winwork monitor`) để quét tự động toàn bộ cửa sổ terminal và kích hoạt failover tự động.
 
 Mô tả hệ thống, hợp đồng giao tiếp, tiêu chí nghiệm thu và quy trình vận hành có hiệu lực theo trạng thái trong chỉ mục. Quyết định về nghiệp vụ được lưu ở `docs/requirements/` và dẫn chiếu từ những tài liệu sử dụng nó.

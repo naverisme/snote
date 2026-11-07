@@ -1,10 +1,23 @@
-import type { Request, Response } from 'express';
 import { DomainError } from '../../core/authorization';
 import { authenticate, requireCsrf, requireVersion, requestId, type Session, type SessionPort } from '../../core/http';
 
-export function parseCookie(header: string | undefined, name: string): string | undefined {
+export interface Request {
+  headers: Record<string, string | string[] | undefined>;
+  url?: string;
+  method?: string;
+}
+
+export interface Response {
+  status(code: number): this;
+  json(body: unknown): this;
+  setHeader(name: string, value: string): this;
+  req?: Request;
+}
+
+export function parseCookie(header: string | string[] | undefined, name: string): string | undefined {
   if (!header) return undefined;
-  const match = header.match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`));
+  const cookieStr = Array.isArray(header) ? header.join('; ') : header;
+  const match = cookieStr.match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`));
   return match ? decodeURIComponent(match[1]) : undefined;
 }
 

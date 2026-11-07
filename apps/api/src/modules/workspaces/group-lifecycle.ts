@@ -29,7 +29,7 @@ export class GroupLifecycle {
         const checks: RestoreMember[] = [];
         for (const m of members) {
           checks.push({ accountId: m.accountId,
-            classMember: await tx.classMembership.count({ where: { classId, accountId: m.accountId, status: 'active' } }) > 0,
+            classMember: m.accountId === cls.ownerId || (await tx.classMembership.count({ where: { classId, accountId: m.accountId, status: 'active' } }) > 0),
             activeGroups: await tx.workspaceMembership.count({ where: { workspaceId: { in: activeGroups.map(g => g.id) }, accountId: m.accountId, status: 'active' } }),
           });
         }

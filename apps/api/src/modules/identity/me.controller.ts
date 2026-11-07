@@ -1,9 +1,8 @@
 import { Body, Controller, Get, Inject, Patch, Req, Res } from '@nestjs/common';
-import type { Request, Response } from 'express';
 import type { components } from '@snote/contracts';
 import { IdentityService } from './identity.service';
 import { AccountService } from './account-service';
-import { getSession, replySuccess, requireAuthAndCsrf } from './http-utils';
+import { getSession, replySuccess, requireAuthAndCsrf, type Request, type Response } from './http-utils';
 import type { SessionPort } from '../../core/http';
 
 type UsageUpdate = components['schemas']['UsageUpdate'];
