@@ -64,6 +64,7 @@ model ClassMembership {
 
 model Workspace {
   id        String   @id @default(uuid()) @db.Uuid
+  name      String
   kind      String
   ownerId   String?  @db.Uuid
   classId   String?  @db.Uuid

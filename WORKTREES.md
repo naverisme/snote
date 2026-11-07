@@ -15,7 +15,7 @@ Phân công bốn worktree theo API + UI của từng luồng được cập nh�
 
 | Worktree/issue | Đường dẫn được sửa chính | Không tự sửa |
 | --- | --- | --- |
-| foundation #28 | `packages/contracts/**`, `apps/api/prisma/**`, `apps/api/src/core/**`, `apps/web/src/api/generated/**`, `docs/contracts/**`, `tools/build_openapi.py`, `tools/validate_contract.py`, cấu hình root | Nghiệp vụ module/feature của agent khác |
+| foundation #28 | `packages/contracts/**`, `apps/api/prisma/**`, `apps/api/src/core/**`, `apps/web/src/api/generated/**`, `docs/contracts/**`, `docs/architecture/physical-schema.md`, `tools/build_openapi.py`, `tools/validate_contract.py`, cấu hình root | Nghiệp vụ module/feature của agent khác |
 | Ngữ cảnh #29 (+ UI lớp của #33, shell của #34) | `apps/api/src/modules/{identity,classes,workspaces,authorization}/**`; `apps/web/src/{app,shared}/**`, `apps/web/src/features/{identity,classes,workspaces}/**` | Schema/migration, generated client, feature Việc/Lịch/Thư viện/Bài giao |
 | Công việc/Lịch #31 (+ UI phần việc/lịch của #34) | `apps/api/src/modules/{tasks,calendar}/**`; `apps/web/src/features/{tasks,calendar}/**` | `app/shared`, schema, module và feature khác |
 | Thư viện #35 (+ UI #30) | `apps/api/src/modules/{library,uploads,storage}/**`; `apps/web/src/features/library/**` | Schema, Bài giao, `app/shared` |

@@ -1546,6 +1546,7 @@ export interface components {
         };
         Workspace: {
             id: string;
+            name: string;
             classId?: string;
             ownerId?: string;
             /** @enum {string} */

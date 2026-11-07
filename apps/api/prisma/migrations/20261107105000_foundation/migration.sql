@@ -50,6 +50,7 @@ CREATE TABLE "ClassMembership" (
 -- CreateTable
 CREATE TABLE "Workspace" (
     "id" UUID NOT NULL,
+    "name" TEXT NOT NULL,
     "kind" TEXT NOT NULL,
     "ownerId" UUID,
     "classId" UUID,
