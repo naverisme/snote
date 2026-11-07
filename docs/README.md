@@ -8,7 +8,7 @@ Tài liệu được chia theo câu hỏi cần trả lời. Mỗi chủ đề c
 | `requirements/` | Ai được làm gì, trong điều kiện nào, kết quả nghiệp vụ là gì | [Chỉ mục yêu cầu](requirements/README.md) và [cấu trúc/vòng đời](requirements/structural-rules.md) |
 | `ux/` | Mục nào cùng cấp, màn nào mở và hành vi từng thành phần đã duyệt | [Chỉ mục màn](ux/README.md) và [hệ giao diện/chuyển động](ux/ui-and-motion.md) |
 | `architecture/` | Ranh giới hệ thống, module, dữ liệu, bảo mật, quyết định thiết kế | [Kiến trúc v2](architecture/README.md) · [dữ liệu/giao dịch](architecture/data-and-transactions.md) · [quyền/bảo mật](architecture/security-boundaries.md) |
-| `contracts/` | Các bên trao đổi gì, quyền thực thi, lỗi và ví dụ | [Hợp đồng REST v2](contracts/README.md) |
+| `contracts/` | Các bên trao đổi gì, quyền thực thi, lỗi và ví dụ | [Hợp đồng REST v2](contracts/README.md) · [danh mục thao tác](contracts/action-catalog.md) |
 | `quality/` | Điều kiện đạt, ca kiểm chứng và cách đo | [Tiêu chí và ca biên](quality/README.md) · [12 ca nền](quality/acceptance-scenarios.md) |
 | `operations/` | Môi trường, phát hành, giám sát, sao lưu và phục hồi | [Vận hành pilot](operations/README.md) |
 
