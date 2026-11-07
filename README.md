@@ -22,6 +22,7 @@ npm run contract:generate
 $env:DATABASE_URL='postgresql://snote:snote_dev_only@localhost:5432/snote?schema=public'
 npx prisma migrate deploy --schema apps/api/prisma/schema.prisma
 npm run build
+npm run contract:http
 python -m pip install -r tools/requirements.txt
 python tools/validate_contract.py
 python -m openapi_spec_validator docs/contracts/openapi.yaml

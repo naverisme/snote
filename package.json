@@ -5,6 +5,7 @@
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
     "build": "npm run build --workspaces --if-present",
+    "contract:http": "node packages/contracts/tests/http-fixture.mjs",
     "contract:generate": "openapi-typescript docs/contracts/openapi.yaml -o packages/contracts/src/schema.ts",
     "contract:validate": "python tools/validate_contract.py"
   },

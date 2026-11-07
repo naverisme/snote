@@ -6,6 +6,8 @@ type CreateTaskBody = paths['/workspaces/{workspaceId}/tasks']['post']['requestB
 type CreateTaskResult = paths['/workspaces/{workspaceId}/tasks']['post']['responses'][200]['content']['application/json'];
 type SubmitBody = paths['/assignment-recipients/{recipientId}/submissions']['post']['requestBody']['content']['application/json'];
 type SubmitResult = paths['/assignment-recipients/{recipientId}/submissions']['post']['responses'][200]['content']['application/json'];
+type AssignmentBody = paths['/classes/{classId}/assignments']['post']['requestBody']['content']['application/json'];
+type AssignmentResult = paths['/classes/{classId}/assignments']['post']['responses'][200]['content']['application/json'];
 
 export interface RequestOptions {
   csrfToken?: string;
@@ -33,5 +35,7 @@ export async function request<T>(path: string, method: string, body?: unknown, o
 export const register = (body: RegisterBody) => request<RegisterResult>('/auth/register', 'POST', body);
 export const createTask = (workspaceId: string, body: CreateTaskBody, options: RequestOptions) =>
   request<CreateTaskResult>(`/workspaces/${encodeURIComponent(workspaceId)}/tasks`, 'POST', body, options);
+export const createAssignment = (classId: string, body: AssignmentBody, options: RequestOptions) =>
+  request<AssignmentResult>(`/classes/${encodeURIComponent(classId)}/assignments`, 'POST', body, options);
 export const submit = (recipientId: string, body: SubmitBody, options: RequestOptions & { idempotencyKey: string }) =>
   request<SubmitResult>(`/assignment-recipients/${encodeURIComponent(recipientId)}/submissions`, 'POST', body, options);
