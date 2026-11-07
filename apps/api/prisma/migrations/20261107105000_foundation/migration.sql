@@ -167,6 +167,7 @@ CREATE TABLE "Grant" (
     "scopeType" TEXT NOT NULL,
     "scopeId" UUID NOT NULL,
     "action" TEXT NOT NULL,
+    "version" INTEGER NOT NULL DEFAULT 1,
     "revokedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 

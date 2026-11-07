@@ -44,6 +44,12 @@ assert accepts("AssignmentInput", {"title":"Bài giao", "recipientWorkspaceIds":
 assert not accepts("AssignmentInput", {"title":"Bài giao", "recipientWorkspaceIds":[]})
 assert accepts("FolderInput", {"name":"Nguồn"})
 assert not accepts("FolderInput", {"id":"f1"})
+assert accepts("Workspace", {"id":"w1", "name":"Nhóm thử", "kind":"independent", "status":"active", "timeZone":"Asia/Bangkok", "version":1})
+assert not accepts("Workspace", {"id":"w1", "kind":"independent", "status":"active", "timeZone":"Asia/Bangkok", "version":1})
+for method, route in (("patch", "/me/usages"), ("patch", "/classes/{classId}/policy"), ("patch", "/groups/{groupId}/leader")):
+    op = doc["paths"][route][method]
+    assert "412" in op["responses"], (method, route)
+    assert any(p["name"] == "If-Match" and p["in"] == "header" and p["required"] for p in op.get("parameters", [])), (method, route)
 assert accepts("EventInput", {"title":"Thi", "scope":{"type":"class","id":"c1"}, "allDay":{"startDate":"2026-11-10","endDateExclusive":"2026-11-11","timeZone":"Asia/Ho_Chi_Minh"}})
 assert not accepts("EventInput", {"title":"Thi", "scope":{"type":"class","id":"c1"}, "allDay":{"startDate":"2026-11-10","endDateExclusive":"2026-11-11","timeZone":"Asia/Ho_Chi_Minh"}, "timed":{"startsAt":"2026-11-10T10:00:00Z","endsAt":"2026-11-10T11:00:00Z"}})
 import json

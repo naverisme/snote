@@ -12,7 +12,7 @@ Nguồn: issue #28, `IMPLEMENTATION_PLAN.md` F1–F6, `docs/architecture/physica
 
 Kết quả cũ ngày 2026-11-07: lúc đó chưa có PostgreSQL chạy được để kiểm migration/constraint. Seed chỉ có `fixture@example.invalid`, không có người thật. Xem kết quả mới bên dưới; không dùng ghi chú cũ làm trạng thái hiện tại.
 
-Sau khi mở PR #39, GitHub Actions trả `failure` trước khi tạo runner/bước chạy. Annotation của check run `128443560482`: "The job was not started because your account is locked due to a billing issue." Chưa có kết quả migration từ CI; cần xử lý trạng thái thanh toán GitHub rồi chạy lại job hoặc dùng PostgreSQL local để có bằng chứng F4/F6.
+Sau khi mở PR #39, một lần GitHub Actions đầu trả `failure` trước khi tạo runner/bước chạy. Annotation của check run `128443560482`: "The job was not started because your account is locked due to a billing issue." Sự cố này đã được xử lý: [run #6](https://github.com/naverisme/snote/actions/runs/42388239452) trên `ef0fdc9` hoàn thành `success` với PostgreSQL 17.7. Kết quả này chỉ áp dụng cho SHA đó.
 
 ## Kiểm Foundation ngày 2026-11-08
 
@@ -22,4 +22,6 @@ Với `DATABASE_URL=postgresql://snote@127.0.0.1:15432/snote_foundation?schema=p
 
 Đã chạy lại `python -m openapi_spec_validator docs/contracts/openapi.yaml`, generator OpenAPI + `npm run contract:generate`, validator cục bộ (78 paths, 98 operations, 871 refs), `prisma validate`, build API/web và 3 core tests; tất cả đạt. Generator chạy lại không để diff ngoài thay đổi nguồn AA-F02. AA-F02 thêm `Workspace.name` bắt buộc vào schema, migration, response và lược đồ kiến trúc; module Ngữ cảnh #29 phải đặt tên cho workspace mặc định khi tạo.
 
-Giới hạn: kế hoạch pin PostgreSQL 17.7 và CI chạy trên phiên đó; lần kiểm này dùng 18.6, chưa thay thế bằng chứng tương thích 17.7. GitHub Actions vẫn cần chạy lại khi tài khoản được mở. Các khoảng trống AA-F01, AA-F03–09 trong hồ sơ API-A chưa giải quyết; không merge Foundation chỉ dựa vào kết quả này. Log test đầy đủ và SHA sau khi commit cần ghi vào PR #39.
+Giới hạn: lần kiểm cục bộ dùng 18.6; [CI run trên `bf26488`](https://github.com/naverisme/snote/actions/runs/42401528353) đã hoàn thành `success` với PostgreSQL 17.7 sau AA-F02; push run cùng head cũng `success`. Các khoảng trống AA-F01, AA-F03–09 trong hồ sơ API-A chưa giải quyết; không merge Foundation chỉ dựa vào kết quả này. PR #39 cần cập nhật SHA và phép kiểm cho từng thay đổi sau đó.
+
+Tiếp theo xử lý một phần AA-F07: `Grant.version` có cột DB thật mặc định 1 như response bắt buộc; ba thao tác `PATCH /me/usages`, `PATCH /classes/{classId}/policy`, `PATCH /groups/{groupId}/leader` nay yêu cầu `If-Match` và khai báo 412. Validator kiểm cả ba header và lỗi, DB check đọc lại version. PostgreSQL 18.6 reset/migrate và kiểm DB đạt; validator chuẩn, 78 paths/98 operations/873 refs, build và 3 core tests đạt. Đây chưa khóa toàn bộ chính sách ETag của các mutation còn lại; owner từng module phải kiểm version tại commit và trả ETag đọc được. Chờ CI head mới trên PostgreSQL 17.7 trước khi tính cổng F.

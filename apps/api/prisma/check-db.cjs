@@ -21,9 +21,13 @@ async function main() {
   await db.$executeRaw`INSERT INTO "Workspace" ("id","name","kind","ownerId","timeZone","updatedAt") VALUES (${workspaceId}::uuid, 'Nhóm thử', 'independent', ${accountId}::uuid, 'UTC', CURRENT_TIMESTAMP)`;
   const [workspace] = await db.$queryRaw`SELECT "name" FROM "Workspace" WHERE "id" = ${workspaceId}::uuid`;
   assert.equal(workspace.name, 'Nhóm thử');
+  const grantId = randomUUID();
+  await db.$executeRaw`INSERT INTO "Grant" ("id","principalId","scopeType","scopeId","action") VALUES (${grantId}::uuid, ${accountId}::uuid, 'workspace', ${workspaceId}::uuid, 'task.create')`;
+  const [grant] = await db.$queryRaw`SELECT "version" FROM "Grant" WHERE "id" = ${grantId}::uuid`;
+  assert.equal(grant.version, 1);
   await expectConstraint(() => db.$executeRaw`INSERT INTO "Workspace" ("id","kind","ownerId","timeZone","updatedAt") VALUES (${randomUUID()}::uuid, 'independent', ${accountId}::uuid, 'UTC', CURRENT_TIMESTAMP)`, '23502');
   await expectConstraint(() => db.$executeRaw`INSERT INTO "Workspace" ("id","name","kind","timeZone","updatedAt") VALUES (${randomUUID()}::uuid, 'Sai scope', 'class_group', 'UTC', CURRENT_TIMESTAMP)`, '23514');
   await expectConstraint(() => db.$executeRaw`INSERT INTO "Event" ("id","scopeType","scopeId","kind","title","updatedAt") VALUES (${randomUUID()}::uuid, 'class', ${classId}::uuid, 'all_day', 'Invalid', CURRENT_TIMESTAMP)`, '23514');
-  console.log('PASS: active membership unique, workspace name/scope, event time shape');
+  console.log('PASS: active membership unique, workspace name/scope, grant version, event time shape');
 }
 main().finally(() => db.$disconnect());

@@ -13,27 +13,27 @@ Tất cả worktree là **thư mục anh em của `SNOTE`**, không nằm trong 
 
 | Thư mục bên cạnh `SNOTE` | Nhánh | Vai trò | Trạng thái 2026-11-08 |
 | --- | --- | --- | --- |
-| `snote-v2-worktree-layout` | `docs/v2/fullstack-worktrees` | Kế hoạch, sở hữu tệp, bảng điều phối | PR #41 mở, đã hết draft; chưa merge |
-| `snote-v2-foundation` | `feat/v2/foundation` | Contract, schema/migration, core và build chung #28 | PR #39 draft; build/contract/core test đạt cục bộ, thiếu kiểm PostgreSQL thật và cổng merge |
+| `snote-v2-worktree-layout` | `docs/v2/fullstack-worktrees` | Kế hoạch, sở hữu tệp, bảng điều phối | PR #41 đã merge thành `54d06f68`; worktree sạch đã được gỡ |
+| `snote-v2-foundation` | `feat/v2/foundation` | Contract, schema/migration, core và build chung #28 | PR #39 draft; PostgreSQL 17.7 CI đạt trên `bf26488`, PostgreSQL 18.6 cục bộ đạt; còn rà contract/server fixture và review |
 | `snote-v2-api-a` | `feat/v2/api-a` | Lát cắt Ngữ cảnh #29, gồm phần UI #33/#34; giữ tên cũ để bảo toàn PR #40 | PR #40 draft; mới có service backend, chưa có luồng API → UI hoàn chỉnh |
 | `snote-v2-planning` | `feat/v2/planning` | Công việc/Lịch #31 + UI việc/lịch #34 | Chưa tạo; chờ Foundation merge |
 | `snote-v2-library` | `feat/v2/library` | Thư viện #35 + UI #30 | Chưa tạo; chờ Foundation merge |
 | `snote-v2-assignments` | `feat/v2/assignments` | Bài giao/Nộp #32 + UI bài giao #33 | Chưa tạo; chờ Foundation merge |
 | `snote-v2-integration` | `feat/v2/integration` | E2E, tải, backup/restore #36 | Chưa tạo; chờ bốn lát cắt merge để chạy cổng đầy đủ |
 
-`snote-v2-worktree-layout` là thư mục tạm cho PR tài liệu. Chỉ gỡ bằng `git worktree remove` sau khi PR #41 merge **và** checkout sạch. `snote-v2-api-a` là worktree Ngữ cảnh hiện có, không tạo worktree `context` thứ hai hoặc đổi tên nhánh khi PR #40 đang mở. Không xóa/sửa các tệp chưa commit ở bất kỳ worktree nào.
+`snote-v2-worktree-layout` là thư mục tạm đã gỡ sau khi PR tài liệu merge và checkout sạch; hàng trên giữ dấu vết, không chỉ dẫn tạo lại. `snote-v2-api-a` là worktree Ngữ cảnh hiện có, không tạo worktree `context` thứ hai hoặc đổi tên nhánh khi PR #40 đang mở. Không xóa/sửa các tệp chưa commit ở bất kỳ worktree nào.
 
 ## Việc làm được ngay
 
 | Mã | Việc và nơi làm | Kết quả cần ghi | Không cần đợi |
 | --- | --- | --- | --- |
-| N1 | Chốt nội dung PR #41 trong `snote-v2-worktree-layout`: rà tên thư mục, bảng owner, liên kết, `git diff --check` | PR tài liệu sạch, reviewer biết bốn lát cắt và cổng | Foundation, CI, môi trường PostgreSQL |
+| N1 — xong | Chốt nội dung PR #41 trong `snote-v2-worktree-layout`: rà tên thư mục, bảng owner, liên kết, `git diff --check` | Đã merge vào `s_note_v2` tại `54d06f68` | Foundation, CI, môi trường PostgreSQL |
 | N2 | Hoàn thiện #28 trong `snote-v2-foundation`: sửa khoảng trống contract/schema có bằng chứng, sinh lại client, kiểm diff sinh ổn định | SHA contract/schema, fixture client/server, kết quả validator/build/test | PR #41 merge hoặc API-A hoàn thành |
-| N3 | Cấp PostgreSQL dev và chạy migration DB trắng, reset/migrate, kiểm constraint/transaction thật cho #28 | Lệnh, phiên bản DB, SHA, kết quả pass/fail trong PR #39; sửa lỗi nếu có | GitHub Actions được mở lại; có thể dùng DB cục bộ/cách ly khác |
+| N3 — vòng đầu đạt | Chạy migration DB trắng, reset/migrate và kiểm constraint thật cho #28; chạy lại ở mỗi head đổi schema | PostgreSQL 17.7 CI đạt tại `bf26488`; PostgreSQL 18.6 cục bộ đạt sau AA-F02; còn kiểm transaction nghiệp vụ theo lát cắt | Không cần lệnh mới; CI đã hoạt động lại |
 | N4 | Rà ma trận quyền, ca đồng thời/lỗi giữa chừng và khoảng trống đầu vào #29–35 trong `review/` hoặc issue tương ứng; dựng fixture theo OpenAPI trong vùng sở hữu khi phù hợp | Yêu cầu thay contract gửi owner #28, bộ ca kiểm; không gọi là feature hoàn chỉnh | Foundation merge; không thêm route/type tạm trái hợp đồng |
 | N5 | Chuẩn bị checklist tích hợp #36 từ QA-01–14 và `review/unresolved.md`; ghi rõ môi trường/đo đạc cần thu sau này | Danh sách phép kiểm và dữ liệu giả, không ghi kết quả chưa chạy | Bốn lát cắt merge |
 
-**Tín hiệu hoàn tất N1:** PR #41 được review và merge vào `s_note_v2`. Tín hiệu này chốt cách làm việc; không phải điều kiện để tiếp tục N2–N5. **Tín hiệu hoàn tất Foundation:** PR #39 ghi bằng chứng F1–F6, đặc biệt PostgreSQL migration/reset/constraint, và được merge; SHA merge là mốc gốc của các worktree tính năng. GitHub Actions bị khóa do billing là lỗi hạ tầng, không biến job chưa chạy thành pass. Khi dùng kiểm thay thế, ghi rõ ngoại lệ và bằng chứng tương đương trong PR.
+**Tín hiệu hoàn tất N1:** PR #41 đã merge. **Tín hiệu hoàn tất Foundation:** PR #39 ghi bằng chứng F1–F6 trên **head hiện tại**, xử lý khoảng trống contract/schema cản feature và được merge; SHA merge là mốc gốc của các worktree tính năng. Kết quả CI của head cũ không thay thế CI cho head mới.
 
 ## Việc phải chờ tín hiệu
 
@@ -58,7 +58,7 @@ Không cần lệnh mới của chủ sản phẩm cho việc code, phân tích 
 | Tín hiệu | Nguồn | Cách xử lý trong lúc chờ |
 | --- | --- | --- |
 | Review/merge PR #41, #39 và PR tính năng | Reviewer/quy trình GitHub theo [kế hoạch](IMPLEMENTATION_PLAN.md) | Hoàn tất bằng chứng và sửa phản hồi review; làm việc độc lập ở N2–N5 |
-| GitHub Actions chạy trở lại | Trạng thái billing/tài khoản GitHub | Dùng PostgreSQL cách ly để kiểm F4/F6 và ghi ngoại lệ; không khai báo CI pass khi job chưa chạy |
+| GitHub Actions trên head mới | Trạng thái check của PR #39/#40 | Actions đã chạy lại; theo dõi kết quả của đúng SHA, dùng PostgreSQL cách ly để lặp lỗi nếu cần |
 | Máy chủ, lưu trữ, chi phí, nhóm thử, email reset, kết quả backup/thiết bị thật | Người vận hành/chủ sản phẩm và phép đo thực; [ENV-01–06](review/unresolved.md) | Xây/test với dữ liệu giả, giữ pilot ở trạng thái chờ; không tự điền số hoặc provider |
 | Quyết định nghiệp vụ còn mâu thuẫn sau khi tra nguồn v2 | Chủ sản phẩm hoặc SRC-27 nếu nằm trong quyền tự quyết thiết kế | Ghi `review/unresolved.md` với phương án/kiểm chứng; tiếp tục phần không phụ thuộc |
 

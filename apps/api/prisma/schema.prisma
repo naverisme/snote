@@ -164,6 +164,7 @@ model Grant {
   scopeType String
   scopeId String @db.Uuid
   action String
+  version Int @default(1)
   revokedAt DateTime?
   createdAt DateTime @default(now())
   @@index([principalId, scopeType, scopeId, action])

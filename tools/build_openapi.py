@@ -197,6 +197,11 @@ O = [
 ]
 
 def operation(method, path, request, response, family):
+    required_version = (method, path) in {
+        ("patch", "/me/usages"),
+        ("patch", "/classes/{classId}/policy"),
+        ("patch", "/groups/{groupId}/leader"),
+    }
     params=[]
     for part in path.split("/"):
         if part.startswith("{"):
@@ -239,12 +244,14 @@ def operation(method, path, request, response, family):
         op["responses"]["409"]={"description":"Domain conflict", "content":{"application/json":{"schema":ref("Error")}}}
     if method in ("post","patch","put") and (family in ("submission","library","task","grant","assignment")):
         op["responses"]["412"]={"description":"Version conflict", "content":{"application/json":{"schema":ref("Error")}}}
+    if required_version:
+        op["responses"]["412"]={"description":"Missing or stale If-Match version", "content":{"application/json":{"schema":ref("Error")}}}
     if method=="post" and path.endswith("/submissions"):
         op.setdefault("parameters",[]).append({"name":"Idempotency-Key","in":"header","required":True,"schema":ID})
     if method in ("post","patch","put","delete") and (not path.startswith("/auth/") or path=="/auth/logout"):
         op.setdefault("parameters",[]).append({"name":"X-CSRF-Token","in":"header","required":True,"schema":ID,"description":"Required for cookie authenticated mutations"})
-    if method=="patch" or path.endswith("/revisions") or path.endswith("/submissions"):
-        op.setdefault("parameters",[]).append({"name":"If-Match","in":"header","required":False,"schema":STR,"description":"Required when changing an existing revision; omitted on first submission"})
+    if required_version or method=="patch" or path.endswith("/revisions") or path.endswith("/submissions"):
+        op.setdefault("parameters",[]).append({"name":"If-Match","in":"header","required":required_version,"schema":STR,"description":"Required for versioned updates; omitted on first submission"})
     return op
 
 paths={}

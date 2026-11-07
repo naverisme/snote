@@ -2300,8 +2300,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
-                /** @description Required when changing an existing revision; omitted on first submission */
-                "If-Match"?: string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path?: never;
             cookie?: never;
@@ -2361,6 +2361,15 @@ export interface operations {
             };
             /** @description Domain conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Missing or stale If-Match version */
+            412: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5065,8 +5074,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
-                /** @description Required when changing an existing revision; omitted on first submission */
-                "If-Match"?: string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 groupId: string;
@@ -5128,6 +5137,15 @@ export interface operations {
             };
             /** @description Domain conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Missing or stale If-Match version */
+            412: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5956,8 +5974,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
-                /** @description Required when changing an existing revision; omitted on first submission */
-                "If-Match"?: string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 classId: string;
@@ -6026,7 +6044,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Version conflict */
+            /** @description Missing or stale If-Match version */
             412: {
                 headers: {
                     [name: string]: unknown;
@@ -6518,7 +6536,7 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
-                /** @description Required when changing an existing revision; omitted on first submission */
+                /** @description Required for versioned updates; omitted on first submission */
                 "If-Match"?: string;
             };
             path: {
@@ -7224,7 +7242,7 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
-                /** @description Required when changing an existing revision; omitted on first submission */
+                /** @description Required for versioned updates; omitted on first submission */
                 "If-Match"?: string;
             };
             path: {
@@ -7602,7 +7620,7 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
-                /** @description Required when changing an existing revision; omitted on first submission */
+                /** @description Required for versioned updates; omitted on first submission */
                 "If-Match"?: string;
             };
             path: {
@@ -7964,7 +7982,7 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
-                /** @description Required when changing an existing revision; omitted on first submission */
+                /** @description Required for versioned updates; omitted on first submission */
                 "If-Match"?: string;
             };
             path: {
@@ -8417,7 +8435,7 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
-                /** @description Required when changing an existing revision; omitted on first submission */
+                /** @description Required for versioned updates; omitted on first submission */
                 "If-Match"?: string;
             };
             path: {
@@ -8625,7 +8643,7 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
-                /** @description Required when changing an existing revision; omitted on first submission */
+                /** @description Required for versioned updates; omitted on first submission */
                 "If-Match"?: string;
             };
             path: {
@@ -9389,7 +9407,7 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
-                /** @description Required when changing an existing revision; omitted on first submission */
+                /** @description Required for versioned updates; omitted on first submission */
                 "If-Match"?: string;
             };
             path: {
@@ -9948,7 +9966,7 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
-                /** @description Required when changing an existing revision; omitted on first submission */
+                /** @description Required for versioned updates; omitted on first submission */
                 "If-Match"?: string;
             };
             path: {
@@ -10341,7 +10359,7 @@ export interface operations {
                 limit?: number;
             };
             header?: {
-                /** @description Required when changing an existing revision; omitted on first submission */
+                /** @description Required for versioned updates; omitted on first submission */
                 "If-Match"?: string;
             };
             path: {
@@ -10426,7 +10444,7 @@ export interface operations {
                 "Idempotency-Key": string;
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
-                /** @description Required when changing an existing revision; omitted on first submission */
+                /** @description Required for versioned updates; omitted on first submission */
                 "If-Match"?: string;
             };
             path: {
