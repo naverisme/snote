@@ -68,7 +68,7 @@ Chỉ bắt đầu cổng tích hợp đầy đủ sau khi bốn PR lát cắt c
 
 | Mốc | Báo cáo khi hoàn tất | Không được tuyên bố trước bằng chứng |
 | --- | --- | --- |
-| F | SHA merge #28, lockfile, OpenAPI validator, generated client, migration/build/test | “Bảy agent đã có nền chung” khi F chưa xanh |
+| F | SHA merge #28, lockfile, OpenAPI validator, generated client, migration/build/test | “Bốn worktree tính năng đã có nền chung” khi F chưa xanh |
 | A | SHA bốn PR lát cắt #29/#31/#35/#32, phần UI của #30/#33/#34, QA API → UI và dependency SHA | “Tính năng hoàn chỉnh” từ service backend hoặc màn dùng fixture |
 | I | SHA #36, báo cáo e2e, đo tải, restore, danh sách lỗi P0 | “Ứng dụng đã đạt nghiệm thu” chỉ từ unit tests |
 | Pilot | Giá trị ENV-01–06, vận hành/chi phí, đối tượng thử, bản phát hành xác định | “Sẵn sàng production/pilot” từ sơ đồ hoặc Docker Compose đơn thuần |
