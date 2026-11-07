@@ -14,7 +14,7 @@
      * Nhánh chính (s_note_v2 / main): Đóng vai trò Bộ chỉ huy điều phối. Giao việc bằng `winwork assign <nhánh_phụ> "<yêu cầu>" [-File <tệp>]`, và nghiệm thu lưu vết bằng `winwork verify <TASK_ID> -Note "<kết quả>"`.
      * Nhánh phụ (Workers: foundation, api-a, web-a...): Nhận lệnh từ PTY stream hoặc kiểm tra hàng đợi bằng `winwork inbox`.
    - Quy tắc hành vi bắt buộc của Agent:
-     * Khi nhận được tín hiệu có mã `[TASK-ID]`: Đọc kỹ mô tả và file đính kèm, chỉ sửa đổi trong phạm vi vùng tệp sở hữu tại [WORKTREES.md](WORKTREES.md).
+     * Khi nhận được tín hiệu có mã [TASK-ID]: Đọc kỹ mô tả và file đính kèm, BẮT BUỘC chạy winwork ack <TASK_ID> để xác nhận bắt đầu làm việc về Bộ chỉ huy; chỉ sửa đổi trong phạm vi vùng tệp sở hữu tại [WORKTREES.md](WORKTREES.md).
      * Khi hoàn thành: Commit mã nguồn lấy commit SHA và bắt buộc chạy lệnh:
        `winwork resolve <TASK_ID> -Sha <COMMIT_SHA> -Note "<mô tả kiểm thử>"`
        *(Lệnh này tự động cập nhật review/inbox, kích hoạt tín hiệu Reverse PTY báo cáo Bộ chỉ huy và tự động kích hoạt Auto-Advance để Worker làm tiếp task mới).*
