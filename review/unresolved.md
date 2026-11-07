@@ -8,7 +8,8 @@ Quy tắc sản phẩm và phương án kiến trúc sau khi chủ sản phẩm 
 | ENV-02 | Nhóm thử nghiệm đầu tiên, số lớp/thành viên/tệp dự kiến, dữ liệu và consent khi thử | [Chất lượng](../docs/quality/README.md), [vận hành](../docs/operations/README.md). Ca tải mô phỏng chỉ là điểm kiểm thử, không phải dự báo |
 | ENV-03 | Khả năng thực tế đạt mục tiêu phục hồi 24 giờ dữ liệu/8 giờ dịch vụ và lịch backup theo nhà cung cấp | [Vận hành](../docs/operations/README.md). Đóng sau một lần phục hồi metadata + bytes đã đo |
 | ENV-04 | Bộ icon và bản mẫu giao diện để kiểm bằng thiết bị/màn hình thật; lựa chọn font, độ tương phản, motion giảm | [UI/chuyển động](../docs/ux/ui-and-motion.md). Quy tắc tương tác/thời lượng đề xuất đã có; kiểm trước khi chốt hình ảnh cuối |
-| ENV-05 | Schema OpenAPI máy đọc được và migrations tương thích phiên bản thư viện khi bắt đầu coding | [Hợp đồng](../docs/contracts/README.md). Tên action/error/vòng đời logic đã có, chi tiết codegen và schema vật lý phải đối chiếu khi triển khai |
+| ENV-06 | Nhà cung cấp gửi email và cấu hình gửi lại mật khẩu; trong development dùng bộ gửi giả không chứa địa chỉ thật | `POST /auth/password-reset-request`; đóng bằng dịch vụ được chọn, thử token hết hạn/một lần và giám sát lỗi gửi |
+| ENV-05 | OpenAPI máy đọc được đã có; còn validator chuẩn OpenAPI, client sinh từ spec, Prisma migrations tương thích phiên bản thư viện khi bắt đầu coding | [Hợp đồng](../docs/contracts/README.md). 78 path/98 operation đã sinh, schema vật lý có ở docs/architecture; đóng sau #28 kiểm validator chuẩn, codegen và migration chạy được |
 
 ## Mã lịch sử đã được giải quyết
 
