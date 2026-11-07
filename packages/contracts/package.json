@@ -1,1 +1,1 @@
-{"name":"@snote/contracts","private":true,"version":"0.1.0","type":"module","exports":{".":"./src/schema.ts"}}
+{"name":"@snote/contracts","private":true,"version":"0.1.0","type":"module","types":"./src/schema.ts","exports":{".":"./src/schema.ts"}}
