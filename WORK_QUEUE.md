@@ -14,11 +14,11 @@ Tất cả worktree là **thư mục anh em của `SNOTE`**, không nằm trong 
 | Thư mục bên cạnh `SNOTE` | Nhánh | Vai trò | Trạng thái 2026-11-08 |
 | --- | --- | --- | --- |
 | `snote-v2-worktree-layout` | `docs/v2/fullstack-worktrees` | Kế hoạch, sở hữu tệp, bảng điều phối | PR #41 đã merge thành `54d06f68`; worktree sạch đã được gỡ |
-| `snote-v2-foundation` | `feat/v2/foundation` | Contract, schema/migration, core và build chung #28 | PR #39 draft; PostgreSQL 17.7 CI đạt trên các head trước, PostgreSQL 18.6 và HTTP fixture cục bộ đạt; kiểm CI đúng head hiện tại và còn rà contract/review |
-| `snote-v2-api-a` | `feat/v2/api-a` | Lát cắt Ngữ cảnh #29, gồm phần UI #33/#34; giữ tên cũ để bảo toàn PR #40 | PR #40 draft; mới có service backend, chưa có luồng API → UI hoàn chỉnh |
-| `snote-v2-planning` | `feat/v2/planning` | Công việc/Lịch #31 + UI việc/lịch #34 | Chưa tạo; chờ Foundation merge |
-| `snote-v2-library` | `feat/v2/library` | Thư viện #35 + UI #30 | Chưa tạo; chờ Foundation merge |
-| `snote-v2-assignments` | `feat/v2/assignments` | Bài giao/Nộp #32 + UI bài giao #33 | Chưa tạo; chờ Foundation merge |
+| `snote-v2-foundation` | `feat/v2/foundation` | Contract, schema/migration, core và build chung #28 | PR #39 đã merge vào `s_note_v2` tại `bc8e6ff`; hoàn tất F1–F6 và AA-F01–09; worktree đã gỡ |
+| `snote-v2-api-a` | `feat/v2/api-a` | Lát cắt Ngữ cảnh #29, gồm phần UI #33/#34; giữ tên cũ để bảo toàn PR #40 | PR #40 draft; đã rebase trên `bc8e6ff`, cập nhật quyền AA-F06, build và 25 tests pass; đang triển khai HTTP routes và UI |
+| `snote-v2-planning` | `feat/v2/planning` | Công việc/Lịch #31 + UI việc/lịch #34 | Đã tạo từ `bc8e6ff`; sẵn sàng nhận việc |
+| `snote-v2-library` | `feat/v2/library` | Thư viện #35 + UI #30 | Đã tạo từ `bc8e6ff`; sẵn sàng nhận việc |
+| `snote-v2-assignments` | `feat/v2/assignments` | Bài giao/Nộp #32 + UI bài giao #33 | Đã tạo từ `bc8e6ff`; sẵn sàng nhận việc |
 | `snote-v2-integration` | `feat/v2/integration` | E2E, tải, backup/restore #36 | Chưa tạo; chờ bốn lát cắt merge để chạy cổng đầy đủ |
 
 `snote-v2-worktree-layout` là thư mục tạm đã gỡ sau khi PR tài liệu merge và checkout sạch; hàng trên giữ dấu vết, không chỉ dẫn tạo lại. `snote-v2-api-a` là worktree Ngữ cảnh hiện có, không tạo worktree `context` thứ hai hoặc đổi tên nhánh khi PR #40 đang mở. Không xóa/sửa các tệp chưa commit ở bất kỳ worktree nào.
@@ -39,7 +39,7 @@ Tất cả worktree là **thư mục anh em của `SNOTE`**, không nằm trong 
 
 | Mã | Việc | Tín hiệu bắt đầu hoặc nối thật | Vì sao phải chờ |
 | --- | --- | --- | --- |
-| G1 | Tạo ba worktree `planning`, `library`, `assignments` từ `origin/s_note_v2`; cập nhật `api-a` từ cùng mốc | #39 đã merge, fetch được SHA Foundation trên `s_note_v2` | Tránh mỗi tính năng tự đặt schema/client/core khác nhau |
+| G1 — xong | Tạo ba worktree `planning`, `library`, `assignments` từ `origin/s_note_v2`; cập nhật `api-a` từ cùng mốc | Đã hoàn thành tại `bc8e6ff`; cả ba worktree đã tạo, `api-a` đã rebase và cập nhật | Tránh mỗi tính năng tự đặt schema/client/core khác nhau |
 | G2 | Hoàn thiện Ngữ cảnh #29 API → UI và merge PR #40 | G1; contract/schema của #28 ổn định; public authorization/membership và shell được kiểm | Backend hiện chỉ là service chuẩn bị sớm; cần route, UI, PostgreSQL và QA thật |
 | G3 | Nối quyền/tư cách thật trong Công việc/Lịch #31, Thư viện #35 và Bài giao/Nộp #32 | Public interface Ngữ cảnh có commit/SHA ổn định, lý tưởng đã merge | Không suy quyền từ role/UI hay đọc bảng riêng của Ngữ cảnh |
 | G4 | Nối UI ba lát cắt vào router/menu/shared shell | Shell và giao diện public của Ngữ cảnh đã có commit/SHA ổn định | Tránh nhiều owner cùng sửa `apps/web/src/app` hoặc `shared` |
