@@ -9,6 +9,10 @@ import { ClassSelector } from '../features/classes/ClassSelector';
 import { ClassMembersView } from '../features/classes/ClassMembersView';
 import { ClassGroupsView } from '../features/classes/ClassGroupsView';
 import { ClassSettingsView } from '../features/classes/ClassSettingsView';
+import { TasksContainer } from '../features/tasks';
+import { CalendarContainer } from '../features/calendar';
+import { LibraryView } from '../features/library';
+import { AssignmentFeature } from '../features/assignments';
 
 type AppContext =
   | { type: 'workspace'; workspaceId: string }
@@ -272,20 +276,16 @@ export function App() {
                 />
               )}
               {classTab === 'assignments' && (
-                <div className="section-box" style={{ textAlign: 'center', padding: '40px 0' }}>
-                  <h2>Bài giao của lớp {activeClass.name}</h2>
-                  <p style={{ color: 'var(--text-secondary)' }}>
-                    Tính năng Bài giao & Nộp bài được sở hữu và phát triển bởi Worktree #32.
-                  </p>
-                </div>
+                <AssignmentFeature
+                  classId={activeClass.id}
+                  isTeacher={Boolean(isClassOwner || user.usages.includes('teacher'))}
+                  activeWorkspaceId={
+                    workspaces.find(w => w.kind === 'class_group' && w.id.includes(activeClass.id))?.id
+                  }
+                />
               )}
               {classTab === 'calendar' && (
-                <div className="section-box" style={{ textAlign: 'center', padding: '40px 0' }}>
-                  <h2>Lịch lớp {activeClass.name}</h2>
-                  <p style={{ color: 'var(--text-secondary)' }}>
-                    Tính năng Lịch trình được sở hữu và phát triển bởi Worktree #31.
-                  </p>
-                </div>
+                <CalendarContainer scopeType="class" scopeId={activeClass.id} />
               )}
             </>
           ) : activeWorkspace ? (
@@ -301,28 +301,19 @@ export function App() {
               </div>
 
               {workspaceTab === 'tasks' && (
-                <div style={{ textAlign: 'center', padding: '30px 0' }}>
-                  <h3>Công việc & Tiến độ (Gantt / Danh sách)</h3>
-                  <p style={{ color: 'var(--text-secondary)', marginTop: 8 }}>
-                    Tính năng Công việc & Gantt được sở hữu và phát triển bởi Worktree #31.
-                  </p>
-                </div>
+                <TasksContainer
+                  workspaceId={activeWorkspace.kind === 'default' ? undefined : activeWorkspace.id}
+                />
               )}
               {workspaceTab === 'calendar' && (
-                <div style={{ textAlign: 'center', padding: '30px 0' }}>
-                  <h3>Lịch trình Workspace</h3>
-                  <p style={{ color: 'var(--text-secondary)', marginTop: 8 }}>
-                    Tính năng Lịch trình được sở hữu và phát triển bởi Worktree #31.
-                  </p>
-                </div>
+                <CalendarContainer scopeType="workspace" scopeId={activeWorkspace.id} />
               )}
               {workspaceTab === 'library' && (
-                <div style={{ textAlign: 'center', padding: '30px 0' }}>
-                  <h3>Thư viện tài liệu & Hộp thu</h3>
-                  <p style={{ color: 'var(--text-secondary)', marginTop: 8 }}>
-                    Tính năng Thư viện & Uploads được sở hữu và phát triển bởi Worktree #35.
-                  </p>
-                </div>
+                <LibraryView
+                  workspaceId={activeWorkspace.id}
+                  isPersonalWorkspace={activeWorkspace.kind === 'default'}
+                  actorId={user?.id}
+                />
               )}
             </div>
           ) : (

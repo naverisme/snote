@@ -8,6 +8,12 @@ import { IdentityModule } from './modules/identity';
 import { ClassesModule } from './modules/classes';
 import { WorkspacesModule } from './modules/workspaces';
 import { AuthorizationModule } from './modules/authorization';
+import { TasksModule } from './modules/tasks/tasks.module';
+import { CalendarModule } from './modules/calendar/calendar.module';
+import { LibraryModule } from './modules/library';
+import { AssignmentsModule } from './modules/assignments';
+import { SubmissionsModule } from './modules/submissions';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 import type { Request, Response } from './modules/identity/http-utils';
 
 const database = new PrismaClient();
@@ -67,6 +73,12 @@ class HealthController {
     ClassesModule,
     WorkspacesModule,
     AuthorizationModule,
+    TasksModule,
+    CalendarModule,
+    LibraryModule,
+    AssignmentsModule,
+    SubmissionsModule,
+    NotificationsModule,
   ],
   controllers: [HealthController],
 })

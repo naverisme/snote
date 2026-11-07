@@ -4,3 +4,4 @@ export * from './url-preview';
 export * from './library-service';
 export * from './prisma-library-store';
 export * from './library.controller';
+export * from './library.module';
