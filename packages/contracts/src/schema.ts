@@ -196,6 +196,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/classes/{classId}/members/{membershipId}/role": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["membershipPatchClassesClassidMembersMembershipidRole"];
+        trace?: never;
+    };
     "/classes/{classId}/join-requests": {
         parameters: {
             query?: never;
@@ -1314,6 +1330,10 @@ export interface components {
         };
         LeaderChange: {
             leaderId: string;
+        };
+        ClassRoleChange: {
+            /** @enum {string} */
+            role: "member" | "monitor";
         };
         GrantInput: {
             principalId: string;
@@ -2858,6 +2878,113 @@ export interface operations {
             };
             /** @description Not found or hidden by scope */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Rate limited */
+            429: {
+                headers: {
+                    "Retry-After"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Retryable service failure */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    membershipPatchClassesClassidMembersMembershipidRole: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Required for cookie authenticated mutations */
+                "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
+            };
+            path: {
+                classId: string;
+                membershipId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClassRoleChange"];
+            };
+        };
+        responses: {
+            /** @description Committed result */
+            200: {
+                headers: {
+                    /** @description Version of returned resource when applicable */
+                    ETag?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MembershipResult"];
+                };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unauthenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Not found or hidden by scope */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Domain conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Missing or stale If-Match version */
+            412: {
                 headers: {
                     [name: string]: unknown;
                 };

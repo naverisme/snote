@@ -527,12 +527,14 @@ ALTER TABLE "Workspace" ADD CONSTRAINT "Workspace_classId_fkey" FOREIGN KEY ("cl
 
 -- Constraints that Prisma cannot express directly. Keep these in the owner migration.
 CREATE UNIQUE INDEX "ClassMembership_active_unique" ON "ClassMembership" ("classId", "accountId") WHERE "status" = 'active';
+CREATE UNIQUE INDEX "ClassMembership_monitor_unique" ON "ClassMembership" ("classId") WHERE "status" = 'active' AND "role" = 'monitor';
 CREATE UNIQUE INDEX "WorkspaceMembership_active_unique" ON "WorkspaceMembership" ("workspaceId", "accountId") WHERE "status" = 'active';
 CREATE UNIQUE INDEX "Workspace_default_owner_unique" ON "Workspace" ("ownerId") WHERE "kind" = 'default';
 CREATE UNIQUE INDEX "TransferRequest_pending_unique" ON "TransferRequest" ("targetType", "targetId") WHERE "status" = 'pending';
 CREATE UNIQUE INDEX "Grant_active_unique" ON "Grant" ("principalId", "scopeType", "scopeId", "action") WHERE "revokedAt" IS NULL;
 ALTER TABLE "Workspace" ADD CONSTRAINT "Workspace_kind_scope_check" CHECK (("kind" = 'class_group' AND "classId" IS NOT NULL) OR ("kind" IN ('default','independent') AND "classId" IS NULL));
 ALTER TABLE "Class" ADD CONSTRAINT "Class_group_limit_check" CHECK ("groupLimit" > 0);
+ALTER TABLE "ClassMembership" ADD CONSTRAINT "ClassMembership_role_check" CHECK ("role" IN ('member','monitor'));
 ALTER TABLE "Event" ADD CONSTRAINT "Event_time_shape_check" CHECK (("kind" = 'timed' AND "timedStart" IS NOT NULL AND "timedEnd" > "timedStart" AND "allDayStart" IS NULL AND "allDayEndExclusive" IS NULL) OR ("kind" = 'all_day' AND "allDayStart" IS NOT NULL AND "allDayEndExclusive" > "allDayStart" AND "timedStart" IS NULL AND "timedEnd" IS NULL));
 ALTER TABLE "PrivateWorkSession" ADD CONSTRAINT "WorkSession_time_check" CHECK ("endAt" > "startAt");
 ALTER TABLE "Blob" ADD CONSTRAINT "Blob_size_check" CHECK ("size" > 0);

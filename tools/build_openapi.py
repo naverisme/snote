@@ -32,6 +32,7 @@ S = {
  "GroupCreate": obj({"name": string(minLength=1), "leaderId": ID}, ("name",)),
  "Transfer": obj({"recipientId": ID}, ("recipientId",)),
  "LeaderChange": obj({"leaderId": ID}, ("leaderId",)),
+ "ClassRoleChange": obj({"role": string(enum=["member","monitor"])}, ("role",)),
  "GrantInput": obj({"principalId": ID, "action": ID, "scopeType": string(enum=["class","workspace","assignment"]), "scopeId": ID}, ("principalId","action","scopeType","scopeId")),
  "Policy": obj({"groupLimit": {"type":"integer","minimum":1}, "roleActions": {"type":"object","additionalProperties": arr(ID)}, "lateFirst": string(enum=["allow","lock"]), "lateRevision": string(enum=["allow","lock"])}, ()),
  "Handover": obj({"handoverTo": ID}, ()),
@@ -114,6 +115,7 @@ O = [
  ("get","/me/events",None,"EventListResult","event"),
  ("get","/classes",None,"ListResult","class"), ("post","/classes","ClassCreate","Result","class"),
  ("get","/classes/{classId}",None,"Result","class"), ("get","/classes/{classId}/members",None,"ListResult","class"),
+ ("patch","/classes/{classId}/members/{membershipId}/role","ClassRoleChange","MembershipResult","membership"),
  ("get","/classes/{classId}/join-requests",None,"ListResult","membership"),
  ("get","/me/invitations",None,"ListResult","membership"),
  ("post","/classes/{classId}/archive",None,"Result","class"), ("post","/classes/{classId}/restore",None,"Result","class"),
@@ -201,6 +203,7 @@ def operation(method, path, request, response, family):
         ("patch", "/me/usages"),
         ("patch", "/classes/{classId}/policy"),
         ("patch", "/groups/{groupId}/leader"),
+        ("patch", "/classes/{classId}/members/{membershipId}/role"),
     }
     params=[]
     for part in path.split("/"):
