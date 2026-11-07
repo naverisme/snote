@@ -26,6 +26,7 @@ jobs:
       - run: npm ci
       - run: npm run contract:generate
       - run: git diff --exit-code -- docs/contracts/openapi.yaml packages/contracts/src/schema.ts
+      - run: npx prisma generate --schema apps/api/prisma/schema.prisma
       - run: npm run build
       - run: npm run contract:http
       - run: npm --workspace @snote/api test
