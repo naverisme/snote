@@ -7,7 +7,8 @@
     "build": "npm run build --workspaces --if-present",
     "contract:http": "node packages/contracts/tests/http-fixture.mjs",
     "contract:generate": "openapi-typescript docs/contracts/openapi.yaml -o packages/contracts/src/schema.ts",
-    "contract:validate": "python tools/validate_contract.py"
+    "contract:validate": "python tools/validate_contract.py",
+    "test:e2e": "node --test tests/e2e/*.spec.mjs"
   },
   "devDependencies": {
     "openapi-typescript": "7.10.1",
