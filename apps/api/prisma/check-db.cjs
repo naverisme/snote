@@ -33,9 +33,15 @@ async function main() {
   await db.$executeRaw`INSERT INTO "Grant" ("id","principalId","scopeType","scopeId","action") VALUES (${grantId}::uuid, ${accountId}::uuid, 'workspace', ${workspaceId}::uuid, 'task.create')`;
   const [grant] = await db.$queryRaw`SELECT "version" FROM "Grant" WHERE "id" = ${grantId}::uuid`;
   assert.equal(grant.version, 1);
+  const transferId = randomUUID();
+  await db.$executeRaw`INSERT INTO "TransferRequest" ("id","targetType","targetId","initiatorId","recipientId","updatedAt") VALUES (${transferId}::uuid, 'class', ${classId}::uuid, ${accountId}::uuid, ${monitorId}::uuid, CURRENT_TIMESTAMP)`;
+  const [transfer] = await db.$queryRaw`SELECT "version","targetType" FROM "TransferRequest" WHERE "id" = ${transferId}::uuid`;
+  assert.equal(transfer.version, 1);
+  assert.equal(transfer.targetType, 'class');
+  await expectConstraint(() => db.$executeRaw`INSERT INTO "TransferRequest" ("id","targetType","targetId","initiatorId","recipientId","updatedAt") VALUES (${randomUUID()}::uuid, 'other', ${workspaceId}::uuid, ${accountId}::uuid, ${monitorId}::uuid, CURRENT_TIMESTAMP)`, '23514');
   await expectConstraint(() => db.$executeRaw`INSERT INTO "Workspace" ("id","kind","ownerId","timeZone","updatedAt") VALUES (${randomUUID()}::uuid, 'independent', ${accountId}::uuid, 'UTC', CURRENT_TIMESTAMP)`, '23502');
   await expectConstraint(() => db.$executeRaw`INSERT INTO "Workspace" ("id","name","kind","timeZone","updatedAt") VALUES (${randomUUID()}::uuid, 'Sai scope', 'class_group', 'UTC', CURRENT_TIMESTAMP)`, '23514');
   await expectConstraint(() => db.$executeRaw`INSERT INTO "Event" ("id","scopeType","scopeId","kind","title","updatedAt") VALUES (${randomUUID()}::uuid, 'class', ${classId}::uuid, 'all_day', 'Invalid', CURRENT_TIMESTAMP)`, '23514');
-  console.log('PASS: active membership/monitor unique, role check, workspace name/scope, grant version, event time shape');
+  console.log('PASS: membership/monitor unique, role, workspace name/scope, grant/transfer versions, transfer target, event time shape');
 }
 main().finally(() => db.$disconnect());

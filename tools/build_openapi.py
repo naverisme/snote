@@ -87,9 +87,10 @@ entities={
  "worksession": obj({"id":ID,"taskId":ID,"ownerId":ID,"startAt":TIME,"endAt":TIME}, ("id","taskId","ownerId","startAt","endAt")),
  "folder": obj({"id":ID,"workspaceId":ID,"name":STR,"parentId":ID}, ("id","workspaceId","name")),
  "download": obj({"url":ID,"expiresAt":TIME}, ("url","expiresAt")),
+ "ownershipTransfer": obj({"id":ID,"targetType":string(enum=["class","workspace"]),"targetId":ID,"initiatorId":ID,"recipientId":ID,"status":string(enum=["pending","accepted","declined","invalidated"]),"acceptedAt":TIME,"version":{"type":"integer"}}, ("id","targetType","targetId","initiatorId","recipientId","status","version")),
 }
 for family,entity in entities.items():
-    label=family.title()
+    label=family[0].upper()+family[1:]
     S[label]=entity
     S[label+"Result"]=obj({"data":ref(label),"requestId":ID}, ("data","requestId"))
     S[label+"ListResult"]=obj({"data":arr(ref(label)),"nextCursor":STR,"requestId":ID}, ("data","requestId"))
@@ -147,6 +148,7 @@ O = [
  ("post","/workspaces/{workspaceId}/ownership-transfers","Transfer","Result","workspace"),
  ("post","/classes/{classId}/ownership-transfers","Transfer","Result","class"),
  ("post","/ownership-transfers/{transferId}/accept",None,"Result","workspace"),
+ ("get","/me/ownership-transfers",None,"ListResult","ownershipTransfer"),
  ("get","/classes/{classId}/policy",None,"Result","grant"),
  ("patch","/classes/{classId}/policy","Policy","Result","grant"),
  ("post","/grants","GrantInput","Result","grant"), ("delete","/grants/{grantId}",None,"Result","grant"),
@@ -204,12 +206,13 @@ def operation(method, path, request, response, family):
         ("patch", "/classes/{classId}/policy"),
         ("patch", "/groups/{groupId}/leader"),
         ("patch", "/classes/{classId}/members/{membershipId}/role"),
+        ("post", "/ownership-transfers/{transferId}/accept"),
     }
     params=[]
     for part in path.split("/"):
         if part.startswith("{"):
             params.append({"name":part[1:-1],"in":"path","required":True,"schema":ID})
-    typed=(family.title()+response) if family in entities and response in ("Result","ListResult") else response
+    typed=(family[0].upper()+family[1:]+response) if family in entities and response in ("Result","ListResult") else response
     special={"/classes/{classId}/members":"MembershipListResult",
              "/classes/{classId}/groups":"WorkspaceListResult",
              "/classes/{classId}/groups#post":"WorkspaceResult",
@@ -219,6 +222,8 @@ def operation(method, path, request, response, family):
              "/me/work-sessions":"WorksessionListResult",
              "/workspaces/{workspaceId}/folders":"FolderListResult",
              "/library/items/{itemId}/download":"DownloadResult"}
+    if path.endswith("/ownership-transfers") or path=="/ownership-transfers/{transferId}/accept":
+        typed="OwnershipTransferResult" if method=="post" else typed
     if path=="/tasks/bulk-actions": typed="TaskListResult"
     typed=special.get(path+"#"+method,special.get(path,typed))
     if typed == "Result": typed = "CommandResult"

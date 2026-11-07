@@ -676,6 +676,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/me/ownership-transfers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ownershipTransferGetMeOwnership-Transfers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/classes/{classId}/policy": {
         parameters: {
             query?: never;
@@ -1776,6 +1792,28 @@ export interface components {
         };
         DownloadListResult: {
             data: components["schemas"]["Download"][];
+            nextCursor?: string;
+            requestId: string;
+        };
+        OwnershipTransfer: {
+            id: string;
+            /** @enum {string} */
+            targetType: "class" | "workspace";
+            targetId: string;
+            initiatorId: string;
+            recipientId: string;
+            /** @enum {string} */
+            status: "pending" | "accepted" | "declined" | "invalidated";
+            /** Format: date-time */
+            acceptedAt?: string;
+            version: number;
+        };
+        OwnershipTransferResult: {
+            data: components["schemas"]["OwnershipTransfer"];
+            requestId: string;
+        };
+        OwnershipTransferListResult: {
+            data: components["schemas"]["OwnershipTransfer"][];
             nextCursor?: string;
             requestId: string;
         };
@@ -5761,7 +5799,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["WorkspaceResult"];
+                    "application/json": components["schemas"]["OwnershipTransferResult"];
                 };
             };
             /** @description Invalid input */
@@ -5856,7 +5894,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ClassResult"];
+                    "application/json": components["schemas"]["OwnershipTransferResult"];
                 };
             };
             /** @description Invalid input */
@@ -5931,6 +5969,8 @@ export interface operations {
             header: {
                 /** @description Required for cookie authenticated mutations */
                 "X-CSRF-Token": string;
+                /** @description Required for versioned updates; omitted on first submission */
+                "If-Match": string;
             };
             path: {
                 transferId: string;
@@ -5947,7 +5987,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["WorkspaceResult"];
+                    "application/json": components["schemas"]["OwnershipTransferResult"];
                 };
             };
             /** @description Invalid input */
@@ -5988,6 +6028,95 @@ export interface operations {
             };
             /** @description Domain conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Missing or stale If-Match version */
+            412: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Rate limited */
+            429: {
+                headers: {
+                    "Retry-After"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Retryable service failure */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    "ownershipTransferGetMeOwnership-Transfers": {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Committed result */
+            200: {
+                headers: {
+                    /** @description Version of returned resource when applicable */
+                    ETag?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OwnershipTransferListResult"];
+                };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unauthenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Not found or hidden by scope */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

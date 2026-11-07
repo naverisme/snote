@@ -46,12 +46,16 @@ assert accepts("FolderInput", {"name":"Nguồn"})
 assert not accepts("FolderInput", {"id":"f1"})
 assert accepts("Workspace", {"id":"w1", "name":"Nhóm thử", "kind":"independent", "status":"active", "timeZone":"Asia/Bangkok", "version":1})
 assert not accepts("Workspace", {"id":"w1", "kind":"independent", "status":"active", "timeZone":"Asia/Bangkok", "version":1})
-for method, route in (("patch", "/me/usages"), ("patch", "/classes/{classId}/policy"), ("patch", "/groups/{groupId}/leader"), ("patch", "/classes/{classId}/members/{membershipId}/role")):
+for method, route in (("patch", "/me/usages"), ("patch", "/classes/{classId}/policy"), ("patch", "/groups/{groupId}/leader"), ("patch", "/classes/{classId}/members/{membershipId}/role"), ("post", "/ownership-transfers/{transferId}/accept")):
     op = doc["paths"][route][method]
     assert "412" in op["responses"], (method, route)
     assert any(p["name"] == "If-Match" and p["in"] == "header" and p["required"] for p in op.get("parameters", [])), (method, route)
 assert accepts("ClassRoleChange", {"role":"monitor"})
 assert not accepts("ClassRoleChange", {"role":"leader"})
+assert accepts("OwnershipTransfer", {"id":"t1", "targetType":"class", "targetId":"c1", "initiatorId":"a1", "recipientId":"a2", "status":"pending", "version":1})
+assert not accepts("OwnershipTransfer", {"id":"t1", "targetType":"other", "targetId":"c1", "initiatorId":"a1", "recipientId":"a2", "status":"pending", "version":1})
+for route in ("/classes/{classId}/ownership-transfers", "/workspaces/{workspaceId}/ownership-transfers", "/ownership-transfers/{transferId}/accept"):
+    assert doc["paths"][route]["post"]["responses"]["200"]["content"]["application/json"]["schema"]["$ref"].endswith("/OwnershipTransferResult"), route
 assert accepts("EventInput", {"title":"Thi", "scope":{"type":"class","id":"c1"}, "allDay":{"startDate":"2026-11-10","endDateExclusive":"2026-11-11","timeZone":"Asia/Ho_Chi_Minh"}})
 assert not accepts("EventInput", {"title":"Thi", "scope":{"type":"class","id":"c1"}, "allDay":{"startDate":"2026-11-10","endDateExclusive":"2026-11-11","timeZone":"Asia/Ho_Chi_Minh"}, "timed":{"startsAt":"2026-11-10T10:00:00Z","endsAt":"2026-11-10T11:00:00Z"}})
 import json

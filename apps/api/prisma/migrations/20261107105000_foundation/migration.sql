@@ -143,6 +143,7 @@ CREATE TABLE "TransferRequest" (
     "initiatorId" UUID NOT NULL,
     "recipientId" UUID NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'pending',
+    "version" INTEGER NOT NULL DEFAULT 1,
     "acceptedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -535,6 +536,7 @@ CREATE UNIQUE INDEX "Grant_active_unique" ON "Grant" ("principalId", "scopeType"
 ALTER TABLE "Workspace" ADD CONSTRAINT "Workspace_kind_scope_check" CHECK (("kind" = 'class_group' AND "classId" IS NOT NULL) OR ("kind" IN ('default','independent') AND "classId" IS NULL));
 ALTER TABLE "Class" ADD CONSTRAINT "Class_group_limit_check" CHECK ("groupLimit" > 0);
 ALTER TABLE "ClassMembership" ADD CONSTRAINT "ClassMembership_role_check" CHECK ("role" IN ('member','monitor'));
+ALTER TABLE "TransferRequest" ADD CONSTRAINT "TransferRequest_target_check" CHECK ("targetType" IN ('class','workspace'));
 ALTER TABLE "Event" ADD CONSTRAINT "Event_time_shape_check" CHECK (("kind" = 'timed' AND "timedStart" IS NOT NULL AND "timedEnd" > "timedStart" AND "allDayStart" IS NULL AND "allDayEndExclusive" IS NULL) OR ("kind" = 'all_day' AND "allDayStart" IS NOT NULL AND "allDayEndExclusive" > "allDayStart" AND "timedStart" IS NULL AND "timedEnd" IS NULL));
 ALTER TABLE "PrivateWorkSession" ADD CONSTRAINT "WorkSession_time_check" CHECK ("endAt" > "startAt");
 ALTER TABLE "Blob" ADD CONSTRAINT "Blob_size_check" CHECK ("size" > 0);
