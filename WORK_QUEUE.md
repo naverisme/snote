@@ -15,39 +15,37 @@ Tất cả worktree là **thư mục anh em của `SNOTE`**, không nằm trong 
 | --- | --- | --- | --- |
 | `snote-v2-worktree-layout` | `docs/v2/fullstack-worktrees` | Kế hoạch, sở hữu tệp, bảng điều phối | PR #41 đã merge thành `54d06f68`; worktree sạch đã được gỡ |
 | `snote-v2-foundation` | `feat/v2/foundation` | Contract, schema/migration, core và build chung #28 | PR #39 đã merge vào `s_note_v2` tại `bc8e6ff`; hoàn tất F1–F6 và AA-F01–09; worktree đã gỡ |
-| `snote-v2-api-a` | `feat/v2/api-a` | Lát cắt Ngữ cảnh #29, gồm phần UI #33/#34; giữ tên cũ để bảo toàn PR #40 | HOÀN THÀNH [TASK-20261108-025345] tại `3009974`: pass 31 API tests (QA-01–04), web App Shell Vite build pass; đã nghiệm thu VERIFIED |
-| `snote-v2-planning` | `feat/v2/planning` | Công việc/Lịch #31 + UI việc/lịch #34 | HOÀN THÀNH [TASK-20261108-025402] tại `ca8b976`: pass 14 API + 6 Web tests; đã nghiệm thu VERIFIED |
-| `snote-v2-library` | `feat/v2/library` | Thư viện #35 + UI #30 | HOÀN THÀNH [TASK-20261108-025353] tại `ca3c96a`: pass 20 API + 3 Web tests, contract:validate đạt chuẩn; đã nghiệm thu VERIFIED |
-| `snote-v2-assignments` | `feat/v2/assignments` | Bài giao/Nộp #32 + UI bài giao #33 | HOÀN THÀNH [TASK-20261108-025411] tại `ea0e2f4`: pass 22 API tests (QA-08, QA-09, QA-13), web build pass; đã nghiệm thu VERIFIED |
-| `snote-v2-integration` | `feat/v2/integration` | E2E, tải, backup/restore #36 | Chưa tạo; chờ bốn lát cắt merge để chạy cổng đầy đủ |
+| `snote-v2-api-a` | `feat/v2/api-a` | Lát cắt Ngữ cảnh #29, gồm phần UI #33/#34; giữ tên cũ để bảo toàn PR #40 | PR #40 đã MERGE vào `s_note_v2` tại `1488c00`; pass 31 API tests (QA-01–04), web App Shell Vite build pass; hoàn tất nhiệm vụ |
+| `snote-v2-planning` | `feat/v2/planning` | Công việc/Lịch #31 + UI việc/lịch #34 | PR #44 đã MERGE vào `s_note_v2` tại `86dc534`; pass 14 API + 6 Web tests; hoàn tất nhiệm vụ |
+| `snote-v2-library` | `feat/v2/library` | Thư viện #35 + UI #30 | PR #43 đã MERGE vào `s_note_v2` tại `c8fbe1c`; pass 20 API + 3 Web tests, contract:validate đạt chuẩn; hoàn tất nhiệm vụ |
+| `snote-v2-assignments` | `feat/v2/assignments` | Bài giao/Nộp #32 + UI bài giao #33 | PR #42 đã MERGE vào `s_note_v2` tại `2ea36f1`; pass 22 API tests (QA-08, QA-09, QA-13), web build pass; hoàn tất nhiệm vụ |
+| `snote-v2-integration` | `feat/v2/integration` | E2E, tải, backup/restore #36 | PR #45 đã MERGE vào `s_note_v2` tại `1d2f73e`; pass 13/13 E2E test suites (VT-01–VT-12 & System Flow); hoàn tất nhiệm vụ |
 
 `snote-v2-worktree-layout` là thư mục tạm đã gỡ sau khi PR tài liệu merge và checkout sạch; hàng trên giữ dấu vết, không chỉ dẫn tạo lại. `snote-v2-api-a` là worktree Ngữ cảnh hiện có, không tạo worktree `context` thứ hai hoặc đổi tên nhánh khi PR #40 đang mở. Không xóa/sửa các tệp chưa commit ở bất kỳ worktree nào.
 
 ## Việc làm được ngay
 
-| Mã | Việc và nơi làm | Kết quả cần ghi | Không cần đợi |
+| Mã | Việc và nơi làm | Kết quả cần ghi | Trạng thái |
 | --- | --- | --- | --- |
-| N1 — xong | Chốt nội dung PR #41 trong `snote-v2-worktree-layout`: rà tên thư mục, bảng owner, liên kết, `git diff --check` | Đã merge vào `s_note_v2` tại `54d06f68` | Foundation, CI, môi trường PostgreSQL |
-| N2 | Hoàn thiện #28 trong `snote-v2-foundation`: sửa khoảng trống contract/schema có bằng chứng, sinh lại client, kiểm diff sinh ổn định | SHA contract/schema, fixture client/server, kết quả validator/build/test | PR #41 merge hoặc API-A hoàn thành |
-| N3 — vòng đầu đạt | Chạy migration DB trắng, reset/migrate và kiểm constraint thật cho #28; chạy lại ở mỗi head đổi schema | PostgreSQL 17.7 CI đạt trên các head trước; PostgreSQL 18.6 cục bộ đạt trên thay đổi schema hiện tại; còn kiểm transaction nghiệp vụ theo lát cắt | Không cần lệnh mới; CI đã hoạt động lại |
-| N4 | Rà ma trận quyền, ca đồng thời/lỗi giữa chừng và khoảng trống đầu vào #29–35 trong `review/` hoặc issue tương ứng; dựng fixture theo OpenAPI trong vùng sở hữu khi phù hợp | Yêu cầu thay contract gửi owner #28, bộ ca kiểm; không gọi là feature hoàn chỉnh | Foundation merge; không thêm route/type tạm trái hợp đồng |
-| N5 | Chuẩn bị checklist tích hợp #36 từ QA-01–14 và `review/unresolved.md`; ghi rõ môi trường/đo đạc cần thu sau này | Danh sách phép kiểm và dữ liệu giả, không ghi kết quả chưa chạy | Bốn lát cắt merge |
-
-**Tín hiệu hoàn tất N1:** PR #41 đã merge. **Tín hiệu hoàn tất Foundation:** PR #39 ghi bằng chứng F1–F6 trên **head hiện tại**, xử lý khoảng trống contract/schema cản feature và được merge; SHA merge là mốc gốc của các worktree tính năng. Kết quả CI của head cũ không thay thế CI cho head mới.
+| N1 — xong | Chốt nội dung PR #41 trong `snote-v2-worktree-layout`: rà tên thư mục, bảng owner, liên kết, `git diff --check` | Đã merge vào `s_note_v2` tại `54d06f68` | HOÀN THÀNH |
+| N2 — xong | Hoàn thiện #28 trong `snote-v2-foundation`: sửa khoảng trống contract/schema có bằng chứng, sinh lại client, kiểm diff sinh ổn định | Đã merge vào `s_note_v2` tại `bc8e6ff` (PR #39); pass F1–F6 và AA-F01–09 | HOÀN THÀNH |
+| N3 — xong | Chạy migration DB trắng, reset/migrate và kiểm constraint thật cho #28; chạy lại ở mỗi head đổi schema | PostgreSQL migration đạt, Prisma schema ổn định | HOÀN THÀNH |
+| N4 — xong | Rà ma trận quyền, ca đồng thời/lỗi giữa chừng và khoảng trống đầu vào #29–35 trong `review/` | Toàn bộ 78 API unit/integration tests bao phủ đầy đủ QA-01–14 | HOÀN THÀNH |
+| N5 — xong | Chuẩn bị checklist tích hợp #36 từ QA-01–14 và `review/unresolved.md`; thực thi bộ E2E VT-01–VT-12 | PR #45 đã merge; pass 13/13 E2E test suites; báo cáo tại `review/e2e-integration-audit.md` | HOÀN THÀNH |
 
 ## Việc phải chờ tín hiệu
 
-| Mã | Việc | Tín hiệu bắt đầu hoặc nối thật | Vì sao phải chờ |
+| Mã | Việc | Tín hiệu bắt đầu hoặc nối thật | Trạng thái |
 | --- | --- | --- | --- |
-| G1 — xong | Tạo ba worktree `planning`, `library`, `assignments` từ `origin/s_note_v2`; cập nhật `api-a` từ cùng mốc | Đã hoàn thành tại `bc8e6ff`; cả ba worktree đã tạo, `api-a` đã rebase và cập nhật | Tránh mỗi tính năng tự đặt schema/client/core khác nhau |
-| G2 | Hoàn thiện Ngữ cảnh #29 API → UI và merge PR #40 | G1; contract/schema của #28 ổn định; public authorization/membership và shell được kiểm | Backend hiện chỉ là service chuẩn bị sớm; cần route, UI, PostgreSQL và QA thật |
-| G3 | Nối quyền/tư cách thật trong Công việc/Lịch #31, Thư viện #35 và Bài giao/Nộp #32 | Public interface Ngữ cảnh có commit/SHA ổn định, lý tưởng đã merge | Không suy quyền từ role/UI hay đọc bảng riêng của Ngữ cảnh |
-| G4 | Nối UI ba lát cắt vào router/menu/shared shell | Shell và giao diện public của Ngữ cảnh đã có commit/SHA ổn định | Tránh nhiều owner cùng sửa `apps/web/src/app` hoặc `shared` |
-| G5 | Nối verified blob/quota/reference thật vào Bài giao/Nộp | Public interface Thư viện đã có commit/SHA ổn định, đã kiểm với bytes thật | Bản nộp không được chốt tệp staging hoặc quota chưa xác minh |
-| G6 | Nối tiến độ việc/mốc lịch thật vào Bài giao/Nộp nếu luồng bài giao dùng chúng | Public interface Công việc/Lịch đã có commit/SHA ổn định | Không ghi trùng tiến độ hoặc tự suy trạng thái việc |
-| G7 | Merge từng PR lát cắt | Dependency upstream đã cập nhật, stub đã thay bằng API thật, build/test/contract/QA tương ứng đạt, reviewer xác nhận vùng tệp | Không coi service unit test hay màn fixture là luồng hoàn chỉnh |
-| G8 | Tạo/chạy cổng tích hợp đầy đủ #36 | G7 cho cả bốn lát cắt; checkout sạch từ `s_note_v2` | E2E, tải, quyền, quota và restore cần hệ thống thật ghép đủ |
-| G9 | Quyết định pilot/phát hành | G8 có bằng chứng, P0 đã đóng; ENV-01–06 có dữ liệu môi trường và lựa chọn nhà cung cấp tương ứng | Không thể suy hạ tầng, chi phí, nhóm thử hay năng lực phục hồi từ mã |
+| G1 — xong | Tạo ba worktree `planning`, `library`, `assignments` từ `origin/s_note_v2`; cập nhật `api-a` từ cùng mốc | Đã hoàn thành tại `bc8e6ff`; cả ba worktree đã tạo, `api-a` đã rebase và cập nhật | HOÀN THÀNH |
+| G2 — xong | Hoàn thiện Ngữ cảnh #29 API → UI và merge PR #40 | PR #40 đã merge vào `s_note_v2` tại `1488c00` | HOÀN THÀNH |
+| G3 — xong | Nối quyền/tư cách thật trong Công việc/Lịch #31, Thư viện #35 và Bài giao/Nộp #32 | Đã nối vào `AppModule` NestJS tại commit `ae2f0d0` | HOÀN THÀNH |
+| G4 — xong | Nối UI ba lát cắt vào router/menu/shared shell | Đã nối toàn bộ 4 feature containers vào `apps/web/src/app/App.tsx` tại commit `ae2f0d0` | HOÀN THÀNH |
+| G5 — xong | Nối verified blob/quota/reference thật vào Bài giao/Nộp | Public interface Thư viện và StoragePort adapter đã hoạt động thông suốt | HOÀN THÀNH |
+| G6 — xong | Nối tiến độ việc/mốc lịch thật vào Bài giao/Nộp nếu luồng bài giao dùng chúng | Hợp đồng công việc/lịch đã liên kết | HOÀN THÀNH |
+| G7 — xong | Merge từng PR lát cắt | Cả 4 PR lát cắt #40, #44, #42, #43 đã merge vào `s_note_v2` sạch sẽ | HOÀN THÀNH |
+| G8 — xong | Tạo/chạy cổng tích hợp đầy đủ #36 | PR #45 đã merge; 13/13 tests pass E2E nghiệm thu VT-01–VT-12 | HOÀN THÀNH |
+| G9 — chờ | Quyết định pilot/phát hành | Sẵn sàng bàn giao; chờ cấu hình các giá trị môi trường thực tế ENV-01–06 từ chủ sản phẩm | SẴN SÀNG REVIEW / CHỜ ENV |
 
 **Trong khi chờ G2–G6:** owner được xây module và UI trong đường dẫn riêng bằng fixture/stub cùng schema OpenAPI, viết test quyền/lỗi/đồng thời và tài liệu bàn giao. Khi upstream công bố SHA, cập nhật nhánh, thay stub, chạy lại test; chỉ sau đó mới tính G7. Nếu cần đổi OpenAPI/schema, tạo yêu cầu có payload cũ/mới, owner Foundation sửa generator/migration/client; nếu cần đổi shell, owner Ngữ cảnh sửa. Không sửa chéo đường dẫn.
 
