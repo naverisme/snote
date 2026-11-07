@@ -100,3 +100,49 @@
 - **Ky duyet hoan thanh:**
   - [x] **RESOLVED by Implementer** (Commit SHA: 3009974969a81a32034d7677705873c4aa4565a6, Triển khai đầy đủ NestJS controllers/modules Ngữ cảnh (identity, classes, workspaces, authorization), App Shell, Auth flow, Class/Workspace switcher, bảng Thành viên và Nhóm trên apps/web; kiểm chứng đạt toàn bộ 31 test suites gồm QA-01 đến QA-04 và contract validation.)
   - [x] **VERIFIED by Requester** (Pass Test: Resolved with main task, verified at 2026-11-08 03:52:31)
+
+
+### [TASK-20261108-034631] Da mo Pull Request #42 (feat/v2/assignments -> s_note_v2) tich hop lat cat Bai giao va Nop (#32 + UI #33). San sang cho review va merge.
+- **Ben yeu cau:** feat/v2/assignments -> **Ben thuc thi:** s_note_v2 (2026-11-08 03:46:31)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **RESOLVED by Implementer** (Commit SHA: 3a21689, PR #42 ghi nhan)
+  - [x] **VERIFIED by Requester** (Pass Test: PR #42 ghi nhan san sang merge, verified at 2026-11-08 03:55:22)
+
+---
+
+
+### [TASK-20261108-035028] Nhanh feat/v2/api-a da san sang sau freeze/resume. TASK-20261108-025345 da hoan thanh tai SHA 3009974969a81a32034d7677705873c4aa4565a6, da push len origin, test pass 31/31 va build thanh cong. Cho verify tu Bo chi huy.
+- **Ben yeu cau:** feat/v2/api-a -> **Ben thuc thi:** s_note_v2 (2026-11-08 03:50:28)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **RESOLVED by Implementer** (Commit SHA: 3a21689, PR #42 ghi nhan)
+  - [x] **VERIFIED by Requester** (Pass Test: Api-a verify hoan tat, verified at 2026-11-08 03:55:22)
+
+---
+
+
+### [TASK-20261108-035222] Da mo Pull Request #43 (feat/v2/library -> s_note_v2) kem 23/23 tests pass va bang chung nghiem thu day du: https://github.com/naverisme/snote/pull/43
+- **Ben yeu cau:** feat/v2/library -> **Ben thuc thi:** s_note_v2 (2026-11-08 03:52:22)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **RESOLVED by Implementer** (Commit SHA: 3a21689, PR #42 ghi nhan)
+  - [x] **VERIFIED by Requester** (Pass Test: PR #43 ghi nhan san sang merge, verified at 2026-11-08 03:55:22)
+
+---
+
+
+### [TASK-20261108-035338] Da mo lai Pull Request #40 (chuyen tu DRAFT sang OPEN): feat(v2): implement Context slice from API to UI (#29) kem day du bang chung kiem thu (31/31 specs pass, build apps/api va apps/web pass, contract validation pass). San sang cho review va merge vao s_note_v2: https://github.com/naverisme/snote/pull/40
+- **Ben yeu cau:** feat/v2/api-a -> **Ben thuc thi:** s_note_v2 (2026-11-08 03:53:38)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **RESOLVED by Implementer** (Commit SHA: 3a21689, PR #42 ghi nhan)
+  - [x] **VERIFIED by Requester** (Pass Test: PR #40 ghi nhan san sang merge, verified at 2026-11-08 03:55:23)
+
+
+### [TASK-20261108-035409] Nghiem thu da xong. Hay day nhanh len origin: 'git push -u origin feat/v2/planning' va mo Pull Request vao s_note_v2 (hoac thong bao URL PR) nhe!
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/planning (2026-11-08 03:54:09)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **RESOLVED by Implementer** (Commit SHA: f22b678, PR #44 da mo)
+  - [x] **VERIFIED by Requester** (Pass Test: Pass, PR #44 ready, verified at 2026-11-08 03:56:44)
