@@ -64,6 +64,9 @@ actions=["class.manage","class.role_change","group.create","group.approve","memb
          "library.delete","folder.manage","assignment.create","assignment.edit","progress.update",
          "submission.send","submission.feedback"]
 S["Action"]={"type":"string","enum":actions}
+S["CommandAcknowledgement"] = obj({"accepted": {"type":"boolean"}}, ("accepted",))
+S["CommandResult"] = obj({"data":ref("CommandAcknowledgement"),"requestId":ID}, ("data","requestId"))
+S["PolicyResult"] = obj({"data":ref("Policy"),"requestId":ID}, ("data","requestId"))
 S["GrantInput"]["properties"]["action"]=ref("Action")
 S["Policy"]["properties"]["roleActions"]["additionalProperties"] = arr(ref("Action"))
 
@@ -202,7 +205,7 @@ def operation(method, path, request, response, family):
     special={"/classes/{classId}/members":"MembershipListResult",
              "/classes/{classId}/groups":"WorkspaceListResult",
              "/classes/{classId}/groups#post":"WorkspaceResult",
-             "/classes/{classId}/policy":"Result",
+             "/classes/{classId}/policy":"PolicyResult",
              "/assignments/{assignmentId}/recipients":"RecipientListResult",
              "/assignment-recipients/{recipientId}/updates":"RecipientResult",
              "/me/work-sessions":"WorksessionListResult",
@@ -210,12 +213,19 @@ def operation(method, path, request, response, family):
              "/library/items/{itemId}/download":"DownloadResult"}
     if path=="/tasks/bulk-actions": typed="TaskListResult"
     typed=special.get(path+"#"+method,special.get(path,typed))
+    if typed == "Result": typed = "CommandResult"
+    if typed == "ListResult": raise ValueError(f"Unresolved list response: {method} {path}")
     if path.startswith("/me/work-sessions/") or (path=="/me/work-sessions" and method=="post"):
         typed="WorksessionResult"
     if path.startswith("/folders/") or (path=="/workspaces/{workspaceId}/folders" and method=="post"):
         typed="FolderResult"
     op={"operationId":family+method.title()+"".join(x.strip("{}").title() for x in path.split("/") if x),
         "tags":[family],"responses":{"200":{"description":"Committed result", "content":{"application/json":{"schema":ref(typed)}}}}}
+    if method in ("get", "patch", "put", "post"):
+        op["responses"]["200"]["headers"]={"ETag":{"description":"Version of returned resource when applicable", "schema":STR}}
+    for status, description in (("400","Invalid input"),("401","Unauthenticated"),("403","Forbidden"),("404","Not found or hidden by scope"),("429","Rate limited"),("503","Retryable service failure")):
+        op["responses"][status]={"description":description,"content":{"application/json":{"schema":ref("Error")}}}
+    op["responses"]["429"]["headers"]={"Retry-After":{"schema":STR}}
     if params:op["parameters"]=params
     if method=="get" and response=="ListResult":
         op.setdefault("parameters",[]).extend([{"name":"cursor","in":"query","schema":STR},{"name":"limit","in":"query","schema":{"type":"integer","minimum":1,"maximum":100}}])
