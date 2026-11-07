@@ -1,5 +1,7 @@
 # Báo cáo Kiểm định Tích hợp Toàn hệ thống — Issue #36
 
+> **Đính chính 2026-11-08:** [Rà lại cổng #36](integration-gate-reassessment.md) cho thấy 13 bài kiểm trong báo cáo này gọi service với `TestDb`/mock Prisma. Kết quả pass của chúng vẫn có giá trị trong phạm vi đó; kết luận “cổng #36 đạt” bên dưới chưa được chứng minh cho HTTP, PostgreSQL, giao diện, tải và phục hồi metadata + bytes. Giữ phần còn lại làm hồ sơ lịch sử PR #45.
+
 | Thuộc tính | Giá trị |
 | --- | --- |
 | Ngày thực hiện | 2026-11-08 |
