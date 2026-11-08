@@ -73,7 +73,7 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
   };
 
   return (
-    <aside className="folder-tree w-64 bg-gray-50 border-r border-gray-200 p-4 flex flex-col gap-3" aria-label="Danh mục thư mục">
+    <aside className="folder-tree w-64 bg-gray-50 border-r border-gray-200 p-3 flex flex-col gap-3" aria-label="Danh mục thư mục">
       <div className="flex justify-between items-center pb-2 border-b border-gray-200">
         <h2 className="font-semibold text-gray-700 text-sm uppercase tracking-wider">Thư mục</h2>
         <button
@@ -163,7 +163,11 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
           }`}
           onClick={() => onSelectFolder(null)}
         >
-          <Folder size={16} className="text-blue-600 flex-shrink-0" aria-hidden="true" />
+          {selectedFolderId === null ? (
+            <FolderOpen size={16} className="text-blue-600 flex-shrink-0" aria-hidden="true" />
+          ) : (
+            <Folder size={16} className="text-blue-600 flex-shrink-0" aria-hidden="true" />
+          )}
           <span>Tất cả tài liệu</span>
         </button>
 
@@ -187,10 +191,16 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
                   {folder.parentId ? (
                     <>
                       <CornerDownRight size={13} />
-                      <Folder size={15} className="text-amber-500" />
+                      {isSelected ? (
+                        <FolderOpen size={15} className="text-amber-500" />
+                      ) : (
+                        <Folder size={15} className="text-amber-500" />
+                      )}
                     </>
-                  ) : (
+                  ) : isSelected ? (
                     <FolderOpen size={16} className="text-amber-500" />
+                  ) : (
+                    <Folder size={16} className="text-amber-500" />
                   )}
                 </span>
                 <span className="truncate">{folder.name}</span>
