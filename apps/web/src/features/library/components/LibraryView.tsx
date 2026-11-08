@@ -33,6 +33,8 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
   const [trashItems, setTrashItems] = useState<ItemDetail[]>([]);
   const [quota, setQuota] = useState<QuotaInfo | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [quotaError, setQuotaError] = useState(false);
+  const [loadError, setLoadError] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Modals state
@@ -46,20 +48,21 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
   // Load workspace data
   const loadData = useCallback(async () => {
     setLoading(true);
+    setLoadError(false);
+    setQuotaError(false);
+    setQuota(null);
+    setFolders([]);
+    setItems([]);
+    setTrashItems([]);
     try {
       // 1. Quota
       try {
         const quotaData = await libraryApi.getWorkspaceQuota(workspaceId, reqOpts);
         setQuota(quotaData);
+        setQuotaError(false);
       } catch {
-        // Fallback default quota info
-        setQuota({
-          usedBytes: 0,
-          totalBytes: 1024 * 1024 * 1024,
-          remainingBytes: 1024 * 1024 * 1024,
-          warning: false,
-          itemCount: 0,
-        });
+        setQuota(null);
+        setQuotaError(true);
       }
 
       // 2. Folders
@@ -101,6 +104,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
       setTrashItems(detailedTrash);
     } catch (err) {
       console.error('Failed to load library data', err);
+      setLoadError(true);
     } finally {
       setLoading(false);
     }
@@ -324,8 +328,14 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
 
       {/* Quota Bar Banner */}
       <div className="px-6 py-3 bg-gray-50 border-b border-gray-200">
-        <QuotaBar quota={quota} loading={loading} />
+        <QuotaBar quota={quota} loading={loading} error={quotaError} onRetry={() => void loadData()} />
       </div>
+      {loadError && (
+        <div role="alert" className="mx-6 mt-4 px-4 py-3 rounded-lg border border-red-200 bg-red-50 text-red-800 text-sm flex items-center justify-between gap-3">
+          <span>Không thể tải tài liệu trong workspace này.</span>
+          <button type="button" onClick={() => void loadData()} className="border border-red-300 rounded px-3 py-1.5 font-semibold">Thử lại</button>
+        </div>
+      )}
 
       {/* Navigation Tabs */}
       <div className="bg-white border-b border-gray-200 px-6 flex justify-between items-center">

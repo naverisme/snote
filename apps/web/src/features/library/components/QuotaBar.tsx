@@ -6,10 +6,12 @@ import { formatBytes } from '../utils';
 export interface QuotaBarProps {
   quota: QuotaInfo | null;
   loading?: boolean;
+  error?: boolean;
+  onRetry?: () => void;
 }
 
-export const QuotaBar: React.FC<QuotaBarProps> = ({ quota, loading }) => {
-  if (loading || !quota) {
+export const QuotaBar: React.FC<QuotaBarProps> = ({ quota, loading, error, onRetry }) => {
+  if (loading) {
     return (
       <div className="quota-bar-skeleton p-3 bg-gray-50 rounded-lg border border-gray-200 animate-pulse" aria-busy="true">
         <div className="h-3.5 bg-gray-200 rounded w-1/3 mb-2" />
@@ -17,8 +19,16 @@ export const QuotaBar: React.FC<QuotaBarProps> = ({ quota, loading }) => {
       </div>
     );
   }
+  if (error || !quota) {
+    return (
+      <div role="status" className="p-3 bg-white rounded-lg border border-gray-200 text-sm text-gray-700 flex items-center justify-between gap-3">
+        <span>Chưa tải được dung lượng lưu trữ.</span>
+        {onRetry && <button type="button" onClick={onRetry} className="border border-gray-300 rounded px-3 py-1.5 font-semibold">Thử lại</button>}
+      </div>
+    );
+  }
 
-  const percent = Math.min(100, Math.round((quota.usedBytes / quota.totalBytes) * 100));
+  const percent = quota.totalBytes > 0 ? Math.min(100, Math.round((quota.usedBytes / quota.totalBytes) * 100)) : 0;
 
   return (
     <div
