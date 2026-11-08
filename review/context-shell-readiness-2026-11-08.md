@@ -6,13 +6,15 @@
 | SHA kiểm | `023b80c3c3ffe2bda0f41445cff578f94799bd49` trên `feat/v2/ui-review` |
 | Phạm vi | Chỉ đọc API Ngữ cảnh và web shell/lớp/workspace; không sửa UI, schema hay OpenAPI |
 | Nguồn | [Kế hoạch kiểm duyệt](../../SNOTE/review/system-redesign-readiness.md) ở worktree chính v2; [quy tắc lớp](../docs/requirements/class-membership.md), [quyền](../docs/requirements/permissions.md), [điều hướng](../docs/ux/validated-navigation.md), [Q33-C](../docs/ux/class-navigation.md), [chuyển động](../docs/ux/ui-and-motion.md), [QA](../docs/quality/README.md), [OpenAPI](../docs/contracts/openapi.yaml); SRC-26/27 ở [provenance](provenance.md) |
-| Giới hạn | Kiểm mã nguồn và build tại SHA trên. Chưa chạy HTTP + PostgreSQL, browser desktop/mobile, thiết bị cảm ứng hoặc đo tương phản render. Phát hiện tĩnh là rủi ro có căn cứ, chưa thay kết quả E2E. |
+| Giới hạn | Kiểm mã nguồn và build tại SHA trên; sau resolve chạy thêm suite E2E có một số ca HTTP + PostgreSQL. Chưa chạy riêng các kịch bản refresh CSRF, thu hồi quyền giữa request, browser desktop/mobile, thiết bị cảm ứng hoặc đo tương phản render. Phát hiện tĩnh vẫn cần kiểm lại trên luồng thật. |
 
 ## Kết quả và đường kiểm
 
-`git status --short --branch` sạch trước báo cáo; `git log -1` là SHA trên. `npm run build --workspace @snote/web` và `npm run build --workspace @snote/api` đều **đạt**. Detector `.agents/skills/impeccable/scripts/bin/windows-x64/impeccable.exe detect apps/web/src` quét 60 tệp và không báo lỗi regex; chính công cụ lưu ý các phép kiểm cần DOM render chưa chạy. Những ca QA-01–04/13 và refresh/revoke **chưa kiểm thực nghiệm** trên HTTP/DB. Build pass không chứng minh quyền hoặc vòng đời phiên.
+`git status --short --branch` sạch trước báo cáo; `git log -1` là SHA trên. `npm run build --workspace @snote/web` và `npm run build --workspace @snote/api` đều **đạt**. Detector `.agents/skills/impeccable/scripts/bin/windows-x64/impeccable.exe detect apps/web/src` quét 60 tệp và không báo lỗi regex; chính công cụ lưu ý các phép kiểm cần DOM render chưa chạy. Build pass không chứng minh quyền hoặc vòng đời phiên.
 
-`node --test` trên năm suite `qa-context`, `classes/admission`, `authorization/policy`, `workspaces/group-lifecycle`, `identity/account-service` **đạt 27/27**. Đây là unit/simulation; chưa chạy request HTTP qua cookie, PostgreSQL và UI thật, nên các phát hiện CTX-01–08 vẫn cần phép kiểm trong bảng dưới.
+`node --test` trên năm suite `qa-context`, `classes/admission`, `authorization/policy`, `workspaces/group-lifecycle`, `identity/account-service` **đạt 27/27**. Bộ này là unit/simulation, không bao gồm request HTTP qua cookie, PostgreSQL hay UI thật, nên các phát hiện CTX-01–08 vẫn cần phép kiểm trong bảng dưới.
+
+**Bổ sung sau resolve:** `npm run contract:validate` đạt (86 paths, 106 operations, 973 refs); `npm test --workspace @snote/api` đạt 3/3 core; toàn bộ suite module đã build đạt 92/92; `npm run test:e2e` đạt 42/42. Suite E2E pha trộn mô phỏng với các ca HTTP qua server và PostgreSQL (`tests/e2e/http-smoke.spec.mjs`, `qa-real-flow.spec.mjs`); kết quả không phủ đúng các tình huống CTX-01–08 hoặc browser tương tác thật. Không dùng nhãn E2E để nâng những chỗ đó lên `đạt`.
 
 ## Phát hiện ưu tiên
 
