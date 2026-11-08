@@ -106,17 +106,18 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
         {error && <div style={{ color: 'var(--danger)', marginBottom: 12, fontSize: '0.875rem' }}>{error}</div>}
         {info && <div style={{ color: 'var(--success)', marginBottom: 12, fontSize: '0.875rem' }}>{info}</div>}
 
-        {tab === 'login' && (
+        {import.meta.env.DEV && tab === 'login' && import.meta.env.VITE_DEMO_PASSWORD && (
           <div style={{ marginBottom: 16, padding: '12px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
             <span style={{ fontSize: '12px', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '8px' }}>
-              ⚡ Trải nghiệm nhanh 1 chạm:
+              Trải nghiệm tài khoản mẫu:
             </span>
             <div style={{ display: 'flex', gap: '8px' }}>
               <button
                 type="button"
                 className="btn btn-secondary btn-sm"
                 style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
-                onClick={() => handleQuickLogin('student.demo@snote.edu.vn', 'DemoPassword123@')}
+                onClick={() => handleQuickLogin(import.meta.env.VITE_DEMO_STUDENT_EMAIL || '', import.meta.env.VITE_DEMO_PASSWORD)}
+                disabled={!import.meta.env.VITE_DEMO_STUDENT_EMAIL || loading}
               >
                 <User size={13} />
                 <span>Học sinh Demo</span>
@@ -125,7 +126,8 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
                 type="button"
                 className="btn btn-secondary btn-sm"
                 style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
-                onClick={() => handleQuickLogin('teacher.demo@snote.edu.vn', 'DemoPassword123@')}
+                onClick={() => handleQuickLogin(import.meta.env.VITE_DEMO_TEACHER_EMAIL || '', import.meta.env.VITE_DEMO_PASSWORD)}
+                disabled={!import.meta.env.VITE_DEMO_TEACHER_EMAIL || loading}
               >
                 <GraduationCap size={13} />
                 <span>Giáo viên Demo</span>
@@ -137,8 +139,9 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
         <form onSubmit={handleSubmit}>
           {tab !== 'reset' && (
             <div className="form-group">
-              <label className="form-label">Email</label>
+              <label className="form-label" htmlFor="auth-email">Email</label>
               <input
+                id="auth-email"
                 className="form-input"
                 type="email"
                 required
@@ -151,8 +154,9 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
 
           {(tab === 'login' || tab === 'register') && (
             <div className="form-group">
-              <label className="form-label">Mật khẩu {tab === 'register' && '(tối thiểu 12 ký tự)'}</label>
+              <label className="form-label" htmlFor="auth-password">Mật khẩu {tab === 'register' && '(tối thiểu 12 ký tự)'}</label>
               <input
+                id="auth-password"
                 className="form-input"
                 type="password"
                 required
@@ -196,8 +200,9 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
               </div>
 
               <div className="form-group">
-                <label className="form-label">Múi giờ</label>
+                <label className="form-label" htmlFor="auth-timezone">Múi giờ</label>
                 <input
+                  id="auth-timezone"
                   className="form-input"
                   type="text"
                   required
@@ -211,8 +216,9 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
           {tab === 'reset' && (
             <>
               <div className="form-group">
-                <label className="form-label">Mã Token đặt lại</label>
+                <label className="form-label" htmlFor="auth-reset-token">Mã Token đặt lại</label>
                 <input
+                  id="auth-reset-token"
                   className="form-input"
                   type="text"
                   required
@@ -222,8 +228,9 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
                 />
               </div>
               <div className="form-group">
-                <label className="form-label">Mật khẩu mới (tối thiểu 12 ký tự)</label>
+                <label className="form-label" htmlFor="auth-new-password">Mật khẩu mới (tối thiểu 12 ký tự)</label>
                 <input
+                  id="auth-new-password"
                   className="form-input"
                   type="password"
                   required

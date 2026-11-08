@@ -10,12 +10,11 @@ import {
   ClipboardList,
   Settings,
   Mail,
-  Pin,
-  Clock,
-  CalendarDays,
   GraduationCap,
   ArrowRight,
   Sparkles,
+  Menu,
+  X,
 } from 'lucide-react';
 import type { Account, Class, Workspace } from '../shared/types';
 import { getMe, listClasses, listWorkspaces, getMyInvitations, login } from '../shared/api';
@@ -50,6 +49,7 @@ export function App() {
   // Modals
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   // Load current session
   const checkSession = async () => {
@@ -110,11 +110,13 @@ export function App() {
   const handleSelectWorkspace = (ws: Workspace) => {
     setContext({ type: 'workspace', workspaceId: ws.id });
     setWorkspaceTab('tasks');
+    setMobileNavOpen(false);
   };
 
   const handleSelectClass = (cls: Class) => {
     setContext({ type: 'class', classId: cls.id });
     setClassTab('members'); // CUXC-06: Default to Members tab
+    setMobileNavOpen(false);
   };
 
   const handleQuickDemoLogin = async (email: string, pass: string) => {
@@ -132,6 +134,18 @@ export function App() {
       {/* Top Application Header */}
       <header className="app-header">
         <div className="header-left">
+          {user && (
+            <button
+              type="button"
+              className="mobile-nav-toggle"
+              onClick={() => setMobileNavOpen(open => !open)}
+              aria-label={mobileNavOpen ? 'Đóng điều hướng' : 'Mở điều hướng'}
+              aria-expanded={mobileNavOpen}
+              aria-controls="app-sidebar"
+            >
+              {mobileNavOpen ? <X size={19} /> : <Menu size={19} />}
+            </button>
+          )}
           <button className="brand-btn" onClick={handleSnoteLogoClick} title="Về Việc của tôi (Personal)">
             <Zap className="ss-icon-brand" />
             <span>Snote</span>
@@ -142,6 +156,7 @@ export function App() {
             <div className="context-selector-cluster">
               <WorkspaceSwitcher
                 workspaces={workspaces}
+                classes={classes}
                 activeWorkspace={activeWorkspace}
                 onSelectWorkspace={handleSelectWorkspace}
                 onWorkspaceCreated={ws => setWorkspaces([...workspaces, ws])}
@@ -188,7 +203,13 @@ export function App() {
       {/* Main Body */}
       <div className="app-body">
         {/* Sidebar Navigation */}
-        <aside className="app-sidebar">
+        {user && <aside
+          id="app-sidebar"
+          className={`app-sidebar ${mobileNavOpen ? 'mobile-open' : ''}`}
+          onClick={event => {
+            if ((event.target as HTMLElement).closest('button')) setMobileNavOpen(false);
+          }}
+        >
           <div className="sidebar-nav-group">
             {context.type === 'workspace' ? (
               /* Workspace Context: 3 features (NAV-04, UXR-02) */
@@ -198,7 +219,7 @@ export function App() {
                   onClick={() => setWorkspaceTab('tasks')}
                 >
                   <CheckSquare size={16} />
-                  <span>Công việc (Gantt/Danh sách)</span>
+                  <span>Công việc</span>
                 </button>
                 <button
                   className={`nav-item-btn ${workspaceTab === 'calendar' ? 'active' : ''}`}
@@ -260,29 +281,18 @@ export function App() {
             )}
           </div>
 
-          {/* UXR-05: Mục lưu ý (chỉ hiện trong ngữ cảnh workspace, không hiện trong lớp - CUXC-04) */}
+          {/* UXR-05: Chỉ hiển thị mục lưu ý khi có dữ liệu thật theo workspace. */}
           {context.type === 'workspace' && (
             <div className="sidebar-notes-preview">
               <div className="sidebar-notes-title">Mục lưu ý</div>
-              <div className="notes-preview-item" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <Pin size={13} style={{ flexShrink: 0 }} />
-                <span>Ghi chú nhanh cá nhân</span>
-              </div>
-              <div className="notes-preview-item" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <Clock size={13} style={{ flexShrink: 0 }} />
-                <span>Việc sắp đến hạn tuần này</span>
-              </div>
-              <div className="notes-preview-item" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <CalendarDays size={13} style={{ flexShrink: 0 }} />
-                <span>Sự kiện sắp diễn ra</span>
-              </div>
+              <p className="notes-preview-empty">Mục lưu ý chưa được đồng bộ</p>
             </div>
           )}
-        </aside>
+        </aside>}
 
         {/* Main Content Area */}
         <main className="app-main">
-          {!user ? (
+          {!user ? (import.meta.env.DEV ? (
             <div style={{ maxWidth: '960px', margin: '0 auto', padding: '32px 16px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
               {/* Hero Banner */}
               <div style={{ textAlign: 'center', padding: '24px 16px' }}>
@@ -334,7 +344,7 @@ export function App() {
                           <CheckSquare size={18} />
                         </div>
                         <span style={{ fontSize: '11px', fontWeight: 600, padding: '2px 8px', borderRadius: '12px', background: '#f4f4f5', color: '#52525b' }}>
-                          student.demo@snote.edu.vn
+                          Học sinh demo
                         </span>
                       </div>
                       <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink-title, #09090b)', marginBottom: '6px' }}>
@@ -347,7 +357,7 @@ export function App() {
                     <button
                       className="btn btn-primary btn-sm"
                       style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '8px 14px' }}
-                      onClick={() => handleQuickDemoLogin('student.demo@snote.edu.vn', 'DemoPassword123@')}
+                      onClick={() => handleQuickDemoLogin(import.meta.env.VITE_DEMO_STUDENT_EMAIL || '', import.meta.env.VITE_DEMO_PASSWORD || '')}
                     >
                       <span>Vào vai Học sinh Demo</span>
                       <ArrowRight size={13} />
@@ -374,7 +384,7 @@ export function App() {
                           <GraduationCap size={18} />
                         </div>
                         <span style={{ fontSize: '11px', fontWeight: 600, padding: '2px 8px', borderRadius: '12px', background: '#f4f4f5', color: '#52525b' }}>
-                          teacher.demo@snote.edu.vn
+                          Giáo viên demo
                         </span>
                       </div>
                       <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink-title, #09090b)', marginBottom: '6px' }}>
@@ -387,7 +397,7 @@ export function App() {
                     <button
                       className="btn btn-secondary btn-sm"
                       style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '8px 14px', background: '#faf5ff', borderColor: '#d8b4fe', color: '#7e22ce' }}
-                      onClick={() => handleQuickDemoLogin('teacher.demo@snote.edu.vn', 'DemoPassword123@')}
+                      onClick={() => handleQuickDemoLogin(import.meta.env.VITE_DEMO_TEACHER_EMAIL || '', import.meta.env.VITE_DEMO_PASSWORD || '')}
                     >
                       <span>Vào vai Giáo viên Demo</span>
                       <ArrowRight size={13} />
@@ -444,7 +454,14 @@ export function App() {
                 </div>
               </div>
             </div>
-          ) : context.type === 'class' && activeClass ? (
+          ) : (
+            <section className="welcome-panel">
+              <div className="welcome-mark"><Zap size={24} aria-hidden="true" /></div>
+              <h1>Học tập và cộng tác trong một không gian rõ ràng.</h1>
+              <p>Quản lý công việc, lịch, tài liệu và bài giao theo đúng lớp hoặc workspace của bạn.</p>
+              <button type="button" className="btn btn-primary" onClick={() => setShowAuthModal(true)}>Bắt đầu với Snote</button>
+            </section>
+          )) : context.type === 'class' && activeClass ? (
             /* Class Context Views */
             <>
               {classTab === 'members' && (
@@ -493,9 +510,9 @@ export function App() {
             <div className="section-box">
               <div className="view-header">
                 <div>
-                  <h1 className="view-title">Workspace: {activeWorkspace.name}</h1>
+                  <h1 className="view-title">{activeWorkspace.name}</h1>
                   <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                    Loại: {activeWorkspace.kind === 'default' ? 'Cá nhân mặc định' : activeWorkspace.kind === 'class_group' ? 'Nhóm trong lớp' : 'Độc lập'}
+                    Workspace · {activeWorkspace.kind === 'default' ? 'Cá nhân' : activeWorkspace.kind === 'class_group' ? 'Nhóm trong lớp' : 'Độc lập'}
                   </span>
                 </div>
               </div>
