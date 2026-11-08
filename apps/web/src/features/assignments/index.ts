@@ -2,6 +2,7 @@ export * from './types';
 export * from './api';
 export * from './hooks/useReducedMotion';
 export * from './hooks/useAssignments';
+export * from './components/AssignmentEmptyState';
 export * from './components/AssignmentCreateModal';
 export * from './components/TeacherProgressDashboard';
 export * from './components/StudentSubmissionForm';

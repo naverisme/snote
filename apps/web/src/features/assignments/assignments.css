@@ -1,29 +1,328 @@
+/* ==========================================================================
+   SNOTE v2 — Feature: Assignments & Submissions (CSS Module)
+   Conforms to: skill-driven-ui-guide.md, Stageshow 5-tier inks, Zero-CLS
+   ========================================================================== */
+
+/* Main layout grid */
+.assignment-feature {
+  min-width: 0;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--ink-body);
+}
+
 .assignment-layout {
   display: grid;
   grid-template-columns: 260px minmax(0, 1fr);
   gap: 24px;
+  align-items: start;
 }
-.assignment-feature { min-width: 0; width: 100%; }
-.assignment-loading { max-width: 1200px; margin: 0 auto; padding: 20px; }
-.assignment-loading-header {
+
+/* Header bar */
+.assignment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: 16px;
+  min-height: 56px;
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   Zero-CLS Skeleton Loader: Exact Pitch & Geometry matching live components
+   ========================================================================== */
+.assignment-skeleton-container {
+  min-width: 0;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-sizing: border-box;
+}
+
+@keyframes assignment-pulse {
+  0% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.88;
+  }
+  100% {
+    opacity: 0.55;
+  }
+}
+
+.skeleton-shimmer {
+  animation: assignment-pulse 1.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer {
+    animation: none !important;
+    opacity: 0.72;
+  }
+}
+
+.skeleton-box {
+  display: block;
+  background-color: var(--surface-ground);
+  border-radius: var(--radius-sm);
+}
+
+/* Header Skeleton */
+.skeleton-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: 16px;
+  min-height: 56px;
+  box-sizing: border-box;
+}
+
+.skeleton-header-title {
+  width: 240px;
+  height: 24px;
+  margin-bottom: 4px;
+}
+
+.skeleton-header-subtitle {
+  width: 140px;
+  height: 14px;
+}
+
+.skeleton-header-button {
+  width: 128px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+}
+
+/* Left list skeleton matching card pitch */
+.skeleton-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-list-label {
+  width: 140px;
+  height: 14px;
+  margin-bottom: 4px;
+}
+
+.skeleton-assignment-card {
+  height: 64px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--hairline);
+  background: var(--surface-raised);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  box-sizing: border-box;
+}
+
+.skeleton-card-title {
+  width: 80%;
+  height: 15px;
+}
+
+.skeleton-card-date {
+  width: 55%;
+  height: 12px;
+}
+
+/* Right detail overview card skeleton */
+.skeleton-overview-card {
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skeleton-overview-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.skeleton-overview-title {
+  width: 320px;
+  height: 22px;
+}
+
+.skeleton-overview-badge {
+  width: 80px;
+  height: 28px;
+}
+
+.skeleton-overview-meta {
+  width: 60%;
+  height: 14px;
+}
+
+.skeleton-overview-desc-1 {
+  width: 95%;
+  height: 14px;
+}
+
+.skeleton-overview-desc-2 {
+  width: 70%;
+  height: 14px;
+}
+
+/* Table skeleton */
+.skeleton-table-card {
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.skeleton-table-header {
+  height: 44px;
+  background: var(--surface-ground);
+  border-bottom: 1px solid var(--hairline);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 16px;
+}
+
+.skeleton-table-row {
+  height: 52px;
+  border-bottom: 1px solid var(--hairline);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 16px;
+}
+
+/* ==========================================================================
+   Stageshow Miniature Showcase (Empty State Demo Card)
+   ========================================================================== */
+.miniature-showcase-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.miniature-demo-card {
+  width: 340px;
+  padding: 16px;
+  margin-bottom: 24px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--hairline);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-raised);
+  user-select: none;
+  pointer-events: none;
+  text-align: left;
+}
+
+.miniature-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
-  padding-bottom: 16px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--hairline);
 }
-.assignment-placeholder { display: block; border-radius: 5px; background: #eceef1; }
-.assignment-placeholder-title { width: min(260px, 55%); height: 24px; }
-.assignment-placeholder-action { width: 124px; height: 36px; }
-.assignment-placeholder-label { width: 130px; height: 14px; margin-bottom: 4px; }
-.assignment-loading-list { display: grid; align-content: start; gap: 8px; }
-.assignment-placeholder-row { width: 100%; height: 58px; border: 1px solid #e5e7eb; background: #f4f5f6; }
-.assignment-loading-detail { min-height: 210px; padding: 16px; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff; }
-.assignment-placeholder-line { width: 100%; height: 14px; margin-top: 14px; }
-.assignment-placeholder-line.short { width: 62%; }
+
+.miniature-window-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.miniature-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.miniature-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-title);
+  margin-bottom: 6px;
+}
+
+.miniature-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--ink-subtle);
+  margin-bottom: 10px;
+}
+
+.miniature-metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.miniature-metric-box {
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-ground);
+  font-size: 10px;
+  color: var(--ink-subtle);
+}
+
+.miniature-metric-val {
+  font-weight: 600;
+  color: var(--ink-title);
+  margin-top: 2px;
+}
+
+.miniature-progress-quote {
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-ground);
+  font-size: 10px;
+  color: var(--ink-subtle);
+  font-style: italic;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   Responsive Adaptations
+   ========================================================================== */
 @media (max-width: 768px) {
-  .assignment-layout { grid-template-columns: minmax(0, 1fr); gap: 18px; }
-  .assignment-loading { padding: 12px; }
+  .assignment-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+  .assignment-feature,
+  .assignment-skeleton-container {
+    padding: 12px;
+  }
+  .miniature-demo-card {
+    width: 100%;
+    max-width: 320px;
+  }
 }
