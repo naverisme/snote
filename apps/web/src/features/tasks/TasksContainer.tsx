@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { taskApi } from './api';
+import { listWorkspaces } from '../../shared/api';
 import { TaskDetailPanel } from './TaskDetailPanel';
 import { TaskFilters } from './TaskFilters';
 import { TaskGanttView } from './TaskGanttView';
@@ -34,6 +35,9 @@ export const TasksContainer: React.FC<TasksContainerProps> = ({
   const [selectedTaskId, setSelectedTaskId] = useState<string | undefined>();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
+  const [creating, setCreating] = useState(false);
 
   // QA-13: Request sequence tracker to discard stale in-flight responses
   const activeRequestIdRef = useRef<number>(0);
@@ -192,15 +196,38 @@ export const TasksContainer: React.FC<TasksContainerProps> = ({
   }, [tasks]);
 
   // Actions
-  const handleCreateTask = async () => {
-    const title = prompt('Nhập tiêu đề công việc mới:');
-    if (!title || !title.trim()) return;
-    const newTask = await taskApi.createTask(workspaceId ?? 'default-workspace', {
-      title: title.trim(),
-      importance: 'medium',
-    });
-    setTasks(prev => [newTask, ...prev]);
-    setSelectedTaskId(newTask.id);
+  const handleCreateTask = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!newTitle.trim() || creating) return;
+    setCreating(true);
+    setError(null);
+    try {
+      let targetWorkspaceId = workspaceId;
+      if (!targetWorkspaceId) {
+        try {
+          targetWorkspaceId = (await listWorkspaces()).data.find(ws => ws.kind === 'default')?.id;
+        } catch {
+          setError('Không thể xác định workspace cá nhân. Vui lòng thử lại.');
+          return;
+        }
+      }
+      if (!targetWorkspaceId) {
+        setError('Chưa xác định được workspace để tạo việc. Vui lòng chọn lại workspace.');
+        return;
+      }
+      const newTask = await taskApi.createTask(targetWorkspaceId, {
+        title: newTitle.trim(),
+        importance: 'medium',
+      });
+      setTasks(prev => [newTask, ...prev]);
+      setSelectedTaskId(newTask.id);
+      setNewTitle('');
+      setCreateOpen(false);
+    } catch {
+      setError('Không thể tạo công việc. Nội dung đã nhập vẫn được giữ để thử lại.');
+    } finally {
+      setCreating(false);
+    }
   };
 
   const handleUpdateTask = async (updates: Partial<Task>) => {
@@ -304,7 +331,7 @@ export const TasksContainer: React.FC<TasksContainerProps> = ({
         upcomingCount={upcomingCount}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
-        onCreateTaskClick={handleCreateTask}
+        onCreateTaskClick={() => { setError(null); setCreateOpen(true); }}
       />
 
       {error && (
@@ -354,6 +381,31 @@ export const TasksContainer: React.FC<TasksContainerProps> = ({
           />
         )}
       </div>
+      {createOpen && (
+        <div className="modal-overlay" role="presentation" onMouseDown={event => {
+          if (event.target === event.currentTarget && !creating) setCreateOpen(false);
+        }}>
+          <div className="modal-content" role="dialog" aria-modal="true" aria-labelledby="create-task-title" onKeyDown={event => {
+            if (event.key === 'Escape' && !creating) setCreateOpen(false);
+          }}>
+            <div className="modal-header">
+              <h2 id="create-task-title" className="modal-title">Tạo công việc</h2>
+              <button type="button" className="close-btn" onClick={() => setCreateOpen(false)} disabled={creating} aria-label="Đóng">×</button>
+            </div>
+            {error && <p role="alert" style={{ color: '#9f2d20', fontSize: 13, marginBottom: 12 }}>{error}</p>}
+            <form onSubmit={event => void handleCreateTask(event)}>
+              <div className="form-group">
+                <label className="form-label" htmlFor="new-task-title">Tên công việc</label>
+                <input id="new-task-title" className="form-input" value={newTitle} onChange={event => setNewTitle(event.target.value)} required autoFocus placeholder="Ví dụ: Chuẩn bị bài thuyết trình" />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+                <button type="button" className="btn btn-secondary" onClick={() => setCreateOpen(false)} disabled={creating}>Hủy</button>
+                <button type="submit" className="btn btn-primary" disabled={creating || !newTitle.trim()}>{creating ? 'Đang tạo...' : 'Tạo công việc'}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
