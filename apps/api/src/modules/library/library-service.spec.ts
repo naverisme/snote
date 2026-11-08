@@ -11,6 +11,18 @@ import {
 } from './library-service';
 import { QuotaService, type QuotaStore } from './quota-service';
 import { DomainError } from '../../core/authorization';
+const allowAuth = { decide: async () => ({ allowed: true }) };
+
+test('library service without a policy fails closed before writing an item', async () => {
+  const store = new MockLibraryStore();
+  const quota = new QuotaService(new MockQuotaStore());
+  const service = new LibraryService(store, quota, new MockUploadStore());
+  await assert.rejects(
+    service.createItem({ accountId: 'attacker' }, 'ws-1', { type: 'text', content: 'secret' }),
+    (err: unknown) => err instanceof DomainError && err.status === 403,
+  );
+  assert.equal(store.items.size, 0);
+});
 import { isPrivateOrBlockedHost, isPrivateOrBlockedIp, normalizeUrl, extractFirstUrl } from './url-preview';
 import type { UploadStore, UploadStagingRecord } from '../uploads/upload-service';
 
@@ -170,7 +182,7 @@ test('QA-05: Concurrent overwrites on same item enforce optimistic locking (If-M
   const quotaStore = new MockQuotaStore();
   const quota = new QuotaService(quotaStore);
   const uploadStore = new MockUploadStore();
-  const service = new LibraryService(libStore, quota, uploadStore);
+  const service = new LibraryService(libStore, quota, uploadStore, allowAuth);
 
   const principal = { accountId: 'actor-1' };
   const item = await service.createItem(principal, 'ws-1', {
@@ -209,7 +221,7 @@ test('QA-05 & LIB-12: Item copy is independent of source modifications and delet
   const quotaStore = new MockQuotaStore();
   const quota = new QuotaService(quotaStore);
   const uploadStore = new MockUploadStore();
-  const service = new LibraryService(libStore, quota, uploadStore);
+  const service = new LibraryService(libStore, quota, uploadStore, allowAuth);
 
   const principal = { accountId: 'actor-1' };
   const item = await service.createItem(principal, 'ws-src', {
@@ -246,12 +258,54 @@ test('QA-05 & LIB-12: Item copy is independent of source modifications and delet
   assert.equal(copyStillActive.item.status, 'active');
 });
 
+test('LIB-12: copy requires source read and a revision owned by the source item', async () => {
+  const store = new MockLibraryStore();
+  const service = new LibraryService(store, new QuotaService(new MockQuotaStore()), new MockUploadStore(), {
+    decide: async (_principal, action, scope) => ({ allowed: scope.id !== 'ws-src' || action !== 'library.read_text' }),
+  });
+  const source = await service.createItem({ accountId: 'actor-1' }, 'ws-src', { type: 'text', content: 'private' });
+  await assert.rejects(
+    service.copyItem({ accountId: 'actor-2' }, source.id, {
+      targetWorkspaceId: 'ws-target',
+      sourceRevisionId: source.currentRevisionId!,
+    }),
+    (err: unknown) => err instanceof DomainError && err.code === 'FORBIDDEN',
+  );
+  const allowed = new LibraryService(store, new QuotaService(new MockQuotaStore()), new MockUploadStore(), allowAuth);
+  const other = await allowed.createItem({ accountId: 'actor-1' }, 'ws-src', { type: 'text', content: 'other' });
+  await assert.rejects(
+    allowed.copyItem({ accountId: 'actor-1' }, source.id, {
+      targetWorkspaceId: 'ws-target',
+      sourceRevisionId: other.currentRevisionId!,
+    }),
+    (err: unknown) => err instanceof DomainError && err.code === 'REVISION_NOT_FOUND',
+  );
+});
+
+test('LIB-15: verified upload cannot be committed by another actor or into another workspace', async () => {
+  const store = new MockLibraryStore();
+  const uploads = new MockUploadStore();
+  const service = new LibraryService(store, new QuotaService(new MockQuotaStore()), uploads, allowAuth);
+  uploads.stagings.set('up-1', {
+    id: 'up-1', actorId: 'actor-1', scopeType: 'workspace', scopeId: 'ws-1',
+    storageKey: 'blob-1', status: 'verified', expiresAt: new Date(Date.now() + 60000),
+  });
+  for (const [actor, workspace] of [['actor-2', 'ws-1'], ['actor-1', 'ws-2']]) {
+    await assert.rejects(
+      service.createItem({ accountId: actor }, workspace, { type: 'file', uploadId: 'up-1' }),
+      (err: unknown) => err instanceof DomainError && err.code === 'UPLOAD_NOT_VERIFIED',
+    );
+  }
+  assert.equal(uploads.stagings.get('up-1')?.status, 'verified');
+  assert.equal(store.items.size, 0);
+});
+
 test('QA-06: Restoring file item from trash checks quota and rejects if workspace full', async () => {
   const libStore = new MockLibraryStore();
   const quotaStore = new MockQuotaStore();
   const quota = new QuotaService(quotaStore);
   const uploadStore = new MockUploadStore();
-  const service = new LibraryService(libStore, quota, uploadStore);
+  const service = new LibraryService(libStore, quota, uploadStore, allowAuth);
 
   const principal = { accountId: 'actor-1' };
 
@@ -293,7 +347,7 @@ test('QA-07: 1,000 revisions of same item retain revision history while only act
   const quotaStore = new MockQuotaStore();
   const quota = new QuotaService(quotaStore);
   const uploadStore = new MockUploadStore();
-  const service = new LibraryService(libStore, quota, uploadStore);
+  const service = new LibraryService(libStore, quota, uploadStore, allowAuth);
 
   const principal = { accountId: 'actor-1' };
   let currentItem = await service.createItem(principal, 'ws-1', {
@@ -342,7 +396,7 @@ test('LIB-02: Quick save to personal inbox assigns folderId = null in personal w
   const quotaStore = new MockQuotaStore();
   const quota = new QuotaService(quotaStore);
   const uploadStore = new MockUploadStore();
-  const service = new LibraryService(libStore, quota, uploadStore);
+  const service = new LibraryService(libStore, quota, uploadStore, allowAuth);
 
   libStore.workspaces.set('ws-personal', {
     id: 'ws-personal',
@@ -366,7 +420,7 @@ test('LIB-06: Moving items across different workspaces is strictly forbidden', a
   const quotaStore = new MockQuotaStore();
   const quota = new QuotaService(quotaStore);
   const uploadStore = new MockUploadStore();
-  const service = new LibraryService(libStore, quota, uploadStore);
+  const service = new LibraryService(libStore, quota, uploadStore, allowAuth);
 
   const principal = { accountId: 'actor-1' };
   const item = await service.createItem(principal, 'ws-1', {
@@ -393,7 +447,7 @@ test('LIB-07: Deleting folder with items or child folders is strictly rejected (
   const quotaStore = new MockQuotaStore();
   const quota = new QuotaService(quotaStore);
   const uploadStore = new MockUploadStore();
-  const service = new LibraryService(libStore, quota, uploadStore);
+  const service = new LibraryService(libStore, quota, uploadStore, allowAuth);
 
   const principal = { accountId: 'actor-1' };
   const parentFolder = await service.createFolder(principal, 'ws-1', { name: 'Parent Folder' });

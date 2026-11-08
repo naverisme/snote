@@ -1,4 +1,7 @@
 import { Module } from '@nestjs/common';
+import { IdentityModule } from '../identity/identity.module';
+import { AuthorizationModule } from '../authorization/authorization.module';
+import { ScopedAuthorization } from '../authorization/policy';
 import { PrismaClient } from '@prisma/client';
 import * as path from 'node:path';
 import { LocalStorageAdapter } from '../storage/local-storage-adapter';
@@ -10,10 +13,13 @@ import { LibraryController } from './library.controller';
 import { PrismaUploadStore } from '../uploads/prisma-upload-store';
 import { UploadService } from '../uploads/upload-service';
 import { UploadController } from '../uploads/upload.controller';
+import { LibrarySessionGuard } from './library-session.guard';
 
 @Module({
+  imports: [IdentityModule, AuthorizationModule],
   controllers: [LibraryController, UploadController],
   providers: [
+    LibrarySessionGuard,
     {
       provide: PrismaClient,
       useFactory: () => new PrismaClient(),
@@ -46,8 +52,9 @@ import { UploadController } from '../uploads/upload.controller';
         storage: LocalStorageAdapter,
         uploadStore: PrismaUploadStore,
         quotaService: QuotaService,
-      ) => new UploadService(storage, uploadStore, quotaService),
-      inject: [LocalStorageAdapter, PrismaUploadStore, QuotaService],
+        auth: ScopedAuthorization,
+      ) => new UploadService(storage, uploadStore, quotaService, auth),
+      inject: [LocalStorageAdapter, PrismaUploadStore, QuotaService, ScopedAuthorization],
     },
     {
       provide: PrismaLibraryStore,
@@ -60,8 +67,9 @@ import { UploadController } from '../uploads/upload.controller';
         store: PrismaLibraryStore,
         quota: QuotaService,
         uploadStore: PrismaUploadStore,
-      ) => new LibraryService(store, quota, uploadStore),
-      inject: [PrismaLibraryStore, QuotaService, PrismaUploadStore],
+        auth: ScopedAuthorization,
+      ) => new LibraryService(store, quota, uploadStore, auth),
+      inject: [PrismaLibraryStore, QuotaService, PrismaUploadStore, ScopedAuthorization],
     },
   ],
   exports: [LibraryService, QuotaService, UploadService],

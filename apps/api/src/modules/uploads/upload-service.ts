@@ -37,7 +37,7 @@ export class UploadService {
     private readonly storage: StoragePort,
     private readonly store: UploadStore,
     private readonly quota: QuotaService,
-    private readonly auth?: AuthorizationPort,
+    private readonly auth: AuthorizationPort,
   ) {}
 
   public async start(principal: Principal, body: UploadStart): Promise<Upload> {
@@ -88,6 +88,15 @@ export class UploadService {
       throw new DomainError('UPLOAD_NOT_FOUND', 404);
     }
 
+    // An upload identifier is not a capability: only its creator may finish it.
+    if (staging.actorId !== principal.accountId) {
+      throw new DomainError('UPLOAD_NOT_FOUND', 404);
+    }
+    const scope = { type: staging.scopeType as 'workspace' | 'class', id: staging.scopeId };
+    if (!(await this.auth.decide(principal, 'library.create', scope)).allowed) {
+      throw new DomainError('FORBIDDEN', 403);
+    }
+
     if (staging.status !== 'staged') {
       throw new DomainError('INVALID_UPLOAD_STATE', 409);
     }
@@ -104,6 +113,12 @@ export class UploadService {
     } catch (err) {
       await this.abort(uploadId);
       throw err;
+    }
+
+    // Membership can be revoked while bytes are streaming; do not publish them then.
+    if (!(await this.auth.decide(principal, 'library.create', scope)).allowed) {
+      await this.abort(uploadId);
+      throw new DomainError('FORBIDDEN', 403);
     }
 
     const blobRecord = await this.store.saveVerifiedBlob({
