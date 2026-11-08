@@ -10,6 +10,7 @@ import type {
   Upload,
   UploadStart,
 } from './types';
+import { getCsrfToken } from '../../shared/api';
 
 export class LibraryApiError extends Error {
   constructor(
@@ -36,7 +37,8 @@ async function requestJson<T>(
 ): Promise<{ data: T; etag?: string; requestId?: string }> {
   const headers = new Headers();
   if (body !== undefined) headers.set('Content-Type', 'application/json');
-  if (options.csrfToken) headers.set('X-CSRF-Token', options.csrfToken);
+  const csrfToken = options.csrfToken ?? getCsrfToken();
+  if (csrfToken) headers.set('X-CSRF-Token', csrfToken);
   if (options.etag) headers.set('If-Match', options.etag);
   if (options.actorId) headers.set('x-actor-id', options.actorId);
 
@@ -270,7 +272,8 @@ export const libraryApi = {
   ): Promise<Upload> {
     const headers = new Headers();
     headers.set('Content-Type', 'application/octet-stream');
-    if (reqOptions.csrfToken) headers.set('X-CSRF-Token', reqOptions.csrfToken);
+    const csrfToken = reqOptions.csrfToken ?? getCsrfToken();
+    if (csrfToken) headers.set('X-CSRF-Token', csrfToken);
     if (reqOptions.actorId) headers.set('x-actor-id', reqOptions.actorId);
 
     const bodyInit: any =
@@ -290,5 +293,62 @@ export const libraryApi = {
       throw new LibraryApiError(res.status, code, payload?.error?.details);
     }
     return payload.data as Upload;
+  },
+
+  async uploadContentWithProgress(
+    uploadId: string,
+    file: File | Blob,
+    onProgress?: (progress: { loadedBytes: number; totalBytes: number; percent: number }) => void,
+    reqOptions: RequestOptions = {},
+  ): Promise<Upload> {
+    if (typeof XMLHttpRequest === 'undefined') {
+      // Fallback for non-browser environments
+      onProgress?.({ loadedBytes: file.size, totalBytes: file.size, percent: 100 });
+      return this.uploadContent(uploadId, file, reqOptions);
+    }
+
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('PUT', `/api/v2/uploads/${encodeURIComponent(uploadId)}/content`);
+      xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+      const csrfToken = reqOptions.csrfToken ?? getCsrfToken();
+      if (csrfToken) xhr.setRequestHeader('X-CSRF-Token', csrfToken);
+      if (reqOptions.actorId) xhr.setRequestHeader('x-actor-id', reqOptions.actorId);
+      xhr.withCredentials = true;
+
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable && onProgress) {
+          const percent = event.total > 0 ? Math.min(100, Math.round((event.loaded / event.total) * 100)) : 0;
+          onProgress({ loadedBytes: event.loaded, totalBytes: event.total, percent });
+        }
+      };
+
+      xhr.onload = () => {
+        try {
+          const payload = JSON.parse(xhr.responseText || '{}');
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve((payload?.data !== undefined ? payload.data : payload) as Upload);
+          } else {
+            const code = payload?.error?.code ?? `HTTP_${xhr.status}`;
+            reject(new LibraryApiError(xhr.status, code, payload?.error?.details));
+          }
+        } catch (e) {
+          reject(new LibraryApiError(xhr.status, `HTTP_${xhr.status}`, { parseError: e }));
+        }
+      };
+
+      xhr.onerror = () => {
+        reject(new LibraryApiError(0, 'NETWORK_ERROR', { message: 'Lỗi kết nối khi tải lên dữ liệu' }));
+      };
+
+      if (reqOptions.signal) {
+        reqOptions.signal.addEventListener('abort', () => {
+          xhr.abort();
+          reject(new DOMException('Aborted', 'AbortError'));
+        });
+      }
+
+      xhr.send(file);
+    });
   },
 };
