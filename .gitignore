@@ -9,3 +9,4 @@ __pycache__/
 .github/hooks/
 .github/skills/
 *.exe
+.chrome-*/
