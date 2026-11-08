@@ -87,8 +87,6 @@ export const AssignmentFeature: React.FC<AssignmentFeatureProps> = ({
       ...options,
       csrfToken,
     });
-    await refreshAssignments();
-    await refreshSubmissions();
     return res;
   };
 
@@ -330,8 +328,9 @@ export const AssignmentFeature: React.FC<AssignmentFeatureProps> = ({
 
                   <StudentSubmissionForm
                     recipientId={selectedRecipient.id}
+                    workspaceId={selectedRecipient.workspaceId}
                     currentVersion={submissions.length > 0 ? submissions[0].version : 0}
-                    onSubmitted={() => refreshSubmissions()}
+                    onSubmitted={() => { void refreshAssignments(); void refreshSubmissions(); }}
                     onSubmitApi={handleSubmitApi}
                     onRefreshLatest={refreshSubmissions}
                   />

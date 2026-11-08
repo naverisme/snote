@@ -1,9 +1,12 @@
 import React, { useState, useRef } from 'react';
 import { UploadCloud, FileText, X } from 'lucide-react';
 import type { Submission, SubmissionInput } from '../types';
+import { libraryApi } from '../../library';
+import { getCsrfToken } from '../../../shared/api';
 
 export interface StudentSubmissionFormProps {
   recipientId: string;
+  workspaceId: string;
   currentVersion?: number;
   onSubmitted: (submission: Submission) => void;
   onSubmitApi: (
@@ -22,6 +25,7 @@ interface AttachedFile {
 
 export const StudentSubmissionForm: React.FC<StudentSubmissionFormProps> = ({
   recipientId,
+  workspaceId,
   currentVersion = 0,
   onSubmitted,
   onSubmitApi,
@@ -31,13 +35,14 @@ export const StudentSubmissionForm: React.FC<StudentSubmissionFormProps> = ({
   const [links, setLinks] = useState<string[]>(['']);
   const [uploadIds, setUploadIds] = useState<string[]>([]);
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
+  const [uploadingFiles, setUploadingFiles] = useState<string[]>([]);
+  const [uploadFailed, setUploadFailed] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error' | 'conflict'; message: string } | null>(null);
-  const [showAdvancedBlobInput, setShowAdvancedBlobInput] = useState(false);
-  const [rawBlobInput, setRawBlobInput] = useState('');
+  const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error' | 'conflict' | 'pending' | 'unknown'; message: string } | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const pendingIntentRef = useRef<{ fingerprint: string; key: string } | null>(null);
 
   // Generate unique client idempotency key per intent (EC-05)
   const generateIdempotencyKey = () => {
@@ -60,61 +65,50 @@ export const StudentSubmissionForm: React.FC<StudentSubmissionFormProps> = ({
     setLinks(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleFilesSelected = (files: FileList | null) => {
+  const handleFilesSelected = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
-
-    const newFiles: AttachedFile[] = [];
-    const newUploadIds: string[] = [];
-    let sizeError = false;
-
-    Array.from(files).forEach(file => {
-      // 25MB check per file (ASG limit)
+    setUploadFailed(false);
+    let failedCount = 0;
+    let uploadedCount = 0;
+    for (const file of Array.from(files)) {
       if (file.size > 25 * 1024 * 1024) {
-        sizeError = true;
-        return;
+        setUploadFailed(true);
+        failedCount += 1;
+        continue;
       }
-      const fileId = `blob-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}-${Date.now().toString(36)}`;
-      newFiles.push({
-        id: fileId,
-        name: file.name,
-        size: file.size,
-      });
-      newUploadIds.push(fileId);
-    });
-
-    if (sizeError) {
-      setStatusMessage({
-        type: 'error',
-        message: 'Một số tệp vượt quá giới hạn 25MB/tệp và đã bị bỏ qua.',
-      });
+      setUploadingFiles(prev => [...prev, file.name]);
+      try {
+        const requestOptions = { csrfToken: getCsrfToken() };
+        const staged = await libraryApi.startUpload({
+          fileName: file.name,
+          size: file.size,
+          declaredType: file.type || 'application/octet-stream',
+          scopeType: 'workspace',
+          scopeId: workspaceId,
+        }, requestOptions);
+        const verified = await libraryApi.uploadContent(staged.id, file, requestOptions);
+        if (verified.status !== 'verified') throw new Error('Tệp chưa được xác nhận.');
+        setAttachedFiles(prev => [...prev, { id: staged.id, name: file.name, size: file.size }]);
+        setUploadIds(prev => [...prev, staged.id]);
+        uploadedCount += 1;
+      } catch {
+        setUploadFailed(true);
+        failedCount += 1;
+      } finally {
+        setUploadingFiles(prev => {
+          const index = prev.indexOf(file.name);
+          return index < 0 ? prev : prev.filter((_, i) => i !== index);
+        });
+      }
     }
-
-    if (newFiles.length > 0) {
-      setAttachedFiles(prev => [...prev, ...newFiles]);
-      setUploadIds(prev => [...prev, ...newUploadIds]);
-    }
+    setStatusMessage(failedCount > 0
+      ? { type: 'error', message: `${failedCount} tệp chưa tải được hoặc vượt quá 25 MB. Chọn lại tệp trước khi nộp.` }
+      : { type: 'success', message: `${uploadedCount} tệp đã tải xong. Xác nhận nộp bài để lưu phiên bản.` });
   };
 
   const handleRemoveFile = (id: string) => {
     setAttachedFiles(prev => prev.filter(f => f.id !== id));
     setUploadIds(prev => prev.filter(uid => uid !== id));
-  };
-
-  const handleAddRawBlobs = () => {
-    const ids = rawBlobInput
-      .split(',')
-      .map(s => s.trim())
-      .filter(Boolean);
-    if (ids.length > 0) {
-      const newFiles: AttachedFile[] = ids.map(id => ({
-        id,
-        name: id,
-        size: 0,
-      }));
-      setAttachedFiles(prev => [...prev, ...newFiles]);
-      setUploadIds(prev => Array.from(new Set([...prev, ...ids])));
-      setRawBlobInput('');
-    }
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -134,12 +128,17 @@ export const StudentSubmissionForm: React.FC<StudentSubmissionFormProps> = ({
     e.stopPropagation();
     setIsDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleFilesSelected(e.dataTransfer.files);
+      void handleFilesSelected(e.dataTransfer.files);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting || uploadingFiles.length > 0) return;
+    if (uploadFailed) {
+      setStatusMessage({ type: 'error', message: 'Có tệp tải lên chưa thành công. Chọn lại tệp trước khi nộp.' });
+      return;
+    }
 
     const validLinks = links.map(l => l.trim()).filter(l => l.length > 0);
     const validText = text.trim();
@@ -160,12 +159,16 @@ export const StudentSubmissionForm: React.FC<StudentSubmissionFormProps> = ({
       uploadIds: validUploads.length > 0 ? validUploads : undefined,
     };
 
-    const idempotencyKey = generateIdempotencyKey();
+    const fingerprint = JSON.stringify({ recipientId, currentVersion, input });
+    const idempotencyKey = pendingIntentRef.current?.fingerprint === fingerprint
+      ? pendingIntentRef.current.key
+      : generateIdempotencyKey();
+    pendingIntentRef.current = { fingerprint, key: idempotencyKey };
     const etag = currentVersion > 0 ? `"${currentVersion}"` : undefined;
 
     try {
       setSubmitting(true);
-      setStatusMessage({ type: 'success', message: 'Đang xác nhận bản nộp...' });
+      setStatusMessage({ type: 'pending', message: 'Đang xác nhận bản nộp...' });
 
       const result = await onSubmitApi(recipientId, input, {
         idempotencyKey,
@@ -178,6 +181,7 @@ export const StudentSubmissionForm: React.FC<StudentSubmissionFormProps> = ({
       });
 
       onSubmitted(result);
+      pendingIntentRef.current = null;
       setText('');
       setLinks(['']);
       setUploadIds([]);
@@ -186,7 +190,7 @@ export const StudentSubmissionForm: React.FC<StudentSubmissionFormProps> = ({
       if (err?.code === 'VERSION_CONFLICT' || err?.status === 412) {
         setStatusMessage({
           type: 'conflict',
-          message: 'Phiên bản hiện hành đã được cập nhật bởi thành viên khác. Vui lòng tải lại và xem bản mới trước khi gửi lại (ASG-12).',
+          message: 'Bản nộp đã có phiên bản mới. Tải lại lịch sử và xem nội dung trước khi gửi tiếp.',
         });
       } else if (err?.code === 'LATE_SUBMISSION_LOCKED' || err?.code === 'LATE_REVISION_LOCKED' || err?.status === 403) {
         setStatusMessage({
@@ -200,8 +204,8 @@ export const StudentSubmissionForm: React.FC<StudentSubmissionFormProps> = ({
         });
       } else {
         setStatusMessage({
-          type: 'error',
-          message: err?.message || 'Có lỗi xảy ra khi nộp bài.',
+          type: 'unknown',
+          message: 'Chưa rõ máy chủ đã nhận bản nộp hay chưa. Tải lại lịch sử hoặc thử lại với đúng nội dung hiện tại.',
         });
       }
     } finally {
@@ -265,26 +269,32 @@ export const StudentSubmissionForm: React.FC<StudentSubmissionFormProps> = ({
             backgroundColor:
               statusMessage.type === 'success'
                 ? '#f0fdf4'
-                : statusMessage.type === 'conflict'
+                : statusMessage.type === 'conflict' || statusMessage.type === 'unknown'
                 ? '#fffbeb'
+                : statusMessage.type === 'pending'
+                ? '#eff6ff'
                 : '#fef2f2',
             color:
               statusMessage.type === 'success'
                 ? '#166534'
-                : statusMessage.type === 'conflict'
+                : statusMessage.type === 'conflict' || statusMessage.type === 'unknown'
                 ? '#92400e'
+                : statusMessage.type === 'pending'
+                ? '#1d4ed8'
                 : '#991b1b',
             border: `1px solid ${
               statusMessage.type === 'success'
                 ? '#bbf7d0'
-                : statusMessage.type === 'conflict'
+                : statusMessage.type === 'conflict' || statusMessage.type === 'unknown'
                 ? '#fde68a'
+                : statusMessage.type === 'pending'
+                ? '#bfdbfe'
                 : '#fecaca'
             }`,
           }}
         >
           <div>{statusMessage.message}</div>
-          {statusMessage.type === 'conflict' && onRefreshLatest && (
+          {(statusMessage.type === 'conflict' || statusMessage.type === 'unknown') && onRefreshLatest && (
             <button
               type="button"
               onClick={onRefreshLatest}
@@ -410,14 +420,18 @@ export const StudentSubmissionForm: React.FC<StudentSubmissionFormProps> = ({
             type="file"
             multiple
             style={{ display: 'none' }}
-            onChange={e => handleFilesSelected(e.target.files)}
+            onChange={e => { void handleFilesSelected(e.target.files); e.target.value = ''; }}
           />
 
           <div
+            role="button"
+            tabIndex={0}
+            aria-label="Chọn tệp đính kèm để tải lên"
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
+            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInputRef.current?.click(); } }}
             style={{
               border: isDragging ? '1px dashed #2563eb' : '1px dashed #cbd5e1',
               backgroundColor: isDragging ? '#f0f7ff' : '#f8fafc',
@@ -438,6 +452,11 @@ export const StudentSubmissionForm: React.FC<StudentSubmissionFormProps> = ({
               Hỗ trợ tài liệu, mã nguồn nén hoặc bản vẽ (tối đa 25MB/tệp)
             </div>
           </div>
+          {uploadingFiles.length > 0 && (
+            <p role="status" style={{ marginTop: 8, color: '#475569', fontSize: 12 }}>
+              Đang tải {uploadingFiles.length} tệp. Chờ xác nhận trước khi nộp.
+            </p>
+          )}
 
           {/* Attached Files List */}
           {attachedFiles.length > 0 && (
@@ -489,66 +508,13 @@ export const StudentSubmissionForm: React.FC<StudentSubmissionFormProps> = ({
             </div>
           )}
 
-          {/* Toggle for entering raw blob IDs from Library staging */}
-          <div style={{ marginTop: '8px' }}>
-            <button
-              type="button"
-              onClick={() => setShowAdvancedBlobInput(prev => !prev)}
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: 0,
-                color: '#64748b',
-                fontSize: '11px',
-                cursor: 'pointer',
-                textDecoration: 'underline',
-              }}
-            >
-              {showAdvancedBlobInput ? 'Ẩn nhập mã blob trực tiếp' : 'Nhập mã blob định danh từ Thư viện (nâng cao)'}
-            </button>
-
-            {showAdvancedBlobInput && (
-              <div style={{ marginTop: '6px', display: 'flex', gap: '8px' }}>
-                <input
-                  type="text"
-                  placeholder="blob-uuid-1, blob-uuid-2"
-                  value={rawBlobInput}
-                  onChange={e => setRawBlobInput(e.target.value)}
-                  style={{
-                    flex: 1,
-                    padding: '6px 10px',
-                    border: '1px solid #cbd5e1',
-                    borderRadius: '4px',
-                    fontSize: '12px',
-                    boxSizing: 'border-box',
-                    outline: 'none',
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={handleAddRawBlobs}
-                  style={{
-                    padding: '6px 12px',
-                    backgroundColor: '#f1f5f9',
-                    border: '1px solid #e2e8f0',
-                    borderRadius: '4px',
-                    fontSize: '12px',
-                    color: '#334155',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Thêm mã
-                </button>
-              </div>
-            )}
-          </div>
         </div>
 
         {/* Action Button */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '8px' }}>
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || uploadingFiles.length > 0 || uploadFailed}
             style={{
               padding: '8px 20px',
               backgroundColor: submitting ? '#93c5fd' : '#2563eb',
@@ -557,11 +523,11 @@ export const StudentSubmissionForm: React.FC<StudentSubmissionFormProps> = ({
               borderRadius: '6px',
               fontSize: '13px',
               fontWeight: 500,
-              cursor: submitting ? 'not-allowed' : 'pointer',
+              cursor: submitting || uploadingFiles.length > 0 || uploadFailed ? 'not-allowed' : 'pointer',
               transition: 'background-color 150ms ease',
             }}
           >
-            {submitting ? 'Đang xác nhận...' : isRevision ? 'Gửi phiên bản mới' : 'Xác nhận nộp bài'}
+            {submitting ? 'Đang xác nhận...' : uploadingFiles.length > 0 ? 'Đang tải tệp...' : isRevision ? 'Gửi phiên bản mới' : 'Xác nhận nộp bài'}
           </button>
         </div>
       </form>
