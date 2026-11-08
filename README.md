@@ -6,9 +6,8 @@ SNOTE hỗ trợ tổ chức công việc, lịch và tài liệu theo workspace
 - [Quy ước tài liệu](docs/DOCUMENTATION_POLICY.md) quy định nơi lưu và cách xác định hiệu lực.
 - [Hồ sơ rà soát](review/README.md) ghi nguồn, phần còn thiếu và nội dung đưa ra duyệt.
 - [Hướng dẫn tác nhân](AGENTS.md) chỉ đường đọc và dùng tài liệu khi nhận việc trên `s_note_v2`.
-- [Kế hoạch xây dựng](IMPLEMENTATION_PLAN.md) chia mốc foundation, tính năng, tích hợp và cổng phát hành thử.
-- [Luật worktree](WORKTREES.md) quy định nhánh, vùng tệp độc quyền, thứ tự phụ thuộc và lệnh tạo các checkout coding.
-- [Bảng điều phối công việc](WORK_QUEUE.md) cho biết thư mục nào đang có, việc làm được ngay và tín hiệu phải chờ trước khi nối hoặc merge.
+- [Use case](docs/requirements/use-cases.md) và [sơ đồ thuật toán](docs/architecture/decision-algorithms.md) nối mục tiêu với quy tắc và các nhánh quyết định.
+- [Hồ sơ điều phối đã hoàn thành](review/archive/coordination/README.md) lưu kế hoạch, phân vùng worktree và queue cũ để truy vết; không dùng làm lệnh hiện hành.
 
 ## Foundation local (issue #28)
 
@@ -28,4 +27,4 @@ python tools/validate_contract.py
 python -m openapi_spec_validator docs/contracts/openapi.yaml
 ```
 
-API skeleton: `npm --workspace @snote/api run start` (`/api/v2/health`). Web skeleton: `npm --workspace @snote/web exec vite -- --host`. `packages/contracts` chứa kiểu sinh từ OpenAPI; `apps/web/src/api/generated/client.ts` dùng cookie và các header hợp đồng. Các module nghiệp vụ còn do #29–35 sở hữu.
+API: `npm --workspace @snote/api run start` (`/api/v2/health`). Web: `npm --workspace @snote/web exec vite -- --host`. `packages/contracts` chứa kiểu sinh từ OpenAPI; `apps/web/src/api/generated/client.ts` dùng cookie và các header hợp đồng. Mã module nghiệp vụ nằm trong `apps/api/src/modules/` và `apps/web/src/features/`; trạng thái pass/fail phải kiểm theo commit và báo cáo trong `review/`, không suy từ lệnh chạy mẫu này.

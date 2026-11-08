@@ -10,6 +10,7 @@
 | [Lịch trình và Lịch lớp](calendar-q33.md) | Q33-A1–A3, E6, F10: chế độ xem, lọc, điều hướng và chi tiết sự kiện |
 | [Thư viện](library-q33.md) | Q33-B1–B3, E7, F8, I6–I13: ba vùng, lưu/tìm, trình soạn văn bản, ghi đè/tạo bản sao và trạng thái tải tệp |
 | [Bài giao và Nộp](assignments-q33.md) | Q33-D1–D2, E8, F9: tạo bài, quyền sau hạn, tiến độ và chi tiết phiên bản nộp |
-| [Ứng dụng kỹ năng xây dựng giao diện & hiệu ứng](skill-driven-ui-guide.md) | Hướng dẫn tác nhân kết hợp `ui-ux-pro-max`, `stageshow`, `impeccable` để chế tác UI, 5 tầng mực, hình học và chuyển động vi mô |
 
 Quyền và hành vi nghiệp vụ tra ở [yêu cầu](../requirements/README.md). Các phiếu G/Q33 trong `review/blocked/` giữ lịch sử tạm duyệt. Thiết kế chi tiết mới ở [ui-and-motion.md](ui-and-motion.md) có nguồn [SRC-27](../../review/provenance.md) và không tự biến mọi ô G trước đây thành quyết định cũ đã chốt. Quyền thực thi tra ở [requirements](../requirements/README.md).
+
+Hướng dẫn dùng công cụ/skill cho chiến dịch UI trước đây đã [lưu trữ ngoài `docs/`](../../review/archive/coordination/README.md); các quy tắc giao diện hiện hành tra ở những tài liệu UX trong bảng, không lấy tên skill hay đường dẫn máy cá nhân làm yêu cầu sản phẩm.

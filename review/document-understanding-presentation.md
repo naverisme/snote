@@ -101,7 +101,7 @@ Nguồn: [kiến trúc](../docs/architecture/README.md), [dữ liệu/giao dịc
 - `ENV-01–06` còn cần hạ tầng, ngân sách, nhóm thử, thiết bị/mẫu UI, email reset, validator/codegen/migration và phép đo thật. Có thể xây nền bằng dữ liệu giả trước khi các giá trị pilot được đóng.
 - Kế hoạch coding đặt **foundation issue #28** làm cổng trước bảy worktree tính năng; integration #36 kiểm luồng thật sau khi các module ghép. Kế hoạch không phải bằng chứng tính năng đã hoàn tất.
 
-Nguồn: [12 ca nền](../docs/quality/acceptance-scenarios.md), [QA-01–14](../docs/quality/README.md), [vận hành](../docs/operations/README.md), [đầu vào còn mở](unresolved.md), [kế hoạch](../IMPLEMENTATION_PLAN.md), [worktree](../WORKTREES.md).
+Nguồn: [12 ca nền](../docs/quality/acceptance-scenarios.md), [QA-01–14](../docs/quality/README.md), [vận hành](../docs/operations/README.md), [đầu vào còn mở](unresolved.md), [kế hoạch](archive/coordination/IMPLEMENTATION_PLAN.md), [worktree](archive/coordination/WORKTREES.md).
 
 ---
 

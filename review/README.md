@@ -7,10 +7,10 @@
 | [Rà Foundation #28](foundation-audit.md) | Giới hạn môi trường, rủi ro giao dịch và kết quả cần kiểm trên PostgreSQL |
 | [Rà lại cổng tích hợp #36](integration-gate-reassessment.md) | Đối chiếu test giả lập với yêu cầu HTTP, PostgreSQL, giao diện, tải và phục hồi trước pilot |
 | [Rà giao diện theo tính năng](ui-commercial-audit.md) | Vấn đề theo từng màn, thứ tự sửa, giới hạn và kết quả cần kiểm trước khi dùng thương mại |
-| [Rà đầu vào API-A #29](api-a-readiness.md) | Cổng foundation, khoảng trống contract/schema, đề nghị bàn giao owner #28 và ma trận QA-01–04 trước triển khai |
 | [Đề xuất toàn vẹn dữ liệu](blocked/data-integrity-proposal.md) | Mô hình phiên bản/tệp, gửi chống trùng, quota và dọn dữ liệu; chưa duyệt kiến trúc |
+| [Rà DCA cấu trúc và sơ đồ](dca-audit-20261109.md) | Mốc nguồn, tệp điều phối đã lọc, độ phủ use case/thuật toán, trạng thái mở và giới hạn kiểm định |
+| [Lưu trữ điều phối](archive/coordination/README.md) | Kế hoạch, worktree, queue và hướng dẫn skill UI của chiến dịch đã qua; không phải chỉ thị hiện hành |
 | [Dấu vết nguồn](provenance.md) | Đối chiếu quyết định người dùng, PR và nơi lưu quy tắc |
-| [Độ phủ của bộ tài liệu](coverage.md) | Kiểm tra bảy nhóm tài liệu và đầu ra của tám bước đã thống nhất |
 | [Các điểm chưa chốt](unresolved.md) | Tìm khoảng trống theo mã và phần tài liệu phụ thuộc |
 | [Sổ quyết định Q21–Q37 và I/J](decision-batch.md) | Tra nội dung đã chốt, phần còn mở và liên kết tới quy tắc theo chủ đề |
 | [Khung workspace và Gantt đã duyệt](../docs/ux/workspace-gantt.md) | Tra số lượng, vị trí, cấp, kiểu và hành động của từng thành phần Q32 |

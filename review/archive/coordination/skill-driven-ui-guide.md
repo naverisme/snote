@@ -1,9 +1,11 @@
+> **LƯU TRỮ — KHÔNG CÒN LÀ HƯỚNG DẪN HIỆN HÀNH.** Ảnh chụp lịch sử từ `s_note_v2` tại `bdc1df38` để truy vết; các lệnh, trạng thái PR và phép kiểm trong bản này không được tự áp dụng.
+
 # Hướng dẫn Tác nhân: Ứng dụng Kỹ năng (Skills) Xây dựng Giao diện & Hiệu ứng SNOTE v2
 
 | Thuộc tính | Giá trị |
 | :--- | :--- |
 | **Phạm vi** | Toàn bộ mã nguồn giao diện trong `apps/web/src/**` trên mọi worktree tính năng |
-| **Trạng thái** | Đặc tả kỹ thuật giao diện chính thức; bổ sung quy chuẩn thực thi cho [ui-and-motion.md](ui-and-motion.md) theo [SRC-27](../../review/provenance.md) |
+| **Trạng thái** | Đặc tả kỹ thuật giao diện chính thức; bổ sung quy chuẩn thực thi cho [ui-and-motion.md](../../../docs/ux/ui-and-motion.md) theo [SRC-27](../../provenance.md) |
 | **Bộ kỹ năng tích hợp** | `ui-ux-pro-max` (Nền tảng hệ thống, A11y, bảng màu), `stageshow` (Thẩm mỹ điềm tĩnh, hình học, chuyển động vi mô), `impeccable` (Định hình, kiểm duyệt chống AI-Slop) |
 
 Tài liệu này là **kim chỉ nam bắt buộc** dành cho tất cả các AI Agent khi nhận nhiệm vụ xây dựng, sửa đổi hoặc nâng cấp giao diện người dùng (UI) và chuyển động/hiệu ứng (Motion/Micro-interactions) trong SNOTE v2.

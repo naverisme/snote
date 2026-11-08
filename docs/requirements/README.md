@@ -11,5 +11,6 @@
 | Lịch | [calendar.md](calendar.md) | Sự kiện xuất hiện ở lịch nào và ai tạo được lịch chung? |
 | Thư viện | [library.md](library.md) | Tài liệu được lưu ở đâu, ai thấy và chia sẻ sang nhóm thế nào? |
 | Bài giao và nộp | [assignments-and-submissions.md](assignments-and-submissions.md) | Ai giao và nộp, tiến độ được xem ra sao, hạn và phiên bản được xử lý thế nào? |
+| Use case bản đầu | [use-cases.md](use-cases.md) | Tác nhân muốn đạt mục tiêu nào, tiền điều kiện, luồng chính và ngoại lệ ra sao? Đây là bản tổng hợp; quy tắc gốc ở các hàng trên. |
 
-Mã quy tắc giúp dẫn chiếu từ UX, thiết kế và kiểm chứng. Các cột nguồn trỏ về [hồ sơ đối chiếu](../../review/provenance.md). Quy tắc bổ sung và quyết định thiết kế sau SRC-27 ở [cấu trúc/vòng đời](structural-rules.md). Khi một tài liệu cũ nêu điểm chưa chốt đã được STR giải quyết, STR có hiệu lực sau; [đầu vào triển khai còn thiếu](../../review/unresolved.md) chủ yếu là giá trị môi trường/công suất và kiểm chứng. Không lấy nhận định cũ ở `review/blocked/` làm hợp đồng.
+Mã quy tắc giúp dẫn chiếu từ UX, thiết kế và kiểm chứng. Các cột nguồn trỏ về [hồ sơ đối chiếu](../../review/provenance.md). Use case không thay ma trận quyền hoặc quy tắc theo chủ đề. Quy tắc bổ sung và quyết định thiết kế sau SRC-27 ở [cấu trúc/vòng đời](structural-rules.md). Khi một tài liệu cũ nêu điểm chưa chốt đã được STR giải quyết, STR có hiệu lực sau; [đầu vào còn thiếu](../../review/unresolved.md) gồm giá trị môi trường và ca nghiệp vụ GAP-01. Không lấy nhận định cũ ở `review/blocked/` làm hợp đồng.

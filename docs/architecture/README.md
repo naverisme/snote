@@ -35,4 +35,6 @@ flowchart TD
 
 Ranh giới module là quyết định thiết kế; chi tiết endpoint ở [hợp đồng](../contracts/README.md), kiểm chứng ở [quality](../quality/README.md) và triển khai ở [operations](../operations/README.md). Đề xuất trước đây tại [review](../../review/blocked/data-integrity-proposal.md) là lịch sử phân tích, tài liệu hiện hành ở đây ưu tiên.
 
+[Sơ đồ thuật toán và điểm chốt giao dịch](decision-algorithms.md) đối chiếu quyền, gia nhập nhóm, Nộp, tệp và thứ tự Việc tiếp theo với mã quy tắc. Đây là sơ đồ quyết định khái niệm; các bước giao dịch ở [mô hình dữ liệu](data-and-transactions.md), các đường API ở [contracts](../contracts/README.md).
+
 Cơ chế giao dịch/điều khiển cạnh tranh dựa trên [tài liệu PostgreSQL](https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html) và [tài liệu Prisma về transaction](https://www.prisma.io/docs/orm/prisma-client/queries/transactions); khả năng cụ thể phải kiểm với phiên bản cài đặt. Việc dùng kho tệp và Docker Compose được đánh giá riêng với [tài liệu Compose production](https://docs.docker.com/compose/how-tos/production/); các nguồn kỹ thuật không thay quyết định nghiệp vụ của SNOTE.
