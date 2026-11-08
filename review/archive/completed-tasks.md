@@ -146,3 +146,81 @@
 - **Ky duyet hoan thanh:**
   - [x] **RESOLVED by Implementer** (Commit SHA: f22b678, PR #44 da mo)
   - [x] **VERIFIED by Requester** (Pass Test: Pass, PR #44 ready, verified at 2026-11-08 03:56:44)
+
+
+### [TASK-20261108-050711] P0 #32: Sua Assignments/Submissions lay actor tu cookie session, CSRF that; bo x-actor-id va teacher-default, kiem quyen tai commit revision; them test 401/403, header gia, idempotency sau mat phan hoi. Chi sua vung #32, bao blocker schema neu can.
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/assignments (2026-11-08 05:07:11)
+- **Tep dinh kem:** review/integration-gate-reassessment.md
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 05:08:07)
+  - [x] **RESOLVED by Implementer** (Commit SHA: ef4c47c, Pass 23 tests bao gom session auth, CSRF va DI)
+  - [x] **VERIFIED by Requester** (Pass Test: Pass 23 tests, auth/CSRF verified, verified at 2026-11-08 08:40:13)
+
+---
+
+
+### [TASK-20261108-050821] P0 bo sung: API bootstrap tren 0e64d01 loi UnknownDependenciesException AssignmentService index 0 trong AssignmentsModule. Sua DI trong owner #32 va kiem AppModule khoi dong that.
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/assignments (2026-11-08 05:08:21)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 05:09:32)
+  - [x] **RESOLVED by Implementer** (Commit SHA: ef4c47c, Pass AppModule DI resolution test)
+  - [x] **VERIFIED by Requester** (Pass Test: Pass AppModule DI resolution, verified at 2026-11-08 08:40:20)
+---
+
+
+### [TASK-20261108-050655] P0 #31: Sua Tasks/Calendar lay principal tu cookie session, CSRF that, scope authorization deny-by-default; bo x-account-id/x-workspace-ids/user-mock; bao cao nhu cau schema persistence cho Foundation, them test 401/403 va restart. Chi sua vung #31.
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/planning (2026-11-08 05:06:55)
+- **Tep dinh kem:** review/integration-gate-reassessment.md
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 05:07:58)
+  - [x] **RESOLVED by Implementer** (Commit SHA: 4ed3c85, Pass 16 tests, auth/CSRF fixed, persistence requirement reported)
+  - [x] **VERIFIED by Requester** (Pass Test: Pass 16 tests, auth/CSRF verified, persistence requirement documented, verified at 2026-11-08 08:40:25)
+
+
+### [TASK-20261108-084026] Mo Pull Request vao s_note_v2 kem bang chung test va commit SHA
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/planning (2026-11-08 08:40:26)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 08:42:17)
+  - [x] **RESOLVED by Implementer** (Commit SHA: 4ed3c85, PR #46 da mo: https://github.com/naverisme/snote/pull/46, 16/16 tests pass, web build pass)
+  - [x] **VERIFIED by Requester** (Pass Test: PR #46 created, 16/16 tests pass, web build pass, verified at 2026-11-08 08:45:25)
+
+
+### [TASK-20261108-084014] Mo Pull Request vao s_note_v2 kem bang chung test va commit SHA
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/assignments (2026-11-08 08:40:14)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 08:40:22)
+  - [x] **RESOLVED by Implementer** (Commit SHA: 6f3ff59, PR #47 da mo thanh cong vao s_note_v2 (SHA: 6f3ff59). Pass 23 unit tests, 13 e2e tests, contract va build.)
+  - [x] **VERIFIED by Requester** (Pass Test: PR #47 created, 23/23 tests pass, DI verified, verified at 2026-11-08 08:46:09)
+
+
+### [TASK-20261108-050704] P0 #35: Sua Library va Upload controller lay principal tu cookie session, kiem CSRF voi session; bo x-actor-id va UUID mac dinh, kiem quyen tai commit; them test 401/403 va header gia khong vuot quyen. Chi sua vung #35, bao blocker schema neu can.
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/library (2026-11-08 05:07:04)
+- **Tep dinh kem:** review/integration-gate-reassessment.md
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 05:08:03)
+  - [x] **RESOLVED by Implementer** (Commit SHA: e40cd04, Enforce session auth, CSRF verification, and deny-by-default in library and upload services. 13/13 library specs and 6/6 upload specs pass.)
+  - [x] **VERIFIED by Requester** (Pass Test: Pass 19 tests, auth/CSRF verified, verified at 2026-11-08 08:47:44)
+
+---
+
+
+### [TASK-20261108-051248] P0 bo sung: sau sua DI #32, API bootstrap loi LibraryController constructor dependency index 1 Function. Sua DI trong owner #35 va kiem AppModule bootstrap sau khi ghep.
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/library (2026-11-08 05:12:48)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 05:13:03)
+  - [x] **RESOLVED by Implementer** (Commit SHA: e40cd04, Fix DI configuration in LibraryModule and LibraryController. Build clean and tests pass.)
+  - [x] **VERIFIED by Requester** (Pass Test: Pass LibraryModule DI configuration, verified at 2026-11-08 08:48:08)
+---
+
+
+### [TASK-20261108-084745] Mo Pull Request vao s_note_v2 kem bang chung test va commit SHA
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/library (2026-11-08 08:47:45)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 08:48:29)
+  - [x] **RESOLVED by Implementer** (Commit SHA: e40cd04, Opened PR #48 to s_note_v2 (https://github.com/naverisme/snote/pull/48). All 19 tests PASS, API and Web build clean.)
+  - [x] **VERIFIED by Requester** (Pass Test: PR #48 created, 19/19 tests pass, web build pass, contract valid, verified at 2026-11-08 08:50:34)
