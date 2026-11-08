@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { taskApi } from './api';
-import { mockChecklistFixture, mockTasksFixture, mockWorkSessionsFixture } from './fixtures';
 import { TaskDetailPanel } from './TaskDetailPanel';
 import { TaskFilters } from './TaskFilters';
 import { TaskGanttView } from './TaskGanttView';
@@ -30,8 +29,8 @@ export const TasksContainer: React.FC<TasksContainerProps> = ({
   const [sortMode, setSortMode] = useState<TaskSortMode>('next_tasks');
   const [searchQuery, setSearchQuery] = useState('');
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [checklistMap, setChecklistMap] = useState<Record<string, ChecklistItemViewModel[]>>(mockChecklistFixture);
-  const [workSessions, setWorkSessions] = useState<WorkSessionViewModel[]>(mockWorkSessionsFixture);
+  const [checklistMap, setChecklistMap] = useState<Record<string, ChecklistItemViewModel[]>>({});
+  const [workSessions, setWorkSessions] = useState<WorkSessionViewModel[]>([]);
   const [selectedTaskId, setSelectedTaskId] = useState<string | undefined>();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -74,6 +73,7 @@ export const TasksContainer: React.FC<TasksContainerProps> = ({
 
       setTasks(loadedTasks);
       setWorkSessions(loadedSessions);
+      setError(null);
     } catch (err: unknown) {
       if (reqId !== activeRequestIdRef.current) return;
       if (err instanceof Error && err.name === 'AbortError') return;
@@ -87,8 +87,9 @@ export const TasksContainer: React.FC<TasksContainerProps> = ({
         onUnauthorized?.();
       }
       setError('Không thể tải danh sách công việc. Vui lòng thử lại.');
-      // Fallback to fixture for preview
-      setTasks(workspaceId ? mockTasksFixture.filter(t => t.workspaceId === workspaceId) : mockTasksFixture);
+      setTasks([]);
+      setWorkSessions([]);
+      setSelectedTaskId(undefined);
     } finally {
       if (reqId === activeRequestIdRef.current) {
         setIsLoading(false);
@@ -307,8 +308,9 @@ export const TasksContainer: React.FC<TasksContainerProps> = ({
       />
 
       {error && (
-        <div style={{ padding: '8px 12px', background: '#ffebe9', color: '#cf222e', borderRadius: '6px', marginBottom: '12px', fontSize: '13px' }}>
-          {error}
+        <div role="alert" style={{ padding: '12px 14px', background: '#fff4f2', color: '#9f2d20', border: '1px solid #f2cbc5', borderRadius: '8px', marginBottom: '12px', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+          <span>{error}</span>
+          <button type="button" onClick={() => void loadData()} style={{ border: '1px solid currentColor', borderRadius: 6, background: 'transparent', color: 'inherit', padding: '5px 9px', cursor: 'pointer', whiteSpace: 'nowrap' }}>Thử lại</button>
         </div>
       )}
 

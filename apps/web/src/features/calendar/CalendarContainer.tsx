@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { calendarApi } from './api';
 import { CalendarView } from './CalendarView';
 import { EventModal } from './EventModal';
-import { mockCalendarEventsFixture } from './fixtures';
 import type { CalendarEventViewModel, EventInput } from './types';
 
 interface CalendarContainerProps {
@@ -16,7 +15,7 @@ export const CalendarContainer: React.FC<CalendarContainerProps> = ({
   scopeId,
   initialTimeZone = 'Asia/Ho_Chi_Minh',
 }) => {
-  const [events, setEvents] = useState<CalendarEventViewModel[]>(mockCalendarEventsFixture);
+  const [events, setEvents] = useState<CalendarEventViewModel[]>([]);
   const [timeZone, setTimeZone] = useState<string>(initialTimeZone);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEventViewModel | undefined>();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,10 +38,11 @@ export const CalendarContainer: React.FC<CalendarContainerProps> = ({
         loaded = await calendarApi.listMyEvents(timeZone, { signal: controller.signal });
       }
       setEvents(loaded);
+      setError(null);
     } catch (err: unknown) {
       if (err instanceof Error && err.name === 'AbortError') return;
-      setError('Không thể đồng bộ lịch từ máy chủ. Đang hiển thị bản nháp ngoại tuyến.');
-      setEvents(mockCalendarEventsFixture);
+      setError('Không thể tải lịch. Kiểm tra kết nối rồi thử lại.');
+      setEvents([]);
     }
   }, [scopeType, scopeId, timeZone]);
 
@@ -66,8 +66,9 @@ export const CalendarContainer: React.FC<CalendarContainerProps> = ({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
       {error && (
-        <div style={{ padding: '8px 12px', background: '#ffebe9', color: '#cf222e', borderRadius: '6px', marginBottom: '10px', fontSize: '13px' }}>
-          {error}
+        <div role="alert" style={{ padding: '12px 14px', background: '#fff4f2', color: '#9f2d20', border: '1px solid #f2cbc5', borderRadius: '8px', marginBottom: '10px', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+          <span>{error}</span>
+          <button type="button" onClick={() => void loadEvents()} style={{ border: '1px solid currentColor', borderRadius: 6, background: 'transparent', color: 'inherit', padding: '5px 9px', cursor: 'pointer', whiteSpace: 'nowrap' }}>Thử lại</button>
         </div>
       )}
 
