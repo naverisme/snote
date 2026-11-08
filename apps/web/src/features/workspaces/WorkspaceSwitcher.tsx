@@ -1,174 +1,240 @@
-import React, { useState } from 'react';
-import { ChevronDown, Plus, List, LayoutGrid, Check } from 'lucide-react';
-import type { Workspace } from '../../shared/types';
+import { useEffect, useRef, useState } from 'react';
+import { Check, ChevronDown, LayoutGrid, List, Plus } from 'lucide-react';
+import type { Class, Workspace } from '../../shared/types';
 import { CreateWorkspaceModal } from './CreateWorkspaceModal';
 
-interface WorkspaceSwitcherProps {
+interface Props {
   workspaces: Workspace[];
+  classes: Class[];
   activeWorkspace: Workspace | null;
   onSelectWorkspace: (ws: Workspace) => void;
   onWorkspaceCreated: (ws: Workspace) => void;
 }
 
-export function WorkspaceSwitcher({
-  workspaces,
-  activeWorkspace,
-  onSelectWorkspace,
-  onWorkspaceCreated,
-}: WorkspaceSwitcherProps) {
+const kindLabel = (kind: Workspace['kind']) =>
+  kind === 'default' ? 'Cá nhân' : kind === 'class_group' ? 'Nhóm lớp' : 'Độc lập';
+const getInitials = (name: string) => name.trim().slice(0, 2).toLocaleUpperCase('vi') || 'WS';
+
+export function WorkspaceSwitcher({ workspaces, classes, activeWorkspace, onSelectWorkspace, onWorkspaceCreated }: Props) {
   const [viewState, setViewState] = useState<'collapsed' | 'strip' | 'list'>('collapsed');
   const [showCreateModal, setShowCreateModal] = useState(false);
-
-  const getInitials = (name: string) => {
-    return name ? name.trim().slice(0, 2).toUpperCase() : 'WS';
+  const [isDragging, setIsDragging] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const stripRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef<{ pointerId: number; startX: number; scrollLeft: number; moved: boolean } | null>(null);
+  const suppressClickRef = useRef(false);
+  const isOpen = viewState !== 'collapsed';
+  const others = workspaces.filter(ws => ws.id !== activeWorkspace?.id);
+  const preview = [activeWorkspace, others[0]].filter((ws): ws is Workspace => Boolean(ws));
+  const detail = (ws: Workspace) => {
+    const className = ws.classId ? classes.find(cls => cls.id === ws.classId)?.name : undefined;
+    return [className ?? kindLabel(ws.kind), ws.status === 'archived' ? 'Đã lưu trữ' : undefined].filter(Boolean).join(' · ');
   };
 
-  const otherWorkspaces = workspaces.filter(w => w.id !== activeWorkspace?.id);
+  useEffect(() => {
+    if (!isOpen) return;
+    const onPointerDown = (event: PointerEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) setViewState('collapsed');
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setViewState('collapsed');
+        triggerRef.current?.focus();
+      }
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [isOpen]);
+
+  const select = (ws: Workspace) => {
+    onSelectWorkspace(ws);
+    setViewState('collapsed');
+    triggerRef.current?.focus();
+  };
+  const create = () => {
+    setViewState('collapsed');
+    setShowCreateModal(true);
+  };
+  const endDrag = () => {
+    const drag = dragRef.current;
+    const strip = stripRef.current;
+    if (drag?.moved) {
+      suppressClickRef.current = true;
+      window.setTimeout(() => { suppressClickRef.current = false; }, 50);
+    }
+    if (drag && strip && strip.hasPointerCapture(drag.pointerId)) {
+      strip.releasePointerCapture(drag.pointerId);
+    }
+    dragRef.current = null;
+    setIsDragging(false);
+  };
+
+  const handleStripKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+      const items = stripRef.current?.querySelectorAll<HTMLButtonElement>('.ws-strip-item');
+      if (!items || items.length === 0) return;
+      const index = Array.from(items).indexOf(document.activeElement as HTMLButtonElement);
+      if (index === -1) return;
+      e.preventDefault();
+      if (e.key === 'ArrowRight') {
+        const next = (index + 1) % items.length;
+        items[next]?.focus();
+      } else {
+        const prev = (index - 1 + items.length) % items.length;
+        items[prev]?.focus();
+      }
+    } else if (e.key === 'Home') {
+      const items = stripRef.current?.querySelectorAll<HTMLButtonElement>('.ws-strip-item');
+      if (items && items[0]) {
+        e.preventDefault();
+        items[0].focus();
+      }
+    } else if (e.key === 'End') {
+      const items = stripRef.current?.querySelectorAll<HTMLButtonElement>('.ws-strip-item');
+      if (items && items[items.length - 1]) {
+        e.preventDefault();
+        items[items.length - 1].focus();
+      }
+    }
+  };
+
+  const handleListKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      const items = e.currentTarget.querySelectorAll<HTMLButtonElement>('.ws-list-item, .ws-list-create');
+      if (!items || items.length === 0) return;
+      const index = Array.from(items).indexOf(document.activeElement as HTMLButtonElement);
+      if (index === -1) return;
+      e.preventDefault();
+      if (e.key === 'ArrowDown') {
+        const next = (index + 1) % items.length;
+        items[next]?.focus();
+      } else {
+        const prev = (index - 1 + items.length) % items.length;
+        items[prev]?.focus();
+      }
+    }
+  };
 
   return (
-    <div className="workspace-switcher">
-      {/* Trigger: Collapsed state (UXR-03: Max 2 stacked icons) */}
+    <div className="workspace-switcher" ref={rootRef}>
       <button
-        className="workspace-cluster-trigger"
-        onClick={() => setViewState(viewState === 'collapsed' ? 'strip' : 'collapsed')}
+        ref={triggerRef}
+        type="button"
+        className={`workspace-cluster-trigger ${isOpen ? 'is-open' : ''}`}
+        onClick={() => setViewState(isOpen ? 'collapsed' : 'strip')}
+        onKeyDown={e => {
+          if ((e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') && !isOpen) {
+            e.preventDefault();
+            setViewState('strip');
+          }
+        }}
         title="Bấm để bung danh sách workspace"
         aria-expanded={viewState !== 'collapsed'}
+        aria-controls="workspace-picker"
+        aria-label={`Workspace hiện tại: ${activeWorkspace?.name ?? 'Chưa chọn'}. Mở danh sách ${workspaces.length} workspace`}
       >
-        <div className="stacked-icons">
-          <div className="ws-icon-circle">
-            {activeWorkspace ? getInitials(activeWorkspace.name) : 'CN'}
-          </div>
-          {otherWorkspaces.length > 0 && (
-            <div className="ws-icon-circle secondary">
-              {getInitials(otherWorkspaces[0].name)}
-            </div>
-          )}
-        </div>
-        <span style={{ fontWeight: 600 }}>{activeWorkspace?.name || 'Cá nhân'}</span>
-        <ChevronDown size={14} style={{ color: 'var(--text-muted)' }} />
+        <span className="workspace-trigger-label">Workspace</span>
+        <span className="stacked-icons" aria-hidden="true">
+          {preview.map(ws => <span key={ws.id} className={`ws-icon-circle ws-kind-${ws.kind}`}>{getInitials(ws.name)}</span>)}
+        </span>
+        <span className="workspace-current-name">{activeWorkspace?.name ?? 'Chọn workspace'}</span>
+        {workspaces.length > 2 && <span className="workspace-more-count" aria-hidden="true">+{workspaces.length - 2}</span>}
+        <ChevronDown size={15} className="workspace-chevron" aria-hidden="true" />
       </button>
 
-      {/* Expanded Horizontal Strip or List (UXR-03, UXR-04) */}
-      {viewState !== 'collapsed' && (
-        <div className="workspace-expanded-panel">
+      {isOpen && (
+        <div id="workspace-picker" className="workspace-expanded-panel" aria-label="Chọn workspace" role="dialog" aria-modal="false">
           <div className="ws-expanded-header">
-            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>
-              {viewState === 'strip' ? 'WORKSPACE (DÃY NGANG)' : 'DANH SÁCH WORKSPACE'}
-            </span>
-            <button
-              className="btn btn-secondary btn-sm"
-              onClick={() => setViewState(viewState === 'strip' ? 'list' : 'strip')}
-              title="Đổi góc nhìn danh sách"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
-            >
-              {viewState === 'strip' ? (
-                <>
-                  <List size={13} />
-                  <span>Dạng danh sách</span>
-                </>
-              ) : (
-                <>
-                  <LayoutGrid size={13} />
-                  <span>Dạng dãy ngang</span>
-                </>
-              )}
+            <div><p className="ws-panel-eyebrow">Không gian làm việc</p><p className="ws-panel-subtitle">Mỗi hình tròn là một workspace</p></div>
+            <button type="button" className="ws-view-toggle" onClick={() => setViewState(viewState === 'strip' ? 'list' : 'strip')}>
+              {viewState === 'strip' ? <List size={16} /> : <LayoutGrid size={16} />}
+              <span>{viewState === 'strip' ? 'Danh sách' : 'Dãy ngang'}</span>
             </button>
           </div>
-
           {viewState === 'strip' ? (
-            <div className="ws-strip">
+            <div
+              ref={stripRef}
+              className={`ws-strip ${isDragging ? 'is-dragging' : ''}`}
+              aria-label="Các workspace"
+              tabIndex={0}
+              onKeyDown={handleStripKeyDown}
+              onPointerDown={event => {
+                if (event.button !== 0) return;
+                dragRef.current = { pointerId: event.pointerId, startX: event.clientX, scrollLeft: event.currentTarget.scrollLeft, moved: false };
+              }}
+              onPointerMove={event => {
+                const drag = dragRef.current;
+                if (!drag || drag.pointerId !== event.pointerId) return;
+                const delta = event.clientX - drag.startX;
+                if (Math.abs(delta) > 5 && !drag.moved) {
+                  drag.moved = true;
+                  setIsDragging(true);
+                  event.currentTarget.setPointerCapture(event.pointerId);
+                }
+                if (drag.moved) {
+                  event.currentTarget.scrollLeft = drag.scrollLeft - delta;
+                  event.preventDefault();
+                }
+              }}
+              onPointerUp={endDrag}
+              onPointerCancel={endDrag}
+              onLostPointerCapture={endDrag}
+              onClickCapture={event => {
+                if (!suppressClickRef.current) return;
+                event.preventDefault();
+                event.stopPropagation();
+                suppressClickRef.current = false;
+              }}
+            >
               {/* UXR-04: Tạo workspace ở đầu trái ngoài cùng */}
-              <button
-                className="ws-strip-item"
-                onClick={() => {
-                  setViewState('collapsed');
-                  setShowCreateModal(true);
-                }}
-                title="Tạo workspace mới"
-              >
-                <div className="ws-icon-circle" style={{ backgroundColor: '#e4e4e7', color: 'var(--text-primary)' }}>
-                  <Plus size={14} />
-                </div>
-                <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>Tạo mới</span>
+              <button type="button" className="ws-strip-item ws-create-item" onClick={create} aria-label="Tạo workspace mới">
+                <span className="ws-icon-circle ws-icon-create"><Plus size={18} aria-hidden="true" /></span>
+                <span className="ws-item-name">Tạo mới</span>
               </button>
-
-              {/* Workspace icons in horizontal strip */}
               {workspaces.map(ws => (
                 <button
+                  type="button"
                   key={ws.id}
                   className={`ws-strip-item ${activeWorkspace?.id === ws.id ? 'active' : ''}`}
-                  onClick={() => {
-                    onSelectWorkspace(ws);
-                    setViewState('collapsed');
-                  }}
-                  title={ws.name}
+                  onClick={() => select(ws)}
+                  aria-current={activeWorkspace?.id === ws.id ? 'true' : undefined}
+                  aria-label={`${ws.name}, ${detail(ws)}${activeWorkspace?.id === ws.id ? ', đang chọn' : ''}`}
                 >
-                  <div className="ws-icon-circle" style={{ backgroundColor: ws.kind === 'default' ? '#10b981' : ws.kind === 'class_group' ? '#8b5cf6' : 'var(--accent)' }}>
-                    {getInitials(ws.name)}
-                  </div>
-                  <span style={{ fontSize: '0.7rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 64 }}>
-                    {ws.name}
-                  </span>
+                  <span className={`ws-icon-circle ws-kind-${ws.kind}`} aria-hidden="true">{getInitials(ws.name)}</span>
+                  <span className="ws-item-name" title={ws.name}>{ws.name}</span>
+                  <span className="ws-item-kind">{ws.status === 'archived' ? 'Lưu trữ' : kindLabel(ws.kind)}</span>
                 </button>
               ))}
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 240, overflowY: 'auto' }}>
-              <button
-                className="btn btn-secondary btn-sm"
-                style={{ width: '100%', justifyContent: 'flex-start', marginBottom: 6, display: 'inline-flex', alignItems: 'center', gap: 6 }}
-                onClick={() => {
-                  setViewState('collapsed');
-                  setShowCreateModal(true);
-                }}
-              >
-                <Plus size={14} />
-                <span>Tạo workspace độc lập</span>
-              </button>
-
+            <div className="ws-list" aria-label="Danh sách workspace" tabIndex={0} onKeyDown={handleListKeyDown}>
+              <button type="button" className="ws-list-create" onClick={create}><Plus size={16} /> Tạo workspace độc lập</button>
               {workspaces.map(ws => (
-                <div
+                <button
+                  type="button"
                   key={ws.id}
-                  onClick={() => {
-                    onSelectWorkspace(ws);
-                    setViewState('collapsed');
-                  }}
-                  style={{
-                    padding: '8px 10px',
-                    borderRadius: 'var(--radius-sm)',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    backgroundColor: activeWorkspace?.id === ws.id ? '#eff6ff' : 'transparent',
-                    fontWeight: activeWorkspace?.id === ws.id ? 600 : 400,
-                    fontSize: '0.9rem',
-                  }}
+                  className={`ws-list-item ${activeWorkspace?.id === ws.id ? 'active' : ''}`}
+                  onClick={() => select(ws)}
+                  aria-current={activeWorkspace?.id === ws.id ? 'true' : undefined}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <div className="ws-icon-circle" style={{ width: 18, height: 18, fontSize: '0.65rem', backgroundColor: ws.kind === 'default' ? '#10b981' : ws.kind === 'class_group' ? '#8b5cf6' : 'var(--accent)' }}>
-                      {getInitials(ws.name)}
-                    </div>
-                    <span>{ws.name}</span>
-                  </div>
-
-                  <span className="badge badge-info" style={{ fontSize: '0.65rem' }}>
-                    {ws.kind === 'default' ? 'Cá nhân' : ws.kind === 'class_group' ? 'Nhóm lớp' : 'Độc lập'}
-                  </span>
-                </div>
+                  <span className={`ws-icon-circle ws-kind-${ws.kind}`} aria-hidden="true">{getInitials(ws.name)}</span>
+                  <span className="ws-list-copy"><strong>{ws.name}</strong><small>{detail(ws)}</small></span>
+                  {activeWorkspace?.id === ws.id && <Check size={16} className="ws-selected-check" aria-label="Đang chọn" />}
+                </button>
               ))}
             </div>
           )}
         </div>
       )}
-
       <CreateWorkspaceModal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        onCreated={(ws) => {
-          onWorkspaceCreated(ws);
-          onSelectWorkspace(ws);
-        }}
+        onCreated={ws => { onWorkspaceCreated(ws); onSelectWorkspace(ws); }}
       />
     </div>
   );

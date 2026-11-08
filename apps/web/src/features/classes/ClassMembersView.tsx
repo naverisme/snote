@@ -208,7 +208,7 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated }: ClassMemb
             <div>
               <span style={{ fontWeight: 600, marginRight: 8 }}>Mã tham gia lớp:</span>
               {joinCode ? (
-                <code style={{ background: '#e4e4e7', padding: '3px 8px', borderRadius: 4, fontWeight: 700 }}>{joinCode}</code>
+                <code style={{ background: 'var(--surface-ground)', border: '1px solid var(--border-light)', padding: '3px 8px', borderRadius: 4, fontWeight: 700 }}>{joinCode}</code>
               ) : (
                 <span style={{ color: 'var(--text-muted)' }}>Chưa bật</span>
               )}
@@ -319,11 +319,11 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated }: ClassMemb
           <div className="section-title">Danh sách người trong lớp ({members.length + 1})</div>
         </div>
 
-        <div className="table-container">
-          <table className="data-table">
+        <div className="table-container class-members-container">
+          <table className="data-table class-members-table">
             <thead>
               <tr>
-                <th>Người học (Learner)</th>
+                <th className="col-learner">Người học (Learner)</th>
                 <th>Vai trò (Role)</th>
                 <th>Nhóm đang tham gia</th>
                 {isOwner && <th style={{ textAlign: 'right' }}>Thao tác</th>}
@@ -331,8 +331,8 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated }: ClassMemb
             </thead>
             <tbody>
               {/* Owner row */}
-              <tr style={{ backgroundColor: '#fafafa' }}>
-                <td>
+              <tr className="owner-row">
+                <td className="col-learner">
                   <strong>{cls.ownerId}</strong> <span className="badge badge-info" style={{ marginLeft: 6 }}>Giáo viên chủ lớp</span>
                 </td>
                 <td>Chủ lớp</td>
@@ -343,7 +343,7 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated }: ClassMemb
               {/* Members rows */}
               {members.map(member => (
                 <tr key={member.id}>
-                  <td style={{ fontFamily: 'monospace' }}>{member.memberId}</td>
+                  <td className="col-learner" style={{ fontFamily: 'monospace' }}>{member.memberId}</td>
                   <td>
                     {isOwner ? (
                       <button

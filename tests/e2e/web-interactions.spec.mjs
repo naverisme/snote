@@ -418,3 +418,84 @@ test('WEB-09: Live HTTP multi-workspace isolation across rapid context transitio
   assert.ok(titanTasks.some(t => t.title === 'Titan Architecture Review'), 'Titan workspace must contain titan task');
   assert.ok(!titanTasks.some(t => t.title === 'Personal Study Plan'), 'Titan workspace must NOT leak personal task');
 });
+
+// ============================================================================
+// SUITE 6: STAGESHOW TOKENS, UXR-03/04 & CUXC-01/07/09/11 VERIFICATION
+// ============================================================================
+
+test('WEB-10: Stageshow token standardization & zero hardcoded hexes in core rules and shell', async () => {
+  const themeCss = (await readFile(join(process.cwd(), 'apps/web/src/shared/theme.css'), 'utf-8')).replace(/\r\n/g, '\n');
+
+  // 1. Verify 5-tier ink tokens
+  assert.ok(themeCss.includes('--ink-title: #09090b;'), 'Must define --ink-title');
+  assert.ok(themeCss.includes('--ink-body: #27272a;'), 'Must define --ink-body');
+  assert.ok(themeCss.includes('--ink-subtle: #52525b;'), 'Must define --ink-subtle');
+  assert.ok(themeCss.includes('--ink-muted: #71717a;'), 'Must define --ink-muted');
+  assert.ok(themeCss.includes('--ink-faint: #a1a1aa;'), 'Must define --ink-faint');
+
+  // 2. Verify 3-tier surface tokens & hairline
+  assert.ok(themeCss.includes('--surface-ground: #f4f4f5;'), 'Must define --surface-ground');
+  assert.ok(themeCss.includes('--surface-raised: #ffffff;'), 'Must define --surface-raised');
+  assert.ok(themeCss.includes('--surface-overlay: #ffffff;'), 'Must define --surface-overlay');
+  assert.ok(themeCss.includes('--hairline: rgba(0, 0, 0, 0.08);'), 'Must define --hairline');
+
+  // 3. Verify no hardcoded hex inside rule blocks in theme.css (outside :root)
+  const rootClosingIdx = themeCss.indexOf('}');
+  assert.ok(rootClosingIdx > 0, ':root block must close');
+  const outsideRoot = themeCss.slice(rootClosingIdx + 1);
+  const hexMatches = outsideRoot.match(/#[0-9a-fA-F]{3,8}\b/g);
+  assert.equal(hexMatches, null, `Found unexpected hardcoded hexes outside :root in theme.css: ${hexMatches}`);
+
+  // 4. Verify zero hardcoded hex in App.tsx, ClassSelector.tsx, ClassMembersView.tsx
+  const appTsx = await readFile(join(process.cwd(), 'apps/web/src/app/App.tsx'), 'utf-8');
+  assert.equal(appTsx.match(/#[0-9a-fA-F]{3,8}\b/g), null, 'App.tsx must not contain hardcoded hex colors');
+
+  const classSelectorTsx = await readFile(join(process.cwd(), 'apps/web/src/features/classes/ClassSelector.tsx'), 'utf-8');
+  assert.equal(classSelectorTsx.match(/#[0-9a-fA-F]{3,8}\b/g), null, 'ClassSelector.tsx must not contain hardcoded hex colors');
+
+  const classMembersTsx = await readFile(join(process.cwd(), 'apps/web/src/features/classes/ClassMembersView.tsx'), 'utf-8');
+  assert.equal(classMembersTsx.match(/#[0-9a-fA-F]{3,8}\b/g), null, 'ClassMembersView.tsx must not contain hardcoded hex colors');
+});
+
+test('WEB-11: WorkspaceSwitcher UXR-03/04 responsive states, drag-scroll suppression and a11y', async () => {
+  const themeCss = (await readFile(join(process.cwd(), 'apps/web/src/shared/theme.css'), 'utf-8')).replace(/\r\n/g, '\n');
+  const wsSwitcherSrc = await readFile(join(process.cwd(), 'apps/web/src/features/workspaces/WorkspaceSwitcher.tsx'), 'utf-8');
+
+  // 1. Desktop default hidden, hover/focus expands
+  assert.ok(themeCss.includes('@media (min-width: 769px)'), 'theme.css must declare desktop workspace name transition');
+  assert.ok(themeCss.includes('.workspace-cluster-trigger:hover .workspace-current-name'), 'Hover must expand workspace name on desktop');
+
+  // 2. Mobile name visible to the right of stacked icons
+  assert.ok(themeCss.includes('.workspace-current-name {\n    display: inline-block;\n    max-width: 130px;'), 'Mobile must display workspace name inline next to icons');
+
+  // 3. Drag suppression and click preservation logic
+  assert.ok(wsSwitcherSrc.includes('suppressClickRef.current = true;'), 'Drag end must suppress accidental click');
+  assert.ok(wsSwitcherSrc.includes('onClickCapture'), 'Container must capture and suppress click if moved');
+
+  // 4. Keyboard arrow navigation in strip and list
+  assert.ok(wsSwitcherSrc.includes('handleStripKeyDown'), 'Must support keyboard navigation in strip');
+  assert.ok(wsSwitcherSrc.includes('handleListKeyDown'), 'Must support keyboard navigation in list');
+  assert.ok(wsSwitcherSrc.includes("if (event.key === 'Escape')"), 'Must support Escape dismissal');
+});
+
+test('WEB-12: ClassSelector CUXC-01 keyboard navigation and ClassMembersView CUXC-07/09/11 sticky column', async () => {
+  const classSelectorSrc = await readFile(join(process.cwd(), 'apps/web/src/features/classes/ClassSelector.tsx'), 'utf-8');
+  const classMembersSrc = await readFile(join(process.cwd(), 'apps/web/src/features/classes/ClassMembersView.tsx'), 'utf-8');
+  const themeCss = (await readFile(join(process.cwd(), 'apps/web/src/shared/theme.css'), 'utf-8')).replace(/\r\n/g, '\n');
+
+  // 1. ClassSelector keyboard navigation (Tab/Enter/Esc)
+  assert.ok(classSelectorSrc.includes('handleDropdownKeyDown'), 'ClassSelector must implement dropdown keyboard navigation');
+  assert.ok(classSelectorSrc.includes("if (e.key === 'Escape')"), 'ClassSelector must handle Escape to close and refocus trigger');
+  assert.ok(classSelectorSrc.includes('role="listbox"'), 'ClassSelector dropdown must have role="listbox"');
+  assert.ok(classSelectorSrc.includes('role="option"'), 'Class items must have role="option"');
+
+  // 2. ClassMembersView CUXC-11 sticky learner column
+  assert.ok(classMembersSrc.includes('class-members-table'), 'ClassMembersView must render class-members-table class');
+  assert.ok(classMembersSrc.includes('col-learner'), 'ClassMembersView must tag learner column with col-learner class');
+  assert.ok(themeCss.includes('.class-members-table th.col-learner,\n.class-members-table td.col-learner {\n  position: sticky;\n  left: 0;'), 'CSS must declare sticky left: 0 for col-learner');
+
+  // 3. CUXC-09: 3 separate zones in ClassMembersView
+  assert.ok(classMembersSrc.includes('CUXC-07, CUXC-11'), 'Zone 1 comment must be present');
+  assert.ok(classMembersSrc.includes('Zone 2: My Invitations'), 'Zone 2 invitations must be present');
+  assert.ok(classMembersSrc.includes('Zone 3: Pending Join Requests'), 'Zone 3 pending join requests must be present');
+});
