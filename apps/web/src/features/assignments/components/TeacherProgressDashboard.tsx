@@ -1,4 +1,5 @@
 import React from 'react';
+import { CheckCircle2, ListChecks, MessageSquare, Clock, ChevronRight } from 'lucide-react';
 import type { RecipientProgress } from '../types';
 
 export interface TeacherProgressDashboardProps {
@@ -16,19 +17,19 @@ export const TeacherProgressDashboard: React.FC<TeacherProgressDashboardProps> =
     return (
       <div
         style={{
-          padding: '32px 24px',
+          padding: '32px 24px', // Inset >= 12px
           textAlign: 'center',
-          color: '#64748b',
-          backgroundColor: '#f8fafc',
-          borderRadius: '8px',
-          border: '1px dashed #cbd5e1',
+          color: 'var(--ink-muted)',
+          backgroundColor: 'var(--surface-ground)',
+          borderRadius: 'var(--radius-md)',
+          border: '1px dashed var(--border-light)',
         }}
       >
-        <div style={{ fontSize: '14px', fontWeight: 500, color: '#334155', marginBottom: '4px' }}>
+        <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink-title)', marginBottom: '4px' }}>
           Chưa có nhóm nào nhận bài giao này
         </div>
-        <div style={{ fontSize: '12px' }}>
-          Các nhóm được giao sẽ xuất hiện tại đây kèm theo 3 trục tiến độ độc lập.
+        <div style={{ fontSize: '12px', color: 'var(--ink-subtle)' }}>
+          Các nhóm được giao sẽ xuất hiện tại đây kèm theo 3 nguồn tiến độ độc lập (CUXD-03).
         </div>
       </div>
     );
@@ -38,20 +39,42 @@ export const TeacherProgressDashboard: React.FC<TeacherProgressDashboardProps> =
     <div
       style={{
         overflowX: 'auto',
-        border: '1px solid #e2e8f0',
-        borderRadius: '8px',
-        background: '#ffffff',
+        border: '1px solid var(--hairline)',
+        borderRadius: 'var(--radius-md)',
+        background: 'var(--surface-raised)',
+        boxShadow: 'var(--shadow-raised)',
       }}
     >
       <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
         <thead>
-          <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569' }}>
+          <tr
+            style={{
+              backgroundColor: 'var(--surface-ground)',
+              borderBottom: '1px solid var(--hairline)',
+              color: 'var(--ink-subtle)',
+            }}
+          >
             <th style={{ padding: '12px 16px', fontWeight: 600, fontSize: '12px' }}>Nhóm nhận bài</th>
-            {/* ASG-02: Ba nguồn tiến độ riêng biệt, không tính tỷ lệ tổng hợp */}
-            <th style={{ padding: '12px 16px', fontWeight: 600, fontSize: '12px' }}>Công việc</th>
-            <th style={{ padding: '12px 16px', fontWeight: 600, fontSize: '12px' }}>Checklist</th>
-            <th style={{ padding: '12px 16px', fontWeight: 600, fontSize: '12px' }}>Cập nhật gần nhất</th>
-            <th style={{ padding: '12px 16px', fontWeight: 600, fontSize: '12px' }}>Trạng thái nộp bài</th>
+            {/* CUXD-03 / ASG-02: Ba nguồn tiến độ phân tách riêng biệt, không tính tỷ lệ tổng hợp */}
+            <th style={{ padding: '12px 16px', fontWeight: 600, fontSize: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <CheckCircle2 size={13} style={{ color: 'var(--ink-muted)' }} />
+                <span>Nguồn 1: Công việc</span>
+              </div>
+            </th>
+            <th style={{ padding: '12px 16px', fontWeight: 600, fontSize: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <ListChecks size={13} style={{ color: 'var(--ink-muted)' }} />
+                <span>Nguồn 2: Checklist</span>
+              </div>
+            </th>
+            <th style={{ padding: '12px 16px', fontWeight: 600, fontSize: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <MessageSquare size={13} style={{ color: 'var(--ink-muted)' }} />
+                <span>Nguồn 3: Cập nhật văn bản</span>
+              </div>
+            </th>
+            <th style={{ padding: '12px 16px', fontWeight: 600, fontSize: '12px' }}>Bản nộp hiện hành</th>
             <th style={{ padding: '12px 16px', fontWeight: 600, fontSize: '12px', textAlign: 'right' }}>Thao tác</th>
           </tr>
         </thead>
@@ -59,8 +82,11 @@ export const TeacherProgressDashboard: React.FC<TeacherProgressDashboardProps> =
           {recipients.map(recipient => {
             const isSelected = recipient.id === selectedRecipientId;
             const hasChecklist = (recipient.checklistTotal ?? 0) > 0;
+            const checklistPercent = hasChecklist
+              ? Math.round(((recipient.checklistCompleted ?? 0) / (recipient.checklistTotal || 1)) * 100)
+              : null;
             const checklistDisplay = hasChecklist
-              ? `${recipient.checklistCompleted ?? 0}/${recipient.checklistTotal} mục`
+              ? `${checklistPercent}% (${recipient.checklistCompleted ?? 0}/${recipient.checklistTotal} mục)`
               : 'Chưa có checklist';
 
             const tasksDisplay = `${recipient.tasksCompleted ?? 0}/${recipient.tasksTotal ?? 0} việc`;
@@ -69,52 +95,63 @@ export const TeacherProgressDashboard: React.FC<TeacherProgressDashboardProps> =
             return (
               <tr
                 key={recipient.id}
+                onClick={() => onSelectRecipient(recipient.id)}
                 style={{
-                  borderBottom: '1px solid #f1f5f9',
-                  backgroundColor: isSelected ? '#f8fafc' : 'transparent',
-                  transition: 'background-color 140ms ease',
+                  borderBottom: '1px solid var(--hairline)',
+                  backgroundColor: isSelected ? 'var(--surface-ground)' : 'transparent',
+                  cursor: 'pointer',
+                  transition: 'background-color var(--transition-fast)',
                 }}
               >
-                <td style={{ padding: '12px 16px', fontWeight: 500, color: '#0f172a' }}>
+                {/* Nhóm */}
+                <td style={{ padding: '14px 16px', fontWeight: 500, color: 'var(--ink-title)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    {isSelected && (
+                    {isSelected ? (
                       <span
                         style={{
                           width: '3px',
                           height: '14px',
-                          backgroundColor: '#2563eb',
+                          backgroundColor: 'var(--accent)',
                           borderRadius: '2px',
                           display: 'inline-block',
+                          flexShrink: 0,
                         }}
                       />
+                    ) : (
+                      <span style={{ width: '3px', height: '14px', display: 'inline-block', flexShrink: 0 }} />
                     )}
                     <span>{recipient.workspaceName || `Nhóm ${recipient.workspaceId.slice(0, 8)}`}</span>
                   </div>
                 </td>
-                <td style={{ padding: '12px 16px', color: '#334155' }}>
+
+                {/* Nguồn 1: Công việc (Tasks Completed / Total) */}
+                <td style={{ padding: '14px 16px', color: 'var(--ink-body)' }}>
                   <span
                     style={{
                       display: 'inline-block',
                       padding: '2px 8px',
                       borderRadius: '4px',
-                      backgroundColor: '#f8fafc',
-                      border: '1px solid #e2e8f0',
+                      backgroundColor: 'var(--surface-ground)',
+                      border: '1px solid var(--hairline)',
                       fontSize: '12px',
                       fontWeight: 500,
+                      color: 'var(--ink-title)',
                     }}
                   >
                     {tasksDisplay}
                   </span>
                 </td>
-                <td style={{ padding: '12px 16px' }}>
+
+                {/* Nguồn 2: Checklist (Completed / Total %) */}
+                <td style={{ padding: '14px 16px' }}>
                   <span
                     style={{
                       display: 'inline-block',
                       padding: '2px 8px',
                       borderRadius: '4px',
-                      backgroundColor: hasChecklist ? '#f8fafc' : 'transparent',
-                      border: hasChecklist ? '1px solid #e2e8f0' : 'none',
-                      color: hasChecklist ? '#334155' : '#94a3b8',
+                      backgroundColor: hasChecklist ? 'var(--surface-ground)' : 'transparent',
+                      border: hasChecklist ? '1px solid var(--hairline)' : 'none',
+                      color: hasChecklist ? 'var(--ink-title)' : 'var(--ink-muted)',
                       fontSize: '12px',
                       fontWeight: hasChecklist ? 500 : 400,
                     }}
@@ -122,7 +159,9 @@ export const TeacherProgressDashboard: React.FC<TeacherProgressDashboardProps> =
                     {checklistDisplay}
                   </span>
                 </td>
-                <td style={{ padding: '12px 16px', color: '#475569', maxWidth: '240px' }}>
+
+                {/* Nguồn 3: Cập nhật văn bản (progressText) */}
+                <td style={{ padding: '14px 16px', color: 'var(--ink-subtle)', maxWidth: '240px' }}>
                   {recipient.progressText ? (
                     <span
                       style={{
@@ -131,16 +170,19 @@ export const TeacherProgressDashboard: React.FC<TeacherProgressDashboardProps> =
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
+                        color: 'var(--ink-body)',
                       }}
+                      title={recipient.progressText}
                     >
                       "{recipient.progressText}"
                     </span>
                   ) : (
-                    <span style={{ color: '#94a3b8', fontSize: '12px' }}>Chưa có cập nhật</span>
+                    <span style={{ color: 'var(--ink-muted)', fontSize: '12px' }}>Chưa có cập nhật</span>
                   )}
                 </td>
-                <td style={{ padding: '12px 16px' }}>
-                  {/* Badges trạng thái nộp bài không dùng màu chói (Quiet Hierarchy) */}
+
+                {/* Bản nộp hiện hành */}
+                <td style={{ padding: '14px 16px' }}>
                   {hasSubmitted ? (
                     <span
                       style={{
@@ -149,11 +191,11 @@ export const TeacherProgressDashboard: React.FC<TeacherProgressDashboardProps> =
                         gap: '5px',
                         padding: '2px 8px',
                         borderRadius: '4px',
-                        fontSize: '12px',
-                        fontWeight: 500,
                         backgroundColor: '#f0fdf4',
                         color: '#166534',
                         border: '1px solid #bbf7d0',
+                        fontSize: '12px',
+                        fontWeight: 500,
                       }}
                     >
                       <span
@@ -161,11 +203,11 @@ export const TeacherProgressDashboard: React.FC<TeacherProgressDashboardProps> =
                           width: '6px',
                           height: '6px',
                           borderRadius: '50%',
-                          backgroundColor: '#16a34a',
+                          backgroundColor: 'var(--success)',
                           display: 'inline-block',
                         }}
                       />
-                      Đã nộp (v{recipient.submissionVersion})
+                      <span>Đã nộp v{recipient.submissionVersion}</span>
                     </span>
                   ) : (
                     <span
@@ -175,43 +217,42 @@ export const TeacherProgressDashboard: React.FC<TeacherProgressDashboardProps> =
                         gap: '5px',
                         padding: '2px 8px',
                         borderRadius: '4px',
+                        backgroundColor: 'var(--surface-ground)',
+                        color: 'var(--ink-muted)',
+                        border: '1px solid var(--hairline)',
                         fontSize: '12px',
-                        fontWeight: 500,
-                        backgroundColor: '#f8fafc',
-                        color: '#64748b',
-                        border: '1px solid #e2e8f0',
                       }}
                     >
-                      <span
-                        style={{
-                          width: '6px',
-                          height: '6px',
-                          borderRadius: '50%',
-                          backgroundColor: '#94a3b8',
-                          display: 'inline-block',
-                        }}
-                      />
-                      Chưa nộp
+                      <span>Chưa nộp bài</span>
                     </span>
                   )}
                 </td>
-                <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+
+                {/* Thao tác (CUXD-05) */}
+                <td style={{ padding: '14px 16px', textAlign: 'right' }}>
                   <button
                     type="button"
-                    onClick={() => onSelectRecipient(recipient.id)}
+                    onClick={e => {
+                      e.stopPropagation();
+                      onSelectRecipient(recipient.id);
+                    }}
                     style={{
-                      padding: '6px 12px',
+                      padding: '4px 10px',
+                      borderRadius: 'var(--radius-sm)',
+                      border: isSelected ? '1px solid var(--accent)' : '1px solid var(--border-light)',
+                      backgroundColor: isSelected ? 'var(--accent)' : 'var(--surface-raised)',
+                      color: isSelected ? '#ffffff' : 'var(--ink-subtle)',
                       fontSize: '12px',
                       fontWeight: 500,
-                      borderRadius: '6px',
-                      border: isSelected ? '1px solid #2563eb' : '1px solid #cbd5e1',
-                      background: isSelected ? '#2563eb' : '#ffffff',
-                      color: isSelected ? '#ffffff' : '#334155',
                       cursor: 'pointer',
-                      transition: 'all 140ms ease',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      transition: 'all var(--transition-fast)',
                     }}
                   >
-                    {isSelected ? 'Đang xem' : 'Xem bản nộp & nhận xét'}
+                    <span>{isSelected ? 'Đang chọn' : 'Xem bài nộp'}</span>
+                    <ChevronRight size={13} style={{ opacity: isSelected ? 1 : 0.7 }} />
                   </button>
                 </td>
               </tr>
@@ -222,7 +263,3 @@ export const TeacherProgressDashboard: React.FC<TeacherProgressDashboardProps> =
     </div>
   );
 };
-
-// Alias export for interoperability
-export const TeacherDashboard = TeacherProgressDashboard;
-export type TeacherDashboardProps = TeacherProgressDashboardProps;
