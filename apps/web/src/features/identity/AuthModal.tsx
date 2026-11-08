@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, GraduationCap, User } from 'lucide-react';
 import { register, login, passwordResetRequest, passwordReset } from '../../shared/api';
 import type { Account } from '../../shared/types';
 
@@ -76,6 +76,20 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
     }
   };
 
+  const handleQuickLogin = async (demoEmail: string, demoPass: string) => {
+    setError(null);
+    setLoading(true);
+    try {
+      const res = await login({ email: demoEmail, password: demoPass });
+      onAuthenticated(res.data);
+      onClose();
+    } catch (err: any) {
+      setError(err?.body?.error?.message || err?.message || 'Không thể đăng nhập tài khoản demo');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true">
       <div className="modal-content" onClick={e => e.stopPropagation()}>
@@ -91,6 +105,34 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
 
         {error && <div style={{ color: 'var(--danger)', marginBottom: 12, fontSize: '0.875rem' }}>{error}</div>}
         {info && <div style={{ color: 'var(--success)', marginBottom: 12, fontSize: '0.875rem' }}>{info}</div>}
+
+        {tab === 'login' && (
+          <div style={{ marginBottom: 16, padding: '12px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+            <span style={{ fontSize: '12px', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '8px' }}>
+              ⚡ Trải nghiệm nhanh 1 chạm:
+            </span>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+                onClick={() => handleQuickLogin('student.demo@snote.edu.vn', 'DemoPassword123@')}
+              >
+                <User size={13} />
+                <span>Học sinh Demo</span>
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+                onClick={() => handleQuickLogin('teacher.demo@snote.edu.vn', 'DemoPassword123@')}
+              >
+                <GraduationCap size={13} />
+                <span>Giáo viên Demo</span>
+              </button>
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           {tab !== 'reset' && (
