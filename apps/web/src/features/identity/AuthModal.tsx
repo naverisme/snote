@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, GraduationCap, User } from 'lucide-react';
+import { X, GraduationCap, User, Sparkles, Check } from 'lucide-react';
 import { register, login, passwordResetRequest, passwordReset } from '../../shared/api';
 import type { Account } from '../../shared/types';
 
@@ -8,6 +8,27 @@ interface AuthModalProps {
   onClose: () => void;
   onAuthenticated: (account: Account) => void;
 }
+
+const ROLE_OPTIONS: { id: 'student' | 'teacher' | 'personal'; title: string; desc: string; icon: React.ComponentType<{ size: number }> }[] = [
+  {
+    id: 'student',
+    title: 'Người học (Student)',
+    desc: 'Tham gia lớp học, làm bài tập, theo dõi lịch và thư viện',
+    icon: User,
+  },
+  {
+    id: 'teacher',
+    title: 'Giáo viên (Teacher)',
+    desc: 'Tạo và quản lý lớp học, giao bài tập, chấm điểm và theo dõi tiến độ',
+    icon: GraduationCap,
+  },
+  {
+    id: 'personal',
+    title: 'Cá nhân (Personal)',
+    desc: 'Quản lý công việc cá nhân, tài liệu và lịch trình độc lập',
+    icon: Sparkles,
+  },
+];
 
 export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) {
   const [tab, setTab] = useState<'login' | 'register' | 'forgot' | 'reset'>('login');
@@ -29,10 +50,20 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
     if (usages.includes(usage)) {
       if (usages.length > 1) {
         setUsages(usages.filter(u => u !== usage));
+        setError(null);
+      } else {
+        setError('Tài khoản cần duy trì ít nhất 1 vai trò');
       }
     } else {
       setUsages([...usages, usage]);
+      setError(null);
     }
+  };
+
+  const handleSelectOnly = (e: React.MouseEvent, usage: 'student' | 'teacher' | 'personal') => {
+    e.stopPropagation();
+    setUsages([usage]);
+    setError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -170,32 +201,64 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
           {tab === 'register' && (
             <>
               <div className="form-group">
-                <label className="form-label">Vai trò sử dụng (chọn ít nhất 1)</label>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={usages.includes('student')}
-                      onChange={() => handleToggleUsage('student')}
-                    />
-                    <span>Người học (Student)</span>
-                  </label>
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={usages.includes('teacher')}
-                      onChange={() => handleToggleUsage('teacher')}
-                    />
-                    <span>Giáo viên (Teacher - có quyền tạo lớp)</span>
-                  </label>
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={usages.includes('personal')}
-                      onChange={() => handleToggleUsage('personal')}
-                    />
-                    <span>Cá nhân (Personal)</span>
-                  </label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                  <label className="form-label" style={{ marginBottom: 0 }}>Vai trò sử dụng</label>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--ink-muted)' }}>Chọn một hoặc nhiều vai trò</span>
+                </div>
+                <div className="role-cards-container">
+                  {ROLE_OPTIONS.map(role => {
+                    const isSelected = usages.includes(role.id);
+                    const Icon = role.icon;
+                    return (
+                      <div
+                        key={role.id}
+                        className={`role-card ${isSelected ? 'active' : ''}`}
+                        onClick={() => handleToggleUsage(role.id)}
+                        role="checkbox"
+                        aria-checked={isSelected}
+                        tabIndex={0}
+                        onKeyDown={e => {
+                          if (e.key === ' ' || e.key === 'Enter') {
+                            e.preventDefault();
+                            handleToggleUsage(role.id);
+                          }
+                        }}
+                      >
+                        <div className="role-card-body">
+                          <div className="role-card-icon-box">
+                            <Icon size={18} />
+                          </div>
+                          <div className="role-card-info">
+                            <span className="role-card-title">{role.title}</span>
+                            <span className="role-card-desc">{role.desc}</span>
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          {isSelected && usages.length > 1 && (
+                            <button
+                              type="button"
+                              className="btn-link"
+                              style={{ fontSize: '0.72rem', color: 'var(--ink-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px' }}
+                              onClick={e => handleSelectOnly(e, role.id)}
+                              title="Chỉ chọn vai trò này"
+                            >
+                              Chỉ chọn
+                            </button>
+                          )}
+                          <div className="role-check-indicator" aria-hidden="true">
+                            {isSelected && <Check size={12} strokeWidth={3} />}
+                          </div>
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => {}}
+                          tabIndex={-1}
+                          style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 

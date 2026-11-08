@@ -9,6 +9,7 @@ interface ClassSelectorProps {
   currentUser: Account | null;
   onSelectClass: (cls: Class) => void;
   onClassCreated: (cls: Class) => void;
+  onOpenSettings?: () => void;
 }
 
 export function ClassSelector({
@@ -17,6 +18,7 @@ export function ClassSelector({
   currentUser,
   onSelectClass,
   onClassCreated,
+  onOpenSettings,
 }: ClassSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -174,7 +176,7 @@ export function ClassSelector({
             ))
           )}
 
-          {isTeacher && (
+          {isTeacher ? (
             <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border-light)' }}>
               <button
                 type="button"
@@ -190,7 +192,24 @@ export function ClassSelector({
                 <span>Tạo lớp học mới</span>
               </button>
             </div>
-          )}
+          ) : currentUser ? (
+            <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border-light)' }}>
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontSize: '0.8rem' }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsOpen(false);
+                  if (onOpenSettings) onOpenSettings();
+                }}
+                title="Bật quyền Giáo viên trong Cài đặt để tạo lớp mới"
+              >
+                <GraduationCap size={13} />
+                <span>Bật quyền Giáo viên để tạo lớp</span>
+              </button>
+            </div>
+          ) : null}
         </div>
       )}
 

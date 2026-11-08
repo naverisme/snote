@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Award, User, ShieldCheck } from 'lucide-react';
 import type { Class, Membership, Invitation, JoinRequest, Account } from '../../shared/types';
 import {
   listClassMembers,
@@ -350,11 +351,34 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated }: ClassMemb
                         className={`btn btn-sm ${member.role === 'monitor' ? 'btn-primary' : 'btn-secondary'}`}
                         onClick={() => handleRoleChange(member.id, member.role as 'member' | 'monitor', member.version)}
                         title="Bấm để thay đổi giữa Member và Lớp trưởng"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
                       >
-                        {member.role === 'monitor' ? '⭐ Lớp trưởng (Monitor)' : 'Thành viên (Member)'}
+                        {member.role === 'monitor' ? (
+                          <>
+                            <Award size={13} />
+                            <span>Lớp trưởng (Monitor)</span>
+                          </>
+                        ) : (
+                          <>
+                            <User size={13} />
+                            <span>Thành viên (Member)</span>
+                          </>
+                        )}
                       </button>
                     ) : (
-                      <span>{member.role === 'monitor' ? '⭐ Lớp trưởng' : 'Thành viên'}</span>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                        {member.role === 'monitor' ? (
+                          <>
+                            <Award size={13} style={{ color: 'var(--accent)' }} />
+                            <span>Lớp trưởng</span>
+                          </>
+                        ) : (
+                          <>
+                            <User size={13} style={{ color: 'var(--ink-muted)' }} />
+                            <span>Thành viên</span>
+                          </>
+                        )}
+                      </span>
                     )}
                   </td>
                   <td>Nhóm của lớp</td>

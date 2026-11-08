@@ -15,6 +15,8 @@ import {
   Sparkles,
   Menu,
   X,
+  PanelLeft,
+  User,
 } from 'lucide-react';
 import type { Account, Class, Workspace } from '../shared/types';
 import { getMe, listClasses, listWorkspaces, getMyInvitations, login } from '../shared/api';
@@ -50,6 +52,7 @@ export function App() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // Load current session
   const checkSession = async () => {
@@ -135,16 +138,27 @@ export function App() {
       <header className="app-header">
         <div className="header-left">
           {user && (
-            <button
-              type="button"
-              className="mobile-nav-toggle"
-              onClick={() => setMobileNavOpen(open => !open)}
-              aria-label={mobileNavOpen ? 'Đóng điều hướng' : 'Mở điều hướng'}
-              aria-expanded={mobileNavOpen}
-              aria-controls="app-sidebar"
-            >
-              {mobileNavOpen ? <X size={19} /> : <Menu size={19} />}
-            </button>
+            <>
+              <button
+                type="button"
+                className="sidebar-toggle-btn"
+                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                title={sidebarCollapsed ? "Mở thanh bên" : "Thu gọn thanh bên"}
+                aria-label={sidebarCollapsed ? "Mở thanh bên" : "Thu gọn thanh bên"}
+              >
+                <PanelLeft size={18} />
+              </button>
+              <button
+                type="button"
+                className="mobile-nav-toggle"
+                onClick={() => setMobileNavOpen(open => !open)}
+                aria-label={mobileNavOpen ? 'Đóng điều hướng' : 'Mở điều hướng'}
+                aria-expanded={mobileNavOpen}
+                aria-controls="app-sidebar"
+              >
+                {mobileNavOpen ? <X size={19} /> : <Menu size={19} />}
+              </button>
+            </>
           )}
           <button className="brand-btn" onClick={handleSnoteLogoClick} title="Về Việc của tôi (Personal)">
             <Zap className="ss-icon-brand" />
@@ -168,6 +182,7 @@ export function App() {
                 currentUser={user}
                 onSelectClass={handleSelectClass}
                 onClassCreated={cls => setClasses([...classes, cls])}
+                onOpenSettings={() => setShowSettingsModal(true)}
               />
             </div>
           )}
@@ -183,13 +198,48 @@ export function App() {
                 </span>
               )}
 
-              <button
-                className="btn btn-secondary btn-sm"
+              {/* ChatGPT Style Role Badge */}
+              <div
+                className="chatgpt-role-badge"
                 onClick={() => setShowSettingsModal(true)}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                title="Bấm để mở cài đặt vai trò tài khoản"
+                role="button"
+                tabIndex={0}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setShowSettingsModal(true);
+                  }
+                }}
               >
-                <Settings size={14} />
-                <span>Cài đặt ({user.usages.join(', ')})</span>
+                {user.usages.includes('teacher') ? (
+                  <>
+                    <GraduationCap size={14} />
+                    <span>Giáo viên</span>
+                  </>
+                ) : (
+                  <>
+                    <User size={14} />
+                    <span>Học sinh</span>
+                  </>
+                )}
+                {user.usages.length > 1 && (
+                  <span className="role-count-pill">+{user.usages.length - 1}</span>
+                )}
+              </div>
+
+              {/* ChatGPT Style User Pill */}
+              <button
+                type="button"
+                className="chatgpt-user-pill"
+                onClick={() => setShowSettingsModal(true)}
+                title={`Tài khoản: ${user.id} (Bấm để mở cài đặt)`}
+              >
+                <div className="chatgpt-avatar">
+                  {user.usages.includes('teacher') ? 'G' : 'H'}
+                </div>
+                <span className="chatgpt-user-email">ID: {user.id.slice(0, 8)}...</span>
+                <Settings size={14} className="chatgpt-settings-icon" />
               </button>
             </div>
           ) : (
@@ -205,12 +255,15 @@ export function App() {
         {/* Sidebar Navigation */}
         {user && <aside
           id="app-sidebar"
-          className={`app-sidebar ${mobileNavOpen ? 'mobile-open' : ''}`}
+          className={`app-sidebar ${sidebarCollapsed ? 'desktop-collapsed' : ''} ${mobileNavOpen ? 'mobile-open' : ''}`}
           onClick={event => {
             if ((event.target as HTMLElement).closest('button')) setMobileNavOpen(false);
           }}
         >
           <div className="sidebar-nav-group">
+            <div className="sidebar-section-label">
+              {context.type === 'workspace' ? 'KHÔNG GIAN LÀM VIỆC' : `LỚP HỌC: ${activeClass?.name ?? ''}`}
+            </div>
             {context.type === 'workspace' ? (
               /* Workspace Context: 3 features (NAV-04, UXR-02) */
               <>
@@ -288,6 +341,23 @@ export function App() {
               <p className="notes-preview-empty">Mục lưu ý chưa được đồng bộ</p>
             </div>
           )}
+
+          {/* ChatGPT Style Sidebar Footer */}
+          <div className="sidebar-footer">
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 10px', fontSize: '0.8rem' }}
+              onClick={() => setShowSettingsModal(true)}
+              title="Quản lý vai trò tài khoản"
+            >
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                {user.usages.includes('teacher') ? <GraduationCap size={14} /> : <User size={14} />}
+                <span>{user.usages.includes('teacher') ? 'Giáo viên' : 'Học sinh'}</span>
+              </span>
+              <span style={{ fontSize: '0.72rem', color: 'var(--ink-muted)' }}>Cài đặt</span>
+            </button>
+          </div>
         </aside>}
 
         {/* Main Content Area */}
