@@ -328,6 +328,11 @@ body {
 .class-selector-trigger:hover {
   background-color: var(--bg-secondary);
 }
+.class-selector-trigger:focus-visible,
+.class-dropdown button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
 
 .class-dropdown {
   position: absolute;
