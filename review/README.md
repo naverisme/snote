@@ -7,6 +7,7 @@
 | [Rà Foundation #28](foundation-audit.md) | Giới hạn môi trường, rủi ro giao dịch và kết quả cần kiểm trên PostgreSQL |
 | [Rà lại cổng tích hợp #36](integration-gate-reassessment.md) | Đối chiếu test giả lập với yêu cầu HTTP, PostgreSQL, giao diện, tải và phục hồi trước pilot |
 | [Rà giao diện theo tính năng](ui-commercial-audit.md) | Vấn đề theo từng màn, thứ tự sửa, giới hạn và kết quả cần kiểm trước khi dùng thương mại |
+| [Rà Ngữ cảnh và shell trước lệnh UI](context-shell-readiness-2026-11-08.md) | SHA, quyền, CSRF, chuyển ngữ cảnh, trạng thái và ma trận màn/API cho #29/#33/#34 |
 | [Rà đầu vào API-A #29](api-a-readiness.md) | Cổng foundation, khoảng trống contract/schema, đề nghị bàn giao owner #28 và ma trận QA-01–04 trước triển khai |
 | [Đề xuất toàn vẹn dữ liệu](blocked/data-integrity-proposal.md) | Mô hình phiên bản/tệp, gửi chống trùng, quota và dọn dữ liệu; chưa duyệt kiến trúc |
 | [Dấu vết nguồn](provenance.md) | Đối chiếu quyết định người dùng, PR và nơi lưu quy tắc |
