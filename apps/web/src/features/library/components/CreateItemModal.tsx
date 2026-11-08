@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { FileText, Folder, Link, X } from 'lucide-react';
+import { FileText, Folder, Link, X, AlertCircle } from 'lucide-react';
 import type { Folder as FolderType, LibraryItemType } from '../types';
-import { ALLOWED_EXTENSIONS, MAX_FILE_SIZE } from '../utils';
+import { ALLOWED_EXTENSIONS, MAX_FILE_SIZE, formatBytes } from '../utils';
+import { calculateListEnter } from '../markdown-helper';
 
 export interface CreateItemModalProps {
   isOpen: boolean;
@@ -33,47 +34,18 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Markdown bullet list shortcut helper on textarea keydown (LIB-09)
+  // CUXB-07 / LIB-09: Markdown list auto-continuation and termination helper
   const handleContentKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter') {
       const textarea = e.currentTarget;
       const pos = textarea.selectionStart;
-      const value = textarea.value;
-      const currentLine = value.substring(0, pos).split('\n').pop() || '';
-
-      if (currentLine.startsWith('- ')) {
+      const res = calculateListEnter(textarea.value, pos);
+      if (res.handled) {
         e.preventDefault();
-        if (currentLine.trim() === '-') {
-          // Empty bullet line ends the list
-          const newValue = value.substring(0, pos - 2) + '\n' + value.substring(pos);
-          setContent(newValue);
-        } else {
-          // Continue bullet list
-          const newValue = value.substring(0, pos) + '\n- ' + value.substring(pos);
-          setContent(newValue);
-          setTimeout(() => {
-            textarea.selectionStart = textarea.selectionEnd = pos + 3;
-          }, 0);
-        }
-      } else if (/^\d+\.\s/.test(currentLine)) {
-        e.preventDefault();
-        const match = currentLine.match(/^(\d+)\.\s/);
-        if (match) {
-          const num = parseInt(match[1], 10);
-          if (currentLine.trim() === `${num}.`) {
-            // Empty numbered line ends list
-            const newValue = value.substring(0, pos - (match[0].length)) + '\n' + value.substring(pos);
-            setContent(newValue);
-          } else {
-            // Next number
-            const prefix = `\n${num + 1}. `;
-            const newValue = value.substring(0, pos) + prefix + value.substring(pos);
-            setContent(newValue);
-            setTimeout(() => {
-              textarea.selectionStart = textarea.selectionEnd = pos + prefix.length;
-            }, 0);
-          }
-        }
+        setContent(res.newValue);
+        setTimeout(() => {
+          textarea.selectionStart = textarea.selectionEnd = res.newCursorPos;
+        }, 0);
       }
     }
   };
@@ -83,14 +55,14 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check size limit (LIB-11, QA-06)
     if (file.size > MAX_FILE_SIZE) {
-      setErrorMessage(`Tệp vượt quá kích thước cho phép 25 MB (Dung lượng: ${(file.size / (1024 * 1024)).toFixed(1)} MB). Vui lòng chọn tệp nhỏ hơn!`);
+      setErrorMessage(
+        `Tệp vượt quá kích thước cho phép 25 MB (${formatBytes(file.size)}). Vui lòng chọn tệp nhỏ hơn!`,
+      );
       e.target.value = '';
       return;
     }
 
-    // Check extension
     const ext = '.' + file.name.split('.').pop()?.toLowerCase();
     if (!ALLOWED_EXTENSIONS.includes(ext)) {
       setErrorMessage(
@@ -132,15 +104,21 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-      <div className="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 flex flex-col gap-4">
-        <div className="flex justify-between items-center border-b pb-3">
-          <h2 id="modal-title" className="text-lg font-bold text-gray-800">
+    <div
+      className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50 animate-in fade-in duration-150"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+    >
+      <div className="bg-[var(--surface-overlay)] border border-[var(--hairline)] rounded-xl shadow-[var(--shadow-overlay)] max-w-lg w-full p-6 flex flex-col gap-4">
+        {/* Header */}
+        <div className="flex justify-between items-center border-b border-[var(--hairline)] pb-3">
+          <h2 id="modal-title" className="text-base font-bold text-[var(--ink-title)]">
             Thêm mới vào Thư viện
           </h2>
           <button
             type="button"
-            className="text-gray-400 hover:text-gray-600 p-1 rounded-md transition-colors"
+            className="text-[var(--ink-muted)] hover:text-[var(--ink-title)] p-1 rounded-md transition-colors"
             onClick={onClose}
             aria-label="Đóng cửa sổ"
           >
@@ -149,57 +127,69 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({
         </div>
 
         {/* Tab buttons */}
-        <div className="flex border-b border-gray-200" role="tablist">
+        <div className="flex border-b border-[var(--hairline)]" role="tablist">
           <button
             type="button"
             role="tab"
             aria-selected={activeTab === 'text'}
-            className={`flex-1 py-2 text-sm font-medium border-b-2 text-center transition-colors inline-flex items-center justify-center gap-1.5 ${
-              activeTab === 'text' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+            className={`flex-1 py-2 text-xs font-semibold border-b-2 text-center transition-colors inline-flex items-center justify-center gap-1.5 ${
+              activeTab === 'text'
+                ? 'border-[var(--accent)] text-blue-600'
+                : 'border-transparent text-[var(--ink-subtle)] hover:text-[var(--ink-title)]'
             }`}
             onClick={() => setActiveTab('text')}
           >
-            <FileText size={15} />
-            <span>Văn bản</span>
+            <FileText size={14} />
+            <span>Văn bản (CUXB-07)</span>
           </button>
           <button
             type="button"
             role="tab"
             aria-selected={activeTab === 'link'}
-            className={`flex-1 py-2 text-sm font-medium border-b-2 text-center transition-colors inline-flex items-center justify-center gap-1.5 ${
-              activeTab === 'link' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+            className={`flex-1 py-2 text-xs font-semibold border-b-2 text-center transition-colors inline-flex items-center justify-center gap-1.5 ${
+              activeTab === 'link'
+                ? 'border-[var(--accent)] text-blue-600'
+                : 'border-transparent text-[var(--ink-subtle)] hover:text-[var(--ink-title)]'
             }`}
             onClick={() => setActiveTab('link')}
           >
-            <Link size={15} />
+            <Link size={14} />
             <span>Đường dẫn</span>
           </button>
           <button
             type="button"
             role="tab"
             aria-selected={activeTab === 'file'}
-            className={`flex-1 py-2 text-sm font-medium border-b-2 text-center transition-colors inline-flex items-center justify-center gap-1.5 ${
-              activeTab === 'file' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+            className={`flex-1 py-2 text-xs font-semibold border-b-2 text-center transition-colors inline-flex items-center justify-center gap-1.5 ${
+              activeTab === 'file'
+                ? 'border-[var(--accent)] text-blue-600'
+                : 'border-transparent text-[var(--ink-subtle)] hover:text-[var(--ink-title)]'
             }`}
             onClick={() => setActiveTab('file')}
           >
-            <Folder size={15} />
-            <span>Tệp</span>
+            <Folder size={14} />
+            <span>Tệp (CUXB-09)</span>
           </button>
         </div>
 
         {errorMessage && (
-          <div className="p-3 text-xs bg-red-50 border border-red-300 text-red-800 rounded-lg" role="alert">
-            {errorMessage}
+          <div
+            className="p-3 text-xs bg-red-50 border border-red-200 text-red-800 rounded-lg flex items-start gap-1.5"
+            role="alert"
+          >
+            <AlertCircle size={14} className="text-red-600 flex-shrink-0 mt-0.5" />
+            <span>{errorMessage}</span>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1">Tiêu đề (Tùy chọn)</label>
+            <label className="block text-xs font-semibold text-[var(--ink-title)] mb-1">
+              Tiêu đề (Tùy chọn)
+            </label>
             <input
               type="text"
-              className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:border-blue-500 focus:outline-none"
+              className="w-full p-2 border border-[var(--hairline)] rounded-lg text-xs focus:border-blue-500 focus:outline-none"
               placeholder="Nhập tiêu đề mục..."
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -207,9 +197,11 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1">Thư mục lưu trữ</label>
+            <label className="block text-xs font-semibold text-[var(--ink-title)] mb-1">
+              Thư mục lưu trữ
+            </label>
             <select
-              className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:border-blue-500 focus:outline-none"
+              className="w-full p-2 border border-[var(--hairline)] rounded-lg text-xs bg-white text-[var(--ink-body)] focus:border-blue-500 focus:outline-none"
               value={selectedFolderId}
               onChange={(e) => setSelectedFolderId(e.target.value)}
             >
@@ -225,11 +217,15 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({
           {activeTab === 'text' && (
             <div>
               <div className="flex justify-between items-center mb-1">
-                <label className="text-xs font-semibold text-gray-700">Nội dung văn bản</label>
-                <span className="text-[11px] text-gray-400">Gõ &quot;- &quot; hoặc &quot;1. &quot; đầu dòng để tạo danh sách</span>
+                <label className="text-xs font-semibold text-[var(--ink-title)]">
+                  Nội dung văn bản
+                </label>
+                <span className="text-[11px] text-[var(--ink-muted)]">
+                  Gõ &quot;- &quot; hoặc &quot;1. &quot; đầu dòng để tự tạo danh sách
+                </span>
               </div>
               <textarea
-                className="w-full p-2.5 border border-gray-300 rounded-lg text-sm h-32 focus:border-blue-500 focus:outline-none font-sans"
+                className="w-full p-2.5 border border-[var(--hairline)] rounded-lg text-xs h-32 focus:border-blue-500 focus:outline-none font-sans leading-relaxed"
                 placeholder="Nhập nội dung ghi chú... (Tự động nhận diện URL và tạo xem trước)"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
@@ -241,39 +237,45 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({
 
           {activeTab === 'link' && (
             <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">Địa chỉ URL</label>
+              <label className="block text-xs font-semibold text-[var(--ink-title)] mb-1">
+                Địa chỉ URL
+              </label>
               <input
                 type="text"
-                className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:border-blue-500 focus:outline-none"
+                className="w-full p-2 border border-[var(--hairline)] rounded-lg text-xs focus:border-blue-500 focus:outline-none"
                 placeholder="example.com hoặc https://example.com"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 required
               />
-              <span className="text-[11px] text-gray-400 mt-1 block">Tự động thêm https:// nếu thiếu giao thức (LIB-10)</span>
+              <span className="text-[11px] text-[var(--ink-muted)] mt-1 block">
+                Tự động thêm https:// nếu thiếu giao thức (LIB-10)
+              </span>
             </div>
           )}
 
           {activeTab === 'file' && (
             <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">Chọn tệp tải lên (Tối đa 25 MB)</label>
+              <label className="block text-xs font-semibold text-[var(--ink-title)] mb-1">
+                Chọn tệp tải lên (Tối đa 25 MB)
+              </label>
               <input
                 type="file"
-                className="w-full p-2 border border-dashed border-gray-300 rounded-lg text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
+                className="w-full p-2.5 border border-dashed border-[var(--hairline)] rounded-lg text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
                 onChange={handleFileChange}
                 accept=".pdf,.png,.jpg,.jpeg,.webp,.txt,.docx,.xlsx,.pptx,.zip"
                 required
               />
-              <span className="text-[11px] text-gray-400 mt-1 block">
+              <span className="text-[11px] text-[var(--ink-muted)] mt-1 block">
                 Hỗ trợ PDF, JPEG, PNG, WebP, TXT, DOCX, XLSX, PPTX, ZIP (LIB-11).
               </span>
             </div>
           )}
 
-          <div className="flex justify-end gap-2 pt-3 border-t mt-2">
+          <div className="flex justify-end gap-2 pt-3 border-t border-[var(--hairline)] mt-1">
             <button
               type="button"
-              className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg"
+              className="px-3.5 py-1.5 text-xs text-[var(--ink-subtle)] hover:bg-gray-100 rounded-lg transition-colors"
               onClick={onClose}
               disabled={isSubmitting}
             >
@@ -281,7 +283,7 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm disabled:opacity-50 flex items-center gap-1"
+              className="px-4 py-1.5 text-xs bg-[var(--accent)] hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-all active:scale-95 disabled:opacity-50 flex items-center gap-1"
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Đang xử lý...' : 'Lưu vào Thư viện'}

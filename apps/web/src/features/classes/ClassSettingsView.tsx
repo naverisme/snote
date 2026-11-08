@@ -118,12 +118,12 @@ export function ClassSettingsView({ cls, currentUser, onClassUpdated }: ClassSet
           <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
             <span>Trạng thái:</span>
             {cls.status === 'active' ? (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#16a34a', fontWeight: 500 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: 'var(--success)', fontWeight: 500 }}>
                 <CheckCircle2 size={13} />
                 <span>Đang hoạt động</span>
               </span>
             ) : (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#d97706', fontWeight: 500 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: 'var(--warning)', fontWeight: 500 }}>
                 <Archive size={13} />
                 <span>Đã lưu trữ</span>
               </span>

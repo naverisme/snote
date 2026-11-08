@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, GraduationCap, User, Sparkles, Check } from 'lucide-react';
 import { register, login, passwordResetRequest, passwordReset } from '../../shared/api';
 import type { Account } from '../../shared/types';
 
@@ -8,6 +8,27 @@ interface AuthModalProps {
   onClose: () => void;
   onAuthenticated: (account: Account) => void;
 }
+
+const ROLE_OPTIONS: { id: 'student' | 'teacher' | 'personal'; title: string; desc: string; icon: React.ComponentType<{ size: number }> }[] = [
+  {
+    id: 'student',
+    title: 'Người học (Student)',
+    desc: 'Tham gia lớp học, làm bài tập, theo dõi lịch và thư viện',
+    icon: User,
+  },
+  {
+    id: 'teacher',
+    title: 'Giáo viên (Teacher)',
+    desc: 'Tạo và quản lý lớp học, giao bài tập, chấm điểm và theo dõi tiến độ',
+    icon: GraduationCap,
+  },
+  {
+    id: 'personal',
+    title: 'Cá nhân (Personal)',
+    desc: 'Quản lý công việc cá nhân, tài liệu và lịch trình độc lập',
+    icon: Sparkles,
+  },
+];
 
 export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) {
   const [tab, setTab] = useState<'login' | 'register' | 'forgot' | 'reset'>('login');
@@ -29,10 +50,20 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
     if (usages.includes(usage)) {
       if (usages.length > 1) {
         setUsages(usages.filter(u => u !== usage));
+        setError(null);
+      } else {
+        setError('Tài khoản cần duy trì ít nhất 1 vai trò');
       }
     } else {
       setUsages([...usages, usage]);
+      setError(null);
     }
+  };
+
+  const handleSelectOnly = (e: React.MouseEvent, usage: 'student' | 'teacher' | 'personal') => {
+    e.stopPropagation();
+    setUsages([usage]);
+    setError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -76,6 +107,20 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
     }
   };
 
+  const handleQuickLogin = async (demoEmail: string, demoPass: string) => {
+    setError(null);
+    setLoading(true);
+    try {
+      const res = await login({ email: demoEmail, password: demoPass });
+      onAuthenticated(res.data);
+      onClose();
+    } catch (err: any) {
+      setError(err?.body?.error?.message || err?.message || 'Không thể đăng nhập tài khoản demo');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true">
       <div className="modal-content" onClick={e => e.stopPropagation()}>
@@ -92,11 +137,42 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
         {error && <div style={{ color: 'var(--danger)', marginBottom: 12, fontSize: '0.875rem' }}>{error}</div>}
         {info && <div style={{ color: 'var(--success)', marginBottom: 12, fontSize: '0.875rem' }}>{info}</div>}
 
+        {import.meta.env.DEV && tab === 'login' && import.meta.env.VITE_DEMO_PASSWORD && (
+          <div style={{ marginBottom: 16, padding: '12px', background: 'var(--surface-ground)', borderRadius: '8px', border: '1px solid var(--border-light)' }}>
+            <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ink-subtle)', display: 'block', marginBottom: '8px' }}>
+              Trải nghiệm tài khoản mẫu:
+            </span>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+                onClick={() => handleQuickLogin(import.meta.env.VITE_DEMO_STUDENT_EMAIL || '', import.meta.env.VITE_DEMO_PASSWORD)}
+                disabled={!import.meta.env.VITE_DEMO_STUDENT_EMAIL || loading}
+              >
+                <User size={13} />
+                <span>Học sinh Demo</span>
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+                onClick={() => handleQuickLogin(import.meta.env.VITE_DEMO_TEACHER_EMAIL || '', import.meta.env.VITE_DEMO_PASSWORD)}
+                disabled={!import.meta.env.VITE_DEMO_TEACHER_EMAIL || loading}
+              >
+                <GraduationCap size={13} />
+                <span>Giáo viên Demo</span>
+              </button>
+            </div>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit}>
           {tab !== 'reset' && (
             <div className="form-group">
-              <label className="form-label">Email</label>
+              <label className="form-label" htmlFor="auth-email">Email</label>
               <input
+                id="auth-email"
                 className="form-input"
                 type="email"
                 required
@@ -109,8 +185,9 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
 
           {(tab === 'login' || tab === 'register') && (
             <div className="form-group">
-              <label className="form-label">Mật khẩu {tab === 'register' && '(tối thiểu 12 ký tự)'}</label>
+              <label className="form-label" htmlFor="auth-password">Mật khẩu {tab === 'register' && '(tối thiểu 12 ký tự)'}</label>
               <input
+                id="auth-password"
                 className="form-input"
                 type="password"
                 required
@@ -124,38 +201,71 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
           {tab === 'register' && (
             <>
               <div className="form-group">
-                <label className="form-label">Vai trò sử dụng (chọn ít nhất 1)</label>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={usages.includes('student')}
-                      onChange={() => handleToggleUsage('student')}
-                    />
-                    <span>Người học (Student)</span>
-                  </label>
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={usages.includes('teacher')}
-                      onChange={() => handleToggleUsage('teacher')}
-                    />
-                    <span>Giáo viên (Teacher - có quyền tạo lớp)</span>
-                  </label>
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={usages.includes('personal')}
-                      onChange={() => handleToggleUsage('personal')}
-                    />
-                    <span>Cá nhân (Personal)</span>
-                  </label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                  <label className="form-label" style={{ marginBottom: 0 }}>Vai trò sử dụng</label>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--ink-muted)' }}>Chọn một hoặc nhiều vai trò</span>
+                </div>
+                <div className="role-cards-container">
+                  {ROLE_OPTIONS.map(role => {
+                    const isSelected = usages.includes(role.id);
+                    const Icon = role.icon;
+                    return (
+                      <div
+                        key={role.id}
+                        className={`role-card ${isSelected ? 'active' : ''}`}
+                        onClick={() => handleToggleUsage(role.id)}
+                        role="checkbox"
+                        aria-checked={isSelected}
+                        tabIndex={0}
+                        onKeyDown={e => {
+                          if (e.key === ' ' || e.key === 'Enter') {
+                            e.preventDefault();
+                            handleToggleUsage(role.id);
+                          }
+                        }}
+                      >
+                        <div className="role-card-body">
+                          <div className="role-card-icon-box">
+                            <Icon size={18} />
+                          </div>
+                          <div className="role-card-info">
+                            <span className="role-card-title">{role.title}</span>
+                            <span className="role-card-desc">{role.desc}</span>
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          {isSelected && usages.length > 1 && (
+                            <button
+                              type="button"
+                              className="btn-link"
+                              style={{ fontSize: '0.72rem', color: 'var(--ink-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px' }}
+                              onClick={e => handleSelectOnly(e, role.id)}
+                              title="Chỉ chọn vai trò này"
+                            >
+                              Chỉ chọn
+                            </button>
+                          )}
+                          <div className="role-check-indicator" aria-hidden="true">
+                            {isSelected && <Check size={12} strokeWidth={3} />}
+                          </div>
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => {}}
+                          tabIndex={-1}
+                          style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
               <div className="form-group">
-                <label className="form-label">Múi giờ</label>
+                <label className="form-label" htmlFor="auth-timezone">Múi giờ</label>
                 <input
+                  id="auth-timezone"
                   className="form-input"
                   type="text"
                   required
@@ -169,8 +279,9 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
           {tab === 'reset' && (
             <>
               <div className="form-group">
-                <label className="form-label">Mã Token đặt lại</label>
+                <label className="form-label" htmlFor="auth-reset-token">Mã Token đặt lại</label>
                 <input
+                  id="auth-reset-token"
                   className="form-input"
                   type="text"
                   required
@@ -180,8 +291,9 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
                 />
               </div>
               <div className="form-group">
-                <label className="form-label">Mật khẩu mới (tối thiểu 12 ký tự)</label>
+                <label className="form-label" htmlFor="auth-new-password">Mật khẩu mới (tối thiểu 12 ký tự)</label>
                 <input
+                  id="auth-new-password"
                   className="form-input"
                   type="password"
                   required

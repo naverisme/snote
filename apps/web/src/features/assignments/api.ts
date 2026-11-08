@@ -6,6 +6,7 @@ import type {
   Submission,
   SubmissionInput,
 } from './types';
+import { getCsrfToken } from '../../shared/api';
 
 export interface RequestOptions {
   csrfToken?: string;
@@ -34,8 +35,9 @@ async function apiRequest<T>(
   if (body !== undefined) {
     headers.set('Content-Type', 'application/json');
   }
-  if (options.csrfToken) {
-    headers.set('X-CSRF-Token', options.csrfToken);
+  const csrfToken = options.csrfToken ?? getCsrfToken();
+  if (csrfToken) {
+    headers.set('X-CSRF-Token', csrfToken);
   }
   if (options.etag) {
     headers.set('If-Match', options.etag);

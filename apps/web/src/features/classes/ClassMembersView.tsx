@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Award, User, ShieldCheck } from 'lucide-react';
 import type { Class, Membership, Invitation, JoinRequest, Account } from '../../shared/types';
 import {
   listClassMembers,
@@ -208,7 +209,7 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated }: ClassMemb
             <div>
               <span style={{ fontWeight: 600, marginRight: 8 }}>Mã tham gia lớp:</span>
               {joinCode ? (
-                <code style={{ background: '#e4e4e7', padding: '3px 8px', borderRadius: 4, fontWeight: 700 }}>{joinCode}</code>
+                <code style={{ background: 'var(--surface-ground)', border: '1px solid var(--border-light)', padding: '3px 8px', borderRadius: 4, fontWeight: 700 }}>{joinCode}</code>
               ) : (
                 <span style={{ color: 'var(--text-muted)' }}>Chưa bật</span>
               )}
@@ -319,11 +320,11 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated }: ClassMemb
           <div className="section-title">Danh sách người trong lớp ({members.length + 1})</div>
         </div>
 
-        <div className="table-container">
-          <table className="data-table">
+        <div className="table-container class-members-container">
+          <table className="data-table class-members-table">
             <thead>
               <tr>
-                <th>Người học (Learner)</th>
+                <th className="col-learner">Người học (Learner)</th>
                 <th>Vai trò (Role)</th>
                 <th>Nhóm đang tham gia</th>
                 {isOwner && <th style={{ textAlign: 'right' }}>Thao tác</th>}
@@ -331,8 +332,8 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated }: ClassMemb
             </thead>
             <tbody>
               {/* Owner row */}
-              <tr style={{ backgroundColor: '#fafafa' }}>
-                <td>
+              <tr className="owner-row">
+                <td className="col-learner">
                   <strong>{cls.ownerId}</strong> <span className="badge badge-info" style={{ marginLeft: 6 }}>Giáo viên chủ lớp</span>
                 </td>
                 <td>Chủ lớp</td>
@@ -343,18 +344,41 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated }: ClassMemb
               {/* Members rows */}
               {members.map(member => (
                 <tr key={member.id}>
-                  <td style={{ fontFamily: 'monospace' }}>{member.memberId}</td>
+                  <td className="col-learner" style={{ fontFamily: 'monospace' }}>{member.memberId}</td>
                   <td>
                     {isOwner ? (
                       <button
                         className={`btn btn-sm ${member.role === 'monitor' ? 'btn-primary' : 'btn-secondary'}`}
                         onClick={() => handleRoleChange(member.id, member.role as 'member' | 'monitor', member.version)}
                         title="Bấm để thay đổi giữa Member và Lớp trưởng"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
                       >
-                        {member.role === 'monitor' ? '⭐ Lớp trưởng (Monitor)' : 'Thành viên (Member)'}
+                        {member.role === 'monitor' ? (
+                          <>
+                            <Award size={13} />
+                            <span>Lớp trưởng (Monitor)</span>
+                          </>
+                        ) : (
+                          <>
+                            <User size={13} />
+                            <span>Thành viên (Member)</span>
+                          </>
+                        )}
                       </button>
                     ) : (
-                      <span>{member.role === 'monitor' ? '⭐ Lớp trưởng' : 'Thành viên'}</span>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                        {member.role === 'monitor' ? (
+                          <>
+                            <Award size={13} style={{ color: 'var(--accent)' }} />
+                            <span>Lớp trưởng</span>
+                          </>
+                        ) : (
+                          <>
+                            <User size={13} style={{ color: 'var(--ink-muted)' }} />
+                            <span>Thành viên</span>
+                          </>
+                        )}
+                      </span>
                     )}
                   </td>
                   <td>Nhóm của lớp</td>

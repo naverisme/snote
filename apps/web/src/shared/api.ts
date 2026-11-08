@@ -12,13 +12,33 @@ import type {
   Grant,
 } from './types';
 
-let currentCsrfToken: string | undefined = undefined;
+const CSRF_STORAGE_KEY = 'snote_csrf_token';
+
+let currentCsrfToken: string | undefined = typeof window !== 'undefined'
+  ? window.sessionStorage?.getItem(CSRF_STORAGE_KEY) || window.localStorage?.getItem(CSRF_STORAGE_KEY) || undefined
+  : undefined;
 
 export function setCsrfToken(token: string | undefined) {
   currentCsrfToken = token;
+  if (typeof window !== 'undefined') {
+    try {
+      if (token) {
+        window.sessionStorage?.setItem(CSRF_STORAGE_KEY, token);
+        window.localStorage?.setItem(CSRF_STORAGE_KEY, token);
+      } else {
+        window.sessionStorage?.removeItem(CSRF_STORAGE_KEY);
+        window.localStorage?.removeItem(CSRF_STORAGE_KEY);
+      }
+    } catch {}
+  }
 }
 
 export function getCsrfToken(): string | undefined {
+  if (!currentCsrfToken && typeof window !== 'undefined') {
+    try {
+      currentCsrfToken = window.sessionStorage?.getItem(CSRF_STORAGE_KEY) || window.localStorage?.getItem(CSRF_STORAGE_KEY) || undefined;
+    } catch {}
+  }
   return currentCsrfToken;
 }
 

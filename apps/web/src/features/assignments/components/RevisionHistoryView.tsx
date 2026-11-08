@@ -1,5 +1,16 @@
 import React, { useState } from 'react';
-import { Paperclip, Link2 } from 'lucide-react';
+import {
+  Paperclip,
+  Link2,
+  FileText,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  ChevronUp,
+  ChevronDown,
+  User,
+  MessageSquare,
+} from 'lucide-react';
 import type { Submission } from '../types';
 import { TeacherFeedbackForm } from './TeacherFeedbackForm';
 
@@ -22,20 +33,20 @@ export const RevisionHistoryView: React.FC<RevisionHistoryViewProps> = ({
     return (
       <div
         style={{
-          padding: '32px 24px',
+          padding: '32px 24px', // Inset >= 12px
           textAlign: 'center',
-          color: '#64748b',
-          backgroundColor: '#f8fafc',
-          borderRadius: '8px',
-          border: '1px dashed #cbd5e1',
+          color: 'var(--ink-muted)',
+          backgroundColor: 'var(--surface-ground)',
+          borderRadius: 'var(--radius-md)',
+          border: '1px dashed var(--border-light)',
           fontSize: '13px',
         }}
       >
-        <div style={{ fontSize: '14px', fontWeight: 500, color: '#334155', marginBottom: '4px' }}>
+        <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink-title)', marginBottom: '4px' }}>
           Chưa có phiên bản nộp nào
         </div>
-        <div style={{ fontSize: '12px' }}>
-          Lịch sử các lần nộp và sửa đổi bài sẽ xuất hiện dưới dạng dòng thời gian tại đây.
+        <div style={{ fontSize: '12px', color: 'var(--ink-subtle)' }}>
+          Lịch sử các lần nộp và sửa đổi bài sẽ xuất hiện dưới dạng dòng thời gian tại đây (CUXD-05/07).
         </div>
       </div>
     );
@@ -50,15 +61,23 @@ export const RevisionHistoryView: React.FC<RevisionHistoryViewProps> = ({
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       {/* Timeline Header Info */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+        <span
+          style={{
+            fontSize: '12px',
+            fontWeight: 600,
+            color: 'var(--ink-subtle)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.04em',
+          }}
+        >
           Lịch sử phiên bản nộp bài ({submissions.length} phiên bản)
         </span>
-        <span style={{ fontSize: '12px', color: '#64748b' }}>
-          Bấm vào phiên bản trên timeline để xem chi tiết
+        <span style={{ fontSize: '12px', color: 'var(--ink-muted)' }}>
+          Bấm vào phiên bản trên timeline để xem chi tiết (CUXD-07)
         </span>
       </div>
 
-      {/* Vertical Timeline with connected node dots */}
+      {/* Vertical Timeline */}
       <div
         style={{
           position: 'relative',
@@ -75,7 +94,7 @@ export const RevisionHistoryView: React.FC<RevisionHistoryViewProps> = ({
             top: '16px',
             bottom: '24px',
             width: '2px',
-            backgroundColor: '#e2e8f0',
+            backgroundColor: 'var(--border-light)',
             borderRadius: '1px',
           }}
         />
@@ -112,14 +131,14 @@ export const RevisionHistoryView: React.FC<RevisionHistoryViewProps> = ({
                     width: isSelected ? '14px' : '12px',
                     height: isSelected ? '14px' : '12px',
                     borderRadius: '50%',
-                    backgroundColor: isSelected ? '#2563eb' : isOnTime ? '#16a34a' : '#ea580c',
-                    border: '2px solid #ffffff',
+                    backgroundColor: isSelected ? 'var(--accent)' : isOnTime ? 'var(--success)' : 'var(--warning)',
+                    border: '2px solid var(--surface-raised)',
                     boxShadow: isSelected
-                      ? '0 0 0 3px #dbeafe'
+                      ? '0 0 0 3px rgba(37, 99, 235, 0.2)'
                       : isOnTime
-                      ? '0 0 0 2px #dcfce7'
-                      : '0 0 0 2px #fed7aa',
-                    transition: 'all 150ms ease',
+                      ? '0 0 0 2px rgba(16, 185, 129, 0.2)'
+                      : '0 0 0 2px rgba(245, 158, 11, 0.2)',
+                    transition: 'all var(--transition-fast)',
                   }}
                 />
               </div>
@@ -127,30 +146,36 @@ export const RevisionHistoryView: React.FC<RevisionHistoryViewProps> = ({
               {/* Revision Card */}
               <div
                 style={{
-                  border: isSelected ? '1px solid #93c5fd' : '1px solid #e2e8f0',
-                  borderRadius: '8px',
-                  backgroundColor: '#ffffff',
-                  boxShadow: isSelected ? '0 1px 3px 0 rgba(0, 0, 0, 0.05)' : 'none',
+                  border: isSelected ? '1px solid var(--accent)' : '1px solid var(--hairline)',
+                  borderRadius: 'var(--radius-md)',
+                  backgroundColor: 'var(--surface-raised)',
+                  boxShadow: isSelected ? 'var(--shadow-raised)' : 'none',
                   overflow: 'hidden',
-                  transition: 'border-color 140ms ease, box-shadow 140ms ease',
+                  transition: 'border-color var(--transition-fast), box-shadow var(--transition-fast)',
                 }}
               >
                 {/* Clickable Card Header */}
                 <div
                   onClick={() => setSelectedVersion(sub.version)}
                   style={{
-                    padding: '12px 16px',
+                    padding: '12px 16px', // Inset >= 12px
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    backgroundColor: isSelected ? '#f8fafc' : '#ffffff',
+                    backgroundColor: isSelected ? 'var(--surface-ground)' : 'var(--surface-raised)',
                     cursor: 'pointer',
-                    borderBottom: isSelected ? '1px solid #e2e8f0' : 'none',
+                    borderBottom: isSelected ? '1px solid var(--hairline)' : 'none',
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '14px', fontWeight: 600, color: isSelected ? '#1e40af' : '#0f172a' }}>
-                      Phiên bản {sub.version}
+                    <span
+                      style={{
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        color: isSelected ? 'var(--accent)' : 'var(--ink-title)',
+                      }}
+                    >
+                      Phiên bản v{sub.version}
                     </span>
                     {isLatest && (
                       <span
@@ -159,16 +184,20 @@ export const RevisionHistoryView: React.FC<RevisionHistoryViewProps> = ({
                           padding: '1px 6px',
                           borderRadius: '4px',
                           backgroundColor: '#eff6ff',
-                          color: '#2563eb',
-                          border: '1px solid #dbeafe',
+                          color: 'var(--accent)',
+                          border: '1px solid #bfdbfe',
                           fontWeight: 500,
                         }}
                       >
                         Bản mới nhất
                       </span>
                     )}
-                    <span style={{ fontSize: '12px', color: '#64748b' }}>
-                      Nộp bởi {sub.submittedBy} • {new Date(sub.acceptedAt).toLocaleString('vi-VN')}
+                    <span style={{ fontSize: '12px', color: 'var(--ink-subtle)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <User size={12} style={{ color: 'var(--ink-muted)' }} />
+                      <span>{sub.submittedBy}</span>
+                      <span>•</span>
+                      <Clock size={12} style={{ color: 'var(--ink-muted)' }} />
+                      <span>{new Date(sub.acceptedAt).toLocaleString('vi-VN')}</span>
                     </span>
                   </div>
 
@@ -193,31 +222,35 @@ export const RevisionHistoryView: React.FC<RevisionHistoryViewProps> = ({
                           width: '6px',
                           height: '6px',
                           borderRadius: '50%',
-                          backgroundColor: isOnTime ? '#16a34a' : '#ea580c',
+                          backgroundColor: isOnTime ? 'var(--success)' : 'var(--warning)',
                           display: 'inline-block',
                         }}
                       />
-                      {isOnTime ? 'Đúng hạn' : 'Nộp muộn'}
+                      <span>{isOnTime ? 'Đúng hạn' : 'Nộp muộn'}</span>
                     </span>
                     <button
                       type="button"
                       style={{
                         background: 'none',
                         border: 'none',
-                        color: '#64748b',
+                        color: 'var(--ink-muted)',
                         fontSize: '12px',
                         cursor: 'pointer',
                         padding: '2px 6px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '2px',
                       }}
                     >
-                      {isSelected ? '▲ Thu gọn' : '▼ Chi tiết'}
+                      {isSelected ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                      <span>{isSelected ? 'Thu gọn' : 'Chi tiết'}</span>
                     </button>
                   </div>
                 </div>
 
-                {/* Expanded details when selected */}
+                {/* Expanded details when selected (CUXD-07) */}
                 {isSelected && (
-                  <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
                     {/* Text content */}
                     {sub.text ? (
                       <div>
@@ -226,7 +259,7 @@ export const RevisionHistoryView: React.FC<RevisionHistoryViewProps> = ({
                             display: 'block',
                             fontSize: '12px',
                             fontWeight: 500,
-                            color: '#475569',
+                            color: 'var(--ink-subtle)',
                             marginBottom: '4px',
                           }}
                         >
@@ -234,13 +267,13 @@ export const RevisionHistoryView: React.FC<RevisionHistoryViewProps> = ({
                         </span>
                         <div
                           style={{
-                            backgroundColor: '#f8fafc',
-                            padding: '10px 14px',
-                            borderRadius: '6px',
-                            border: '1px solid #e2e8f0',
+                            backgroundColor: 'var(--surface-ground)',
+                            padding: '12px 14px',
+                            borderRadius: 'var(--radius-sm)',
+                            border: '1px solid var(--hairline)',
                             fontSize: '13px',
                             whiteSpace: 'pre-wrap',
-                            color: '#1e293b',
+                            color: 'var(--ink-body)',
                             lineHeight: '1.5',
                           }}
                         >
@@ -248,7 +281,7 @@ export const RevisionHistoryView: React.FC<RevisionHistoryViewProps> = ({
                         </div>
                       </div>
                     ) : (
-                      <div style={{ fontSize: '12px', color: '#94a3b8', fontStyle: 'italic' }}>
+                      <div style={{ fontSize: '12px', color: 'var(--ink-muted)', fontStyle: 'italic' }}>
                         Không có ghi chú văn bản trong phiên bản này.
                       </div>
                     )}
@@ -261,13 +294,13 @@ export const RevisionHistoryView: React.FC<RevisionHistoryViewProps> = ({
                             display: 'block',
                             fontSize: '12px',
                             fontWeight: 500,
-                            color: '#475569',
+                            color: 'var(--ink-subtle)',
                             marginBottom: '6px',
                           }}
                         >
                           Đường dẫn đính kèm ({sub.links.length}):
                         </span>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                           {sub.links.map((link, lIdx) => (
                             <div
                               key={lIdx}
@@ -278,12 +311,12 @@ export const RevisionHistoryView: React.FC<RevisionHistoryViewProps> = ({
                                 fontSize: '13px',
                               }}
                             >
-                              <Link2 size={13} style={{ color: '#64748b', flexShrink: 0 }} />
+                              <Link2 size={13} style={{ color: 'var(--ink-muted)', flexShrink: 0 }} />
                               <a
                                 href={link}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                style={{ color: '#2563eb', textDecoration: 'underline', wordBreak: 'break-all' }}
+                                style={{ color: 'var(--accent)', textDecoration: 'underline', wordBreak: 'break-all' }}
                               >
                                 {link}
                               </a>
@@ -293,7 +326,7 @@ export const RevisionHistoryView: React.FC<RevisionHistoryViewProps> = ({
                       </div>
                     )}
 
-                    {/* Attachments (uploadIds) */}
+                    {/* Attachments */}
                     {sub.uploadIds && sub.uploadIds.length > 0 && (
                       <div>
                         <span
@@ -301,85 +334,86 @@ export const RevisionHistoryView: React.FC<RevisionHistoryViewProps> = ({
                             display: 'block',
                             fontSize: '12px',
                             fontWeight: 500,
-                            color: '#475569',
+                            color: 'var(--ink-subtle)',
                             marginBottom: '6px',
                           }}
                         >
-                          Tệp đính kèm ({sub.uploadIds.length}):
+                          Tệp đính kèm ({sub.uploadIds.length} tệp):
                         </span>
-                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                          {sub.uploadIds.map((blobId, bIdx) => (
-                            <span
-                              key={bIdx}
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                          {sub.uploadIds.map((uId, uIdx) => (
+                            <div
+                              key={uIdx}
                               style={{
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 gap: '6px',
-                                padding: '4px 10px',
-                                borderRadius: '4px',
-                                backgroundColor: '#f8fafc',
-                                border: '1px solid #e2e8f0',
+                                padding: '6px 10px',
+                                borderRadius: 'var(--radius-sm)',
+                                backgroundColor: 'var(--surface-ground)',
+                                border: '1px solid var(--hairline)',
                                 fontSize: '12px',
-                                color: '#334155',
+                                color: 'var(--ink-title)',
                               }}
                             >
-                              <Paperclip size={12} style={{ color: '#64748b', flexShrink: 0 }} />
-                              <span>{blobId}</span>
-                            </span>
+                              <Paperclip size={13} style={{ color: 'var(--ink-muted)' }} />
+                              <span style={{ fontFamily: 'monospace' }}>upload-{uId.slice(0, 10)}...</span>
+                            </div>
                           ))}
                         </div>
                       </div>
                     )}
 
-                    {/* Feedback list */}
-                    <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '12px', marginTop: '4px' }}>
-                      <span
+                    {/* Teacher Feedback list for this version (ASG-09 / CUXD-07) */}
+                    <div>
+                      <div
                         style={{
-                          fontSize: '13px',
-                          fontWeight: 600,
-                          color: '#334155',
-                          display: 'block',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          fontSize: '12px',
+                          fontWeight: 500,
+                          color: 'var(--ink-subtle)',
                           marginBottom: '8px',
+                          paddingTop: '8px',
+                          borderTop: '1px solid var(--hairline)',
                         }}
                       >
-                        Nhận xét của giáo viên ({sub.feedback?.length ?? 0}):
-                      </span>
+                        <MessageSquare size={13} style={{ color: 'var(--ink-muted)' }} />
+                        <span>Nhận xét của giáo viên cho phiên bản v{sub.version}:</span>
+                      </div>
 
-                      {(!sub.feedback || sub.feedback.length === 0) ? (
-                        <div style={{ fontSize: '12px', color: '#94a3b8', fontStyle: 'italic', marginBottom: '8px' }}>
-                          Chưa có nhận xét cho phiên bản này.
-                        </div>
-                      ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
+                      {sub.feedback && sub.feedback.length > 0 ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                           {sub.feedback.map(fb => (
                             <div
                               key={fb.id}
                               style={{
-                                backgroundColor: '#f8fafc',
-                                border: '1px solid #e2e8f0',
-                                borderRadius: '6px',
-                                padding: '8px 12px',
+                                padding: '10px 14px',
+                                borderRadius: 'var(--radius-sm)',
+                                backgroundColor: '#f0f9ff',
+                                border: '1px solid #bae6fd',
                                 fontSize: '13px',
+                                color: '#0369a1',
                               }}
                             >
-                              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                                <span style={{ fontWeight: 500, color: '#0f172a' }}>Giáo viên ({fb.teacherId})</span>
-                                <span style={{ fontSize: '11px', color: '#64748b' }}>
-                                  {new Date(fb.createdAt).toLocaleString('vi-VN')}
-                                </span>
+                              <div style={{ fontSize: '11px', color: '#0284c7', marginBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
+                                <span>Giáo viên: {fb.teacherId}</span>
+                                <span>{new Date(fb.createdAt).toLocaleString('vi-VN')}</span>
                               </div>
-                              <div style={{ color: '#334155', lineHeight: '1.4' }}>{fb.text}</div>
+                              <div style={{ lineHeight: 1.4 }}>{fb.text}</div>
                             </div>
                           ))}
                         </div>
+                      ) : (
+                        <div style={{ fontSize: '12px', color: 'var(--ink-muted)', fontStyle: 'italic' }}>
+                          Chưa có nhận xét nào từ giáo viên cho phiên bản này.
+                        </div>
                       )}
 
-                      {/* Teacher feedback form if in teacher mode */}
+                      {/* Teacher Form to add feedback */}
                       {isTeacher && onSubmitFeedback && (
-                        <TeacherFeedbackForm
-                          submissionId={sub.id}
-                          onSubmitFeedback={onSubmitFeedback}
-                        />
+                        <TeacherFeedbackForm submissionId={sub.id} onSubmitFeedback={onSubmitFeedback} />
                       )}
                     </div>
                   </div>
