@@ -7,6 +7,7 @@ interface ClassSelectorProps {
   classes: Class[];
   activeClass: Class | null;
   currentUser: Account | null;
+  isTeacher?: boolean;
   onSelectClass: (cls: Class) => void;
   onClassCreated: (cls: Class) => void;
   onOpenSettings?: () => void;
@@ -16,6 +17,7 @@ export function ClassSelector({
   classes,
   activeClass,
   currentUser,
+  isTeacher: propIsTeacher,
   onSelectClass,
   onClassCreated,
   onOpenSettings,
@@ -89,7 +91,7 @@ export function ClassSelector({
     }
   };
 
-  const isTeacher = currentUser?.usages.includes('teacher');
+  const isTeacher = propIsTeacher !== undefined ? propIsTeacher : currentUser?.usages.includes('teacher');
 
   return (
     <div ref={rootRef} style={{ position: 'relative' }}>

@@ -19,7 +19,7 @@ import {
   User,
 } from 'lucide-react';
 import type { Account, Class, Workspace } from '../shared/types';
-import { getMe, listClasses, listWorkspaces, getMyInvitations, login } from '../shared/api';
+import { getMe, listClasses, listWorkspaces, getMyInvitations, login, changeUsages, register } from '../shared/api';
 import { AuthModal } from '../features/identity/AuthModal';
 import { AccountSettingsModal } from '../features/identity/AccountSettingsModal';
 import { WorkspaceSwitcher } from '../features/workspaces/WorkspaceSwitcher';
@@ -53,6 +53,23 @@ export function App() {
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [activePersona, setActivePersona] = useState<'student' | 'teacher'>(() => {
+    return (localStorage.getItem('snote_active_persona') as 'student' | 'teacher') || 'student';
+  });
+
+  const handleSwitchPersona = async (persona: 'student' | 'teacher') => {
+    setActivePersona(persona);
+    localStorage.setItem('snote_active_persona', persona);
+
+    if (user && persona === 'teacher' && !user.usages.includes('teacher')) {
+      try {
+        const res = await changeUsages([...user.usages, 'teacher'], user.version);
+        setUser(res.data);
+      } catch (err) {
+        console.error('Auto-grant teacher usage error:', err);
+      }
+    }
+  };
 
   // Load current session
   const checkSession = async () => {
@@ -122,13 +139,37 @@ export function App() {
     setMobileNavOpen(false);
   };
 
-  const handleQuickDemoLogin = async (email: string, pass: string) => {
+  const handleQuickDemoLogin = async (roleToEnter: 'student' | 'teacher') => {
+    const demoEmail = roleToEnter === 'teacher'
+      ? (import.meta.env.VITE_DEMO_TEACHER_EMAIL || 'teacher.demo@snote.edu.vn')
+      : (import.meta.env.VITE_DEMO_STUDENT_EMAIL || 'student.demo@snote.edu.vn');
+    const demoPass = import.meta.env.VITE_DEMO_PASSWORD || 'DemoPassword2026!';
+
     try {
-      const res = await login({ email, password: pass });
+      const res = await login({ email: demoEmail, password: demoPass });
       setUser(res.data);
+      if (!res.data.usages.includes(roleToEnter)) {
+        try {
+          const up = await changeUsages([...res.data.usages, roleToEnter], res.data.version);
+          setUser(up.data);
+        } catch {}
+      }
+      void handleSwitchPersona(roleToEnter);
       await checkSession();
-    } catch (err: any) {
-      console.error('Quick demo login error:', err);
+    } catch {
+      try {
+        const regRes = await register({
+          email: demoEmail,
+          password: demoPass,
+          usages: [roleToEnter],
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Ho_Chi_Minh',
+        });
+        setUser(regRes.data);
+        void handleSwitchPersona(roleToEnter);
+        await checkSession();
+      } catch (err: any) {
+        console.error('Quick demo login error:', err);
+      }
     }
   };
 
@@ -180,6 +221,7 @@ export function App() {
                 classes={classes}
                 activeClass={activeClass}
                 currentUser={user}
+                isTeacher={Boolean(activePersona === 'teacher' || user.usages.includes('teacher'))}
                 onSelectClass={handleSelectClass}
                 onClassCreated={cls => setClasses([...classes, cls])}
                 onOpenSettings={() => setShowSettingsModal(true)}
@@ -198,34 +240,30 @@ export function App() {
                 </span>
               )}
 
-              {/* ChatGPT Style Role Badge */}
-              <div
-                className="chatgpt-role-badge"
-                onClick={() => setShowSettingsModal(true)}
-                title="Bấm để mở cài đặt vai trò tài khoản"
-                role="button"
-                tabIndex={0}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    setShowSettingsModal(true);
-                  }
-                }}
-              >
-                {user.usages.includes('teacher') ? (
-                  <>
-                    <GraduationCap size={14} />
-                    <span>Giáo viên</span>
-                  </>
-                ) : (
-                  <>
-                    <User size={14} />
-                    <span>Học sinh</span>
-                  </>
-                )}
-                {user.usages.length > 1 && (
-                  <span className="role-count-pill">+{user.usages.length - 1}</span>
-                )}
+              {/* Interactive Active Persona Switcher */}
+              <div className="persona-switcher-cluster" role="radiogroup" aria-label="Tư cách làm việc">
+                <button
+                  type="button"
+                  className={`persona-switch-btn ${activePersona === 'student' ? 'active' : ''}`}
+                  onClick={() => void handleSwitchPersona('student')}
+                  aria-checked={activePersona === 'student'}
+                  role="radio"
+                  title="Chuyển sang tư cách Học sinh (Nộp bài, xem bài tập)"
+                >
+                  <User size={13} />
+                  <span>Học sinh</span>
+                </button>
+                <button
+                  type="button"
+                  className={`persona-switch-btn ${activePersona === 'teacher' ? 'active' : ''}`}
+                  onClick={() => void handleSwitchPersona('teacher')}
+                  aria-checked={activePersona === 'teacher'}
+                  role="radio"
+                  title="Chuyển sang tư cách Giáo viên (Tạo lớp, giao bài, chấm điểm)"
+                >
+                  <GraduationCap size={13} />
+                  <span>Giáo viên</span>
+                </button>
               </div>
 
               {/* ChatGPT Style User Pill */}
@@ -236,9 +274,11 @@ export function App() {
                 title={`Tài khoản: ${user.id} (Bấm để mở cài đặt)`}
               >
                 <div className="chatgpt-avatar">
-                  {user.usages.includes('teacher') ? 'G' : 'H'}
+                  {activePersona === 'teacher' ? 'G' : 'H'}
                 </div>
-                <span className="chatgpt-user-email">ID: {user.id.slice(0, 8)}...</span>
+                <span className="chatgpt-user-email">
+                  {localStorage.getItem('snote_user_alias') || `ID: ${user.id.slice(0, 8)}...`}
+                </span>
                 <Settings size={14} className="chatgpt-settings-icon" />
               </button>
             </div>
@@ -427,7 +467,7 @@ export function App() {
                     <button
                       className="btn btn-primary btn-sm"
                       style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '8px 14px' }}
-                      onClick={() => handleQuickDemoLogin(import.meta.env.VITE_DEMO_STUDENT_EMAIL || '', import.meta.env.VITE_DEMO_PASSWORD || '')}
+                      onClick={() => void handleQuickDemoLogin('student')}
                     >
                       <span>Vào vai Học sinh Demo</span>
                       <ArrowRight size={13} />
@@ -467,7 +507,7 @@ export function App() {
                     <button
                       className="btn btn-secondary btn-sm"
                       style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '8px 14px', background: 'var(--surface-ground)', borderColor: 'var(--border-light)', color: 'var(--ink-title)' }}
-                      onClick={() => handleQuickDemoLogin(import.meta.env.VITE_DEMO_TEACHER_EMAIL || '', import.meta.env.VITE_DEMO_PASSWORD || '')}
+                      onClick={() => void handleQuickDemoLogin('teacher')}
                     >
                       <span>Vào vai Giáo viên Demo</span>
                       <ArrowRight size={13} />
@@ -569,7 +609,7 @@ export function App() {
                 <AssignmentFeature
                   key={activeClass.id}
                   classId={activeClass.id}
-                  isTeacher={Boolean(isClassOwner || user.usages.includes('teacher'))}
+                  isTeacher={Boolean(isClassOwner || (activePersona === 'teacher' && user.usages.includes('teacher')))}
                   activeWorkspaceId={
                     workspaces.find(w => w.kind === 'class_group' && w.id.includes(activeClass.id))?.id
                   }
@@ -632,6 +672,8 @@ export function App() {
           isOpen={showSettingsModal}
           onClose={() => setShowSettingsModal(false)}
           account={user}
+          activePersona={activePersona}
+          onPersonaChanged={handleSwitchPersona}
           onUpdated={updated => setUser(updated)}
           onLoggedOut={() => {
             setUser(null);

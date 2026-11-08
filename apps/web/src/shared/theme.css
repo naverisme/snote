@@ -57,6 +57,17 @@
   --transition-fast: 160ms cubic-bezier(0.16, 1, 0.3, 1);
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  /* Dark Mode Palette Tokens (stored inside :root to satisfy WEB-10) */
+  --dark-ink-title: #f4f4f5;
+  --dark-ink-body: #e4e4e7;
+  --dark-ink-subtle: #a1a1aa;
+  --dark-ink-muted: #71717a;
+  --dark-ink-faint: #52525b;
+  --dark-surface-ground: #121214;
+  --dark-surface-raised: #1e1e22;
+  --dark-surface-overlay: #27272a;
+  --dark-border-light: #2e2e33;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1127,4 +1138,132 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+/* Dark Theme Implementation using :root variables */
+[data-theme="dark"] {
+  --ink-title: var(--dark-ink-title);
+  --ink-body: var(--dark-ink-body);
+  --ink-subtle: var(--dark-ink-subtle);
+  --ink-muted: var(--dark-ink-muted);
+  --ink-faint: var(--dark-ink-faint);
+  --surface-ground: var(--dark-surface-ground);
+  --surface-raised: var(--dark-surface-raised);
+  --surface-overlay: var(--dark-surface-overlay);
+  --bg-primary: var(--dark-surface-ground);
+  --bg-secondary: var(--dark-surface-raised);
+  --bg-surface: var(--dark-surface-raised);
+  --text-primary: var(--dark-ink-title);
+  --text-secondary: var(--dark-ink-subtle);
+  --border-light: var(--dark-border-light);
+  --hairline: rgba(255, 255, 255, 0.08);
+}
+
+/* Segmented Persona Switcher */
+.persona-switcher-cluster {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--surface-ground);
+  border: 1px solid var(--border-light);
+  border-radius: 9999px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.persona-switch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ink-subtle);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.persona-switch-btn:hover {
+  color: var(--ink-title);
+}
+
+.persona-switch-btn.active {
+  background-color: var(--surface-raised);
+  color: var(--accent);
+  font-weight: 600;
+  border-color: var(--hairline);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Settings Tabs Navigation */
+.settings-tabs-nav {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid var(--border-light);
+  margin-bottom: 18px;
+  padding-bottom: 2px;
+  overflow-x: auto;
+}
+
+.settings-nav-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--ink-subtle);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.settings-nav-tab:hover {
+  background-color: var(--surface-ground);
+  color: var(--ink-title);
+}
+
+.settings-nav-tab.active {
+  background-color: var(--accent-light);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.theme-options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.theme-card-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  background-color: var(--surface-raised);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: center;
+}
+
+.theme-card-option:hover {
+  background-color: var(--surface-ground);
+}
+
+.theme-card-option.active {
+  border-color: var(--accent);
+  background-color: var(--accent-light);
+  color: var(--accent);
+  font-weight: 600;
 }
