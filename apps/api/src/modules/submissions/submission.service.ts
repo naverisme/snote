@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import type { PrismaClient } from '@prisma/client';
+import { Inject, Injectable } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
 import { DomainError } from '../../core/authorization';
 import { requireVersion } from '../../core/http';
 import { fingerprint } from '../../core/receipt';
@@ -17,7 +17,7 @@ export class SubmissionService {
   private readonly auth: SubmissionAuthService;
 
   constructor(
-    private readonly prisma: PrismaClient,
+    @Inject(PrismaClient) private readonly prisma: PrismaClient,
     private readonly notificationService: NotificationService
   ) {
     this.auth = new SubmissionAuthService(prisma);
