@@ -8,6 +8,7 @@ import { StudentSubmissionForm } from './components/StudentSubmissionForm';
 import { RevisionHistoryView } from './components/RevisionHistoryView';
 import { GroupProgressUpdateWidget } from './components/GroupProgressUpdateWidget';
 import * as api from './api';
+import './assignments.css';
 
 export interface AssignmentFeatureProps {
   classId: string;
@@ -41,6 +42,8 @@ export const AssignmentFeature: React.FC<AssignmentFeatureProps> = ({
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const reducedMotion = useReducedMotion();
+  const latePolicyLabel = (value: 'inherit' | 'allow' | 'lock' | undefined) =>
+    value === 'allow' ? 'Cho phép' : value === 'lock' ? 'Khóa sau hạn' : 'Theo cài đặt lớp';
 
   const selectedAssignment = assignments.find(a => a.id === selectedAssignmentId);
   const selectedRecipient = recipients.find(r => r.id === selectedRecipientId);
@@ -91,14 +94,26 @@ export const AssignmentFeature: React.FC<AssignmentFeatureProps> = ({
 
   if (loading && assignments.length === 0) {
     return (
-      <div style={{ padding: '32px', textAlign: 'center', color: '#6b7280', fontSize: '14px' }}>
-        Đang tải dữ liệu bài giao...
+      <div className="assignment-feature assignment-loading" aria-busy="true" aria-label="Đang tải bài giao">
+        <div className="assignment-loading-header"><span className="assignment-placeholder assignment-placeholder-title" /><span className="assignment-placeholder assignment-placeholder-action" /></div>
+        <div className="assignment-layout">
+          <div className="assignment-loading-list">
+            <span className="assignment-placeholder assignment-placeholder-label" />
+            {[0, 1, 2].map(index => <span key={index} className="assignment-placeholder assignment-placeholder-row" />)}
+          </div>
+          <div className="assignment-loading-detail">
+            <span className="assignment-placeholder assignment-placeholder-title" />
+            <span className="assignment-placeholder assignment-placeholder-line" />
+            <span className="assignment-placeholder assignment-placeholder-line short" />
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
     <div
+      className="assignment-feature"
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -188,7 +203,7 @@ export const AssignmentFeature: React.FC<AssignmentFeatureProps> = ({
           </div>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '24px' }}>
+        <div className="assignment-layout">
           {/* Left Column: Assignments list */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <span style={{ fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
@@ -242,9 +257,9 @@ export const AssignmentFeature: React.FC<AssignmentFeatureProps> = ({
                         ? `Thời hạn: Cuối ngày ${selectedAssignment.deadlineDate.date} (${selectedAssignment.deadlineDate.timeZone})`
                         : 'Không giới hạn thời gian'}
                       {' • '}
-                      <span>Nộp lần đầu sau hạn: <strong>{selectedAssignment.lateFirst || 'inherit'}</strong></span>
+                      <span>Nộp lần đầu sau hạn: <strong>{latePolicyLabel(selectedAssignment.lateFirst)}</strong></span>
                       {' • '}
-                      <span>Sửa sau hạn: <strong>{selectedAssignment.lateRevision || 'inherit'}</strong></span>
+                      <span>Sửa sau hạn: <strong>{latePolicyLabel(selectedAssignment.lateRevision)}</strong></span>
                     </div>
                   </div>
 
@@ -262,7 +277,7 @@ export const AssignmentFeature: React.FC<AssignmentFeatureProps> = ({
                         cursor: 'pointer',
                       }}
                     >
-                      Lưu trữ (ASG-10)
+                      Lưu trữ
                     </button>
                   )}
                 </div>
