@@ -1,5 +1,7 @@
 # Rà lại cổng tích hợp #36 — 2026-11-08
 
+> **Đính chính trên head mới:** [Kiểm duyệt lại #36 trước UI mới](system-redesign-integration-audit.md) tái hiện mất task sau restart và phát hiện các phép tải/restore/browser chưa đáp ứng đầy đủ tiêu chí. Kết luận “đủ bằng chứng” dưới đây chỉ ghi lại trạng thái PR #49–52, không còn là kết luận cổng hiện hành.
+
 | Trường | Kết quả |
 | --- | --- |
 | Phạm vi | `s_note_v2` tại `0e64d01`; đối chiếu issue #36, `IMPLEMENTATION_PLAN.md`, `docs/quality/README.md` và `docs/operations/README.md` |

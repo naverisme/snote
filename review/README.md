@@ -6,6 +6,7 @@
 | [Tình huống biên, rủi ro và phản biện](edge-case-audit.md) | 24 ca có nguồn, hậu quả dự kiến, khuyến nghị và kết quả cần kiểm chứng; phân biệt đề xuất với quyết định đã duyệt |
 | [Rà Foundation #28](foundation-audit.md) | Giới hạn môi trường, rủi ro giao dịch và kết quả cần kiểm trên PostgreSQL |
 | [Rà lại cổng tích hợp #36](integration-gate-reassessment.md) | Đối chiếu test giả lập với yêu cầu HTTP, PostgreSQL, giao diện, tải và phục hồi trước pilot |
+| [Kiểm duyệt lại #36 trước UI mới](system-redesign-integration-audit.md) | Bằng chứng trên head 2026-11-08: mất task sau restart, giới hạn tải/restore/browser và owner cần sửa |
 | [Rà giao diện theo tính năng](ui-commercial-audit.md) | Vấn đề theo từng màn, thứ tự sửa, giới hạn và kết quả cần kiểm trước khi dùng thương mại |
 | [Rà đầu vào API-A #29](api-a-readiness.md) | Cổng foundation, khoảng trống contract/schema, đề nghị bàn giao owner #28 và ma trận QA-01–04 trước triển khai |
 | [Đề xuất toàn vẹn dữ liệu](blocked/data-integrity-proposal.md) | Mô hình phiên bản/tệp, gửi chống trùng, quota và dọn dữ liệu; chưa duyệt kiến trúc |
