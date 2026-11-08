@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { UploadCloud, FileText, X } from 'lucide-react';
 import type { Submission, SubmissionInput } from '../types';
 
 export interface StudentSubmissionFormProps {
@@ -427,8 +428,8 @@ export const StudentSubmissionForm: React.FC<StudentSubmissionFormProps> = ({
               transition: 'border-color 150ms ease, background-color 150ms ease',
             }}
           >
-            <div style={{ fontSize: '20px', marginBottom: '6px', color: '#64748b' }}>
-              📎
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px', color: '#64748b' }}>
+              <UploadCloud size={24} />
             </div>
             <div style={{ fontSize: '13px', fontWeight: 500, color: '#334155', marginBottom: '4px' }}>
               Kéo và thả tệp vào đây, hoặc <span style={{ color: '#2563eb', textDecoration: 'underline' }}>nhấn để chọn tệp</span>
@@ -456,7 +457,7 @@ export const StudentSubmissionForm: React.FC<StudentSubmissionFormProps> = ({
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
-                    <span style={{ color: '#64748b' }}>📄</span>
+                    <FileText size={14} style={{ color: '#64748b', flexShrink: 0 }} />
                     <span style={{ color: '#0f172a', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {file.name}
                     </span>
@@ -475,11 +476,13 @@ export const StudentSubmissionForm: React.FC<StudentSubmissionFormProps> = ({
                       color: '#94a3b8',
                       cursor: 'pointer',
                       padding: '2px 6px',
-                      fontSize: '12px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     }}
                     title="Xóa tệp"
                   >
-                    ✕
+                    <X size={13} />
                   </button>
                 </div>
               ))}
