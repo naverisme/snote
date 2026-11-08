@@ -24,7 +24,7 @@ flowchart TD
 
 | Cạnh/điều kiện | Nguồn kiểm ngữ nghĩa | Trạng thái |
 | --- | --- | --- |
-| Scope/tư cách → hợp quyền theo action → ranh giới cứng → quyết định | [STR-11–14](../requirements/structural-rules.md), [PM-01–05](../requirements/permission-matrix.md) | VERIFIED về thứ tự logic |
+| Scope/tư cách → hợp quyền theo action → ranh giới cứng → quyết định | [STR-11–14](../requirements/structural-rules.md), [PM-01–05](../requirements/access-control.md) | VERIFIED về thứ tự logic |
 | Che đối tượng ngoài quyền trước khi đếm/tìm/tải | [STR-06](../requirements/structural-rules.md), [hợp đồng 404](../contracts/README.md) | VERIFIED về kết quả; mã HTTP theo hợp đồng |
 
 Một người kiêm vai trò được **hợp quyền trong scope**; quyền sửa nội dung chung không vượt quyền riêng Hộp thu/buổi làm, trạng thái lưu trữ hay hạn. Kiểm lại tại điểm chốt, không tin trạng thái nút cũ trên UI.[^ALG-01]
@@ -51,7 +51,7 @@ flowchart TD
 | --- | --- | --- |
 | Trigger khác nhau nhưng chỉ hiệu lực ở chấp nhận/duyệt | [CLS-05](../requirements/class-membership.md), [STR-07](../requirements/structural-rules.md) | VERIFIED |
 | Kiểm tư cách lớp, trạng thái lưu trữ và giới hạn hiện hành | [CLS-06/11/14](../requirements/class-membership.md), [STR-04/08](../requirements/structural-rules.md) | VERIFIED |
-| Khóa cặp, đếm, ghi và vô hiệu lời mời trong một giao dịch | [data-and-transactions](data-and-transactions.md), [CLS-07](../requirements/class-membership.md) | INFERRED về cơ chế khóa; VERIFIED về kết quả |
+| Khóa cặp, đếm, ghi và vô hiệu lời mời trong một giao dịch | [data-and-transactions](data-model.md), [CLS-07](../requirements/class-membership.md) | INFERRED về cơ chế khóa; VERIFIED về kết quả |
 
 Nếu giới hạn giảm dưới số nhóm đang có, giữ tư cách cũ và chặn lần gia nhập mới; khôi phục nhóm có xung đột thì giữ nhóm lưu trữ, không khôi phục một phần. Các nhánh này là cùng bất biến, không phải luồng tự động xóa thành viên.[^ALG-02]
 
@@ -75,7 +75,7 @@ flowchart TD
 | --- | --- | --- |
 | Key và fingerprint, tra biên nhận khi mất phản hồi | [STR-16](../requirements/structural-rules.md), [hợp đồng](../contracts/README.md) | VERIFIED |
 | Nội dung tối thiểu, quyền Nộp riêng, hai luật sau hạn, version nền | [ASG-03/05/06/12/14/15](../requirements/assignments-and-submissions.md) | VERIFIED |
-| Revision, quota và receipt trong cùng giao dịch DB; thông báo sau commit | [data-and-transactions](data-and-transactions.md), [ASG-17](../requirements/assignments-and-submissions.md) | INFERRED về cơ chế; VERIFIED về kết quả cần giữ |
+| Revision, quota và receipt trong cùng giao dịch DB; thông báo sau commit | [data-and-transactions](data-model.md), [ASG-17](../requirements/assignments-and-submissions.md) | INFERRED về cơ chế; VERIFIED về kết quả cần giữ |
 
 Lỗi version nền là 412; lỗi bytes/metadata không tạo phiên bản mới. Nếu client mất phản hồi sau commit, tra `/operations/by-key/{key}` hoặc gửi lại **cùng** key, không tạo ý định khác. Hạn sửa sau khi nộp không phân loại lại bản cũ. Sơ đồ không mô tả thuật toán upload bytes: xem A4.[^ALG-03]
 
@@ -98,7 +98,7 @@ flowchart TD
 | --- | --- | --- |
 | Staging, xác minh bytes, chỉ hiện thành công sau metadata | [LIB-11/15](../requirements/library.md), [UX trạng thái tải](../ux/ui-and-motion.md) | VERIFIED |
 | Version nền và lựa chọn ghi đè/bản sao; quota khi khôi phục | [LIB-12–17](../requirements/library.md), [STR-15](../requirements/structural-rules.md) | VERIFIED |
-| Giữ bytes lịch sử/bản nộp, GC kiểm tham chiếu trước khi xóa | [data-and-transactions](data-and-transactions.md), [physical-schema](physical-schema.md) | INFERRED về cơ chế, VERIFIED về yêu cầu giữ |
+| Giữ bytes lịch sử/bản nộp, GC kiểm tham chiếu trước khi xóa | [data-and-transactions](data-model.md), [physical-schema](data-model.md) | INFERRED về cơ chế, VERIFIED về yêu cầu giữ |
 
 Sơ đồ không đồng nhất “dọn staging” với xóa bytes đã được tham chiếu: dọn chỉ sau đối soát. Hạn mức logic và ngân sách vật lý là hai điều kiện khác nhau; ngân sách máy chủ thực còn mở ở ENV-01.[^ALG-04]
 
@@ -131,7 +131,7 @@ Nhóm 1 theo hạn cũ nhất; nhóm 2 theo hạn gần nhất; nhóm 3 theo bu�
 **Giới hạn kiểm định:** năm hình được đối chiếu bằng chữ với mã quy tắc ở từng bảng; chưa có bằng chứng renderer Mermaid hoặc phép đo thuật toán trên commit hiện tại. Ca kiểm tương ứng ở [QA-02/04–09/11](../quality/README.md). Các bằng chứng chạy theo môi trường và SHA được giữ tại `review/`, không nằm trong đặc tả này.
 
 [^ALG-01]: [SRC-02/24/27](../../review/provenance.md), [STR-06/11–14](../requirements/structural-rules.md), mốc `bdc1df38`. Quy tắc quyền, không phải kết quả security test.
-[^ALG-02]: [SRC-02/10/27](../../review/provenance.md), [CLS-05–07/11](../requirements/class-membership.md), [thiết kế giao dịch](data-and-transactions.md), mốc `bdc1df38`.
+[^ALG-02]: [SRC-02/10/27](../../review/provenance.md), [CLS-05–07/11](../requirements/class-membership.md), [thiết kế giao dịch](data-model.md), mốc `bdc1df38`.
 [^ALG-03]: [SRC-05/26/27](../../review/provenance.md), [ASG-03–08/12/14–18](../requirements/assignments-and-submissions.md), [STR-16](../requirements/structural-rules.md), mốc `bdc1df38`.
-[^ALG-04]: [SRC-25/26/27](../../review/provenance.md), [LIB-11–17](../requirements/library.md), [thiết kế dữ liệu](data-and-transactions.md), mốc `bdc1df38`.
+[^ALG-04]: [SRC-25/26/27](../../review/provenance.md), [LIB-11–17](../requirements/library.md), [thiết kế dữ liệu](data-model.md), mốc `bdc1df38`.
 [^ALG-05]: [SRC-04/15/26/27](../../review/provenance.md), [TASK-10/11/17](../requirements/tasks.md), [STR-19](../requirements/structural-rules.md), mốc `bdc1df38`.

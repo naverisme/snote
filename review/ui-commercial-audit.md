@@ -3,7 +3,7 @@
 | Trường | Giá trị |
 | --- | --- |
 | Phạm vi | Web v2 tại head `cb464e6`; chỉ mã và tài liệu v2 hiện hành |
-| Nguồn | Yêu cầu người dùng ngày 2026-11-08; [UX tổng hợp](../docs/ux/ui-and-motion.md), [Q32](../docs/ux/workspace-gantt.md), [điều hướng lớp](../docs/ux/class-navigation.md), [SRC-27](provenance.md) |
+| Nguồn | Yêu cầu người dùng ngày 2026-11-08; [UX tổng hợp](../docs/ux/ui-and-motion.md), [Q32](../docs/ux/workspace-and-tasks.md), [điều hướng lớp](../docs/ux/class-navigation.md), [SRC-27](provenance.md) |
 | Trạng thái | Rà mã tĩnh và cải tiến shell trên branch `feat/v2/ui-review`; cần xem trên thiết bị và dữ liệu thật trước khi kết luận đủ chất lượng phát hành |
 
 ## Thứ tự sửa theo trải nghiệm người dùng

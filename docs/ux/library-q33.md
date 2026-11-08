@@ -3,8 +3,8 @@
 | Trường | Giá trị |
 | --- | --- |
 | Phạm vi | Thư viện của workspace cá nhân, cộng tác và nhóm trong lớp |
-| Trạng thái | B1–B3, E7, F8 và I6–I13 được chủ sản phẩm chốt; thành phần khác còn ở [phiếu rà soát](../../review/blocked/ux-q33-library.md) |
-| Nguồn | [SRC-19, SRC-21/22, SRC-25](../../review/provenance.md), [LIB-01–15](../requirements/library.md), [NAV-04/06](validated-navigation.md) |
+| Trạng thái | B1–B3, E7, F8 và I6–I13 được chủ sản phẩm chốt; thành phần khác còn ở [phiếu rà soát](https://github.com/naverisme/snote/blob/49caff82e8b004ca0afc2ab52229c4711fdd9334/review/blocked/ux-q33-library.md) |
+| Nguồn | [SRC-19, SRC-21/22, SRC-25](../../review/provenance.md), [LIB-01–15](../requirements/library.md), [NAV-04/06](workspace-and-tasks.md) |
 
 | Mã | Cấp, vị trí | Số lượng, loại | Hành vi đã chốt |
 | --- | --- | --- | --- |

@@ -27,14 +27,25 @@ flowchart TD
 | Bài giao/nộp | Bài, nhóm nhận, tiến độ, phiên bản, hạn và biên nhận thao tác | Cần xác nhận quyền/hạn/quota tại điểm chốt, không phụ thuộc nút hiển thị |
 | Thông báo | Thông điệp phát sinh sau thay đổi có hiệu lực | Khi mở đích, kiểm quyền hiện hành; lịch nhắc kiểm trạng thái lúc phát |
 
-**Giao dịch và lỗi:** Cơ sở dữ liệu và kho tệp không được giả định là một giao dịch nguyên tử. Tải tệp ở trạng thái tạm; xác minh; kiểm lại quyền, hạn, phiên bản nền, quota; chốt bản ghi và biên nhận chống lặp trong một giao dịch dữ liệu; chỉ trả thành công sau đó. Nếu mất phản hồi, truy vấn biên nhận trước khi thử tạo dữ liệu. Công việc nền đối soát tệp tạm, tham chiếu và quota, dọn chỉ khi chứng minh không còn nơi tham chiếu. Mô hình chi tiết ở [dữ liệu và giao dịch](data-and-transactions.md).
+**Giao dịch và lỗi:** Cơ sở dữ liệu và kho tệp không được giả định là một giao dịch nguyên tử. Tải tệp ở trạng thái tạm; xác minh; kiểm lại quyền, hạn, phiên bản nền, quota; chốt bản ghi và biên nhận chống lặp trong một giao dịch dữ liệu; chỉ trả thành công sau đó. Nếu mất phản hồi, truy vấn biên nhận trước khi thử tạo dữ liệu. Công việc nền đối soát tệp tạm, tham chiếu và quota, dọn chỉ khi chứng minh không còn nơi tham chiếu. Mô hình chi tiết ở [dữ liệu và giao dịch](data-model.md).
 
 **Bảo mật:** Kiểm phạm vi trước tìm kiếm, tổng hợp và tải tệp. Thẻ URL chỉ truy cập đích công khai, giới hạn chuyển hướng, kích thước và thời gian; không chuyển credential người dùng sang nguồn. Định danh bytes không tự cấp quyền. Chi tiết [ranh giới quyền](security-boundaries.md).
 
 **Quyết định công nghệ:** Giữ bộ React/TypeScript/Vite/Tailwind, NestJS, PostgreSQL/Prisma, REST, Git/GitHub và Docker Compose được đưa vào thảo luận. Mật khẩu băm bằng thuật toán chuyên dụng hiện đại được cấu hình sau khi chọn thư viện, phiên truy cập ngắn hạn và cơ chế làm mới/thu hồi; không chọn JWT tự chứa như nguồn quyền duy nhất. Tệp cần giao diện lưu trữ trừu tượng: máy chủ cục bộ cho thử nghiệm cô lập; kho tương thích object storage cho môi trường cần độ bền/đa máy. Không tuyên bố Docker Compose là cơ chế sao lưu hay nơi lưu tệp. Nhà cung cấp, chi phí, công suất và phiên bản dependency được xác nhận khi có môi trường, không suy từ đề xuất cũ.
 
-Ranh giới module là quyết định thiết kế; chi tiết endpoint ở [hợp đồng](../contracts/README.md), kiểm chứng ở [quality](../quality/README.md) và triển khai ở [operations](../operations/README.md). Đề xuất trước đây tại [review](../../review/blocked/data-integrity-proposal.md) là lịch sử phân tích, tài liệu hiện hành ở đây ưu tiên.
+Ranh giới module là quyết định thiết kế; chi tiết endpoint ở [hợp đồng](../contracts/README.md), kiểm chứng ở [quality](../quality/README.md) và triển khai ở [operations](../operations/README.md). Đề xuất trước đây tại [review](https://github.com/naverisme/snote/blob/49caff82e8b004ca0afc2ab52229c4711fdd9334/review/blocked/data-integrity-proposal.md) là lịch sử phân tích, tài liệu hiện hành ở đây ưu tiên.
 
-[Sơ đồ thuật toán và điểm chốt giao dịch](decision-algorithms.md) đối chiếu quyền, gia nhập nhóm, Nộp, tệp và thứ tự Việc tiếp theo với mã quy tắc. Đây là sơ đồ quyết định khái niệm; các bước giao dịch ở [mô hình dữ liệu](data-and-transactions.md), các đường API ở [contracts](../contracts/README.md).
+**Bản đồ đọc thiết kế và mã hiện có:** Bảng chỉ xác định nơi đối chiếu, không tuyên bố mọi mô đun đã đáp ứng toàn bộ đặc tả. Để biết một chức năng có chạy đúng, kiểm test/bằng chứng tại cùng SHA.
+
+| Cần hiểu | Đặc tả đích | Vị trí hiện trạng để kiểm |
+| --- | --- | --- |
+| Lớp, workspace, tư cách và quyền | [Quy tắc](../requirements/class-membership.md), [ma trận quyền](../requirements/access-control.md) | [`apps/api/src/modules/`](../../apps/api/src/modules/), [`schema.prisma`](../../apps/api/prisma/schema.prisma) |
+| Công việc, lịch, Thư viện và bài giao | [Yêu cầu theo tính năng](../requirements/README.md), [màn theo tính năng](../ux/README.md) | [`apps/api/src/modules/`](../../apps/api/src/modules/), [`apps/web/src/features/`](../../apps/web/src/features/) |
+| Bất biến dữ liệu, tệp, cạnh tranh | [Mô hình dữ liệu](data-model.md), [sơ đồ quyết định](decision-algorithms.md) | [`schema.prisma`](../../apps/api/prisma/schema.prisma), [`migrations`](../../apps/api/prisma/migrations/) |
+| Hợp đồng giữa web và API | [OpenAPI](../contracts/openapi.yaml) | [`packages/contracts`](../../packages/contracts/), [`client.ts`](../../apps/web/src/api/generated/client.ts) |
+
+Các đường dẫn code chỉ là điểm bắt đầu kiểm chứng; khi thiết kế và triển khai khác nhau, ghi sai khác vào `review/` và đối chiếu quy tắc nguồn trước khi sửa một trong hai.
+
+[Sơ đồ thuật toán và điểm chốt giao dịch](decision-algorithms.md) đối chiếu quyền, gia nhập nhóm, Nộp, tệp và thứ tự Việc tiếp theo với mã quy tắc. Đây là sơ đồ quyết định khái niệm; các bước giao dịch ở [mô hình dữ liệu](data-model.md), các đường API ở [contracts](../contracts/README.md).
 
 Cơ chế giao dịch/điều khiển cạnh tranh dựa trên [tài liệu PostgreSQL](https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html) và [tài liệu Prisma về transaction](https://www.prisma.io/docs/orm/prisma-client/queries/transactions); khả năng cụ thể phải kiểm với phiên bản cài đặt. Việc dùng kho tệp và Docker Compose được đánh giá riêng với [tài liệu Compose production](https://docs.docker.com/compose/how-tos/production/); các nguồn kỹ thuật không thay quyết định nghiệp vụ của SNOTE.

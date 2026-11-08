@@ -1,23 +1,13 @@
-# Hồ sơ rà soát SNOTE v2
+# Hồ sơ kiểm định và lịch sử SNOTE v2
 
-| Mục | Dùng để làm gì |
+`review/` không phải mã nguồn hay đặc tả hiện hành. Người đọc thường bắt đầu ở [docs](../docs/README.md); chỉ mở các hồ sơ sau khi cần nguồn, vấn đề chưa chốt hoặc bằng chứng một lần chạy.
+
+| Cần kiểm | Mở tệp |
 | --- | --- |
-| [Bản trình bày cách hiểu bộ tài liệu](document-understanding-presentation.md) | Xem bản tổng hợp ngắn theo nguồn hiện hành, phân biệt quyết định, thiết kế và điểm còn cần kiểm chứng |
-| [Tình huống biên, rủi ro và phản biện](edge-case-audit.md) | 24 ca có nguồn, hậu quả dự kiến, khuyến nghị và kết quả cần kiểm chứng; phân biệt đề xuất với quyết định đã duyệt |
-| [Rà Foundation #28](foundation-audit.md) | Giới hạn môi trường, rủi ro giao dịch và kết quả cần kiểm trên PostgreSQL |
-| [Rà lại cổng tích hợp #36](integration-gate-reassessment.md) | Đối chiếu test giả lập với yêu cầu HTTP, PostgreSQL, giao diện, tải và phục hồi trước pilot |
-| [Rà giao diện theo tính năng](ui-commercial-audit.md) | Vấn đề theo từng màn, thứ tự sửa, giới hạn và kết quả cần kiểm trước khi dùng thương mại |
-| [Đề xuất toàn vẹn dữ liệu](blocked/data-integrity-proposal.md) | Mô hình phiên bản/tệp, gửi chống trùng, quota và dọn dữ liệu; chưa duyệt kiến trúc |
-| [Rà DCA cấu trúc và sơ đồ](dca-audit-20261109.md) | Mốc nguồn, tệp điều phối đã lọc, độ phủ use case/thuật toán, trạng thái mở và giới hạn kiểm định |
-| [Lưu trữ điều phối](archive/coordination/README.md) | Kế hoạch, worktree, queue và hướng dẫn skill UI của chiến dịch đã qua; không phải chỉ thị hiện hành |
-| [Dấu vết nguồn](provenance.md) | Đối chiếu quyết định người dùng, PR và nơi lưu quy tắc |
-| [Các điểm chưa chốt](unresolved.md) | Tìm khoảng trống theo mã và phần tài liệu phụ thuộc |
-| [Sổ quyết định Q21–Q37 và I/J](decision-batch.md) | Tra nội dung đã chốt, phần còn mở và liên kết tới quy tắc theo chủ đề |
-| [Khung workspace và Gantt đã duyệt](../docs/ux/workspace-gantt.md) | Tra số lượng, vị trí, cấp, kiểu và hành động của từng thành phần Q32 |
-| [Phiếu Q33 và phần còn mở](blocked/ux-q33-review.md) | Đối chiếu các quyết định C–F đã chốt với thành phần còn rà soát trong bốn màn |
-| [Phiếu G1–G12 tạm duyệt](blocked/ux-q33-g-provisional.md) | Rà các phương án giao diện đang dùng để tiếp tục thiết kế, chưa khóa thành yêu cầu coding |
-| [Bốn màn Q33 để duyệt](blocked/ux-q33-review.md) | Đánh giá Lịch trình, Thư viện, Lớp học và Bài giao/nộp theo từng thành phần; chỉ các phần C–F đã chuyển vào `docs/ux/` |
-| [Ca nghiệm thu đã duyệt](../docs/quality/acceptance-scenarios.md) | Xem 12 tình huống nền và kết quả cần quan sát; ngưỡng định lượng còn mở |
-| [Phương án lưu trữ để duyệt](blocked/storage-proposal.md) | So sánh nơi lưu text, link, tệp và phương án sao lưu |
+| Quy tắc nào đến từ quyết định nào | [provenance.md](provenance.md), [decision-batch.md](decision-batch.md) |
+| Điểm nghiệp vụ hoặc môi trường chưa được đóng | [unresolved.md](unresolved.md) |
+| Phân loại tệp đã bỏ, gộp, giữ; ánh xạ đường dẫn cũ | [dca-consolidation-20261109.md](dca-consolidation-20261109.md) |
+| Kết quả kiểm thử gắn SHA/môi trường | [hồ sơ foundation](foundation-audit.md), [I1](i1-http-smoke-evidence.md), [I2](i2-real-flow-qa-evidence.md), [I3](i3-web-interactions-evidence.md), [I4](i4-performance-recovery-evidence.md) |
+| Rủi ro hoặc nhận định chưa tự trở thành quy tắc | [edge-case-audit.md](edge-case-audit.md), [ui-commercial-audit.md](ui-commercial-audit.md), [integration-gate-reassessment.md](integration-gate-reassessment.md) |
 
-Đọc [docs](../docs/README.md) để tra các nội dung đã đối chiếu. Các lựa chọn trong khu vực này có hiệu lực sau khi có quyết định của chủ sản phẩm và được đưa vào tài liệu đúng nhóm.
+Các phiếu nháp Q33, hồ sơ điều phối và snapshot cũ đã được loại khỏi cây hiện hành. Lịch sử còn tại commit v2 `49caff82`; xem bảng đường dẫn trong hồ sơ kiểm kê. Không dùng kết quả kiểm thử tại một SHA làm bằng chứng cho SHA khác.

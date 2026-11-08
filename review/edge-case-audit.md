@@ -6,7 +6,7 @@
 | Căn cứ | Quy tắc hiện hành trên `s_note_v2` sau I và J; yêu cầu chủ động phân tích tại [SRC-26](provenance.md). Không sử dụng v1 |
 | Trạng thái | **Phân tích và đề xuất**, chưa phải yêu cầu mới được duyệt, chưa phải báo cáo lỗi tìm thấy trong mã chạy |
 | Phương pháp | Xét luồng thường, quyền thay đổi, thao tác đồng thời, lỗi giữa chừng, hết hạn, lưu trữ/khôi phục và thay đổi múi giờ |
-| Đầu ra | 24 ca, hậu quả dự kiến, phản biện lựa chọn, đề xuất và kết quả cần quan sát. Thiết kế tham khảo ở [đề xuất toàn vẹn dữ liệu](blocked/data-integrity-proposal.md) |
+| Đầu ra | 24 ca, hậu quả dự kiến, phản biện lựa chọn, đề xuất và kết quả cần quan sát. Thiết kế tham khảo ở [đề xuất toàn vẹn dữ liệu](https://github.com/naverisme/snote/blob/49caff82e8b004ca0afc2ab52229c4711fdd9334/review/blocked/data-integrity-proposal.md) |
 
 **Cách dùng.** “Đã chốt” chỉ phần có mã quy tắc dẫn nguồn. Phần “Đề xuất” là nhận định của tác nhân. “Kiểm chứng” là ca cần thực hiện sau khi có thiết kế/mã; chưa có ca nào trong hồ sơ này được chạy. Không tự chuyển các ca này vào `docs/quality/` với nhãn đã duyệt. Mức P0/P1/P2 là ưu tiên rà thiết kế theo hậu quả, không phải xác suất hay mức sự cố đã đo.
 
@@ -67,7 +67,7 @@
 
 ## EC-07 — Mất quyền hoặc lưu trữ workspace trong lúc đang tải
 
-- **Căn cứ:** [PM-01–05](../docs/requirements/permission-matrix.md), LIB-15, ASG-17.
+- **Căn cứ:** [PM-01–05](../docs/requirements/access-control.md), LIB-15, ASG-17.
 - **Tình huống:** Người dùng mở biểu mẫu khi còn quyền; trong lúc tải, giáo viên thu hồi quyền Nộp hoặc lưu trữ lớp.
 - **Hậu quả:** Chỉ kiểm quyền lúc mở màn khiến dữ liệu mới lọt vào sau khi quyền đã dừng.
 - **Đề xuất:** Kiểm lại quyền/tư cách/trạng thái lưu trữ tại thời điểm chốt thao tác; không công bố mục hoàn chỉnh nếu không còn hợp lệ. Nếu dùng URL tải trực tiếp tạm thời, quyền tải bytes không được coi là quyền hoàn tất nghiệp vụ. TTL của URL và cách hạn chế tải xuống sau mất quyền cần đặc tả riêng.
@@ -124,7 +124,7 @@
 
 ## EC-14 — Một ngày hợp lệ bị chặn bởi “kết thúc phải sau bắt đầu”
 
-- **Căn cứ:** CAL-09; [G6 tạm duyệt](blocked/ux-q33-g-provisional.md) đề xuất kết thúc sau bắt đầu.
+- **Căn cứ:** CAL-09; [G6 tạm duyệt](https://github.com/naverisme/snote/blob/49caff82e8b004ca0afc2ab52229c4711fdd9334/review/blocked/ux-q33-g-provisional.md) đề xuất kết thúc sau bắt đầu.
 - **Tình huống:** Người dùng chọn cả ngày 10/11–10/11. Kiểm tra dùng chung với sự kiện có giờ từ chối lưu.
 - **Hậu quả:** Quy tắc kỹ thuật của bản thảo làm mất trường hợp đã chốt.
 - **Đề xuất:** Phân loại trước khi kiểm tra: sự kiện có giờ cần kết thúc sau bắt đầu; cả ngày cho phép ngày cuối bằng ngày đầu. UI hiển thị ngày cuối được tính vào sự kiện; mô hình trao đổi có thể dùng ngày kết thúc loại trừ, phù hợp RFC 5545 [T2]. Ví dụ UI 10–10/11 tương ứng khoảng ngày [10/11, 11/11). Đây là đề xuất hợp đồng, không phải schema đã chốt.
