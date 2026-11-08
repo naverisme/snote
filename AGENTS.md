@@ -58,5 +58,12 @@ eview/inbox/ hoặc WORK_QUEUE.md còn task tiếp theo trong phân vùng sở h
        - Agent mới tự động nhận prompt tiếp quản: đọc lại `git status`, `git log -1` và `review/inbox/` để hoàn thiện tiếp phần việc dở dang.
        - Khi toàn bộ Agent trong danh sách đều đã hết Quota, hệ thống lập tức tự động kích hoạt Cầu dao đóng băng (`winwork freeze`) bảo vệ toàn bộ tiến trình.
        - Có thể dùng `winwork check-quota` (hoặc `winwork monitor`) để quét tự động toàn bộ cửa sổ terminal và kích hoạt failover tự động.
+     * Quy chuẩn chế tác giao diện theo kỹ năng Stageshow (Stageshow UI Craft Standard):
+       - Áp dụng bắt buộc cho toàn bộ mã nguồn giao diện trong `apps/web/src/features/**`:
+         1. Tiết chế & Trọng tâm (Restraint & Focus): Chữ thật chỉ đặt ở nơi có câu chuyện nghiệp vụ và hành động cốt lõi (Title, action, result, state); vùng thông tin phụ dùng tone xám điềm tĩnh (`muted`), skeleton loader phải giữ nguyên pitch và hình học của component thật (tránh layout shift).
+         2. Thẩm mỹ Điềm tĩnh (Quiet Hierarchy): Loại bỏ hoàn toàn hiệu ứng hào nhoáng rẻ tiền (cấm gradient tím sặc sỡ, cấm icon lấp lánh stock AI). Nền trung tính dịu mắt, viền hairline 1px tinh tế, 1 màu Accent duy nhất cho hành động kích hoạt.
+         3. Khoảng cách & Hình học chuẩn xác (Geometric Insets & Spacing): Inset tối thiểu 12px từ lề thẻ; bán kính bo góc ngoài = bán kính bo góc trong + padding; căn chỉnh số liệu và ký hiệu tiền tệ/đơn vị chuẩn xác bên trái.
+         4. Chuyển động có Nguyên do (Intentional Motion): Mọi animation từ 150-250ms phải phản ánh tương quan vị trí (khi xóa/thêm item, các item xung quanh trượt êm ái); tuân thủ nghiêm ngặt `@media (prefers-reduced-motion: reduce)`.
+         5. Trạng thái rỗng & Minh họa tính năng (Empty State & Feature Showcase): Tại các màn hình chưa có dữ liệu, hiển thị khung minh họa thu nhỏ (miniature preview / demo card) theo phong cách Stageshow để hướng dẫn người dùng trực quan trong 5 giây.
 
 Mô tả hệ thống, hợp đồng giao tiếp, tiêu chí nghiệm thu và quy trình vận hành có hiệu lực theo trạng thái trong chỉ mục. Quyết định về nghiệp vụ được lưu ở `docs/requirements/` và dẫn chiếu từ những tài liệu sử dụng nó.
