@@ -15,6 +15,8 @@ import { LibraryService } from '../../apps/api/dist/modules/library/library-serv
 import { AssignmentService } from '../../apps/api/dist/modules/assignments/assignment.service.js';
 import { SubmissionService } from '../../apps/api/dist/modules/submissions/submission.service.js';
 
+const allowAuth = { decide: async () => ({ allowed: true }) };
+
 test('VT-01: Đăng ký tài khoản (Người học + Giáo viên) -> Workspace cá nhân tự tạo, có quyền tạo lớp', async () => {
   const db = new TestDb();
   const sessionStore = new InMemorySessionStore();
@@ -151,7 +153,7 @@ test('VT-04: Phân quyền Giáo viên vs Lớp trưởng, Hộp thu riêng bả
 });
 
 test('VT-05: Một việc có hạn hôm nay và một buổi làm riêng hôm nay -> Hiển thị chính xác 1 lần trong Hôm nay', async () => {
-  const tasksService = new TasksService();
+  const tasksService = new TasksService(allowAuth);
   const userId = 'usr-001';
   const workspaceId = 'ws-001';
 
@@ -189,7 +191,7 @@ test('VT-05: Một việc có hạn hôm nay và một buổi làm riêng hôm n
 });
 
 test('VT-06: Việc có hạn chỉ ngày, lập buổi làm sau hạn -> Lưu với nhãn "Làm muộn", hạn giữ nguyên', async () => {
-  const tasksService = new TasksService();
+  const tasksService = new TasksService(allowAuth);
   const userId = 'usr-002';
   const workspaceId = 'ws-002';
 
@@ -203,6 +205,7 @@ test('VT-06: Việc có hạn chỉ ngày, lập buổi làm sau hạn -> Lưu v
     {
       title: 'Báo cáo giữa kỳ',
       dueAt: originalDueAt,
+      assigneeId: userId,
     },
   );
 
@@ -229,7 +232,7 @@ test('VT-06: Việc có hạn chỉ ngày, lập buổi làm sau hạn -> Lưu v
 });
 
 test('VT-07: Đánh dấu xong toàn bộ checklist -> Chỉ hoàn thành khi xác nhận; Mở lại ghi audit trail', async () => {
-  const tasksService = new TasksService();
+  const tasksService = new TasksService(allowAuth);
   const userId = 'usr-003';
   const workspaceId = 'ws-003';
 
@@ -288,7 +291,7 @@ test('VT-08: Lưu nhanh mục vào Hộp thu riêng -> Sao chép sang workspace 
   const store = new MockStore();
   const quota = new MockQuota();
   const uploadStore = { findStaging: async () => null, updateStagingStatus: async () => {} };
-  const lib = new LibraryService(store, quota, uploadStore);
+  const lib = new LibraryService(store, quota, uploadStore, allowAuth);
 
   const personalWsId = 'ws-personal';
   const groupWsId = 'ws-group';
@@ -331,7 +334,7 @@ test('VT-08: Lưu nhanh mục vào Hộp thu riêng -> Sao chép sang workspace 
 });
 
 test('VT-09: Sự kiện lịch tạo cho 1 nhóm trong lớp có 2 nhóm -> Chỉ nhóm liên quan thấy', async () => {
-  const cal = new CalendarService();
+  const cal = new CalendarService(allowAuth);
   const classId = 'class-cnpm';
   const group1Id = 'group-01';
   const group2Id = 'group-02';
@@ -663,7 +666,7 @@ test('VT-11: Nộp bài, nhận xét phiên bản, đổi hạn sau đó -> Snap
 });
 
 test('VT-12: Chế độ xem: Gantt mặc định trong Việc của tôi & Workspace; chuyển Danh sách bảo toàn tập việc', async () => {
-  const tasksService = new TasksService();
+  const tasksService = new TasksService(allowAuth);
   const userId = 'usr-view';
   const workspaceId = 'ws-view';
 

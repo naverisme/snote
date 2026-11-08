@@ -19,20 +19,20 @@
 
 Các controller Công việc và Lịch lấy `accountId` từ `x-account-id`, dùng `user-mock` khi thiếu; Lịch còn lấy danh sách workspace từ `x-workspace-ids` do client gửi. Service Công việc/Lịch dùng `Map` trong tiến trình và tự cho phép mọi action nếu không được truyền `AuthorizationPort`; các Nest module hiện tạo service mà không truyền port. Controller Thư viện lấy `x-actor-id` hoặc UUID mặc định, còn controller Bài giao lấy `x-actor-id` hoặc `teacher-default`; các giá trị CSRF ở các controller này chưa được đối chiếu với session. Đây là đường chạy có thể giả danh/đọc sai phạm vi và mất dữ liệu sau restart, trái [QA-04/08/10/13](../docs/quality/README.md), [ma trận quyền](../docs/requirements/permission-matrix.md) và quy tắc deny-by-default trong [kế hoạch](../IMPLEMENTATION_PLAN.md).
 
-| Owner theo `WORKTREES.md` | Việc sửa bắt buộc | Kết quả kiểm chứng |
-| --- | --- | --- |
-| Công việc/Lịch #31 (`feat/v2/planning`) | Bỏ danh tính/workspace từ header, lấy session cookie và CSRF thật; nối authorization theo scope, mặc định từ chối; thay state `Map` bằng lưu trữ bền qua schema/migration do owner Foundation điều phối | Không session 401; header giả không đổi principal/scope; không CSRF hoặc sai CSRF 403; người mất quyền 403/404; dữ liệu còn sau restart và cạnh tranh phiên bản không ghi đè |
-| Thư viện #35 (`feat/v2/library`) | Bỏ `x-actor-id`/UUID mặc định, dùng session và kiểm CSRF; xác nhận authorization tại điểm commit | Anonymous 401, giả header không vượt quyền, sai CSRF 403; quota/bytes không đổi sau thao tác bị từ chối |
-| Bài giao/Nộp #32 (`feat/v2/assignments`) | Sửa DI để AppModule khởi động; bỏ `x-actor-id`/`teacher-default`, dùng session và kiểm CSRF; so quyền tại điểm chốt revision | AppModule bootstrap và `/ready` qua; anonymous 401, giả header không tạo/xem/nộp thay người khác, sai CSRF 403; nộp thử lại không nhân đôi |
+| Owner theo `WORKTREES.md` | Việc sửa bắt buộc | Kết quả kiểm chứng | Trạng thái |
+| --- | --- | --- | --- |
+| Công việc/Lịch #31 (`feat/v2/planning`) | Bỏ danh tính/workspace từ header, lấy session cookie và CSRF thật; nối authorization theo scope, mặc định từ chối; thay state `Map` bằng lưu trữ bền qua schema/migration do owner Foundation điều phối | Không session 401; header giả không đổi principal/scope; không CSRF hoặc sai CSRF 403; người mất quyền 403/404; dữ liệu còn sau restart và cạnh tranh phiên bản không ghi đè | **Đã sửa tại PR #46** (commit `4ed3c85`); nghiệm thu qua HTTP smoke |
+| Thư viện #35 (`feat/v2/library`) | Bỏ `x-actor-id`/UUID mặc định, dùng session và kiểm CSRF; xác nhận authorization tại điểm commit | Anonymous 401, giả header không vượt quyền, sai CSRF 403; quota/bytes không đổi sau thao tác bị từ chối | **Đã sửa tại PR #48** (commit `e40cd04`); nghiệm thu qua HTTP smoke |
+| Bài giao/Nộp #32 (`feat/v2/assignments`) | Sửa DI để AppModule khởi động; bỏ `x-actor-id`/`teacher-default`, dùng session và kiểm CSRF; so quyền tại điểm chốt revision | AppModule bootstrap và `/ready` qua; anonymous 401, giả header không tạo/xem/nộp thay người khác, sai CSRF 403; nộp thử lại không nhân đôi | **Đã sửa tại PR #47** (commit `6f3ff59`); nghiệm thu qua HTTP smoke |
 
-Các kết luận này dựa trên đường khởi tạo/controller/service trong mã tại `0e64d01`, chưa phải khai thác trên server thật. Kiểm HTTP thật trong I-1 phải làm ca hồi quy cho từng owner, rồi mới nghiệm thu sửa lỗi.
+Cả 3 PR #46, #47, #48 đã merge vào `s_note_v2` tại commit `b15cca0`. AppModule khởi động 100%, endpoint `/ready` kết nối PostgreSQL thành công.
 
 ## Việc tiếp theo theo cổng #36
 
-| Mã | Điều kiện và hành động | Rủi ro nếu bỏ qua | Bằng chứng đạt |
-| --- | --- | --- | --- |
-| I-1 | Trên worktree integration, dựng môi trường cách ly với PostgreSQL thật và storage bền tạm; chạy migration, seed, API và web từ cùng SHA; thêm smoke qua HTTP và client sinh từ OpenAPI | Route, cookie/CSRF, transaction hoặc mapping DB có thể sai dù unit test qua | Log lệnh, SHA, phiên bản DB, request/response cho đăng nhập, quyền, việc, thư viện và nộp; kiểm lỗi 401/403/409/412 |
-| I-2 | Chạy 12 VT và QA-01–14 trên luồng thật; kiểm thao tác đồng thời và lỗi giữa chừng, gồm nộp mất phản hồi, quota/GC và URL preview | Thành công giả, ghi trùng hoặc lộ dữ liệu trong lúc cạnh tranh | Kết quả từng mã, trạng thái DB/bytes sau lỗi và test tự động lặp lại được |
+| Mã | Điều kiện và hành động | Rủi ro nếu bỏ qua | Bằng chứng đạt | Trạng thái |
+| --- | --- | --- | --- | --- |
+| I-1 | Trên worktree integration, dựng môi trường cách ly với PostgreSQL thật và storage bền tạm; chạy migration, seed, API và web từ cùng SHA; thêm smoke qua HTTP và client sinh từ OpenAPI | Route, cookie/CSRF, transaction hoặc mapping DB có thể sai dù unit test qua | Log lệnh, SHA, phiên bản DB, request/response cho đăng nhập, quyền, việc, thư viện và nộp; kiểm lỗi 401/403/409/412 | **ĐẠT (Hoàn thành)** — `tests/e2e/http-smoke.spec.mjs`, hồ sơ tại `review/i1-http-smoke-evidence.md` |
+| I-2 | Chạy 12 VT và QA-01–14 trên luồng thật; kiểm thao tác đồng thời và lỗi giữa chừng, gồm nộp mất phản hồi, quota/GC và URL preview | Thành công giả, ghi trùng hoặc lộ dữ liệu trong lúc cạnh tranh | Kết quả từng mã, trạng thái DB/bytes sau lỗi và test tự động lặp lại được | Đang chờ triển khai |
 | I-3 | Chạy giao diện trên desktop/mobile hoặc thiết bị kiểm thử được nêu; kiểm focus, keyboard, reduced motion và phản hồi cũ sau đổi workspace | Dữ liệu cũ còn hiển thị hoặc thao tác sai ngữ cảnh | Môi trường thiết bị, bước chạy và ảnh/log kết quả |
 | I-4 | Đo p95 với tập dữ liệu/độ đồng thời trong `docs/quality/README.md`; sao lưu và phục hồi metadata **cùng bytes**, đối soát mọi revision nộp | Không biết tải thực hoặc có thể mất bản nộp sau restore | Script, cấu hình máy, số đo, checksum/đối soát và thời gian phục hồi |
 | I-5 | Thêm các kiểm tra trên vào CI hoặc ghi rõ gate thủ công bắt buộc; cập nhật báo cáo #36 và trạng thái issue theo đúng bằng chứng | Head mới có thể vượt qua CI chỉ với Foundation | Workflow hoặc biên bản kiểm trên đúng SHA; chỉ đóng #36 khi các cổng cần thiết qua |
