@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import type { Folder, ItemDetail } from '../types';
+import { FileText, Folder, Link, ExternalLink, Download, History, Copy, FolderInput, Trash2 } from 'lucide-react';
+import type { Folder as FolderType, ItemDetail } from '../types';
 
 export interface ItemCardProps {
   item: ItemDetail;
-  folders: Folder[];
+  folders: FolderType[];
   onOpenRevisions: (item: ItemDetail) => void;
   onOpenCopy: (item: ItemDetail) => void;
   onMoveFolder: (item: ItemDetail, folderId: string | null) => Promise<void>;
@@ -64,7 +65,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
         {/* Header: Type and Version badges */}
         <div className="flex justify-between items-center mb-2">
           <span
-            className={`text-xs px-2 py-0.5 rounded font-medium ${
+            className={`text-xs px-2 py-0.5 rounded font-medium inline-flex items-center gap-1 ${
               item.type === 'file'
                 ? 'bg-purple-100 text-purple-800'
                 : item.type === 'link'
@@ -72,7 +73,22 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                   : 'bg-blue-100 text-blue-800'
             }`}
           >
-            {item.type === 'file' ? '📁 Tệp' : item.type === 'link' ? '🔗 Đường dẫn' : '📝 Văn bản'}
+            {item.type === 'file' ? (
+              <>
+                <Folder size={12} />
+                <span>Tệp</span>
+              </>
+            ) : item.type === 'link' ? (
+              <>
+                <Link size={12} />
+                <span>Đường dẫn</span>
+              </>
+            ) : (
+              <>
+                <FileText size={12} />
+                <span>Văn bản</span>
+              </>
+            )}
           </span>
           <span className="text-xs text-gray-400">v{item.version}</span>
         </div>
@@ -84,8 +100,9 @@ export const ItemCard: React.FC<ItemCardProps> = ({
 
         {/* Folder tag */}
         {currentFolder && (
-          <span className="inline-block text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded mb-2">
-            📂 {currentFolder.name}
+          <span className="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded mb-2">
+            <Folder size={12} className="text-gray-500" />
+            <span>{currentFolder.name}</span>
           </span>
         )}
 
@@ -103,10 +120,10 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                 href={item.revision.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:underline text-sm font-medium flex items-center gap-1 break-all"
+                className="text-blue-600 hover:underline text-sm font-medium inline-flex items-center gap-1 break-all"
               >
                 <span>{item.revision.url}</span>
-                <span aria-hidden="true">↗</span>
+                <ExternalLink size={13} className="flex-shrink-0" aria-hidden="true" />
               </a>
             </div>
           )}
@@ -147,10 +164,11 @@ export const ItemCard: React.FC<ItemCardProps> = ({
               {onDownload && (
                 <button
                   type="button"
-                  className="text-xs bg-purple-600 hover:bg-purple-700 text-white px-2.5 py-1 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-400"
+                  className="text-xs bg-purple-600 hover:bg-purple-700 text-white px-2.5 py-1 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-400 inline-flex items-center gap-1"
                   onClick={() => onDownload(item)}
                 >
-                  Tải xuống ⬇
+                  <span>Tải xuống</span>
+                  <Download size={12} />
                 </button>
               )}
             </div>
@@ -163,37 +181,41 @@ export const ItemCard: React.FC<ItemCardProps> = ({
         <div className="flex items-center gap-1">
           <button
             type="button"
-            className="hover:text-blue-600 p-1"
+            className="hover:text-blue-600 p-1 rounded inline-flex items-center gap-1"
             title="Lịch sử phiên bản / Ghi đè"
             onClick={() => onOpenRevisions(item)}
           >
-            🕒 Phiên bản
+            <History size={13} />
+            <span>Phiên bản</span>
           </button>
           <button
             type="button"
-            className="hover:text-blue-600 p-1"
+            className="hover:text-blue-600 p-1 rounded inline-flex items-center gap-1"
             title="Sao chép sang nhóm khác"
             onClick={() => onOpenCopy(item)}
           >
-            📋 Sao chép
+            <Copy size={13} />
+            <span>Sao chép</span>
           </button>
           <button
             type="button"
-            className="hover:text-blue-600 p-1"
+            className="hover:text-blue-600 p-1 rounded inline-flex items-center gap-1"
             title="Chuyển thư mục trong cùng workspace"
             onClick={() => setIsMoving(!isMoving)}
           >
-            📁 Chuyển
+            <FolderInput size={13} />
+            <span>Chuyển</span>
           </button>
         </div>
 
         <button
           type="button"
-          className="text-red-500 hover:text-red-700 p-1"
+          className="text-red-500 hover:text-red-700 p-1 rounded inline-flex items-center gap-1"
           title="Chuyển vào Thùng rác (Lưu 30 ngày)"
           onClick={() => onTrash(item)}
         >
-          🗑️ Xóa
+          <Trash2 size={13} />
+          <span>Xóa</span>
         </button>
       </footer>
 

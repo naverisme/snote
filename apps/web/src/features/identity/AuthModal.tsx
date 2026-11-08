@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { X } from 'lucide-react';
 import { register, login, passwordResetRequest, passwordReset } from '../../shared/api';
 import type { Account } from '../../shared/types';
 
@@ -85,7 +86,7 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
             {tab === 'forgot' && 'Quên mật khẩu'}
             {tab === 'reset' && 'Đặt lại mật khẩu'}
           </h2>
-          <button className="close-btn" onClick={onClose} aria-label="Đóng">✕</button>
+          <button className="close-btn" onClick={onClose} aria-label="Đóng"><X size={16} /></button>
         </div>
 
         {error && <div style={{ color: 'var(--danger)', marginBottom: 12, fontSize: '0.875rem' }}>{error}</div>}

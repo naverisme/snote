@@ -1,4 +1,5 @@
 import React from 'react';
+import { AlertTriangle } from 'lucide-react';
 import type { QuotaInfo } from '../types';
 import { formatBytes } from '../utils';
 
@@ -54,8 +55,8 @@ export const QuotaBar: React.FC<QuotaBarProps> = ({ quota, loading }) => {
       </div>
 
       {quota.warning && (
-        <div className="mt-2 text-xs flex items-center gap-1 font-semibold text-amber-800" role="alert">
-          <span aria-hidden="true">⚠️</span>
+        <div className="mt-2 text-xs flex items-center gap-1.5 font-semibold text-amber-800" role="alert">
+          <AlertTriangle size={14} className="text-amber-600 flex-shrink-0" aria-hidden="true" />
           <span>Cảnh báo: Dung lượng lưu trữ của workspace đã đạt trên 80%. Hãy dọn dẹp hoặc tối ưu tệp.</span>
         </div>
       )}

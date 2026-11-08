@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { ClipboardList } from 'lucide-react';
 import type { Task, WorkSessionViewModel } from './types';
 
 interface TaskGanttViewProps {
@@ -275,7 +276,10 @@ export const TaskGanttView: React.FC<TaskGanttViewProps> = ({
       {unscheduledTasks.length > 0 && (
         <div style={{ border: '1px solid #d0d7de', borderRadius: '6px', background: '#fff', padding: '14px' }}>
           <div style={{ fontSize: '13px', fontWeight: 600, color: '#57606a', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span>📋 Chưa có mốc thời gian ({unscheduledTasks.length})</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <ClipboardList size={14} />
+              <span>Chưa có mốc thời gian ({unscheduledTasks.length})</span>
+            </span>
             <span style={{ fontSize: '11px', fontWeight: 400, color: '#8c959f' }}>
               (Bấm vào công việc để xem chi tiết hoặc đặt hạn)
             </span>

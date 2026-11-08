@@ -1,4 +1,5 @@
 import React from 'react';
+import { GanttChart, List, Plus, Search } from 'lucide-react';
 import type { TaskFilter, TaskSortMode, TaskViewMode } from './types';
 
 interface TaskFiltersProps {
@@ -41,10 +42,14 @@ export const TaskFilters: React.FC<TaskFiltersProps> = ({
             background: viewMode === 'gantt' ? '#0969da' : '#f6f8fa',
             color: viewMode === 'gantt' ? '#ffffff' : '#24292f',
             cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
           }}
           aria-pressed={viewMode === 'gantt'}
         >
-          Gantt
+          <GanttChart size={14} />
+          <span>Gantt</span>
         </button>
         <button
           type="button"
@@ -58,10 +63,14 @@ export const TaskFilters: React.FC<TaskFiltersProps> = ({
             background: viewMode === 'list' ? '#0969da' : '#f6f8fa',
             color: viewMode === 'list' ? '#ffffff' : '#24292f',
             cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
           }}
           aria-pressed={viewMode === 'list'}
         >
-          Danh sách
+          <List size={14} />
+          <span>Danh sách</span>
         </button>
       </div>
 
@@ -151,9 +160,13 @@ export const TaskFilters: React.FC<TaskFiltersProps> = ({
             background: '#1f883d',
             color: '#ffffff',
             cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
           }}
         >
-          + Tạo việc
+          <Plus size={14} />
+          <span>Tạo việc</span>
         </button>
       </div>
     </div>

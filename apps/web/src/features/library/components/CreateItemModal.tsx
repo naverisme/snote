@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import type { Folder, LibraryItemType } from '../types';
+import { FileText, Folder, Link, X } from 'lucide-react';
+import type { Folder as FolderType, LibraryItemType } from '../types';
 import { ALLOWED_EXTENSIONS, MAX_FILE_SIZE } from '../utils';
 
 export interface CreateItemModalProps {
   isOpen: boolean;
-  folders: Folder[];
+  folders: FolderType[];
   initialFolderId?: string | null;
   onClose: () => void;
   onCreateText: (title: string, content: string, folderId: string | null) => Promise<void>;
@@ -139,11 +140,11 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({
           </h2>
           <button
             type="button"
-            className="text-gray-400 hover:text-gray-600 text-xl font-bold p-1"
+            className="text-gray-400 hover:text-gray-600 p-1 rounded-md transition-colors"
             onClick={onClose}
             aria-label="Đóng cửa sổ"
           >
-            ×
+            <X size={18} />
           </button>
         </div>
 
@@ -153,34 +154,37 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({
             type="button"
             role="tab"
             aria-selected={activeTab === 'text'}
-            className={`flex-1 py-2 text-sm font-medium border-b-2 text-center transition-colors ${
+            className={`flex-1 py-2 text-sm font-medium border-b-2 text-center transition-colors inline-flex items-center justify-center gap-1.5 ${
               activeTab === 'text' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
             onClick={() => setActiveTab('text')}
           >
-            📝 Văn bản
+            <FileText size={15} />
+            <span>Văn bản</span>
           </button>
           <button
             type="button"
             role="tab"
             aria-selected={activeTab === 'link'}
-            className={`flex-1 py-2 text-sm font-medium border-b-2 text-center transition-colors ${
+            className={`flex-1 py-2 text-sm font-medium border-b-2 text-center transition-colors inline-flex items-center justify-center gap-1.5 ${
               activeTab === 'link' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
             onClick={() => setActiveTab('link')}
           >
-            🔗 Đường dẫn
+            <Link size={15} />
+            <span>Đường dẫn</span>
           </button>
           <button
             type="button"
             role="tab"
             aria-selected={activeTab === 'file'}
-            className={`flex-1 py-2 text-sm font-medium border-b-2 text-center transition-colors ${
+            className={`flex-1 py-2 text-sm font-medium border-b-2 text-center transition-colors inline-flex items-center justify-center gap-1.5 ${
               activeTab === 'file' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
             onClick={() => setActiveTab('file')}
           >
-            📁 Tệp
+            <Folder size={15} />
+            <span>Tệp</span>
           </button>
         </div>
 

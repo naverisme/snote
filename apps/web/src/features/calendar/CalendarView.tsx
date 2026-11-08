@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { AlertTriangle, Calendar, Plus } from 'lucide-react';
 import type { CalendarEventViewModel, CalendarViewMode } from './types';
 
 interface CalendarViewProps {
@@ -139,7 +140,10 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               cursor: 'pointer',
             }}
           >
-            + Sự kiện mới
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <Plus size={14} />
+              <span>Sự kiện mới</span>
+            </span>
           </button>
         </div>
       </div>
@@ -147,14 +151,18 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       {/* Conflict Warning Banner (CAL-06) */}
       {hasConflict && (
         <div style={{ padding: '8px 12px', background: '#fff8c5', border: '1px solid #d4a72c', borderRadius: '6px', fontSize: '12px', color: '#735c0f', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span>⚠️ <strong>Cảnh báo trùng lịch:</strong> Có các sự kiện trùng khung giờ trong lịch này. Hệ thống vẫn lưu đầy đủ nhưng bạn nên kiểm tra lại để tránh xung đột.</span>
+          <AlertTriangle size={16} style={{ flexShrink: 0, color: '#9a6700' }} />
+          <span><strong>Cảnh báo trùng lịch:</strong> Có các sự kiện trùng khung giờ trong lịch này. Hệ thống vẫn lưu đầy đủ nhưng bạn nên kiểm tra lại để tránh xung đột.</span>
         </div>
       )}
 
       {/* All-Day Events Section (QA-10 & EC-13: Civil Date anchored) */}
       <div style={{ border: '1px solid #d0d7de', borderRadius: '6px', background: '#f6f8fa', padding: '10px' }}>
         <div style={{ fontSize: '11px', fontWeight: 600, color: '#57606a', textTransform: 'uppercase', marginBottom: '8px' }}>
-          📅 Sự kiện cả ngày (Giữ nguyên ngày dân sự theo QA-10)
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <Calendar size={13} />
+            <span>Sự kiện cả ngày (Giữ nguyên ngày dân sự theo QA-10)</span>
+          </span>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
           {events.filter(e => e.allDay).length === 0 ? (
@@ -279,8 +287,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                                 </span>
                               )}
                               {ev.conflictWarning && !isCancelled && (
-                                <span style={{ fontSize: '10px', background: '#d4a72c', color: '#fff', padding: '1px 4px', borderRadius: '4px', fontWeight: 600 }} title="Trùng lịch">
-                                  ⚠️ Trùng
+                                <span style={{ fontSize: '10px', background: '#d4a72c', color: '#fff', padding: '1px 4px', borderRadius: '4px', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '2px' }} title="Trùng lịch">
+                                  <AlertTriangle size={10} />
+                                  <span>Trùng</span>
                                 </span>
                               )}
                             </div>

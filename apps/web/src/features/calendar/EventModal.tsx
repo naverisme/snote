@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { X, Trash2 } from 'lucide-react';
 import type { CalendarEventViewModel, EventInput, Scope } from './types';
 
 interface EventModalProps {
@@ -142,10 +143,10 @@ export const EventModal: React.FC<EventModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            style={{ border: 'none', background: 'transparent', fontSize: '18px', cursor: 'pointer', color: '#57606a' }}
+            style={{ border: 'none', background: 'transparent', display: 'inline-flex', alignItems: 'center', cursor: 'pointer', color: '#57606a' }}
             aria-label="Đóng"
           >
-            ✕
+            <X size={16} />
           </button>
         </div>
 
@@ -297,9 +298,13 @@ export const EventModal: React.FC<EventModalProps> = ({
                   background: '#ffebe9',
                   color: '#cf222e',
                   cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
                 }}
               >
-                ✕ Hủy sự kiện
+                <Trash2 size={13} />
+                <span>Hủy sự kiện</span>
               </button>
             ) : <div />}
 

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import type { Folder } from '../types';
+import { Folder, FolderOpen, Plus, CornerDownRight, Pencil, Trash2 } from 'lucide-react';
+import type { Folder as FolderType } from '../types';
 
 export interface FolderTreeProps {
-  folders: Folder[];
+  folders: FolderType[];
   selectedFolderId: string | null;
   onSelectFolder: (folderId: string | null) => void;
   onCreateFolder: (name: string, parentId?: string) => Promise<void>;
@@ -21,7 +22,7 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
   const [isCreating, setIsCreating] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
   const [parentFolderId, setParentFolderId] = useState<string | undefined>(undefined);
-  const [editingFolder, setEditingFolder] = useState<Folder | null>(null);
+  const [editingFolder, setEditingFolder] = useState<FolderType | null>(null);
   const [renameValue, setRenameValue] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -51,7 +52,7 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
     }
   };
 
-  const handleDelete = async (folder: Folder) => {
+  const handleDelete = async (folder: FolderType) => {
     if (!window.confirm(`Bạn có chắc muốn xóa thư mục "${folder.name}"?`)) return;
     try {
       setErrorMessage(null);
@@ -77,14 +78,15 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
         <h2 className="font-semibold text-gray-700 text-sm uppercase tracking-wider">Thư mục</h2>
         <button
           type="button"
-          className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 inline-flex items-center gap-1"
           onClick={() => {
             setIsCreating(true);
             setParentFolderId(selectedFolderId ?? undefined);
           }}
           title="Tạo thư mục mới"
         >
-          + Thêm
+          <Plus size={13} />
+          <span>Thêm</span>
         </button>
       </div>
 
@@ -161,7 +163,7 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
           }`}
           onClick={() => onSelectFolder(null)}
         >
-          <span aria-hidden="true">📁</span>
+          <Folder size={16} className="text-blue-600 flex-shrink-0" aria-hidden="true" />
           <span>Tất cả tài liệu</span>
         </button>
 
@@ -181,29 +183,38 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
                 className="flex items-center gap-2 flex-grow text-left truncate mr-2"
                 onClick={() => onSelectFolder(folder.id)}
               >
-                <span aria-hidden="true">{folder.parentId ? '↳ 📁' : '📂'}</span>
+                <span className="inline-flex items-center gap-1 text-gray-400 flex-shrink-0" aria-hidden="true">
+                  {folder.parentId ? (
+                    <>
+                      <CornerDownRight size={13} />
+                      <Folder size={15} className="text-amber-500" />
+                    </>
+                  ) : (
+                    <FolderOpen size={16} className="text-amber-500" />
+                  )}
+                </span>
                 <span className="truncate">{folder.name}</span>
               </button>
 
               <div className="opacity-0 group-hover:opacity-100 focus-within:opacity-100 flex items-center gap-1">
                 <button
                   type="button"
-                  className="text-xs text-gray-500 hover:text-blue-600 p-1"
+                  className="text-gray-400 hover:text-blue-600 p-1 rounded transition-colors"
                   title="Đổi tên"
                   onClick={() => {
                     setEditingFolder(folder);
                     setRenameValue(folder.name);
                   }}
                 >
-                  ✏️
+                  <Pencil size={13} />
                 </button>
                 <button
                   type="button"
-                  className="text-xs text-gray-500 hover:text-red-600 p-1"
+                  className="text-gray-400 hover:text-red-600 p-1 rounded transition-colors"
                   title="Xóa thư mục"
                   onClick={() => handleDelete(folder)}
                 >
-                  🗑️
+                  <Trash2 size={13} />
                 </button>
               </div>
             </div>

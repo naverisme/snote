@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Archive, Trash2 } from 'lucide-react';
 import type { ChecklistItemViewModel, Task } from './types';
 
 interface TaskListViewProps {
@@ -99,9 +100,13 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
                 background: '#fff',
                 color: '#24292f',
                 cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
               }}
             >
-              📦 Lưu trữ hàng loạt
+              <Archive size={13} />
+              <span>Lưu trữ hàng loạt</span>
             </button>
             <button
               type="button"
@@ -116,9 +121,13 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
                 background: '#ffebe9',
                 color: '#cf222e',
                 cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
               }}
             >
-              🗑️ Xóa hàng loạt
+              <Trash2 size={13} />
+              <span>Xóa hàng loạt</span>
             </button>
           </div>
         </div>

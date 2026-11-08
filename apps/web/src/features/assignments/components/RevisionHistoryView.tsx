@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Paperclip } from 'lucide-react';
 import type { Submission } from '../types';
 import { TeacherFeedbackForm } from './TeacherFeedbackForm';
 
@@ -151,9 +152,13 @@ export const RevisionHistoryView: React.FC<RevisionHistoryViewProps> = ({
                     border: '1px solid #d1d5db',
                     fontSize: '12px',
                     color: '#374151',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
                   }}
                 >
-                  📎 {blobId}
+                  <Paperclip size={12} />
+                  <span>{blobId}</span>
                 </span>
               ))}
             </div>
