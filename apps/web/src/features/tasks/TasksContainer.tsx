@@ -232,26 +232,42 @@ export const TasksContainer: React.FC<TasksContainerProps> = ({
 
   const handleUpdateTask = async (updates: Partial<Task>) => {
     if (!selectedTaskId) return;
-    const updated = await taskApi.updateTask(selectedTaskId, updates);
-    setTasks(prev => prev.map(t => (t.id === selectedTaskId ? updated : t)));
+    try {
+      const updated = await taskApi.updateTask(selectedTaskId, updates);
+      setTasks(prev => prev.map(t => (t.id === selectedTaskId ? updated : t)));
+    } catch {
+      setError('Không thể cập nhật công việc. Vui lòng tải lại và thử tiếp.');
+    }
   };
 
   const handleCompleteTask = async () => {
     if (!selectedTaskId) return;
-    const completed = await taskApi.completeTask(selectedTaskId);
-    setTasks(prev => prev.map(t => (t.id === selectedTaskId ? completed : t)));
+    try {
+      const completed = await taskApi.completeTask(selectedTaskId);
+      setTasks(prev => prev.map(t => (t.id === selectedTaskId ? completed : t)));
+    } catch {
+      setError('Chưa thể hoàn thành công việc. Vui lòng thử lại.');
+    }
   };
 
   const handleReopenTask = async () => {
     if (!selectedTaskId) return;
-    const reopened = await taskApi.reopenTask(selectedTaskId);
-    setTasks(prev => prev.map(t => (t.id === selectedTaskId ? reopened : t)));
+    try {
+      const reopened = await taskApi.reopenTask(selectedTaskId);
+      setTasks(prev => prev.map(t => (t.id === selectedTaskId ? reopened : t)));
+    } catch {
+      setError('Chưa thể mở lại công việc. Vui lòng thử lại.');
+    }
   };
 
   const handleReassignTask = async (newAssigneeId: string) => {
     if (!selectedTaskId) return;
-    const reassigned = await taskApi.reassignTask(selectedTaskId, { assigneeId: newAssigneeId });
-    setTasks(prev => prev.map(t => (t.id === selectedTaskId ? reassigned : t)));
+    try {
+      const reassigned = await taskApi.reassignTask(selectedTaskId, { assigneeId: newAssigneeId });
+      setTasks(prev => prev.map(t => (t.id === selectedTaskId ? reassigned : t)));
+    } catch {
+      setError('Chưa thể giao lại công việc. Vui lòng thử lại.');
+    }
   };
 
   const handleAddChecklistItem = async (text: string) => {

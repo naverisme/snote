@@ -273,6 +273,9 @@ export const TaskDetailPanel: React.FC<TaskDetailPanelProps> = ({
           <span style={{ fontSize: '14px', fontWeight: 600, color: '#24292f' }}>Checklist</span>
           <span style={{ fontSize: '12px', color: '#57606a', fontWeight: 500 }}>{checklistRatio}</span>
         </div>
+        <p role="status" style={{ margin: '0 0 10px', fontSize: '12px', color: '#57606a' }}>
+          Checklist hiện chưa khả dụng. Mục mới chưa thể được lưu và đồng bộ.
+        </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
           {checklistItems.map(item => (
@@ -291,6 +294,7 @@ export const TaskDetailPanel: React.FC<TaskDetailPanelProps> = ({
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer', flex: 1 }}>
                 <input
                   type="checkbox"
+                  disabled
                   checked={item.done}
                   onChange={e => onToggleChecklistItem(item.id, e.target.checked)}
                 />
@@ -300,6 +304,7 @@ export const TaskDetailPanel: React.FC<TaskDetailPanelProps> = ({
               </label>
               <button
                 type="button"
+                disabled
                 onClick={() => onDeleteChecklistItem(item.id)}
                 style={{ border: 'none', background: 'transparent', color: '#cf222e', display: 'inline-flex', alignItems: 'center', cursor: 'pointer', padding: '2px 4px' }}
                 aria-label="Xóa mục checklist"
@@ -313,6 +318,7 @@ export const TaskDetailPanel: React.FC<TaskDetailPanelProps> = ({
         <form onSubmit={handleAddChecklist} style={{ display: 'flex', gap: '6px' }}>
           <input
             type="text"
+            disabled
             placeholder="Thêm mục checklist..."
             value={newChecklistText}
             onChange={e => setNewChecklistText(e.target.value)}
@@ -320,7 +326,7 @@ export const TaskDetailPanel: React.FC<TaskDetailPanelProps> = ({
           />
           <button
             type="submit"
-            disabled={!newChecklistText.trim() || isSubmitting}
+            disabled
             style={{ padding: '5px 10px', fontSize: '12px', fontWeight: 600, borderRadius: '4px', border: '1px solid #d0d7de', background: '#f6f8fa', cursor: 'pointer' }}
           >
             + Thêm
