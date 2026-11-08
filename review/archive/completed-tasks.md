@@ -362,3 +362,30 @@
   - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 09:50:49)
   - [x] **RESOLVED by Implementer** (Commit SHA: f98203d, Bo chi huy da nghiem thu PR #52 va dong Cong tich hop #36)
   - [x] **VERIFIED by Requester** (Pass Test: Bo chi huy da nghiem thu toan bo 5 hang muc I-1 den I-5, verified at 2026-11-08 09:50:51)
+
+
+### [TASK-20261108-104332] Nang cap TaskListView va CalendarView: Ap dung 5-tier inks (--ink-title, --ink-muted), vien hairline 1px, icon Lucide (CheckCircle2, Clock, CalendarIcon), va Solid Disc cho ngay hien tai tren CalendarView
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/planning (2026-11-08 10:43:32)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 10:43:43)
+  - [x] **RESOLVED by Implementer** (Commit SHA: 4670ead, Upgraded TaskListView & CalendarView with 5-tier inks, 1px hairline, Lucide icons (CheckCircle2, Clock, CalendarIcon), and Solid Disc for current day; 22 tests pass, build pass)
+  - [x] **VERIFIED by Requester** (Pass Test: TaskListView va CalendarView dat 5-tier inks, hairline, lucide icons va solid disc, verified at 2026-11-08 10:53:34)
+
+
+### [TASK-20261108-104340] Nang cap FolderTree, ItemCard, QuotaBar va TrashView: Dung vector icon Lucide (Folder, FolderOpen, FileText, Link), QuotaBar manh 6px bo tron, ItemCard inset 12px khong dung emoji
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/library (2026-11-08 10:43:40)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 10:43:53)
+  - [x] **RESOLVED by Implementer** (Commit SHA: 97764c8, FolderTree, ItemCard, QuotaBar, TrashView upgraded with Stageshow tokens and Lucide vector icons; 6px rounded QuotaBar, 12px card inset, zero emojis. All web and library tests pass.)
+  - [x] **VERIFIED by Requester** (Pass Test: FolderTree, ItemCard, QuotaBar va TrashView dat chuan Stageshow tokens va Lucide icons, verified at 2026-11-08 10:53:40)
+
+
+### [TASK-20261108-104348] Nang cap StudentSubmissionForm, TeacherDashboard va RevisionHistoryView: Dropzone vien net dut manh 1px, timeline phien ban doc noi diem tron, badges trang thai nop bai khong dung mau choi
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/assignments (2026-11-08 10:43:48)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 10:43:58)
+  - [x] **RESOLVED by Implementer** (Commit SHA: b93a67e, PR #53 mo thanh cong (SHA: b93a67e). Dropzone 1px net dut, vertical timeline noi diem tron va badges diu mat da pass web build va 23 tests.)
+  - [x] **VERIFIED by Requester** (Pass Test: StudentSubmissionForm Dropzone, vertical revision timeline va quiet status badges hoan tat, verified at 2026-11-08 10:53:48)
