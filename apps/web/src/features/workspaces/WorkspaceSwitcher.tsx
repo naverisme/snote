@@ -13,17 +13,17 @@ interface Props {
 
 const kindLabel = (kind: Workspace['kind']) =>
   kind === 'default' ? 'Cá nhân' : kind === 'class_group' ? 'Nhóm lớp' : 'Độc lập';
-const initials = (name: string) => name.trim().slice(0, 2).toLocaleUpperCase('vi') || 'WS';
+const getInitials = (name: string) => name.trim().slice(0, 2).toLocaleUpperCase('vi') || 'WS';
 
 export function WorkspaceSwitcher({ workspaces, classes, activeWorkspace, onSelectWorkspace, onWorkspaceCreated }: Props) {
-  const [view, setView] = useState<'closed' | 'strip' | 'list'>('closed');
+  const [viewState, setViewState] = useState<'collapsed' | 'strip' | 'list'>('collapsed');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const stripRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ pointerId: number; startX: number; scrollLeft: number; moved: boolean } | null>(null);
   const suppressClickRef = useRef(false);
-  const isOpen = view !== 'closed';
+  const isOpen = viewState !== 'collapsed';
   const others = workspaces.filter(ws => ws.id !== activeWorkspace?.id);
   const preview = [activeWorkspace, others[0]].filter((ws): ws is Workspace => Boolean(ws));
   const detail = (ws: Workspace) => {
@@ -34,11 +34,11 @@ export function WorkspaceSwitcher({ workspaces, classes, activeWorkspace, onSele
   useEffect(() => {
     if (!isOpen) return;
     const onPointerDown = (event: PointerEvent) => {
-      if (!rootRef.current?.contains(event.target as Node)) setView('closed');
+      if (!rootRef.current?.contains(event.target as Node)) setViewState('collapsed');
     };
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setView('closed');
+        setViewState('collapsed');
         triggerRef.current?.focus();
       }
     };
@@ -52,11 +52,11 @@ export function WorkspaceSwitcher({ workspaces, classes, activeWorkspace, onSele
 
   const select = (ws: Workspace) => {
     onSelectWorkspace(ws);
-    setView('closed');
+    setViewState('collapsed');
     triggerRef.current?.focus();
   };
   const create = () => {
-    setView('closed');
+    setViewState('collapsed');
     setShowCreateModal(true);
   };
   const endDrag = () => {
@@ -76,14 +76,15 @@ export function WorkspaceSwitcher({ workspaces, classes, activeWorkspace, onSele
         ref={triggerRef}
         type="button"
         className={`workspace-cluster-trigger ${isOpen ? 'is-open' : ''}`}
-        onClick={() => setView(isOpen ? 'closed' : 'strip')}
-        aria-expanded={isOpen}
+        onClick={() => setViewState(isOpen ? 'collapsed' : 'strip')}
+        title="Bấm để bung danh sách workspace"
+        aria-expanded={viewState !== 'collapsed'}
         aria-controls="workspace-picker"
         aria-label={`Workspace hiện tại: ${activeWorkspace?.name ?? 'Chưa chọn'}. Mở danh sách ${workspaces.length} workspace`}
       >
         <span className="workspace-trigger-label">Workspace</span>
         <span className="stacked-icons" aria-hidden="true">
-          {preview.map(ws => <span key={ws.id} className={`ws-icon-circle ws-kind-${ws.kind}`}>{initials(ws.name)}</span>)}
+          {preview.map(ws => <span key={ws.id} className={`ws-icon-circle ws-kind-${ws.kind}`}>{getInitials(ws.name)}</span>)}
         </span>
         <span className="workspace-current-name">{activeWorkspace?.name ?? 'Chọn workspace'}</span>
         {workspaces.length > 2 && <span className="workspace-more-count" aria-hidden="true">+{workspaces.length - 2}</span>}
@@ -94,12 +95,12 @@ export function WorkspaceSwitcher({ workspaces, classes, activeWorkspace, onSele
         <div id="workspace-picker" className="workspace-expanded-panel" aria-label="Chọn workspace">
           <div className="ws-expanded-header">
             <div><p className="ws-panel-eyebrow">Không gian làm việc</p><p className="ws-panel-subtitle">Mỗi hình tròn là một workspace</p></div>
-            <button type="button" className="ws-view-toggle" onClick={() => setView(view === 'strip' ? 'list' : 'strip')}>
-              {view === 'strip' ? <List size={16} /> : <LayoutGrid size={16} />}
-              <span>{view === 'strip' ? 'Danh sách' : 'Dãy ngang'}</span>
+            <button type="button" className="ws-view-toggle" onClick={() => setViewState(viewState === 'strip' ? 'list' : 'strip')}>
+              {viewState === 'strip' ? <List size={16} /> : <LayoutGrid size={16} />}
+              <span>{viewState === 'strip' ? 'Danh sách' : 'Dãy ngang'}</span>
             </button>
           </div>
-          {view === 'strip' ? (
+          {viewState === 'strip' ? (
             <div
               ref={stripRef}
               className="ws-strip"
@@ -131,6 +132,7 @@ export function WorkspaceSwitcher({ workspaces, classes, activeWorkspace, onSele
                 suppressClickRef.current = false;
               }}
             >
+              {/* UXR-04: Tạo workspace ở đầu trái ngoài cùng */}
               <button type="button" className="ws-strip-item ws-create-item" onClick={create}>
                 <span className="ws-icon-circle ws-icon-create"><Plus size={18} aria-hidden="true" /></span>
                 <span className="ws-item-name">Tạo mới</span>
@@ -144,7 +146,7 @@ export function WorkspaceSwitcher({ workspaces, classes, activeWorkspace, onSele
                   aria-current={activeWorkspace?.id === ws.id ? 'true' : undefined}
                   aria-label={`${ws.name}, ${detail(ws)}${activeWorkspace?.id === ws.id ? ', đang chọn' : ''}`}
                 >
-                  <span className={`ws-icon-circle ws-kind-${ws.kind}`} aria-hidden="true">{initials(ws.name)}</span>
+                  <span className={`ws-icon-circle ws-kind-${ws.kind}`} aria-hidden="true">{getInitials(ws.name)}</span>
                   <span className="ws-item-name" title={ws.name}>{ws.name}</span>
                   <span className="ws-item-kind">{ws.status === 'archived' ? 'Lưu trữ' : kindLabel(ws.kind)}</span>
                 </button>
@@ -161,7 +163,7 @@ export function WorkspaceSwitcher({ workspaces, classes, activeWorkspace, onSele
                   onClick={() => select(ws)}
                   aria-current={activeWorkspace?.id === ws.id ? 'true' : undefined}
                 >
-                  <span className={`ws-icon-circle ws-kind-${ws.kind}`} aria-hidden="true">{initials(ws.name)}</span>
+                  <span className={`ws-icon-circle ws-kind-${ws.kind}`} aria-hidden="true">{getInitials(ws.name)}</span>
                   <span className="ws-list-copy"><strong>{ws.name}</strong><small>{detail(ws)}</small></span>
                   {activeWorkspace?.id === ws.id && <Check size={16} className="ws-selected-check" aria-label="Đang chọn" />}
                 </button>
