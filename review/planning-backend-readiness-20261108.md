@@ -38,6 +38,10 @@ const auth = { decide: async () => ({ allowed: true }) };
 
 Kết quả: `404 NOT_FOUND`.
 
+### Kiểm tra toàn repo sau resolve
+
+`npm run build`, `npm run contract:http`, `npm test -w @snote/api` đều pass (core 3/3). `npm run test:e2e` cho **24/39 pass, 15/39 fail** trên máy kiểm: `/ready` trả 503, đăng ký không có Set-Cookie vì DB không phục vụ. `Test-NetConnection 127.0.0.1 -Port 5432 -InformationLevel Quiet` trả `False`; không có `DATABASE_URL`/`TEST_DATABASE_URL` trong môi trường shell. Bộ HTTP test mặc định nối PostgreSQL localhost:5432. Đây là **giới hạn môi trường của lần chạy**, không quy 15 lỗi thành lỗi riêng của #31 và không gọi e2e pass. Cần chạy lại trên PostgreSQL đã migrate ở cùng SHA để đánh giá HTTP/DB/restart.
+
 ## Bảng sai lệch và đề xuất
 
 | Mức / trạng thái | Quy tắc | Quan sát trên head kiểm | Đề xuất và phép kiểm mong đợi |
