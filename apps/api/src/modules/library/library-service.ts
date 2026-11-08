@@ -244,14 +244,21 @@ export class LibraryService {
     workspaceId: string,
     filter?: { folderId?: string | null; status?: string },
   ): Promise<Library[]> {
+    const allowedActions = new Set<string>();
+    for (const action of ['library.read_text', 'library.read_link', 'library.read_file']) {
+      if (this.auth && (await this.auth.decide(principal, action, { type: 'workspace', id: workspaceId })).allowed) {
+        allowedActions.add(action);
+      }
+    }
+    if (allowedActions.size === 0) throw new DomainError('FORBIDDEN', 403);
+
     const items = await this.store.listItems(workspaceId, filter);
     const visible: ItemRecord[] = [];
     for (const item of items) {
       const action = item.type === 'text' ? 'library.read_text'
         : item.type === 'link' ? 'library.read_link'
           : item.type === 'file' ? 'library.read_file' : null;
-      if (!action || !this.auth) continue;
-      if ((await this.auth.decide(principal, action, { type: 'workspace', id: workspaceId })).allowed) {
+      if (action && allowedActions.has(action)) {
         visible.push(item);
       }
     }

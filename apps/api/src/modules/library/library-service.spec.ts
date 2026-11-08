@@ -192,6 +192,13 @@ test('list filters each item by its own read action before returning metadata', 
   });
   const visible = await service.listItems({ accountId: 'reader' }, 'ws-1');
   assert.deepEqual(visible.map((item) => item.id), ['text']);
+  const denied = new LibraryService(store, new QuotaService(new MockQuotaStore()), new MockUploadStore(), {
+    decide: async () => ({ allowed: false }),
+  });
+  await assert.rejects(
+    denied.listItems({ accountId: 'outsider' }, 'ws-1'),
+    (err: unknown) => err instanceof DomainError && err.status === 403,
+  );
 });
 
 test('copying a file refuses a full target quota before creating a reference or item', async () => {

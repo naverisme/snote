@@ -15,6 +15,7 @@
 | Trạng thái | Quan sát, ảnh hưởng, bằng chứng | Xử lý và phép kiểm mong đợi |
 | --- | --- | --- |
 | **Đã sửa** | `listItems` chỉ kiểm `library.read_text` rồi trả cả link/file, lộ title/ID/version cho principal chỉ có quyền văn bản; trái action catalog và PM-07/08. | Lọc từng item theo `read_text/read_link/read_file`; unit test principal chỉ đọc text chỉ nhận text. Cần kiểm HTTP với grant tùy chỉnh trên PostgreSQL. |
+| **Đã sửa sau E2E** | Lần lọc đầu trả `200 []` cho người không có bất kỳ quyền đọc nào; QA-04 yêu cầu `403`. | Chặn ở cấp workspace nếu cả ba action đọc đều bị từ chối. Chạy lại E2E 39/39 và unit test outsider 403. |
 | **Đã sửa một phần** | `copyItem` đọc quota đích nhưng không dùng kết quả, thêm ref dù đã đầy; trái LIB-12/16, QA-06. | Gọi `checkRestore` trước khi thêm ref, test đầy quota không thêm item/ref. Đây mới là kiểm tuần tự; ghi song song vẫn cần giao dịch giữ chỗ nguyên tử. |
 | **Đã sửa UI** | `LibraryView` thay lỗi đọc quota bằng `0/1 GB`, và nếu chi tiết GET lỗi vẫn hiển thị metadata từ list; sau lỗi tải cả trang còn có thể giữ dữ liệu scope cũ. | Hiện lỗi và nút thử lại, xoá state cũ, bỏ item mà GET chi tiết lỗi. Build web đạt. Vẫn cần thử browser khi đổi workspace trước khi response cũ về. |
 | **Sai — P0** | `QuotaService.checkAndReserve` đọc tổng rồi tạo reservation qua hai lệnh; hai upload song song có thể đều qua kiểm 1 GB. `PrismaQuotaStore` dùng query/upsert riêng, không khóa quota theo scope. `checkRestore` và copy cũng có cửa sổ race. | Owner Foundation cần cơ chế transaction/khóa theo scope và retry toàn bộ quyết định; owner #35 nối service vào đó. Chạy 20 upload/copy/restore cùng quota, tổng ref+reservation không vượt ngưỡng. Không tự sửa schema/contract trong worktree này. |
@@ -40,4 +41,7 @@ node --test apps/web/src/features/library/library-ui.spec.ts  PASS 3/3
 python tools/validate_contract.py                    PASS 86 paths, 106 operations, 973 refs
 .agents/skills/impeccable/scripts/bin/windows-x64/impeccable.exe detect apps/web/src  PASS static scan, 59 files; parsed-page rules not run
 git diff --check                                      PASS
+npm run contract:http                                 PASS
+node --test (all compiled API *.spec.js)             PASS 97/97
+npm run test:e2e                                      PASS 39/39 after QA-04 fix
 ```
