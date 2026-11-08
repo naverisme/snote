@@ -88,18 +88,29 @@ export class LibraryService {
     private readonly auth?: AuthorizationPort,
   ) {}
 
+  private async requireAuth(
+    principal: Principal,
+    action: string,
+    scope: { type: 'class' | 'workspace' | 'assignment'; id: string },
+  ): Promise<void> {
+    if (!this.auth) {
+      throw new DomainError('FORBIDDEN', 403);
+    }
+    const decision = await this.auth.decide(principal, action, scope);
+    if (!decision.allowed) {
+      throw new DomainError('FORBIDDEN', 403);
+    }
+  }
+
   public async createItem(
     principal: Principal,
     workspaceId: string,
     input: LibraryItemInput,
   ): Promise<Library> {
-    if (this.auth) {
-      const decision = await this.auth.decide(principal, 'library.create', {
-        type: 'workspace',
-        id: workspaceId,
-      });
-      if (!decision.allowed) throw new DomainError('FORBIDDEN', 403);
-    }
+    await this.requireAuth(principal, 'library.create', {
+      type: 'workspace',
+      id: workspaceId,
+    });
 
     if (input.folderId) {
       const folder = await this.store.findFolder(input.folderId);
@@ -117,7 +128,8 @@ export class LibraryService {
     if (input.type === 'file') {
       if (!input.uploadId) throw new DomainError('MISSING_UPLOAD_ID', 400);
       const staging = await this.uploadStore.findStaging(input.uploadId);
-      if (!staging || staging.status !== 'verified') {
+      if (!staging || staging.status !== 'verified' || staging.actorId !== principal.accountId ||
+          staging.scopeType !== 'workspace' || staging.scopeId !== workspaceId) {
         throw new DomainError('UPLOAD_NOT_VERIFIED', 400);
       }
 
@@ -187,19 +199,16 @@ export class LibraryService {
     const item = await this.store.findItem(itemId);
     if (!item) throw new DomainError('ITEM_NOT_FOUND', 404);
 
-    if (this.auth) {
-      const readAction =
-        item.type === 'text'
-          ? 'library.read_text'
-          : item.type === 'link'
-            ? 'library.read_link'
-            : 'library.read_file';
-      const decision = await this.auth.decide(principal, readAction, {
-        type: 'workspace',
-        id: item.workspaceId,
-      });
-      if (!decision.allowed) throw new DomainError('FORBIDDEN', 403);
-    }
+    const readAction =
+      item.type === 'text'
+        ? 'library.read_text'
+        : item.type === 'link'
+          ? 'library.read_link'
+          : 'library.read_file';
+    await this.requireAuth(principal, readAction, {
+      type: 'workspace',
+      id: item.workspaceId,
+    });
 
     let revision: RevisionRecord | null = null;
     let preview: UrlPreview | undefined;
@@ -235,13 +244,10 @@ export class LibraryService {
     workspaceId: string,
     filter?: { folderId?: string | null; status?: string },
   ): Promise<Library[]> {
-    if (this.auth) {
-      const decision = await this.auth.decide(principal, 'library.read_text', {
-        type: 'workspace',
-        id: workspaceId,
-      });
-      if (!decision.allowed) throw new DomainError('FORBIDDEN', 403);
-    }
+    await this.requireAuth(principal, 'library.read_text', {
+      type: 'workspace',
+      id: workspaceId,
+    });
 
     const items = await this.store.listItems(workspaceId, filter);
     return items.map((it) => ({
@@ -266,19 +272,16 @@ export class LibraryService {
 
     requireVersion(item.version, ifMatch);
 
-    if (this.auth) {
-      const editAction =
-        item.type === 'text'
-          ? 'library.edit_text'
-          : item.type === 'link'
-            ? 'library.edit_link'
-            : 'library.edit_file';
-      const decision = await this.auth.decide(principal, editAction, {
-        type: 'workspace',
-        id: item.workspaceId,
-      });
-      if (!decision.allowed) throw new DomainError('FORBIDDEN', 403);
-    }
+    const editAction =
+      item.type === 'text'
+        ? 'library.edit_text'
+        : item.type === 'link'
+          ? 'library.edit_link'
+          : 'library.edit_file';
+    await this.requireAuth(principal, editAction, {
+      type: 'workspace',
+      id: item.workspaceId,
+    });
 
     // Moving between folders: must stay within the same workspace (LIB-06)
     if (input.folderId !== undefined) {
@@ -321,19 +324,16 @@ export class LibraryService {
     // Optimistic concurrency check (QA-05)
     requireVersion(item.version, ifMatch);
 
-    if (this.auth) {
-      const editAction =
-        item.type === 'text'
-          ? 'library.edit_text'
-          : item.type === 'link'
-            ? 'library.edit_link'
-            : 'library.edit_file';
-      const decision = await this.auth.decide(principal, editAction, {
-        type: 'workspace',
-        id: item.workspaceId,
-      });
-      if (!decision.allowed) throw new DomainError('FORBIDDEN', 403);
-    }
+    const editAction =
+      item.type === 'text'
+        ? 'library.edit_text'
+        : item.type === 'link'
+          ? 'library.edit_link'
+          : 'library.edit_file';
+    await this.requireAuth(principal, editAction, {
+      type: 'workspace',
+      id: item.workspaceId,
+    });
 
     const revisionId = randomUUID();
     let blobId: string | null = null;
@@ -343,7 +343,8 @@ export class LibraryService {
     if (item.type === 'file') {
       if (!input.uploadId) throw new DomainError('MISSING_UPLOAD_ID', 400);
       const staging = await this.uploadStore.findStaging(input.uploadId);
-      if (!staging || staging.status !== 'verified') {
+      if (!staging || staging.status !== 'verified' || staging.actorId !== principal.accountId ||
+          staging.scopeType !== 'workspace' || staging.scopeId !== item.workspaceId) {
         throw new DomainError('UPLOAD_NOT_VERIFIED', 400);
       }
       blobId = staging.storageKey;
@@ -390,19 +391,25 @@ export class LibraryService {
     const sourceItem = await this.store.findItem(itemId);
     if (!sourceItem) throw new DomainError('ITEM_NOT_FOUND', 404);
 
-    if (this.auth) {
-      const decision = await this.auth.decide(principal, 'library.create', {
-        type: 'workspace',
-        id: copy.targetWorkspaceId,
-      });
-      if (!decision.allowed) throw new DomainError('FORBIDDEN', 403);
-    }
+    const readAction = sourceItem.type === 'text' ? 'library.read_text'
+      : sourceItem.type === 'link' ? 'library.read_link' : 'library.read_file';
+    await this.requireAuth(principal, readAction, { type: 'workspace', id: sourceItem.workspaceId });
+
+    await this.requireAuth(principal, 'library.create', {
+      type: 'workspace',
+      id: copy.targetWorkspaceId,
+    });
 
     const revisionToCopyId = copy.sourceRevisionId ?? sourceItem.currentRevisionId;
     if (!revisionToCopyId) throw new DomainError('REVISION_NOT_FOUND', 404);
 
     const sourceRevision = await this.store.findRevision(revisionToCopyId);
-    if (!sourceRevision) throw new DomainError('REVISION_NOT_FOUND', 404);
+    if (!sourceRevision || sourceRevision.itemId !== sourceItem.id) throw new DomainError('REVISION_NOT_FOUND', 404);
+
+    if (copy.folderId) {
+      const folder = await this.store.findFolder(copy.folderId);
+      if (!folder || folder.workspaceId !== copy.targetWorkspaceId) throw new DomainError('INVALID_FOLDER', 400);
+    }
 
     // If copying file to target workspace, track quota in target workspace (LIB-16)
     if (sourceItem.type === 'file' && sourceRevision.blobId) {
@@ -461,13 +468,10 @@ export class LibraryService {
 
     requireVersion(item.version, ifMatch);
 
-    if (this.auth) {
-      const decision = await this.auth.decide(principal, 'library.delete', {
-        type: 'workspace',
-        id: item.workspaceId,
-      });
-      if (!decision.allowed) throw new DomainError('FORBIDDEN', 403);
-    }
+    await this.requireAuth(principal, 'library.delete', {
+      type: 'workspace',
+      id: item.workspaceId,
+    });
 
     const now = new Date();
     const purgeAfter = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days (LIB-14)
@@ -505,13 +509,10 @@ export class LibraryService {
 
     requireVersion(item.version, ifMatch);
 
-    if (this.auth) {
-      const decision = await this.auth.decide(principal, 'library.create', {
-        type: 'workspace',
-        id: item.workspaceId,
-      });
-      if (!decision.allowed) throw new DomainError('FORBIDDEN', 403);
-    }
+    await this.requireAuth(principal, 'library.create', {
+      type: 'workspace',
+      id: item.workspaceId,
+    });
 
     // QA-06: Check whether restoring this item exceeds quota
     if (item.type === 'file' && item.currentRevisionId) {
@@ -545,13 +546,10 @@ export class LibraryService {
     const item = await this.store.findItem(itemId);
     if (!item) throw new DomainError('ITEM_NOT_FOUND', 404);
 
-    if (this.auth) {
-      const decision = await this.auth.decide(principal, 'library.read_file', {
-        type: 'workspace',
-        id: item.workspaceId,
-      });
-      if (!decision.allowed) throw new DomainError('FORBIDDEN', 403);
-    }
+    await this.requireAuth(principal, 'library.read_file', {
+      type: 'workspace',
+      id: item.workspaceId,
+    });
 
     if (!item.currentRevisionId) throw new DomainError('NO_CONTENT', 404);
     const rev = await this.store.findRevision(item.currentRevisionId);
@@ -570,13 +568,10 @@ export class LibraryService {
     workspaceId: string,
     input: FolderInput,
   ): Promise<Folder> {
-    if (this.auth) {
-      const decision = await this.auth.decide(principal, 'folder.manage', {
-        type: 'workspace',
-        id: workspaceId,
-      });
-      if (!decision.allowed) throw new DomainError('FORBIDDEN', 403);
-    }
+    await this.requireAuth(principal, 'folder.manage', {
+      type: 'workspace',
+      id: workspaceId,
+    });
 
     if (input.parentId) {
       const parent = await this.store.findFolder(input.parentId);
@@ -618,13 +613,10 @@ export class LibraryService {
 
     requireVersion(folder.version, ifMatch);
 
-    if (this.auth) {
-      const decision = await this.auth.decide(principal, 'folder.manage', {
-        type: 'workspace',
-        id: folder.workspaceId,
-      });
-      if (!decision.allowed) throw new DomainError('FORBIDDEN', 403);
-    }
+    await this.requireAuth(principal, 'folder.manage', {
+      type: 'workspace',
+      id: folder.workspaceId,
+    });
 
     if (input.parentId === folderId) {
       throw new DomainError('CIRCULAR_PARENT', 400);
@@ -657,13 +649,10 @@ export class LibraryService {
 
     requireVersion(folder.version, ifMatch);
 
-    if (this.auth) {
-      const decision = await this.auth.decide(principal, 'folder.manage', {
-        type: 'workspace',
-        id: folder.workspaceId,
-      });
-      if (!decision.allowed) throw new DomainError('FORBIDDEN', 403);
-    }
+    await this.requireAuth(principal, 'folder.manage', {
+      type: 'workspace',
+      id: folder.workspaceId,
+    });
 
     // STRICT LIB-07 ENFORCEMENT:
     // Only delete folder when it contains NO items and NO child folders!
@@ -689,13 +678,10 @@ export class LibraryService {
   }
 
   public async listFolders(principal: Principal, workspaceId: string): Promise<Folder[]> {
-    if (this.auth) {
-      const decision = await this.auth.decide(principal, 'library.read_text', {
-        type: 'workspace',
-        id: workspaceId,
-      });
-      if (!decision.allowed) throw new DomainError('FORBIDDEN', 403);
-    }
+    await this.requireAuth(principal, 'library.read_text', {
+      type: 'workspace',
+      id: workspaceId,
+    });
 
     const folders = await this.store.listFolders(workspaceId);
     return folders.map((f) => ({

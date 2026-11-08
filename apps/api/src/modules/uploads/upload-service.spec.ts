@@ -7,6 +7,7 @@ import { LocalStorageAdapter } from '../storage/local-storage-adapter';
 import { UploadService, type UploadStore, type UploadStagingRecord } from './upload-service';
 import { QuotaService, type QuotaStore } from '../library/quota-service';
 import { DomainError } from '../../core/authorization';
+const allowAuth = { decide: async () => ({ allowed: true }) };
 
 class InMemoryQuotaStore implements QuotaStore {
   public activeBlobs = new Map<string, bigint>();
@@ -74,7 +75,7 @@ test('UploadService happy path: start, putContent, verify', async () => {
     const quotaStore = new InMemoryQuotaStore();
     const quota = new QuotaService(quotaStore);
     const uploadStore = new InMemoryUploadStore();
-    const uploadService = new UploadService(storage, uploadStore, quota);
+    const uploadService = new UploadService(storage, uploadStore, quota, allowAuth);
 
     const principal = { accountId: 'user-1' };
     const validPdf = Buffer.from('%PDF-1.4 test document body');
@@ -106,6 +107,28 @@ test('UploadService happy path: start, putContent, verify', async () => {
   }
 });
 
+test('UploadService rejects another actor before accepting staged bytes', async () => {
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'snote-upload-ownership-'));
+  try {
+    const store = new InMemoryUploadStore();
+    const service = new UploadService(new LocalStorageAdapter({ rootDir: tempDir }), store,
+      new QuotaService(new InMemoryQuotaStore()), allowAuth);
+    const bytes = Buffer.from('%PDF-1.4 private document');
+    const started = await service.start({ accountId: 'owner' }, {
+      fileName: 'private.pdf', size: bytes.length, declaredType: 'application/pdf',
+      scopeType: 'workspace', scopeId: 'ws-1',
+    });
+    await assert.rejects(
+      service.putContent({ accountId: 'other' }, started.id, createAsyncIterable(bytes)),
+      (err: unknown) => err instanceof DomainError && err.code === 'UPLOAD_NOT_FOUND',
+    );
+    assert.equal(store.stagings.get(started.id)?.status, 'staged');
+    assert.equal(store.savedBlobs.size, 0);
+  } finally {
+    await fs.rm(tempDir, { recursive: true, force: true });
+  }
+});
+
 test('UploadService rejects files > 25 MB on start (LIB-11, QA-06)', async () => {
   const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'snote-upload-25mb-'));
   try {
@@ -113,7 +136,7 @@ test('UploadService rejects files > 25 MB on start (LIB-11, QA-06)', async () =>
     const quotaStore = new InMemoryQuotaStore();
     const quota = new QuotaService(quotaStore);
     const uploadStore = new InMemoryUploadStore();
-    const uploadService = new UploadService(storage, uploadStore, quota);
+    const uploadService = new UploadService(storage, uploadStore, quota, allowAuth);
 
     await assert.rejects(
       uploadService.start({ accountId: 'user-1' }, {
@@ -139,7 +162,7 @@ test('UploadService rejects start when workspace quota is full (QA-06)', async (
     quotaStore.activeBlobs.set('blob-full', BigInt(1024 * 1024 * 1024));
     const quota = new QuotaService(quotaStore);
     const uploadStore = new InMemoryUploadStore();
-    const uploadService = new UploadService(storage, uploadStore, quota);
+    const uploadService = new UploadService(storage, uploadStore, quota, allowAuth);
 
     await assert.rejects(
       uploadService.start({ accountId: 'user-1' }, {
@@ -163,7 +186,7 @@ test('UploadService aborts and cleans up reservation on invalid MIME content (QA
     const quotaStore = new InMemoryQuotaStore();
     const quota = new QuotaService(quotaStore);
     const uploadStore = new InMemoryUploadStore();
-    const uploadService = new UploadService(storage, uploadStore, quota);
+    const uploadService = new UploadService(storage, uploadStore, quota, allowAuth);
 
     const started = await uploadService.start({ accountId: 'user-1' }, {
       fileName: 'fake.pdf',
@@ -184,6 +207,31 @@ test('UploadService aborts and cleans up reservation on invalid MIME content (QA
     assert.equal(staging?.status, 'aborted');
     const pending = await quotaStore.getPendingReservationsBytes('workspace', 'ws-1');
     assert.equal(pending, 0n);
+  } finally {
+    await fs.rm(tempDir, { recursive: true, force: true });
+  }
+});
+
+test('upload identifier cannot be used by another account to publish bytes', async () => {
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'snote-upload-owner-'));
+  try {
+    const storage = new LocalStorageAdapter({ rootDir: tempDir });
+    const quotaStore = new InMemoryQuotaStore();
+    const quota = new QuotaService(quotaStore);
+    const uploadStore = new InMemoryUploadStore();
+    const service = new UploadService(storage, uploadStore, quota, allowAuth);
+    const started = await service.start({ accountId: 'owner' }, {
+      fileName: 'document.pdf', size: 24, declaredType: 'application/pdf',
+      scopeType: 'workspace', scopeId: 'ws-1',
+    });
+
+    await assert.rejects(
+      service.putContent({ accountId: 'attacker' }, started.id,
+        createAsyncIterable(Buffer.from('%PDF-1.4 test document'))),
+      (err: unknown) => err instanceof DomainError && err.status === 404,
+    );
+    assert.equal((await uploadStore.findStaging(started.id))?.status, 'staged');
+    assert.equal(uploadStore.savedBlobs.size, 0);
   } finally {
     await fs.rm(tempDir, { recursive: true, force: true });
   }

@@ -1,22 +1,23 @@
-import { Body, Controller, Headers, HttpException, Param, Post, Put, Req } from '@nestjs/common';
+import { Body, Controller, HttpException, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import type { IncomingMessage } from 'node:http';
 import { DomainError } from '../../core/authorization';
 import { requestId, success } from '../../core/http';
 import { UploadService, type UploadStart } from './upload-service';
+import { LibrarySessionGuard, libraryPrincipal, type LibraryRequest } from '../library/library-session.guard';
 
 @Controller('uploads')
+@UseGuards(LibrarySessionGuard)
 export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
   @Post()
   async startUpload(
     @Body() body: UploadStart,
-    @Headers('X-CSRF-Token') _csrfToken?: string,
-    @Headers('x-actor-id') actorId?: string,
+    @Req() req: LibraryRequest,
   ) {
     const reqId = requestId();
     try {
-      const principal = { accountId: actorId ?? '00000000-0000-0000-0000-000000000001' };
+      const principal = libraryPrincipal(req);
       const data = await this.uploadService.start(principal, body);
       return success(data, reqId);
     } catch (err) {
@@ -37,12 +38,10 @@ export class UploadController {
   async uploadContent(
     @Param('uploadId') uploadId: string,
     @Req() req: IncomingMessage,
-    @Headers('X-CSRF-Token') _csrfToken?: string,
-    @Headers('x-actor-id') actorId?: string,
   ) {
     const reqId = requestId();
     try {
-      const principal = { accountId: actorId ?? '00000000-0000-0000-0000-000000000001' };
+      const principal = libraryPrincipal(req as LibraryRequest);
       // Stream request body chunks
       const data = await this.uploadService.putContent(
         principal,
