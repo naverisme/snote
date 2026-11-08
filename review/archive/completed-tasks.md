@@ -224,3 +224,57 @@
   - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 08:48:29)
   - [x] **RESOLVED by Implementer** (Commit SHA: e40cd04, Opened PR #48 to s_note_v2 (https://github.com/naverisme/snote/pull/48). All 19 tests PASS, API and Web build clean.)
   - [x] **VERIFIED by Requester** (Pass Test: PR #48 created, 19/19 tests pass, web build pass, contract valid, verified at 2026-11-08 08:50:34)
+
+
+### [TASK-20261108-045417] THONG BAO TU BO CHI HUY: PR #44 da duoc MERGE thanh cong vao s_note_v2. Toan bo lat cat Cong viec & Lich da hoan tat!
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/planning (2026-11-08 04:54:17)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 05:07:58)
+  - [x] **RESOLVED by Implementer** (Commit SHA: 4ed3c85, Da ghi nhan PR #44 merge, tat ca task slice Planning hoan tat va PR #46 da mo)
+  - [x] **VERIFIED by Requester** (Pass Test: Hoan tat toan bo lat cat Planning (PR #44 va PR #46), verified at 2026-11-08 08:54:51)
+
+---
+---
+
+
+### [TASK-20261108-045423] THONG BAO TU BO CHI HUY: PR #42 da duoc MERGE thanh cong vao s_note_v2. Toan bo lat cat Bai giao & Nop da hoan tat!
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/assignments (2026-11-08 04:54:23)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 05:08:07)
+  - [x] **RESOLVED by Implementer** (Commit SHA: 6f3ff59, Xac nhan thong bao merge PR #42 da tiep nhan va hoan tat)
+  - [x] **VERIFIED by Requester** (Pass Test: Hoan tat toan bo lat cat Assignments (PR #42 va PR #47), verified at 2026-11-08 08:54:52)
+
+---
+
+
+### [TASK-20261108-045430] THONG BAO TU BO CHI HUY: PR #43 da duoc MERGE thanh cong vao s_note_v2. Toan bo lat cat Thu vien da hoan tat!
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/library (2026-11-08 04:54:30)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 05:08:03)
+  - [x] **RESOLVED by Implementer** (Commit SHA: e40cd04, Slice completed and post-merge fixes applied.)
+  - [x] **VERIFIED by Requester** (Pass Test: Hoan tat toan bo lat cat Library (PR #43 va PR #48), verified at 2026-11-08 08:54:53)
+
+---
+
+
+### [TASK-20261108-051011] P0 #35: service Library/Upload hiện dùng optional auth, Nest module không inject; controller tin x-actor-id và bỏ qua CSRF. Tôi đã ACK task và đang sửa session + policy. Kiểm quyền tại commit chưa thể bảo đảm vì PrismaLibraryStore/QuotaStore thao tác DB riêng, cần thiết kế transaction chung từ Foundation; sẽ báo chi tiết sau test.
+- **Ben yeu cau:** feat/v2/library -> **Ben thuc thi:** s_note_v2 (2026-11-08 05:10:11)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [ ] **ACKNOWLEDGED by Worker** (Bat dau luc: _______)
+  - [x] **RESOLVED by Implementer** (Commit SHA: e40cd04, Merged via PR #48)
+  - [x] **VERIFIED by Requester** (Pass Test: Resolved in s_note_v2@b15cca0, verified at 2026-11-08 08:55:05)
+
+---
+
+
+### [TASK-20261108-051533] TASK-20261108-050655: Auth/CSRF + deny-by-default fixes compile, 13 owner tests pass. Persistence cannot be completed correctly with current Event schema: Event lacks ownerId and content used by CalendarService; request Foundation-owned additive schema/migration plus contract impact review. Existing Task/Checklist/PrivateWorkSession models exist. Do not mark #31 complete yet. npm ci had EBUSY; npm install succeeded.
+- **Ben yeu cau:** feat/v2/planning -> **Ben thuc thi:** s_note_v2 (2026-11-08 05:15:33)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [ ] **ACKNOWLEDGED by Worker** (Bat dau luc: _______)
+  - [x] **RESOLVED by Implementer** (Commit SHA: 4ed3c85, Merged via PR #46)
+  - [x] **VERIFIED by Requester** (Pass Test: Resolved in s_note_v2@b15cca0, verified at 2026-11-08 08:55:06)
