@@ -20,6 +20,9 @@
 
 ## Giới hạn và phản biện
 
-- Đổi màu/spacing không giải quyết được dữ liệu mẫu xuất hiện khi API lỗi. Các P0 trên cần owner tính năng sửa trước khi đánh giá “sẵn sàng thương mại”.
+- Sau đợt rà tiếp, các PR [#58](https://github.com/naverisme/snote/pull/58), [#59](https://github.com/naverisme/snote/pull/59), [#60](https://github.com/naverisme/snote/pull/60) loại bỏ dữ liệu giả khi API lỗi, quota giả, và ID tệp nộp tự tạo. Tệp nộp chỉ được đưa vào bản nộp sau khi upload xác nhận `verified`. Đây là thay đổi đang chờ review và kiểm thử tích hợp, chưa được coi là phát hành.
+- Checklist công việc chưa có đường đọc trong OpenAPI v2 dù có lệnh ghi. UI tạm khóa thao tác để tránh tạo mục chỉ tồn tại trong bộ nhớ. Cần hợp đồng đọc và kiểm thử quyền theo TASK-15/16 trước khi mở lại.
+- Sau khi tải lại trang, phiên đăng nhập vẫn có thể còn hiệu lực nhưng CSRF token chỉ lưu trong bộ nhớ. Hợp đồng hiện chưa có cách cấp lại token cho phiên còn sống; cần quyết định liên nhóm và cập nhật hợp đồng trước khi coi các lệnh ghi là ổn định.
+- Đổi màu và khoảng cách không giải quyết được lỗi dữ liệu. Các sửa đổi P0 đã được đề xuất trong PR tính năng; cần nghiệm thu tích hợp trước khi đánh giá “sẵn sàng thương mại”.
 - Bản shell mới chưa có kiểm chứng thị giác trên thiết bị thật, chưa đo tương phản toàn bộ màn, và chưa kiểm nghiệm với tên workspace rất dài, số lượng lớn hoặc tên lớp giống nhau. Dùng fixture v2 để kiểm những ca đó và ghi kết quả vào review.
 - Không tự đặt số quota, trạng thái offline hoặc lời hứa vận hành. Các điều kiện môi trường còn mở theo [unresolved](unresolved.md).
