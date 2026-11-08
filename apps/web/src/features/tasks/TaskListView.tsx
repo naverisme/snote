@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Archive, Trash2 } from 'lucide-react';
+import { Archive, Trash2, CheckCircle2, Clock } from 'lucide-react';
 import type { ChecklistItemViewModel, Task } from './types';
 
 interface TaskListViewProps {
@@ -78,12 +78,12 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '8px 14px',
-            background: '#ddf4ff',
-            border: '1px solid #54aeff',
-            borderRadius: '6px',
+            background: 'rgba(37, 99, 235, 0.08)',
+            border: '1px solid var(--hairline)',
+            borderRadius: 'var(--radius-sm, 6px)',
           }}
         >
-          <span style={{ fontSize: '13px', fontWeight: 600, color: '#0969da' }}>
+          <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--accent)' }}>
             Đã chọn {selectedIds.size} công việc
           </span>
           <div style={{ display: 'flex', gap: '8px' }}>
@@ -95,17 +95,17 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
                 padding: '4px 12px',
                 fontSize: '12px',
                 fontWeight: 600,
-                borderRadius: '6px',
-                border: '1px solid #d0d7de',
-                background: '#fff',
-                color: '#24292f',
+                borderRadius: 'var(--radius-sm, 6px)',
+                border: '1px solid var(--hairline)',
+                background: 'var(--surface-raised, #ffffff)',
+                color: 'var(--ink-body)',
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '6px',
               }}
             >
-              <Archive size={13} />
+              <Archive size={13} style={{ color: 'var(--ink-muted)' }} />
               <span>Lưu trữ hàng loạt</span>
             </button>
             <button
@@ -116,10 +116,10 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
                 padding: '4px 12px',
                 fontSize: '12px',
                 fontWeight: 600,
-                borderRadius: '6px',
-                border: '1px solid #ff8182',
-                background: '#ffebe9',
-                color: '#cf222e',
+                borderRadius: 'var(--radius-sm, 6px)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                background: 'rgba(239, 68, 68, 0.08)',
+                color: 'var(--danger)',
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -134,10 +134,18 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
       )}
 
       {/* Task List Table */}
-      <div style={{ border: '1px solid #d0d7de', borderRadius: '6px', overflowX: 'auto', background: '#fff' }}>
+      <div
+        style={{
+          border: '1px solid var(--hairline)',
+          borderRadius: 'var(--radius-md, 8px)',
+          overflowX: 'auto',
+          background: 'var(--surface-raised, #ffffff)',
+          boxShadow: 'var(--shadow-raised)',
+        }}
+      >
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
           <thead>
-            <tr style={{ background: '#f6f8fa', borderBottom: '1px solid #d0d7de' }}>
+            <tr style={{ background: 'var(--surface-ground, #f4f4f5)', borderBottom: '1px solid var(--hairline)' }}>
               <th style={{ width: '40px', padding: '10px', textAlign: 'center' }}>
                 <input
                   type="checkbox"
@@ -146,18 +154,37 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
                   aria-label="Chọn tất cả"
                 />
               </th>
-              <th style={{ padding: '10px 12px', fontSize: '12px', fontWeight: 600, color: '#57606a' }}>Tiêu đề</th>
-              <th style={{ width: '110px', padding: '10px 12px', fontSize: '12px', fontWeight: 600, color: '#57606a' }}>Mức độ</th>
-              <th style={{ width: '110px', padding: '10px 12px', fontSize: '12px', fontWeight: 600, color: '#57606a' }}>Trạng thái</th>
-              <th style={{ width: '150px', padding: '10px 12px', fontSize: '12px', fontWeight: 600, color: '#57606a' }}>Hạn chót</th>
-              <th style={{ width: '160px', padding: '10px 12px', fontSize: '12px', fontWeight: 600, color: '#57606a' }}>Checklist</th>
+              <th style={{ padding: '10px 12px', fontSize: '12px', fontWeight: 600, color: 'var(--ink-muted)' }}>
+                Tiêu đề
+              </th>
+              <th style={{ width: '110px', padding: '10px 12px', fontSize: '12px', fontWeight: 600, color: 'var(--ink-muted)' }}>
+                Mức độ
+              </th>
+              <th style={{ width: '120px', padding: '10px 12px', fontSize: '12px', fontWeight: 600, color: 'var(--ink-muted)' }}>
+                Trạng thái
+              </th>
+              <th style={{ width: '160px', padding: '10px 12px', fontSize: '12px', fontWeight: 600, color: 'var(--ink-muted)' }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <Clock size={12} />
+                  <span>Hạn chót</span>
+                </span>
+              </th>
+              <th style={{ width: '170px', padding: '10px 12px', fontSize: '12px', fontWeight: 600, color: 'var(--ink-muted)' }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <CheckCircle2 size={12} />
+                  <span>Checklist</span>
+                </span>
+              </th>
             </tr>
           </thead>
           <tbody>
             {tasks.length === 0 ? (
               <tr>
-                <td colSpan={6} style={{ padding: '24px', textAlign: 'center', color: '#57606a', fontSize: '13px' }}>
-                  Không có công việc phù hợp với bộ lọc hiện tại.
+                <td colSpan={6} style={{ padding: '32px 16px', textAlign: 'center', color: 'var(--ink-muted)', fontSize: '13px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                    <CheckCircle2 size={24} style={{ color: 'var(--ink-faint)' }} />
+                    <span>Không có công việc phù hợp với bộ lọc hiện tại.</span>
+                  </div>
                 </td>
               </tr>
             ) : (
@@ -171,10 +198,10 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
                     key={task.id}
                     onClick={() => onSelectTask(task)}
                     style={{
-                      borderBottom: '1px solid #eaeef2',
-                      background: isChecked ? '#f1f8ff' : isSelectedRow ? '#f6f8fa' : '#fff',
+                      borderBottom: '1px solid var(--hairline)',
+                      background: isChecked ? 'rgba(37, 99, 235, 0.06)' : isSelectedRow ? 'var(--surface-ground, #f4f4f5)' : 'transparent',
                       cursor: 'pointer',
-                      transition: 'background 0.1s ease',
+                      transition: 'background var(--transition-fast, 0.16s ease)',
                     }}
                   >
                     <td style={{ padding: '10px', textAlign: 'center' }} onClick={e => e.stopPropagation()}>
@@ -185,8 +212,13 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
                         aria-label={`Chọn ${task.title}`}
                       />
                     </td>
-                    <td style={{ padding: '10px 12px', fontSize: '13px', fontWeight: 500, color: '#24292f' }}>
-                      <span style={{ textDecoration: task.status === 'done' ? 'line-through' : 'none', color: task.status === 'done' ? '#57606a' : '#24292f' }}>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', fontWeight: 500 }}>
+                      <span
+                        style={{
+                          textDecoration: task.status === 'done' ? 'line-through' : 'none',
+                          color: task.status === 'done' ? 'var(--ink-muted)' : 'var(--ink-title)',
+                        }}
+                      >
                         {task.title}
                       </span>
                     </td>
@@ -197,8 +229,19 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
                           padding: '2px 8px',
                           borderRadius: '12px',
                           fontWeight: 600,
-                          background: task.importance === 'high' ? '#ffebe9' : task.importance === 'medium' ? '#fff8c5' : '#dafbe1',
-                          color: task.importance === 'high' ? '#cf222e' : task.importance === 'medium' ? '#9a6700' : '#1a7f37',
+                          border: '1px solid var(--hairline)',
+                          background:
+                            task.importance === 'high'
+                              ? 'rgba(239, 68, 68, 0.1)'
+                              : task.importance === 'medium'
+                              ? 'rgba(245, 158, 11, 0.1)'
+                              : 'rgba(16, 185, 129, 0.1)',
+                          color:
+                            task.importance === 'high'
+                              ? 'var(--danger)'
+                              : task.importance === 'medium'
+                              ? '#b45309'
+                              : 'var(--success)',
                         }}
                       >
                         {task.importance === 'high' ? 'Cao' : task.importance === 'medium' ? 'Vừa' : 'Thấp'}
@@ -211,18 +254,64 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
                           padding: '2px 8px',
                           borderRadius: '12px',
                           fontWeight: 500,
-                          background: task.status === 'done' ? '#dafbe1' : task.status === 'doing' ? '#ddf4ff' : '#f6f8fa',
-                          color: task.status === 'done' ? '#1a7f37' : task.status === 'doing' ? '#0969da' : '#57606a',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          border: '1px solid var(--hairline)',
+                          background:
+                            task.status === 'done'
+                              ? 'rgba(16, 185, 129, 0.1)'
+                              : task.status === 'doing'
+                              ? 'rgba(37, 99, 235, 0.08)'
+                              : 'var(--surface-ground, #f4f4f5)',
+                          color:
+                            task.status === 'done'
+                              ? 'var(--success)'
+                              : task.status === 'doing'
+                              ? 'var(--accent)'
+                              : 'var(--ink-muted)',
                         }}
                       >
-                        {task.status === 'done' ? 'Đã xong' : task.status === 'doing' ? 'Đang làm' : 'Chờ làm'}
+                        {task.status === 'done' && <CheckCircle2 size={11} />}
+                        {task.status === 'doing' && <Clock size={11} />}
+                        <span>{task.status === 'done' ? 'Đã xong' : task.status === 'doing' ? 'Đang làm' : 'Chờ làm'}</span>
                       </span>
                     </td>
-                    <td style={{ padding: '10px 12px', fontSize: '12px', color: '#57606a' }}>
-                      {task.dueAt ? new Date(task.dueAt).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}
+                    <td style={{ padding: '10px 12px', fontSize: '12px', color: 'var(--ink-muted)' }}>
+                      {task.dueAt ? (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <Clock size={12} style={{ color: 'var(--ink-subtle)' }} />
+                          <span>
+                            {new Date(task.dueAt).toLocaleDateString('vi-VN', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </span>
+                        </span>
+                      ) : (
+                        <span style={{ color: 'var(--ink-faint)' }}>—</span>
+                      )}
                     </td>
-                    <td style={{ padding: '10px 12px', fontSize: '12px', color: '#57606a' }}>
-                      {chk.text}
+                    <td style={{ padding: '10px 12px', fontSize: '12px' }}>
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          color: chk.percentage === 100 ? 'var(--success)' : 'var(--ink-muted)',
+                        }}
+                      >
+                        <CheckCircle2
+                          size={12}
+                          style={{
+                            color: chk.percentage === 100 ? 'var(--success)' : 'var(--ink-faint)',
+                          }}
+                        />
+                        <span>{chk.text}</span>
+                      </span>
                     </td>
                   </tr>
                 );
