@@ -434,3 +434,39 @@
   - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 16:35:43)
   - [x] **RESOLVED by Implementer** (Commit SHA: 7993016af50cb96d30806bfaa37d7815aeedbc2f, Che tac UI Tasks va Calendar theo Recipe 1 va Recipe 2 Stageshow: xoa triet de fixture gia khi API loi, hien nut Thu lai that; the Task voi inset 12px, hairline 1px, 5 tang muc, micro-interaction checkbox pop 120ms, ngan sach chu <= 7 cum tu, thay 100% emoji bang lucide-react; Recipe 2 Miniature Showcase empty state cho ca Tasks va Calendar; chuyen doi Gantt/Danh sach 160ms khong giat layout (CLS=0) kem skeleton loader; lich Tuan desktop / Ngay mobile theo CUXA-01/04; impeccable detect 0 anti-patterns va build web dat 100%)
   - [x] **VERIFIED by Requester** (Pass Test: Pass 11/11 unit tests (QA-10/13, EC-13/17/24, CAL-06, TASK-11/17, CUXA-01/04, Stageshow Recipe 1 <=7 words, 0 fixture fallback), impeccable detect clean (59 files), web build pass 100%, verified at 2026-11-08 16:58:04)
+
+
+### [TASK-20261108-165655] Mo Pull Request tu feat/v2/ui-library vao s_note_v2 kem day du bang chung test (12/12 unit tests pass, impeccable detect clean, build web pass 100%).
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/ui-library (2026-11-08 16:56:55)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 16:57:13)
+  - [x] **RESOLVED by Implementer** (Commit SHA: ecda3fd82eee0e568014a06a7bd4d3963d7b2a4f, Da cap nhat va mo PR #59 thanh cong vao s_note_v2: https://github.com/naverisme/snote/pull/59 kem day du bang chung test (12/12 unit tests, impeccable 0 findings, build 100%))
+  - [x] **VERIFIED by Requester** (Pass Test: PR #59 da duoc merge thanh cong vao s_note_v2 tai commit 335e2ed. 12/12 tests pass, build pass 100%., verified at 2026-11-08 17:05:18)
+
+
+### [TASK-20261108-165805] Mo Pull Request tu feat/v2/ui-planning vao s_note_v2 kem day du bang chung test (11/11 unit tests pass, impeccable detect clean, build web pass 100%).
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/ui-planning (2026-11-08 16:58:05)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 16:58:26)
+  - [x] **RESOLVED by Implementer** (Commit SHA: 7993016af50cb96d30806bfaa37d7815aeedbc2f, Da mo va chuyen PR #58 thanh trang thai OPEN (Ready for review) vao s_note_v2 kem day du bang chung test: 11/11 tests pass, impeccable detect clean 59 files, web build pass 100%, contract HTTP va validation pass.)
+  - [x] **VERIFIED by Requester** (Pass Test: PR #58 da duoc merge thanh cong vao s_note_v2 tai commit 7f8922c. 11/11 tests pass, build pass 100%., verified at 2026-11-08 17:05:19)
+
+
+### [TASK-20261108-163526] Nang cap Shell, Navigation, Token & A11y theo Stageshow va skill-driven-ui-guide.md: (1) Chuan hoa 5 tang muc (--ink-*) va 3 tang surface theo theme.css, triet tieu hex hardcoded; (2) Bo chon workspace UXR-03/04 bung ngang, scroll keo-tha giu nguyen khong doi den khi click, ho tro a11y focus/Esc, mobile hien ten ben phai; (3) Bo chon lop CUXC-01 bang phim Tab/Enter/Esc; Bang Thanh vien CUXC-07/09/11 co dinh cot Nguoi hoc khi cuon ngang tren mobile; (4) Chay impeccable.exe detect apps/web/src va npm run --prefix apps/web build truoc khi resolve.
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/ui-review (2026-11-08 16:35:26)
+- **Tep dinh kem:** docs/ux/skill-driven-ui-guide.md
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 16:36:10)
+  - [x] **RESOLVED by Implementer** (Commit SHA: 023b80c3c3ffe2bda0f41445cff578f94799bd49, Passed impeccable.exe detect, passed web build, passed all 42/42 e2e tests (including WEB-10, WEB-11, WEB-12))
+  - [x] **VERIFIED by Requester** (Pass Test: Pass 12/12 web interaction tests (WEB-01..12), impeccable detect clean (60 files), web build pass 100%, verified at 2026-11-08 17:18:39)
+
+
+### [TASK-20261108-171840] Mo Pull Request tu feat/v2/ui-review vao s_note_v2 kem day du bang chung test (12/12 web interaction tests pass, impeccable clean, build web pass 100%).
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/ui-review (2026-11-08 17:18:40)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 17:19:20)
+  - [x] **RESOLVED by Implementer** (Commit SHA: 023b80c3c3ffe2bda0f41445cff578f94799bd49, Opened Pull Request #56 (https://github.com/naverisme/snote/pull/56), ready for review. 42/42 tests pass 100%, web build pass 100%, impeccable detect clean)
+  - [x] **VERIFIED by Requester** (Pass Test: PR #56 da duoc review, CI check pass 100%, 12/12 web interaction tests pass, mergeable CLEAN, verified at 2026-11-08 17:24:07)

@@ -34,7 +34,7 @@ Tất cả worktree là **thư mục anh em của `SNOTE`**, không nằm trong 
 | N5 — xong phần giả lập | Chuẩn bị checklist tích hợp #36 từ QA-01–14 và `review/unresolved.md`; chạy VT-01–VT-12 ở mức service | PR #45 đã merge; 13/13 bài service giả lập qua. [Báo cáo gốc](review/e2e-integration-audit.md) có đính chính | HOÀN THÀNH PHẦN GIẢ LẬP |
 | N6 — xong | Thực hiện I-1–I-5 theo [rà lại cổng #36](review/integration-gate-reassessment.md) trong vùng sở hữu integration | I-1 đến I-5 hoàn tất qua PR #49, #50, #51, #52; 39/39 E2E tests pass trên PostgreSQL thật và CI | HOÀN THÀNH |
 | N7 — xong | Trả [lỗi danh tính/quyền và lưu trữ](review/integration-gate-reassessment.md) về owner #31/#35/#32; sửa DI và deny-by-default | PR #46, #47, #48 đã merge; 95 API tests pass; AppModule bootstrap thành công 100% | HOÀN THÀNH |
-| N8 — đang chạy | Chiến dịch nâng cấp UI/UX toàn diện theo [skill-driven-ui-guide.md](docs/ux/skill-driven-ui-guide.md) trên 4 worktree chuyên trách | Đã nghiệm thu và merge 3/4 PR: #60 (Assignments UI), #59 (Library UI), #58 (Planning UI) vào `s_note_v2`; đang chạy mũi cuối cùng trên `ui-review` (Shell/Navigation/A11y) | 75% HOÀN THÀNH (ĐANG CHẠY MŨI 4) |
+| N8 — xong | Chiến dịch nâng cấp UI/UX toàn diện theo [skill-driven-ui-guide.md](docs/ux/skill-driven-ui-guide.md) trên 4 worktree chuyên trách | Đã nghiệm thu và merge 100% 4 PR: #60 (Assignments UI), #59 (Library UI), #58 (Planning UI), #56 (Review/Shell/A11y) vào `s_note_v2`; pass toàn bộ 44/44 web unit/e2e tests, build web thành công, quét sạch 68 files mã nguồn UI không có anti-pattern | HOÀN THÀNH |
 
 ## Việc phải chờ tín hiệu
 
