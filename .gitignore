@@ -4,3 +4,8 @@ dist/
 *.tsbuildinfo
 __pycache__/
 .agents/
+.codex/
+.github/agents/
+.github/hooks/
+.github/skills/
+*.exe
