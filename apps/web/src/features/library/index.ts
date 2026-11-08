@@ -10,3 +10,8 @@ export * from './components/QuickSaveModal';
 export * from './components/RevisionHistoryModal';
 export * from './components/TrashView';
 export * from './components/CopyItemModal';
+export * from './components/LibraryEmptyState';
+export * from './components/UploadProgressCard';
+export * from './components/EditFileModal';
+export * from './components/ItemDetailPanel';
+export * from './markdown-helper';

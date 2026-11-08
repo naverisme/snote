@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Copy, X, AlertCircle } from 'lucide-react';
 import type { ItemDetail } from '../types';
 
 export interface CopyItemModalProps {
@@ -39,37 +40,47 @@ export const CopyItemModal: React.FC<CopyItemModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50" role="dialog" aria-modal="true" aria-labelledby="copy-title">
-      <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 flex flex-col gap-4">
-        <div className="flex justify-between items-center border-b pb-3">
-          <h2 id="copy-title" className="text-base font-bold text-gray-800">
-            Sao chép sang Workspace khác (LIB-04, LIB-12)
+    <div
+      className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50 animate-in fade-in duration-150"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="copy-title"
+    >
+      <div className="bg-[var(--surface-overlay)] border border-[var(--hairline)] rounded-xl shadow-[var(--shadow-overlay)] max-w-md w-full p-6 flex flex-col gap-4">
+        <div className="flex justify-between items-center border-b border-[var(--hairline)] pb-3">
+          <h2 id="copy-title" className="text-base font-bold text-[var(--ink-title)] flex items-center gap-1.5">
+            <Copy size={16} className="text-emerald-600" />
+            <span>Sao chép sang Workspace khác (LIB-04, LIB-12)</span>
           </h2>
           <button
             type="button"
-            className="text-gray-400 hover:text-gray-600 text-xl font-bold p-1"
+            className="text-[var(--ink-muted)] hover:text-[var(--ink-title)] p-1 rounded-md transition-colors"
             onClick={onClose}
+            aria-label="Đóng"
           >
-            ×
+            <X size={18} />
           </button>
         </div>
 
-        <p className="text-xs text-gray-600">
+        <p className="text-xs text-[var(--ink-subtle)] leading-relaxed">
           Mục sao chép sẽ tạo một bản độc lập trong workspace đích. Mọi chỉnh sửa hoặc xóa sau này trên bản gốc sẽ không ảnh hưởng đến bản sao và ngược lại.
         </p>
 
         {errorMessage && (
-          <div className="p-3 text-xs bg-red-50 border border-red-300 text-red-800 rounded-lg" role="alert">
-            {errorMessage}
+          <div className="p-3 text-xs bg-red-50 border border-red-200 text-red-800 rounded-lg flex items-start gap-1.5" role="alert">
+            <AlertCircle size={14} className="text-red-600 flex-shrink-0 mt-0.5" />
+            <span>{errorMessage}</span>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1">Mã Workspace đích (UUID)</label>
+            <label className="block text-xs font-semibold text-[var(--ink-title)] mb-1">
+              Mã Workspace đích (UUID)
+            </label>
             <input
               type="text"
-              className="w-full p-2 border border-gray-300 rounded text-sm focus:border-blue-500 focus:outline-none"
+              className="w-full p-2.5 border border-[var(--hairline)] rounded-lg text-xs bg-white text-[var(--ink-body)] focus:border-blue-500 focus:outline-none"
               placeholder="Nhập workspaceId đích..."
               value={targetWorkspaceId}
               onChange={(e) => setTargetWorkspaceId(e.target.value)}
@@ -78,10 +89,10 @@ export const CopyItemModal: React.FC<CopyItemModalProps> = ({
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-2 border-t">
+          <div className="flex justify-end gap-2 pt-2 border-t border-[var(--hairline)]">
             <button
               type="button"
-              className="px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-100 rounded"
+              className="px-3.5 py-1.5 text-xs text-[var(--ink-subtle)] hover:bg-gray-100 rounded-lg transition-colors"
               onClick={onClose}
               disabled={isSubmitting}
             >
@@ -89,7 +100,7 @@ export const CopyItemModal: React.FC<CopyItemModalProps> = ({
             </button>
             <button
               type="submit"
-              className="px-4 py-1.5 text-xs bg-blue-600 hover:bg-blue-700 text-white font-medium rounded shadow-sm disabled:opacity-50"
+              className="px-4 py-1.5 text-xs bg-[var(--accent)] hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-all active:scale-95 disabled:opacity-50"
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Đang sao chép...' : 'Xác nhận sao chép'}

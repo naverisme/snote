@@ -294,4 +294,61 @@ export const libraryApi = {
     }
     return payload.data as Upload;
   },
+
+  async uploadContentWithProgress(
+    uploadId: string,
+    file: File | Blob,
+    onProgress?: (progress: { loadedBytes: number; totalBytes: number; percent: number }) => void,
+    reqOptions: RequestOptions = {},
+  ): Promise<Upload> {
+    if (typeof XMLHttpRequest === 'undefined') {
+      // Fallback for non-browser environments
+      onProgress?.({ loadedBytes: file.size, totalBytes: file.size, percent: 100 });
+      return this.uploadContent(uploadId, file, reqOptions);
+    }
+
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('PUT', `/api/v2/uploads/${encodeURIComponent(uploadId)}/content`);
+      xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+      const csrfToken = reqOptions.csrfToken ?? getCsrfToken();
+      if (csrfToken) xhr.setRequestHeader('X-CSRF-Token', csrfToken);
+      if (reqOptions.actorId) xhr.setRequestHeader('x-actor-id', reqOptions.actorId);
+      xhr.withCredentials = true;
+
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable && onProgress) {
+          const percent = event.total > 0 ? Math.min(100, Math.round((event.loaded / event.total) * 100)) : 0;
+          onProgress({ loadedBytes: event.loaded, totalBytes: event.total, percent });
+        }
+      };
+
+      xhr.onload = () => {
+        try {
+          const payload = JSON.parse(xhr.responseText || '{}');
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve((payload?.data !== undefined ? payload.data : payload) as Upload);
+          } else {
+            const code = payload?.error?.code ?? `HTTP_${xhr.status}`;
+            reject(new LibraryApiError(xhr.status, code, payload?.error?.details));
+          }
+        } catch (e) {
+          reject(new LibraryApiError(xhr.status, `HTTP_${xhr.status}`, { parseError: e }));
+        }
+      };
+
+      xhr.onerror = () => {
+        reject(new LibraryApiError(0, 'NETWORK_ERROR', { message: 'Lỗi kết nối khi tải lên dữ liệu' }));
+      };
+
+      if (reqOptions.signal) {
+        reqOptions.signal.addEventListener('abort', () => {
+          xhr.abort();
+          reject(new DOMException('Aborted', 'AbortError'));
+        });
+      }
+
+      xhr.send(file);
+    });
+  },
 };

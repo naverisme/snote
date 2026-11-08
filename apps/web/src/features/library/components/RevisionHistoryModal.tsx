@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { History, X, AlertCircle, FileEdit, Check } from 'lucide-react';
 import type { ItemDetail, LibraryItem } from '../types';
 
 export interface RevisionHistoryModalProps {
@@ -61,64 +62,82 @@ export const RevisionHistoryModal: React.FC<RevisionHistoryModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50" role="dialog" aria-modal="true" aria-labelledby="rev-title">
-      <div className="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 flex flex-col gap-4">
-        <div className="flex justify-between items-center border-b pb-3">
+    <div
+      className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50 animate-in fade-in duration-150"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="rev-title"
+    >
+      <div className="bg-[var(--surface-overlay)] border border-[var(--hairline)] rounded-xl shadow-[var(--shadow-overlay)] max-w-lg w-full p-6 flex flex-col gap-4">
+        <div className="flex justify-between items-center border-b border-[var(--hairline)] pb-3">
           <div>
-            <h2 id="rev-title" className="text-lg font-bold text-gray-800">
-              Quản lý phiên bản & Ghi đè
+            <h2 id="rev-title" className="text-base font-bold text-[var(--ink-title)] flex items-center gap-1.5">
+              <History size={16} className="text-blue-600" />
+              <span>Quản lý phiên bản & Ghi đè</span>
             </h2>
-            <p className="text-xs text-gray-500 truncate max-w-sm">{item.title || item.id}</p>
+            <p className="text-xs text-[var(--ink-subtle)] truncate max-w-sm mt-0.5">
+              {item.title || item.id}
+            </p>
           </div>
           <button
             type="button"
-            className="text-gray-400 hover:text-gray-600 text-xl font-bold p-1"
+            className="text-[var(--ink-muted)] hover:text-[var(--ink-title)] p-1 rounded-md transition-colors"
             onClick={onClose}
+            aria-label="Đóng"
           >
-            ×
+            <X size={18} />
           </button>
         </div>
 
         {errorMessage && (
-          <div className="p-3 text-xs bg-red-50 border border-red-300 text-red-800 rounded-lg" role="alert">
-            {errorMessage}
+          <div className="p-3 text-xs bg-red-50 border border-red-200 text-red-800 rounded-lg flex items-start gap-1.5" role="alert">
+            <AlertCircle size={14} className="text-red-600 flex-shrink-0 mt-0.5" />
+            <span>{errorMessage}</span>
           </div>
         )}
 
         {/* Current revision info */}
-        <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 text-xs flex justify-between items-center">
+        <div className="bg-[var(--surface-ground)] p-3.5 rounded-xl border border-[var(--hairline)] text-xs flex justify-between items-center">
           <div>
-            <span className="font-semibold text-gray-700">Phiên bản hiện tại: v{item.version}</span>
-            <p className="text-gray-500 mt-0.5">
-              Mã sửa đổi: {item.currentRevisionId ? item.currentRevisionId.substring(0, 8) + '...' : 'Chưa có'}
+            <span className="font-semibold text-[var(--ink-title)]">Phiên bản hiện tại: v{item.version}</span>
+            <p className="text-[var(--ink-subtle)] font-mono mt-0.5">
+              Mã sửa đổi: {item.currentRevisionId ? item.currentRevisionId.substring(0, 12) + '...' : 'Chưa có'}
             </p>
           </div>
-          <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded font-medium">Hoạt động</span>
+          <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md font-medium text-[11px] inline-flex items-center gap-1">
+            <Check size={11} />
+            <span>Hoạt động</span>
+          </span>
         </div>
 
         {/* Overwrite toggle button */}
         {!isOverwriting ? (
           <div className="flex flex-col gap-2">
-            <p className="text-xs text-gray-600">
-              Theo quy tắc LIB-13, khi tải lên bản mới hoặc cập nhật nội dung, bạn có thể chọn <strong>Ghi đè mục này</strong> để lưu phiên bản mới mà vẫn giữ nguyên lịch sử cũ.
+            <p className="text-xs text-[var(--ink-subtle)] leading-relaxed">
+              Theo quy tắc <strong>CUXB-08 (LIB-13)</strong>, khi cập nhật nội dung hoặc tải tệp mới, bạn có thể chọn <strong>Ghi đè mục này</strong> để lưu phiên bản mới mà vẫn giữ nguyên lịch sử và ID của mục.
             </p>
             <button
               type="button"
-              className="mt-2 w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm rounded-lg shadow-sm"
+              className="mt-2 w-full py-2.5 bg-[var(--accent)] hover:bg-blue-700 text-white font-medium text-xs rounded-lg shadow-sm transition-all active:scale-95 inline-flex items-center justify-center gap-1.5"
               onClick={() => setIsOverwriting(true)}
             >
-              + Ghi đè phiên bản mới (v{item.version + 1})
+              <FileEdit size={13} />
+              <span>Ghi đè phiên bản mới (v{item.version + 1})</span>
             </button>
           </div>
         ) : (
-          <form onSubmit={handleOverwriteSubmit} className="flex flex-col gap-3 p-3 bg-blue-50/50 border border-blue-200 rounded-lg">
-            <h3 className="text-xs font-bold text-blue-900 uppercase">Cập nhật phiên bản mới (v{item.version + 1})</h3>
+          <form onSubmit={handleOverwriteSubmit} className="flex flex-col gap-3 p-3.5 bg-blue-50/40 border border-blue-200 rounded-xl">
+            <h3 className="text-xs font-bold text-blue-900 uppercase">
+              Cập nhật phiên bản mới (v{item.version + 1})
+            </h3>
 
             {item.type === 'text' && (
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Nội dung văn bản mới</label>
+                <label className="block text-xs font-semibold text-[var(--ink-title)] mb-1">
+                  Nội dung văn bản mới
+                </label>
                 <textarea
-                  className="w-full p-2 border border-gray-300 rounded text-sm h-28 focus:outline-none focus:border-blue-500"
+                  className="w-full p-2.5 border border-[var(--hairline)] rounded-lg text-xs h-28 focus:outline-none focus:border-blue-500 bg-white leading-relaxed"
                   value={newContent}
                   onChange={(e) => setNewContent(e.target.value)}
                   required
@@ -128,10 +147,12 @@ export const RevisionHistoryModal: React.FC<RevisionHistoryModalProps> = ({
 
             {item.type === 'link' && (
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">URL liên kết mới</label>
+                <label className="block text-xs font-semibold text-[var(--ink-title)] mb-1">
+                  URL liên kết mới
+                </label>
                 <input
                   type="text"
-                  className="w-full p-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-blue-500"
+                  className="w-full p-2 border border-[var(--hairline)] rounded-lg text-xs focus:outline-none focus:border-blue-500 bg-white"
                   value={newUrl}
                   onChange={(e) => setNewUrl(e.target.value)}
                   required
@@ -141,20 +162,22 @@ export const RevisionHistoryModal: React.FC<RevisionHistoryModalProps> = ({
 
             {item.type === 'file' && (
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Chọn tệp ghi đè mới</label>
+                <label className="block text-xs font-semibold text-[var(--ink-title)] mb-1">
+                  Chọn tệp ghi đè mới
+                </label>
                 <input
                   type="file"
-                  className="w-full text-xs"
+                  className="w-full text-xs p-2 border border-dashed border-[var(--hairline)] rounded-lg bg-white cursor-pointer"
                   onChange={(e) => setNewFile(e.target.files?.[0] || null)}
                   required
                 />
               </div>
             )}
 
-            <div className="flex justify-end gap-2 mt-2">
+            <div className="flex justify-end gap-2 mt-1">
               <button
                 type="button"
-                className="px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-200 rounded"
+                className="px-3 py-1.5 text-xs text-[var(--ink-subtle)] hover:bg-gray-200 rounded-lg transition-colors"
                 onClick={() => setIsOverwriting(false)}
                 disabled={isSubmitting}
               >
@@ -162,7 +185,7 @@ export const RevisionHistoryModal: React.FC<RevisionHistoryModalProps> = ({
               </button>
               <button
                 type="submit"
-                className="px-3 py-1.5 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded font-medium disabled:opacity-50"
+                className="px-3.5 py-1.5 text-xs bg-[var(--accent)] hover:bg-blue-700 text-white rounded-lg font-medium shadow-sm transition-all active:scale-95 disabled:opacity-50"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? 'Đang lưu...' : 'Xác nhận ghi đè'}
@@ -171,10 +194,10 @@ export const RevisionHistoryModal: React.FC<RevisionHistoryModalProps> = ({
           </form>
         )}
 
-        <div className="flex justify-end pt-2 border-t">
+        <div className="flex justify-end pt-2 border-t border-[var(--hairline)]">
           <button
             type="button"
-            className="px-4 py-1.5 text-xs text-gray-600 hover:bg-gray-100 rounded"
+            className="px-4 py-1.5 text-xs text-[var(--ink-subtle)] hover:bg-[var(--surface-ground)] rounded-lg transition-colors"
             onClick={onClose}
           >
             Đóng
