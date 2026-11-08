@@ -466,6 +466,7 @@ export function App() {
             <>
               {classTab === 'members' && (
                 <ClassMembersView
+                  key={activeClass.id}
                   cls={activeClass}
                   currentUser={user}
                   onClassUpdated={updated => {
@@ -475,6 +476,7 @@ export function App() {
               )}
               {classTab === 'groups' && (
                 <ClassGroupsView
+                  key={activeClass.id}
                   cls={activeClass}
                   currentUser={user}
                   onOpenGroupWorkspace={groupWs => {
@@ -485,6 +487,7 @@ export function App() {
               )}
               {classTab === 'settings' && isClassOwner && (
                 <ClassSettingsView
+                  key={activeClass.id}
                   cls={activeClass}
                   currentUser={user}
                   onClassUpdated={updated => {
@@ -494,6 +497,7 @@ export function App() {
               )}
               {classTab === 'assignments' && (
                 <AssignmentFeature
+                  key={activeClass.id}
                   classId={activeClass.id}
                   isTeacher={Boolean(isClassOwner || user.usages.includes('teacher'))}
                   activeWorkspaceId={
@@ -502,7 +506,7 @@ export function App() {
                 />
               )}
               {classTab === 'calendar' && (
-                <CalendarContainer scopeType="class" scopeId={activeClass.id} />
+                <CalendarContainer key={activeClass.id} scopeType="class" scopeId={activeClass.id} />
               )}
             </>
           ) : activeWorkspace ? (
@@ -519,14 +523,16 @@ export function App() {
 
               {workspaceTab === 'tasks' && (
                 <TasksContainer
+                  key={activeWorkspace.id}
                   workspaceId={activeWorkspace.kind === 'default' ? undefined : activeWorkspace.id}
                 />
               )}
               {workspaceTab === 'calendar' && (
-                <CalendarContainer scopeType="workspace" scopeId={activeWorkspace.id} />
+                <CalendarContainer key={activeWorkspace.id} scopeType="workspace" scopeId={activeWorkspace.id} />
               )}
               {workspaceTab === 'library' && (
                 <LibraryView
+                  key={activeWorkspace.id}
                   workspaceId={activeWorkspace.id}
                   isPersonalWorkspace={activeWorkspace.kind === 'default'}
                   actorId={user?.id}
