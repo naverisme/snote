@@ -5,8 +5,8 @@
 | Task | `TASK-20261108-205640`, issue [#29](https://github.com/naverisme/snote/issues/29), [#33](https://github.com/naverisme/snote/issues/33), [#34](https://github.com/naverisme/snote/issues/34) |
 | SHA kiểm | `023b80c3c3ffe2bda0f41445cff578f94799bd49` trên `feat/v2/ui-review` |
 | Phạm vi | Chỉ đọc API Ngữ cảnh và web shell/lớp/workspace; không sửa UI, schema hay OpenAPI |
-| Nguồn | [Kế hoạch kiểm duyệt](../../SNOTE/review/system-redesign-readiness.md) ở worktree chính v2; [quy tắc lớp](../docs/requirements/class-membership.md), [quyền](../docs/requirements/permissions.md), [điều hướng](../docs/ux/validated-navigation.md), [Q33-C](../docs/ux/class-navigation.md), [chuyển động](../docs/ux/ui-and-motion.md), [QA](../docs/quality/README.md), [OpenAPI](../docs/contracts/openapi.yaml); SRC-26/27 ở [provenance](provenance.md) |
-| Giới hạn | Kiểm mã nguồn và build tại SHA trên; sau resolve chạy thêm suite E2E có một số ca HTTP + PostgreSQL. Chưa chạy riêng các kịch bản refresh CSRF, thu hồi quyền giữa request, browser desktop/mobile, thiết bị cảm ứng hoặc đo tương phản render. Phát hiện tĩnh vẫn cần kiểm lại trên luồng thật. |
+| Nguồn | [Kế hoạch kiểm duyệt](system-redesign-readiness.md) trong cùng thư mục `review/` của repo v2; [quy tắc lớp](../docs/requirements/class-membership.md), [quyền](../docs/requirements/permissions.md), [điều hướng](../docs/ux/validated-navigation.md), [Q33-C](../docs/ux/class-navigation.md), [chuyển động](../docs/ux/ui-and-motion.md), [QA](../docs/quality/README.md), [OpenAPI](../docs/contracts/openapi.yaml); SRC-26/27 ở [provenance](provenance.md) |
+| Giới hạn | Kiểm mã nguồn và build tại SHA trên; sau resolve chạy suite E2E hỗn hợp, gồm HTTP qua Nest và PostgreSQL cho các ca nêu dưới đây. Chưa chạy chuỗi refresh với cookie còn hạn rồi ghi bằng CSRF được cấp lại, thu hồi quyền giữa request, response muộn khi đổi scope/logout, browser desktop/mobile, thiết bị cảm ứng hoặc đo tương phản render. Phát hiện tĩnh vẫn cần kiểm lại trên luồng thật. |
 
 ## Kết quả và đường kiểm
 
@@ -14,7 +14,9 @@
 
 `node --test` trên năm suite `qa-context`, `classes/admission`, `authorization/policy`, `workspaces/group-lifecycle`, `identity/account-service` **đạt 27/27**. Bộ này là unit/simulation, không bao gồm request HTTP qua cookie, PostgreSQL hay UI thật, nên các phát hiện CTX-01–08 vẫn cần phép kiểm trong bảng dưới.
 
-**Bổ sung sau resolve:** `npm run contract:validate` đạt (86 paths, 106 operations, 973 refs); `npm test --workspace @snote/api` đạt 3/3 core; toàn bộ suite module đã build đạt 92/92; `npm run test:e2e` đạt 42/42. Suite E2E pha trộn mô phỏng với các ca HTTP qua server và PostgreSQL (`tests/e2e/http-smoke.spec.mjs`, `qa-real-flow.spec.mjs`); kết quả không phủ đúng các tình huống CTX-01–08 hoặc browser tương tác thật. Không dùng nhãn E2E để nâng những chỗ đó lên `đạt`.
+**Bổ sung sau resolve:** `npm run contract:validate` đạt (86 paths, 106 operations, 973 refs); `npm test --workspace @snote/api` đạt 3/3 core; toàn bộ suite module đã build đạt 92/92; `npm run test:e2e` đạt 42/42. Trong đó [HTTP smoke](../tests/e2e/http-smoke.spec.mjs) chạy server Nest qua socket và PostgreSQL: kiểm 401 khi không có cookie, header giả không vượt xác thực, `PATCH /me/usages` trả 403 khi thiếu/sai CSRF và 200 khi dùng token từ đăng ký, 412 khi `If-Match` cũ, cùng luồng tạo lớp/nhóm và các lát cắt khác. [QA real flow](../tests/e2e/qa-real-flow.spec.mjs) kiểm qua HTTP: QA-01 đổi usages rồi tạo lớp; QA-02/03 xin vào lớp, duyệt, lưu trữ/khôi phục; QA-04 người ngoài bị 403 khi đọc task/thư viện hoặc tạo bài giao trong scope của người khác. Các suite E2E còn lại pha trộn mô phỏng với kiểm HTTP; tổng 42/42 không phải 42 ca browser hoặc 42 ca riêng của Ngữ cảnh.
+
+**Chưa được các ca trên chứng minh:** reload trang khi cookie còn hiệu lực rồi lấy lại CSRF và thực hiện mutation; quyền tạo nhóm mặc định của thành viên, người được ủy quyền và thu hồi quyền ngay trước commit; chuyển workspace/lớp A→B khi response A về muộn; logout hoặc mất quyền trong lúc request còn bay và dữ liệu/số đếm cũ phải bị xóa. Cũng chưa chạy tương tác browser desktop/mobile, focus và reduced motion cho shell. Vì vậy CTX-01–08 giữ trạng thái phát hiện cần sửa/kiểm, không được nâng thành `đạt` từ tên suite E2E.
 
 ## Phát hiện ưu tiên
 
@@ -33,9 +35,9 @@
 
 | Màn / luồng | Endpoint hiện có và quyền | Trạng thái cần thiết, mức kiểm |
 | --- | --- | --- |
-| Đăng nhập, đăng ký, tài khoản | `POST /auth/login`, `/auth/register`, `GET /me`, `PATCH /me/usages`, `POST /auth/logout`; ACC-01–03, QA-01 | Loading, lỗi xác thực/CSRF/412, cookie còn hạn sau refresh, logout; **chưa kiểm HTTP**. Token khởi tạo có, cấp lại sau refresh thiếu. |
+| Đăng nhập, đăng ký, tài khoản | `POST /auth/login`, `/auth/register`, `GET /me`, `PATCH /me/usages`, `POST /auth/logout`; ACC-01–03, QA-01 | HTTP đã kiểm đăng ký, mutation usages với CSRF hợp lệ/thiếu/sai, 412 và quyền tạo lớp theo usage; **chưa kiểm** refresh với cookie còn hạn → cấp lại CSRF → mutation, logout khi request còn bay hoặc UI loading/lỗi. Token khởi tạo có, cấp lại sau refresh thiếu. |
 | Bộ chọn lớp/workspace và shell | `GET /classes`, `GET /workspaces`, `GET /me/invitations`; NAV-01–08, UXR-01–05, CUXC-01–06, QA-13 | Loading/rỗng/lỗi/mất quyền, A→B response muộn, badge đúng scope, menu mobile/keyboard/focus/reduced motion; code có selectors nhưng epoch và lỗi scope thiếu. |
-| Thành viên, lời mời, yêu cầu | `GET /classes/{classId}/members`, `GET /classes/{classId}/join-requests`, `/me/invitations` và mutation lớp; CLS-02/03/13, CUXC-07/09/11, QA-01/02/04 | Bảng cuộn ngang giữ cột Người học có CSS; cần dữ liệu nhóm/thời điểm thật, 409/412, quyền nút, mất tư cách; **chưa kiểm browser/DB**. |
+| Thành viên, lời mời, yêu cầu | `GET /classes/{classId}/members`, `GET /classes/{classId}/join-requests`, `/me/invitations` và mutation lớp; CLS-02/03/13, CUXC-07/09/11, QA-01/02/04 | HTTP + PostgreSQL đã kiểm xin vào/duyệt và đọc membership; **chưa kiểm** trình bày bảng trên browser, dữ liệu nhóm/thời điểm, mất tư cách giữa request, quyền nút và xung đột 409/412 riêng của luồng này. |
 | Nhóm trong lớp | `GET/POST /classes/{classId}/groups`, `POST /groups/{groupId}/join-requests`; CLS-04–07/11, CUXC-03/08, QA-02/03 | Rỗng/loading/lỗi, trưởng nhóm và tư cách người xem, quyền tạo, 409 khi giới hạn, archive; API đang sai quyền tạo mặc định. |
 | Cài đặt và lưu trữ lớp | `GET/PATCH /classes/{classId}/policy`, archive/restore/ownership transfer; CUXC-10/12, PER-09–13, QA-03/04 | Bốn phần, chỉ đọc khi archived, 412 và refresh phiên bản, bảng quyền lớp trưởng theo action; UI hiện thiếu bảng chỉnh quyền. |
 
