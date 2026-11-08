@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { FileText, Link, X } from 'lucide-react';
 
 export interface QuickSaveModalProps {
   isOpen: boolean;
@@ -45,10 +46,11 @@ export const QuickSaveModal: React.FC<QuickSaveModalProps> = ({ isOpen, onClose,
           </div>
           <button
             type="button"
-            className="text-gray-400 hover:text-gray-600 text-xl font-bold p-1"
+            className="text-gray-400 hover:text-gray-600 p-1 rounded-md transition-colors"
             onClick={onClose}
+            aria-label="Đóng cửa sổ"
           >
-            ×
+            <X size={18} />
           </button>
         </div>
 
@@ -62,21 +64,23 @@ export const QuickSaveModal: React.FC<QuickSaveModalProps> = ({ isOpen, onClose,
           <div className="flex border-b border-gray-200">
             <button
               type="button"
-              className={`flex-1 py-1.5 text-xs font-semibold border-b-2 ${
-                type === 'text' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500'
+              className={`flex-1 py-1.5 text-xs font-semibold border-b-2 inline-flex items-center justify-center gap-1.5 transition-colors ${
+                type === 'text' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
               onClick={() => setType('text')}
             >
-              📝 Ghi chú nhanh
+              <FileText size={14} />
+              <span>Ghi chú nhanh</span>
             </button>
             <button
               type="button"
-              className={`flex-1 py-1.5 text-xs font-semibold border-b-2 ${
-                type === 'link' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500'
+              className={`flex-1 py-1.5 text-xs font-semibold border-b-2 inline-flex items-center justify-center gap-1.5 transition-colors ${
+                type === 'link' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
               onClick={() => setType('link')}
             >
-              🔗 Lưu đường dẫn
+              <Link size={14} />
+              <span>Lưu đường dẫn</span>
             </button>
           </div>
 

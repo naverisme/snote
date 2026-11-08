@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ChevronDown, Plus, List, LayoutGrid, Check } from 'lucide-react';
 import type { Workspace } from '../../shared/types';
 import { CreateWorkspaceModal } from './CreateWorkspaceModal';
 
@@ -44,7 +45,7 @@ export function WorkspaceSwitcher({
           )}
         </div>
         <span style={{ fontWeight: 600 }}>{activeWorkspace?.name || 'Cá nhân'}</span>
-        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>▼</span>
+        <ChevronDown size={14} style={{ color: 'var(--text-muted)' }} />
       </button>
 
       {/* Expanded Horizontal Strip or List (UXR-03, UXR-04) */}
@@ -58,8 +59,19 @@ export function WorkspaceSwitcher({
               className="btn btn-secondary btn-sm"
               onClick={() => setViewState(viewState === 'strip' ? 'list' : 'strip')}
               title="Đổi góc nhìn danh sách"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
             >
-              {viewState === 'strip' ? '☰ Dạng danh sách' : '⊞ Dạng dãy ngang'}
+              {viewState === 'strip' ? (
+                <>
+                  <List size={13} />
+                  <span>Dạng danh sách</span>
+                </>
+              ) : (
+                <>
+                  <LayoutGrid size={13} />
+                  <span>Dạng dãy ngang</span>
+                </>
+              )}
             </button>
           </div>
 
@@ -75,7 +87,7 @@ export function WorkspaceSwitcher({
                 title="Tạo workspace mới"
               >
                 <div className="ws-icon-circle" style={{ backgroundColor: '#e4e4e7', color: 'var(--text-primary)' }}>
-                  +
+                  <Plus size={14} />
                 </div>
                 <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>Tạo mới</span>
               </button>
@@ -104,13 +116,14 @@ export function WorkspaceSwitcher({
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 240, overflowY: 'auto' }}>
               <button
                 className="btn btn-secondary btn-sm"
-                style={{ width: '100%', justifyContent: 'flex-start', marginBottom: 6 }}
+                style={{ width: '100%', justifyContent: 'flex-start', marginBottom: 6, display: 'inline-flex', alignItems: 'center', gap: 6 }}
                 onClick={() => {
                   setViewState('collapsed');
                   setShowCreateModal(true);
                 }}
               >
-                + Tạo workspace độc lập
+                <Plus size={14} />
+                <span>Tạo workspace độc lập</span>
               </button>
 
               {workspaces.map(ws => (

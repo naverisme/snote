@@ -1,5 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import '../shared/theme.css';
+import {
+  Zap,
+  CheckSquare,
+  Calendar,
+  BookOpen,
+  Users,
+  FolderKanban,
+  ClipboardList,
+  Settings,
+  Mail,
+  Pin,
+  Clock,
+  CalendarDays,
+} from 'lucide-react';
 import type { Account, Class, Workspace } from '../shared/types';
 import { getMe, listClasses, listWorkspaces, getMyInvitations } from '../shared/api';
 import { AuthModal } from '../features/identity/AuthModal';
@@ -106,7 +120,8 @@ export function App() {
       <header className="app-header">
         <div className="header-left">
           <button className="brand-btn" onClick={handleSnoteLogoClick} title="Về Việc của tôi (Personal)">
-            <span>⚡ Snote</span>
+            <Zap className="ss-icon-brand" />
+            <span>Snote</span>
           </button>
 
           {/* Context Selector Cluster: Workspace & Class side-by-side (UXR-03 / CUXC-01) */}
@@ -134,16 +149,19 @@ export function App() {
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               {pendingInvCount > 0 && (
-                <span className="badge badge-warning" title={`${pendingInvCount} lời mời đang chờ`}>
-                  {pendingInvCount} lời mời
+                <span className="badge badge-warning" title={`${pendingInvCount} lời mời đang chờ`} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                  <Mail size={13} />
+                  <span>{pendingInvCount} lời mời</span>
                 </span>
               )}
 
               <button
                 className="btn btn-secondary btn-sm"
                 onClick={() => setShowSettingsModal(true)}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
               >
-                <span>⚙ Cài đặt ({user.usages.join(', ')})</span>
+                <Settings size={14} />
+                <span>Cài đặt ({user.usages.join(', ')})</span>
               </button>
             </div>
           ) : (
@@ -166,19 +184,22 @@ export function App() {
                   className={`nav-item-btn ${workspaceTab === 'tasks' ? 'active' : ''}`}
                   onClick={() => setWorkspaceTab('tasks')}
                 >
-                  <span>📋 Công việc (Gantt/Danh sách)</span>
+                  <CheckSquare size={16} />
+                  <span>Công việc (Gantt/Danh sách)</span>
                 </button>
                 <button
                   className={`nav-item-btn ${workspaceTab === 'calendar' ? 'active' : ''}`}
                   onClick={() => setWorkspaceTab('calendar')}
                 >
-                  <span>📅 Lịch trình</span>
+                  <Calendar size={16} />
+                  <span>Lịch trình</span>
                 </button>
                 <button
                   className={`nav-item-btn ${workspaceTab === 'library' ? 'active' : ''}`}
                   onClick={() => setWorkspaceTab('library')}
                 >
-                  <span>📚 Thư viện</span>
+                  <BookOpen size={16} />
+                  <span>Thư viện</span>
                 </button>
               </>
             ) : (
@@ -188,25 +209,29 @@ export function App() {
                   className={`nav-item-btn ${classTab === 'members' ? 'active' : ''}`}
                   onClick={() => setClassTab('members')}
                 >
-                  <span>👥 Thành viên</span>
+                  <Users size={16} />
+                  <span>Thành viên</span>
                 </button>
                 <button
                   className={`nav-item-btn ${classTab === 'groups' ? 'active' : ''}`}
                   onClick={() => setClassTab('groups')}
                 >
-                  <span>🗂 Nhóm trong lớp</span>
+                  <FolderKanban size={16} />
+                  <span>Nhóm trong lớp</span>
                 </button>
                 <button
                   className={`nav-item-btn ${classTab === 'assignments' ? 'active' : ''}`}
                   onClick={() => setClassTab('assignments')}
                 >
-                  <span>📝 Bài giao</span>
+                  <ClipboardList size={16} />
+                  <span>Bài giao</span>
                 </button>
                 <button
                   className={`nav-item-btn ${classTab === 'calendar' ? 'active' : ''}`}
                   onClick={() => setClassTab('calendar')}
                 >
-                  <span>📅 Lịch lớp</span>
+                  <Calendar size={16} />
+                  <span>Lịch lớp</span>
                 </button>
                 {/* CUXC-02: Cài đặt chỉ hiện khi có quyền quản lý lớp */}
                 {isClassOwner && (
@@ -214,7 +239,8 @@ export function App() {
                     className={`nav-item-btn ${classTab === 'settings' ? 'active' : ''}`}
                     onClick={() => setClassTab('settings')}
                   >
-                    <span>⚙ Cài đặt lớp</span>
+                    <Settings size={16} />
+                    <span>Cài đặt lớp</span>
                   </button>
                 )}
               </>
@@ -225,9 +251,18 @@ export function App() {
           {context.type === 'workspace' && (
             <div className="sidebar-notes-preview">
               <div className="sidebar-notes-title">Mục lưu ý</div>
-              <div className="notes-preview-item">📌 Ghi chú nhanh cá nhân</div>
-              <div className="notes-preview-item">⏰ Việc sắp đến hạn tuần này</div>
-              <div className="notes-preview-item">🗓 Sự kiện sắp diễn ra</div>
+              <div className="notes-preview-item" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Pin size={13} style={{ flexShrink: 0 }} />
+                <span>Ghi chú nhanh cá nhân</span>
+              </div>
+              <div className="notes-preview-item" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Clock size={13} style={{ flexShrink: 0 }} />
+                <span>Việc sắp đến hạn tuần này</span>
+              </div>
+              <div className="notes-preview-item" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <CalendarDays size={13} style={{ flexShrink: 0 }} />
+                <span>Sự kiện sắp diễn ra</span>
+              </div>
             </div>
           )}
         </aside>

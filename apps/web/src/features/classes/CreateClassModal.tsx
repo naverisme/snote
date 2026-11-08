@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { X } from 'lucide-react';
 import { createClass } from '../../shared/api';
 import type { Class } from '../../shared/types';
 
@@ -40,7 +41,7 @@ export function CreateClassModal({ isOpen, onClose, onCreated }: CreateClassModa
       <div className="modal-content" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h2 className="modal-title">Tạo lớp học mới</h2>
-          <button className="close-btn" onClick={onClose} aria-label="Đóng">✕</button>
+          <button className="close-btn" onClick={onClose} aria-label="Đóng"><X size={16} /></button>
         </div>
 
         {error && <div style={{ color: 'var(--danger)', marginBottom: 12, fontSize: '0.875rem' }}>{error}</div>}

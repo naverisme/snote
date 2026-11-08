@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { X, Check, Lock } from 'lucide-react';
 import type { ChecklistItemViewModel, Task, WorkSessionViewModel } from './types';
 
 interface TaskDetailPanelProps {
@@ -125,14 +126,15 @@ export const TaskDetailPanel: React.FC<TaskDetailPanelProps> = ({
           style={{
             border: 'none',
             background: 'transparent',
-            fontSize: '18px',
+            display: 'inline-flex',
+            alignItems: 'center',
             color: '#57606a',
             cursor: 'pointer',
             padding: '4px',
           }}
           aria-label="Đóng bảng chi tiết"
         >
-          ✕
+          <X size={16} />
         </button>
       </div>
 
@@ -152,9 +154,13 @@ export const TaskDetailPanel: React.FC<TaskDetailPanelProps> = ({
               background: '#1f883d',
               color: '#fff',
               cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
             }}
           >
-            ✓ Xác nhận hoàn thành việc
+            <Check size={14} />
+            <span>Xác nhận hoàn thành việc</span>
           </button>
         ) : (
           <button
@@ -295,10 +301,10 @@ export const TaskDetailPanel: React.FC<TaskDetailPanelProps> = ({
               <button
                 type="button"
                 onClick={() => onDeleteChecklistItem(item.id)}
-                style={{ border: 'none', background: 'transparent', color: '#cf222e', fontSize: '12px', cursor: 'pointer', padding: '2px 4px' }}
+                style={{ border: 'none', background: 'transparent', color: '#cf222e', display: 'inline-flex', alignItems: 'center', cursor: 'pointer', padding: '2px 4px' }}
                 aria-label="Xóa mục checklist"
               >
-                ✕
+                <X size={12} />
               </button>
             </div>
           ))}
@@ -330,7 +336,10 @@ export const TaskDetailPanel: React.FC<TaskDetailPanelProps> = ({
           <span style={{ fontSize: '14px', fontWeight: 600, color: '#24292f' }}>
             Lịch làm riêng của tôi
           </span>
-          <span style={{ fontSize: '11px', color: '#0969da' }}>🔒 Chỉ bạn nhìn thấy</span>
+          <span style={{ fontSize: '11px', color: '#0969da', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+            <Lock size={11} />
+            <span>Chỉ bạn nhìn thấy</span>
+          </span>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '12px' }}>

@@ -335,3 +335,57 @@
   - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 09:36:04)
   - [x] **RESOLVED by Implementer** (Commit SHA: 0a40110, Hoan thanh I-3: 36/36 tests PASS, web-interactions covering focus, keyboard, prefers-reduced-motion, race condition sequence tracking va multi-workspace HTTP isolation)
   - [x] **VERIFIED by Requester** (Pass Test: Pass 36/36 E2E tests bao gom 9 WEB-* test suites, verified at 2026-11-08 09:41:24)
+
+
+### [TASK-20261108-094134] Mo Pull Request vao s_note_v2 cho hang muc I-3 kem bang chung test va commit SHA 0a40110
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/integration (2026-11-08 09:41:34)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 09:41:45)
+  - [x] **RESOLVED by Implementer** (Commit SHA: 0a40110, Da mo PR #51 vao s_note_v2 cho hang muc I-3 (36/36 tests PASS, web interactions, prefers-reduced-motion, keyboard/focus WCAG dialogs, multi-workspace isolation))
+  - [x] **VERIFIED by Requester** (Pass Test: PR #51 da duoc MERGE vao s_note_v2 (36/36 tests PASS, CI updated). Hoan thanh I-3., verified at 2026-11-08 09:44:44)
+
+
+### [TASK-20261108-094334] Da mo PR #51 cho I-3 tai commit 0a40110 (36/36 test pass). feat/v2/integration bat dau trien khai hang muc I-4: p95 latency benchmark va backup/restore drill.
+- **Ben yeu cau:** feat/v2/integration -> **Ben thuc thi:** s_note_v2 (2026-11-08 09:43:34)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 09:44:52)
+  - [x] **RESOLVED by Implementer** (Commit SHA: e8d350e, Da merge PR #51, Bo chi huy ghi nhan va dang doi bien ban I-4 tu feat/v2/integration)
+  - [x] **VERIFIED by Requester** (Pass Test: Bo chi huy da xac nhan, verified at 2026-11-08 09:45:00)
+
+
+### [TASK-20261108-094818] Da hoan thanh toan bo 5 hang muc I-1 den I-5 cua Cong tich hop #36. Da mo PR #52 (commit 24490c1): pass 39/39 E2E tests tren PostgreSQL that, p95 query latency dat 174.49ms (<= 1.000ms), recovery drill QA-14 khop 100% SHA-256 va CI workflow da san sang nghiem thu.
+- **Ben yeu cau:** feat/v2/integration -> **Ben thuc thi:** s_note_v2 (2026-11-08 09:48:18)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 09:50:49)
+  - [x] **RESOLVED by Implementer** (Commit SHA: f98203d, Bo chi huy da nghiem thu PR #52 va dong Cong tich hop #36)
+  - [x] **VERIFIED by Requester** (Pass Test: Bo chi huy da nghiem thu toan bo 5 hang muc I-1 den I-5, verified at 2026-11-08 09:50:51)
+
+
+### [TASK-20261108-104332] Nang cap TaskListView va CalendarView: Ap dung 5-tier inks (--ink-title, --ink-muted), vien hairline 1px, icon Lucide (CheckCircle2, Clock, CalendarIcon), va Solid Disc cho ngay hien tai tren CalendarView
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/planning (2026-11-08 10:43:32)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 10:43:43)
+  - [x] **RESOLVED by Implementer** (Commit SHA: 4670ead, Upgraded TaskListView & CalendarView with 5-tier inks, 1px hairline, Lucide icons (CheckCircle2, Clock, CalendarIcon), and Solid Disc for current day; 22 tests pass, build pass)
+  - [x] **VERIFIED by Requester** (Pass Test: TaskListView va CalendarView dat 5-tier inks, hairline, lucide icons va solid disc, verified at 2026-11-08 10:53:34)
+
+
+### [TASK-20261108-104340] Nang cap FolderTree, ItemCard, QuotaBar va TrashView: Dung vector icon Lucide (Folder, FolderOpen, FileText, Link), QuotaBar manh 6px bo tron, ItemCard inset 12px khong dung emoji
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/library (2026-11-08 10:43:40)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 10:43:53)
+  - [x] **RESOLVED by Implementer** (Commit SHA: 97764c8, FolderTree, ItemCard, QuotaBar, TrashView upgraded with Stageshow tokens and Lucide vector icons; 6px rounded QuotaBar, 12px card inset, zero emojis. All web and library tests pass.)
+  - [x] **VERIFIED by Requester** (Pass Test: FolderTree, ItemCard, QuotaBar va TrashView dat chuan Stageshow tokens va Lucide icons, verified at 2026-11-08 10:53:40)
+
+
+### [TASK-20261108-104348] Nang cap StudentSubmissionForm, TeacherDashboard va RevisionHistoryView: Dropzone vien net dut manh 1px, timeline phien ban doc noi diem tron, badges trang thai nop bai khong dung mau choi
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/assignments (2026-11-08 10:43:48)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 10:43:58)
+  - [x] **RESOLVED by Implementer** (Commit SHA: b93a67e, PR #53 mo thanh cong (SHA: b93a67e). Dropzone 1px net dut, vertical timeline noi diem tron va badges diu mat da pass web build va 23 tests.)
+  - [x] **VERIFIED by Requester** (Pass Test: StudentSubmissionForm Dropzone, vertical revision timeline va quiet status badges hoan tat, verified at 2026-11-08 10:53:48)

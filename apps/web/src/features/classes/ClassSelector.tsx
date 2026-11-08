@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { GraduationCap, ChevronDown, Plus } from 'lucide-react';
 import type { Class, Account } from '../../shared/types';
 import { CreateClassModal } from './CreateClassModal';
 
@@ -29,11 +30,14 @@ export function ClassSelector({
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
       >
-        <span>🏫 Lớp học</span>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <GraduationCap size={15} />
+          <span>Lớp học</span>
+        </span>
         {activeClass && (
           <span style={{ fontWeight: 600, color: 'var(--accent)' }}>: {activeClass.name}</span>
         )}
-        <span style={{ fontSize: '0.75rem', marginLeft: 4 }}>▼</span>
+        <ChevronDown size={14} style={{ color: 'var(--text-muted)', marginLeft: 4 }} />
       </button>
 
       {isOpen && (
@@ -79,14 +83,15 @@ export function ClassSelector({
               <button
                 type="button"
                 className="btn btn-primary btn-sm"
-                style={{ width: '100%' }}
+                style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsOpen(false);
                   setShowCreateModal(true);
                 }}
               >
-                + Tạo lớp học mới
+                <Plus size={14} />
+                <span>Tạo lớp học mới</span>
               </button>
             </div>
           )}

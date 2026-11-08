@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { X, Plus, FolderKanban, ArrowRight } from 'lucide-react';
 import type { Class, Workspace, Account } from '../../shared/types';
 import {
   listClassGroups,
@@ -115,10 +116,11 @@ export function ClassGroupsView({ cls, currentUser, onOpenGroupWorkspace }: Clas
                     <td style={{ textAlign: 'right' }}>
                       <button
                         className="btn btn-primary btn-sm"
-                        style={{ marginRight: 6 }}
+                        style={{ marginRight: 6, display: 'inline-flex', alignItems: 'center', gap: 4 }}
                         onClick={() => onOpenGroupWorkspace(g)}
                       >
-                        Vào Workspace nhóm ➜
+                        <span>Vào Workspace nhóm</span>
+                        <ArrowRight size={13} />
                       </button>
                       <button
                         className="btn btn-secondary btn-sm"
@@ -140,7 +142,7 @@ export function ClassGroupsView({ cls, currentUser, onOpenGroupWorkspace }: Clas
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <h2 className="modal-title">Tạo nhóm mới trong lớp</h2>
-              <button className="close-btn" onClick={() => setShowCreateModal(false)} aria-label="Đóng">✕</button>
+              <button className="close-btn" onClick={() => setShowCreateModal(false)} aria-label="Đóng"><X size={16} /></button>
             </div>
 
             <form onSubmit={handleCreateGroup}>

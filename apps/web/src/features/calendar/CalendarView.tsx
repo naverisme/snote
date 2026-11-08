@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { AlertTriangle, Calendar as CalendarIcon, Clock, Plus, CheckCircle2 } from 'lucide-react';
 import type { CalendarEventViewModel, CalendarViewMode } from './types';
 
 interface CalendarViewProps {
@@ -60,40 +61,84 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           <button
             type="button"
             onClick={() => setOffsetDays(prev => prev - (viewMode === 'day' ? 1 : viewMode === 'week' ? 7 : 30))}
-            style={{ padding: '5px 10px', fontSize: '12px', borderRadius: '6px', border: '1px solid #d0d7de', background: '#fff', cursor: 'pointer' }}
+            style={{
+              padding: '5px 10px',
+              fontSize: '12px',
+              borderRadius: 'var(--radius-sm, 6px)',
+              border: '1px solid var(--hairline)',
+              background: 'var(--surface-raised, #ffffff)',
+              color: 'var(--ink-body)',
+              cursor: 'pointer',
+            }}
           >
             ← Trước
           </button>
           <button
             type="button"
             onClick={() => setOffsetDays(0)}
-            style={{ padding: '5px 10px', fontSize: '12px', fontWeight: 600, borderRadius: '6px', border: '1px solid #d0d7de', background: '#fff', cursor: 'pointer' }}
+            style={{
+              padding: '5px 10px',
+              fontSize: '12px',
+              fontWeight: 600,
+              borderRadius: 'var(--radius-sm, 6px)',
+              border: '1px solid var(--hairline)',
+              background: 'var(--surface-raised, #ffffff)',
+              color: 'var(--ink-title)',
+              cursor: 'pointer',
+            }}
           >
             Hôm nay
           </button>
           <button
             type="button"
             onClick={() => setOffsetDays(prev => prev + (viewMode === 'day' ? 1 : viewMode === 'week' ? 7 : 30))}
-            style={{ padding: '5px 10px', fontSize: '12px', borderRadius: '6px', border: '1px solid #d0d7de', background: '#fff', cursor: 'pointer' }}
+            style={{
+              padding: '5px 10px',
+              fontSize: '12px',
+              borderRadius: 'var(--radius-sm, 6px)',
+              border: '1px solid var(--hairline)',
+              background: 'var(--surface-raised, #ffffff)',
+              color: 'var(--ink-body)',
+              cursor: 'pointer',
+            }}
           >
             Sau →
           </button>
-          <span style={{ fontSize: '14px', fontWeight: 600, color: '#24292f', marginLeft: '6px' }}>
-            {headerLabel}
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontSize: '14px',
+              fontWeight: 600,
+              color: 'var(--ink-title)',
+              marginLeft: '6px',
+            }}
+          >
+            <CalendarIcon size={16} style={{ color: 'var(--accent)' }} />
+            <span>{headerLabel}</span>
           </span>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {/* Timezone Selector (QA-10, CAL-01, CAL-07) */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <label htmlFor="calendar-tz-select" style={{ fontSize: '12px', color: '#57606a' }}>
+            <label htmlFor="calendar-tz-select" style={{ fontSize: '12px', color: 'var(--ink-muted)' }}>
               Múi giờ:
             </label>
             <select
               id="calendar-tz-select"
               value={timeZone}
               onChange={e => onTimeZoneChange(e.target.value)}
-              style={{ padding: '4px 8px', fontSize: '12px', borderRadius: '6px', border: '1px solid #d0d7de', background: '#fff', cursor: 'pointer' }}
+              style={{
+                padding: '4px 8px',
+                fontSize: '12px',
+                borderRadius: 'var(--radius-sm, 6px)',
+                border: '1px solid var(--hairline)',
+                background: 'var(--surface-raised, #ffffff)',
+                color: 'var(--ink-body)',
+                cursor: 'pointer',
+              }}
             >
               <option value="Asia/Ho_Chi_Minh">Hà Nội / HCM (UTC+7)</option>
               <option value="UTC">UTC (GMT+0)</option>
@@ -103,7 +148,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           </div>
 
           {/* View Mode Switcher */}
-          <div style={{ display: 'inline-flex', borderRadius: '6px', border: '1px solid #d0d7de', overflow: 'hidden' }}>
+          <div
+            style={{
+              display: 'inline-flex',
+              borderRadius: 'var(--radius-sm, 6px)',
+              border: '1px solid var(--hairline)',
+              overflow: 'hidden',
+            }}
+          >
             {(['day', 'week', 'month'] as CalendarViewMode[]).map(mode => (
               <button
                 key={mode}
@@ -113,10 +165,12 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                   padding: '4px 10px',
                   fontSize: '12px',
                   border: 'none',
-                  background: viewMode === mode ? '#0969da' : '#fff',
-                  color: viewMode === mode ? '#fff' : '#24292f',
+                  background: viewMode === mode ? 'var(--accent)' : 'var(--surface-raised, #ffffff)',
+                  color: viewMode === mode ? '#ffffff' : 'var(--ink-body)',
                   cursor: 'pointer',
-                  borderLeft: mode !== 'day' ? '1px solid #d0d7de' : 'none',
+                  borderLeft: mode !== 'day' ? '1px solid var(--hairline)' : 'none',
+                  fontWeight: viewMode === mode ? 600 : 400,
+                  transition: 'background var(--transition-fast, 0.16s ease)',
                 }}
               >
                 {mode === 'day' ? 'Ngày' : mode === 'week' ? 'Tuần' : 'Tháng'}
@@ -132,33 +186,73 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               padding: '5px 12px',
               fontSize: '12px',
               fontWeight: 600,
-              borderRadius: '6px',
-              border: '1px solid #1a7f37',
-              background: '#1f883d',
-              color: '#fff',
+              borderRadius: 'var(--radius-sm, 6px)',
+              border: '1px solid var(--accent)',
+              background: 'var(--accent)',
+              color: '#ffffff',
               cursor: 'pointer',
+              boxShadow: 'var(--shadow-raised)',
+              transition: 'background var(--transition-fast, 0.16s ease)',
             }}
           >
-            + Sự kiện mới
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <Plus size={14} />
+              <span>Sự kiện mới</span>
+            </span>
           </button>
         </div>
       </div>
 
       {/* Conflict Warning Banner (CAL-06) */}
       {hasConflict && (
-        <div style={{ padding: '8px 12px', background: '#fff8c5', border: '1px solid #d4a72c', borderRadius: '6px', fontSize: '12px', color: '#735c0f', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span>⚠️ <strong>Cảnh báo trùng lịch:</strong> Có các sự kiện trùng khung giờ trong lịch này. Hệ thống vẫn lưu đầy đủ nhưng bạn nên kiểm tra lại để tránh xung đột.</span>
+        <div
+          style={{
+            padding: '8px 12px',
+            background: 'rgba(245, 158, 11, 0.1)',
+            border: '1px solid rgba(245, 158, 11, 0.3)',
+            borderRadius: 'var(--radius-sm, 6px)',
+            fontSize: '12px',
+            color: '#b45309',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}
+        >
+          <AlertTriangle size={16} style={{ flexShrink: 0, color: 'var(--warning)' }} />
+          <span>
+            <strong>Cảnh báo trùng lịch:</strong> Có các sự kiện trùng khung giờ trong lịch này. Hệ thống vẫn lưu đầy đủ nhưng bạn nên kiểm tra lại để tránh xung đột.
+          </span>
         </div>
       )}
 
       {/* All-Day Events Section (QA-10 & EC-13: Civil Date anchored) */}
-      <div style={{ border: '1px solid #d0d7de', borderRadius: '6px', background: '#f6f8fa', padding: '10px' }}>
-        <div style={{ fontSize: '11px', fontWeight: 600, color: '#57606a', textTransform: 'uppercase', marginBottom: '8px' }}>
-          📅 Sự kiện cả ngày (Giữ nguyên ngày dân sự theo QA-10)
+      <div
+        style={{
+          border: '1px solid var(--hairline)',
+          borderRadius: 'var(--radius-md, 8px)',
+          background: 'var(--surface-ground, #f4f4f5)',
+          padding: '12px',
+        }}
+      >
+        <div
+          style={{
+            fontSize: '11px',
+            fontWeight: 600,
+            color: 'var(--ink-muted)',
+            textTransform: 'uppercase',
+            marginBottom: '8px',
+          }}
+        >
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <CalendarIcon size={13} />
+            <span>Sự kiện cả ngày (Giữ nguyên ngày dân sự theo QA-10)</span>
+          </span>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
           {events.filter(e => e.allDay).length === 0 ? (
-            <span style={{ fontSize: '12px', color: '#8c959f', fontStyle: 'italic' }}>Không có sự kiện cả ngày</span>
+            <span style={{ fontSize: '12px', color: 'var(--ink-muted)', fontStyle: 'italic' }}>
+              Không có sự kiện cả ngày
+            </span>
           ) : (
             events
               .filter(e => e.allDay)
@@ -168,10 +262,19 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                   onClick={() => onSelectEvent(event)}
                   style={{
                     padding: '4px 10px',
-                    borderRadius: '4px',
-                    background: event.status === 'cancelled' ? '#ffebe9' : '#ddf4ff',
-                    border: event.status === 'cancelled' ? '1px solid #ff8182' : '1px solid #54aeff',
-                    color: event.status === 'cancelled' ? '#cf222e' : '#0969da',
+                    borderRadius: 'var(--radius-sm, 6px)',
+                    background:
+                      event.status === 'cancelled'
+                        ? 'rgba(239, 68, 68, 0.08)'
+                        : 'rgba(37, 99, 235, 0.08)',
+                    border:
+                      event.status === 'cancelled'
+                        ? '1px solid rgba(239, 68, 68, 0.3)'
+                        : '1px solid rgba(37, 99, 235, 0.25)',
+                    color:
+                      event.status === 'cancelled'
+                        ? 'var(--danger)'
+                        : 'var(--accent)',
                     fontSize: '12px',
                     fontWeight: 500,
                     cursor: 'pointer',
@@ -181,11 +284,20 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                   }}
                 >
                   <span>{event.title}</span>
-                  <span style={{ fontSize: '10px', opacity: 0.8 }}>
+                  <span style={{ fontSize: '10px', opacity: 0.8, color: 'var(--ink-muted)' }}>
                     [{event.allDay?.startDate} → {event.allDay?.endDateExclusive}]
                   </span>
                   {event.status === 'cancelled' && (
-                    <span style={{ fontSize: '10px', background: '#cf222e', color: '#fff', padding: '1px 4px', borderRadius: '4px', fontWeight: 600 }}>
+                    <span
+                      style={{
+                        fontSize: '10px',
+                        background: 'var(--danger)',
+                        color: '#ffffff',
+                        padding: '1px 4px',
+                        borderRadius: '4px',
+                        fontWeight: 600,
+                      }}
+                    >
                       Đã hủy
                     </span>
                   )}
@@ -196,27 +308,76 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       </div>
 
       {/* Timed Events Grid */}
-      <div style={{ border: '1px solid #d0d7de', borderRadius: '6px', overflowX: 'auto', background: '#fff', flex: 1 }}>
+      <div
+        style={{
+          border: '1px solid var(--hairline)',
+          borderRadius: 'var(--radius-md, 8px)',
+          overflowX: 'auto',
+          background: 'var(--surface-raised, #ffffff)',
+          flex: 1,
+          boxShadow: 'var(--shadow-raised)',
+        }}
+      >
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '700px' }}>
           <thead>
-            <tr style={{ background: '#f6f8fa', borderBottom: '1px solid #d0d7de' }}>
+            <tr style={{ background: 'var(--surface-ground, #f4f4f5)', borderBottom: '1px solid var(--hairline)' }}>
               {visibleDays.map(day => (
                 <th
                   key={day.toISOString()}
                   style={{
                     padding: '10px',
                     textAlign: 'center',
-                    fontSize: '12px',
-                    borderLeft: '1px solid #e1e4e8',
-                    background: isToday(day) ? '#ddf4ff' : 'transparent',
-                    color: isToday(day) ? '#0969da' : '#57606a',
+                    borderLeft: '1px solid var(--hairline)',
+                    background: isToday(day) ? 'rgba(37, 99, 235, 0.04)' : 'transparent',
                   }}
                 >
-                  <div style={{ fontWeight: isToday(day) ? 700 : 500 }}>
+                  <div
+                    style={{
+                      fontSize: '11px',
+                      fontWeight: isToday(day) ? 700 : 500,
+                      color: isToday(day) ? 'var(--accent)' : 'var(--ink-muted)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.02em',
+                    }}
+                  >
                     {day.toLocaleDateString('vi-VN', { weekday: 'short' })}
                   </div>
-                  <div style={{ fontSize: '14px', fontWeight: isToday(day) ? 700 : 400 }}>
-                    {day.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}
+                  {/* Solid Disc cho ngày hiện tại (Stageshow Standard) */}
+                  <div style={{ display: 'flex', justifyContent: 'center', marginTop: '4px' }}>
+                    {isToday(day) ? (
+                      <span
+                        style={{
+                          width: '28px',
+                          height: '28px',
+                          borderRadius: '50%',
+                          background: 'var(--accent)',
+                          color: '#ffffff',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '13px',
+                          fontWeight: 700,
+                          boxShadow: '0 2px 4px rgba(37, 99, 235, 0.25)',
+                        }}
+                      >
+                        {day.toLocaleDateString('vi-VN', { day: '2-digit' })}
+                      </span>
+                    ) : (
+                      <span
+                        style={{
+                          width: '28px',
+                          height: '28px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '13px',
+                          fontWeight: 500,
+                          color: 'var(--ink-title)',
+                        }}
+                      >
+                        {day.toLocaleDateString('vi-VN', { day: '2-digit' })}
+                      </span>
+                    )}
                   </div>
                 </th>
               ))}
@@ -238,9 +399,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     key={dayStr}
                     style={{
                       padding: '8px',
-                      borderLeft: '1px solid #f0f2f5',
-                      borderBottom: '1px solid #f0f2f5',
-                      background: isToday(day) ? 'rgba(221, 244, 255, 0.2)' : 'transparent',
+                      borderLeft: '1px solid var(--hairline)',
+                      borderBottom: '1px solid var(--hairline)',
+                      background: isToday(day) ? 'rgba(37, 99, 235, 0.02)' : 'transparent',
                     }}
                   >
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -253,41 +414,88 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                             key={ev.id}
                             onClick={() => onSelectEvent(ev)}
                             style={{
-                              padding: '6px 8px',
-                              borderRadius: '6px',
-                              background: isCancelled ? '#f6f8fa' : ev.conflictWarning ? '#fff8c5' : '#e7f5ff',
-                              border: isCancelled
-                                ? '1px solid #d0d7de'
+                              padding: '8px 10px',
+                              borderRadius: 'var(--radius-sm, 6px)',
+                              background: isCancelled
+                                ? 'var(--surface-ground, #f4f4f5)'
                                 : ev.conflictWarning
-                                ? '1px solid #d4a72c'
+                                ? 'rgba(245, 158, 11, 0.1)'
+                                : 'rgba(37, 99, 235, 0.06)',
+                              border: isCancelled
+                                ? '1px solid var(--hairline)'
+                                : ev.conflictWarning
+                                ? '1px solid rgba(245, 158, 11, 0.4)'
                                 : isSelected
-                                ? '2px solid #0969da'
-                                : '1px solid #a5d8ff',
+                                ? '2px solid var(--accent)'
+                                : '1px solid rgba(37, 99, 235, 0.2)',
                               cursor: 'pointer',
                               display: 'flex',
                               flexDirection: 'column',
-                              gap: '2px',
+                              gap: '3px',
+                              transition: 'transform var(--transition-fast, 0.16s ease), box-shadow var(--transition-fast, 0.16s ease)',
                             }}
                           >
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '4px' }}>
-                              <span style={{ fontSize: '12px', fontWeight: 600, color: isCancelled ? '#57606a' : '#1971c2', textDecoration: isCancelled ? 'line-through' : 'none' }}>
+                              <span
+                                style={{
+                                  fontSize: '12px',
+                                  fontWeight: 600,
+                                  color: isCancelled ? 'var(--ink-muted)' : 'var(--ink-title)',
+                                  textDecoration: isCancelled ? 'line-through' : 'none',
+                                }}
+                              >
                                 {ev.title}
                               </span>
                               {isCancelled && (
-                                <span style={{ fontSize: '10px', background: '#ffebe9', color: '#cf222e', border: '1px solid #ff8182', padding: '1px 4px', borderRadius: '4px', fontWeight: 600 }}>
+                                <span
+                                  style={{
+                                    fontSize: '10px',
+                                    background: 'rgba(239, 68, 68, 0.1)',
+                                    color: 'var(--danger)',
+                                    border: '1px solid rgba(239, 68, 68, 0.3)',
+                                    padding: '1px 4px',
+                                    borderRadius: '4px',
+                                    fontWeight: 600,
+                                  }}
+                                >
                                   Đã hủy
                                 </span>
                               )}
                               {ev.conflictWarning && !isCancelled && (
-                                <span style={{ fontSize: '10px', background: '#d4a72c', color: '#fff', padding: '1px 4px', borderRadius: '4px', fontWeight: 600 }} title="Trùng lịch">
-                                  ⚠️ Trùng
+                                <span
+                                  style={{
+                                    fontSize: '10px',
+                                    background: 'var(--warning)',
+                                    color: '#ffffff',
+                                    padding: '1px 4px',
+                                    borderRadius: '4px',
+                                    fontWeight: 600,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '2px',
+                                  }}
+                                  title="Trùng lịch"
+                                >
+                                  <AlertTriangle size={10} />
+                                  <span>Trùng</span>
                                 </span>
                               )}
                             </div>
-                            <div style={{ fontSize: '10px', color: '#57606a' }}>
-                              {ev.timed?.startsAt.slice(11, 16)} - {ev.timed?.endsAt.slice(11, 16)} ({timeZone.split('/')[1] ?? timeZone})
+                            <div
+                              style={{
+                                fontSize: '10px',
+                                color: 'var(--ink-muted)',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '3px',
+                              }}
+                            >
+                              <Clock size={10} style={{ color: 'var(--ink-muted)' }} />
+                              <span>
+                                {ev.timed?.startsAt.slice(11, 16)} - {ev.timed?.endsAt.slice(11, 16)} ({timeZone.split('/')[1] ?? timeZone})
+                              </span>
                             </div>
-                            <div style={{ fontSize: '10px', color: '#8c959f' }}>
+                            <div style={{ fontSize: '10px', color: 'var(--ink-muted)' }}>
                               Phạm vi: {ev.scope.type === 'private' ? 'Riêng tư' : ev.scope.type === 'workspace' ? 'Workspace' : 'Lớp học'}
                             </div>
                           </div>

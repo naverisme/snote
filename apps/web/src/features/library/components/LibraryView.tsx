@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { BookOpen, Inbox, FileText, Trash2, Plus, Download, FolderOpen } from 'lucide-react';
 import { libraryApi } from '../api';
 import type { Folder, ItemDetail, Library, QuotaInfo } from '../types';
 import { CopyItemModal } from './CopyItemModal';
@@ -284,7 +285,8 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
       <header className="bg-white border-b border-gray-200 px-6 py-4 flex flex-wrap justify-between items-center gap-4">
         <div>
           <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-            <span>📚 Thư viện tài liệu</span>
+            <BookOpen size={20} className="text-blue-600" />
+            <span>Thư viện tài liệu</span>
             {isPersonalWorkspace && (
               <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded font-normal">
                 Workspace cá nhân
@@ -304,7 +306,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
             onClick={() => setIsQuickSaveOpen(true)}
             title="Lưu nhanh vào Hộp thu cá nhân"
           >
-            <span>📥</span>
+            <Download size={14} />
             <span>Lưu nhanh</span>
           </button>
 
@@ -314,7 +316,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm flex items-center gap-1.5 transition-colors"
             onClick={() => setIsCreateOpen(true)}
           >
-            <span>+</span>
+            <Plus size={14} />
             <span>Thêm tài liệu</span>
           </button>
         </div>
@@ -337,7 +339,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
             }`}
             onClick={() => setCurrentTab('documents')}
           >
-            <span>📄</span>
+            <FileText size={15} />
             <span>Tài liệu</span>
             <span className="text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full">
               {items.length}
@@ -357,7 +359,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
                 setSelectedFolderId(null);
               }}
             >
-              <span>📥</span>
+              <Inbox size={15} />
               <span>Hộp thu (Inbox)</span>
             </button>
           )}
@@ -371,7 +373,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
             }`}
             onClick={() => setCurrentTab('trash')}
           >
-            <span>🗑️</span>
+            <Trash2 size={15} />
             <span>Thùng rác</span>
             {trashItems.length > 0 && (
               <span className="text-xs bg-red-100 text-red-700 px-1.5 py-0.5 rounded-full font-bold">
@@ -419,17 +421,18 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
                 </div>
               ) : filteredItems.length === 0 ? (
                 <div className="h-64 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-xl bg-white p-6 text-center text-gray-500">
-                  <span className="text-4xl mb-2">📂</span>
+                  <FolderOpen size={44} className="text-gray-300 mb-2 stroke-1" />
                   <p className="font-semibold text-gray-700">Chưa có tài liệu nào trong thư mục này</p>
                   <p className="text-xs text-gray-400 mt-1 max-w-sm">
                     Nhấn vào nút &quot;Thêm tài liệu&quot; ở góc trên để tạo văn bản, lưu đường dẫn hoặc tải lên tệp đính kèm.
                   </p>
                   <button
                     type="button"
-                    className="mt-4 px-3 py-1.5 bg-blue-600 text-white text-xs rounded-lg font-medium shadow-sm hover:bg-blue-700"
+                    className="mt-4 px-3 py-1.5 bg-blue-600 text-white text-xs rounded-lg font-medium shadow-sm hover:bg-blue-700 inline-flex items-center gap-1"
                     onClick={() => setIsCreateOpen(true)}
                   >
-                    + Tạo mục đầu tiên
+                    <Plus size={14} />
+                    <span>Tạo mục đầu tiên</span>
                   </button>
                 </div>
               ) : (

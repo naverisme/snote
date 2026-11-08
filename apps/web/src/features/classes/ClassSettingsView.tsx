@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { CheckCircle2, Archive } from 'lucide-react';
 import type { Class, Policy, Account } from '../../shared/types';
 import {
   getClassPolicy,
@@ -114,8 +115,20 @@ export function ClassSettingsView({ cls, currentUser, onClassUpdated }: ClassSet
       <div className="view-header">
         <div>
           <h1 className="view-title">Cài đặt lớp học: {cls.name}</h1>
-          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-            Trạng thái: {cls.status === 'active' ? '🟢 Đang hoạt động' : '🟡 Đã lưu trữ'} (Phiên bản {cls.version})
+          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <span>Trạng thái:</span>
+            {cls.status === 'active' ? (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#16a34a', fontWeight: 500 }}>
+                <CheckCircle2 size={13} />
+                <span>Đang hoạt động</span>
+              </span>
+            ) : (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#d97706', fontWeight: 500 }}>
+                <Archive size={13} />
+                <span>Đã lưu trữ</span>
+              </span>
+            )}
+            <span>(Phiên bản {cls.version})</span>
           </span>
         </div>
 

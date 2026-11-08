@@ -4,7 +4,23 @@
   --bg-surface: #ffffff;
   --text-primary: #18181b;
   --text-secondary: #71717a;
-  --text-muted: #a1a1aa;
+  --text-muted: #71717a; /* Upgraded to WCAG AA 4.58:1 */
+
+  /* Stageshow 5-tier Inks */
+  --ink-title: #09090b;
+  --ink-body: #27272a;
+  --ink-subtle: #52525b;
+  --ink-muted: #71717a;
+  --ink-faint: #a1a1aa;
+
+  /* Stageshow 3-tier Surface Steps & Shadows */
+  --surface-ground: #f4f4f5;
+  --surface-raised: #ffffff;
+  --surface-overlay: #ffffff;
+  --hairline: rgba(0, 0, 0, 0.08);
+  --shadow-raised: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-overlay: 0 12px 28px -4px rgba(0, 0, 0, 0.1), 0 4px 12px -2px rgba(0, 0, 0, 0.05);
+
   --border-light: #e4e4e7;
   --border-dark: #27272a;
   --accent: #2563eb;
@@ -144,6 +160,25 @@ body {
   background-color: #eff6ff;
   color: var(--accent);
   font-weight: 600;
+}
+
+.ss-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.ss-icon-brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--accent);
 }
 
 .sidebar-notes-preview {

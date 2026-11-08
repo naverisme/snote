@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { FileText, Folder, Link, Clock, RotateCcw, Trash2 } from 'lucide-react';
 import type { ItemDetail } from '../types';
 
 export interface TrashViewProps {
@@ -62,9 +63,10 @@ export const TrashView: React.FC<TrashViewProps> = ({ trashItems, onRestore, loa
       )}
 
       {trashItems.length === 0 ? (
-        <div className="p-12 text-center text-gray-400 border border-dashed rounded-lg bg-gray-50">
-          <p className="text-base font-medium">Thùng rác trống</p>
-          <p className="text-xs mt-1">Không có tài liệu nào bị xóa trong 30 ngày qua.</p>
+        <div className="p-12 text-center text-gray-400 border border-dashed rounded-lg bg-gray-50 flex flex-col items-center justify-center">
+          <Trash2 size={36} className="text-gray-300 mb-2 stroke-1" aria-hidden="true" />
+          <p className="text-base font-medium text-gray-700">Thùng rác trống</p>
+          <p className="text-xs text-gray-400 mt-1">Không có tài liệu nào bị xóa trong 30 ngày qua.</p>
         </div>
       ) : (
         <div className="overflow-x-auto">
@@ -83,14 +85,32 @@ export const TrashView: React.FC<TrashViewProps> = ({ trashItems, onRestore, loa
                 return (
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="p-3 font-medium">
-                      {item.type === 'file' ? '📁 Tệp' : item.type === 'link' ? '🔗 Đường dẫn' : '📝 Văn bản'}
+                      <span className="inline-flex items-center gap-1.5">
+                        {item.type === 'file' ? (
+                          <>
+                            <Folder size={14} className="text-purple-600" />
+                            <span>Tệp</span>
+                          </>
+                        ) : item.type === 'link' ? (
+                          <>
+                            <Link size={14} className="text-emerald-600" />
+                            <span>Đường dẫn</span>
+                          </>
+                        ) : (
+                          <>
+                            <FileText size={14} className="text-blue-600" />
+                            <span>Văn bản</span>
+                          </>
+                        )}
+                      </span>
                     </td>
                     <td className="p-3 font-semibold text-gray-900">
                       {item.title || item.id}
                     </td>
                     <td className="p-3">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-amber-100 text-amber-800">
-                        ⏳ Còn {daysRemaining} ngày
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-amber-100 text-amber-800">
+                        <Clock size={12} />
+                        <span>Còn {daysRemaining} ngày</span>
                       </span>
                     </td>
                     <td className="p-3 text-right">
@@ -100,7 +120,14 @@ export const TrashView: React.FC<TrashViewProps> = ({ trashItems, onRestore, loa
                         disabled={restoringId === item.id}
                         onClick={() => handleRestoreClick(item)}
                       >
-                        {restoringId === item.id ? 'Đang khôi phục...' : 'Khôi phục ↺'}
+                        {restoringId === item.id ? (
+                          'Đang khôi phục...'
+                        ) : (
+                          <span className="inline-flex items-center gap-1">
+                            <RotateCcw size={12} />
+                            <span>Khôi phục</span>
+                          </span>
+                        )}
                       </button>
                     </td>
                   </tr>

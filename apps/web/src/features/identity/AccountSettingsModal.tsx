@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { X, LogOut } from 'lucide-react';
 import { changeUsages, logout } from '../../shared/api';
 import type { Account } from '../../shared/types';
 
@@ -59,7 +60,7 @@ export function AccountSettingsModal({
       <div className="modal-content" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h2 className="modal-title">Cài đặt tài khoản</h2>
-          <button className="close-btn" onClick={onClose} aria-label="Đóng">✕</button>
+          <button className="close-btn" onClick={onClose} aria-label="Đóng"><X size={16} /></button>
         </div>
 
         {error && <div style={{ color: 'var(--danger)', marginBottom: 12, fontSize: '0.875rem' }}>{error}</div>}
@@ -109,8 +110,9 @@ export function AccountSettingsModal({
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 24 }}>
-          <button type="button" className="btn btn-danger" onClick={handleLogout}>
-            Đăng xuất
+          <button type="button" className="btn btn-danger" onClick={handleLogout} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <LogOut size={14} />
+            <span>Đăng xuất</span>
           </button>
           <button type="button" className="btn btn-secondary" onClick={onClose}>
             Đóng

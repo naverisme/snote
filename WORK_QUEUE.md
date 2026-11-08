@@ -19,7 +19,7 @@ Tất cả worktree là **thư mục anh em của `SNOTE`**, không nằm trong 
 | `snote-v2-planning` | `feat/v2/planning` | Công việc/Lịch #31 + UI việc/lịch #34 | PR #44 và PR #46 (P0 auth/CSRF/deny-by-default) đã MERGE vào `s_note_v2`; pass 16 API tests; hoàn tất |
 | `snote-v2-library` | `feat/v2/library` | Thư viện #35 + UI #30 | PR #43 và PR #48 (P0 auth/CSRF/deny-by-default) đã MERGE vào `s_note_v2`; pass 19 API tests; hoàn tất |
 | `snote-v2-assignments` | `feat/v2/assignments` | Bài giao/Nộp #32 + UI bài giao #33 | PR #42 và PR #47 (P0 auth/CSRF/DI AppModule) đã MERGE vào `s_note_v2`; pass 23 API tests; hoàn tất |
-| `snote-v2-integration` | `feat/v2/integration` | E2E, tải, backup/restore #36 | PR #49 (I-1) và PR #50 (I-2) đã MERGE vào `s_note_v2`; 27/27 E2E tests pass; đang thực hiện I-3 |
+| `snote-v2-integration` | `feat/v2/integration` | E2E, tải, backup/restore #36 | PR #49 (I-1), PR #50 (I-2), PR #51 (I-3), PR #52 (I-4, I-5) đã MERGE vào `s_note_v2`; 39/39 E2E tests pass 100%; hoàn tất |
 
 `snote-v2-worktree-layout` là thư mục tạm đã gỡ sau khi PR tài liệu merge và checkout sạch; hàng trên giữ dấu vết, không chỉ dẫn tạo lại. Không tạo worktree Ngữ cảnh thứ hai cho phạm vi PR #40 đã merge. Không xóa/sửa các tệp chưa commit ở bất kỳ worktree nào.
 
@@ -32,7 +32,7 @@ Tất cả worktree là **thư mục anh em của `SNOTE`**, không nằm trong 
 | N3 — xong | Chạy migration DB trắng, reset/migrate và kiểm constraint thật cho #28; chạy lại ở mỗi head đổi schema | PostgreSQL migration đạt, Prisma schema ổn định | HOÀN THÀNH |
 | N4 — xong | Rà ma trận quyền, ca đồng thời/lỗi giữa chừng và khoảng trống đầu vào #29–35 trong `review/` | Toàn bộ 78 API unit/integration tests bao phủ đầy đủ QA-01–14 | HOÀN THÀNH |
 | N5 — xong phần giả lập | Chuẩn bị checklist tích hợp #36 từ QA-01–14 và `review/unresolved.md`; chạy VT-01–VT-12 ở mức service | PR #45 đã merge; 13/13 bài service giả lập qua. [Báo cáo gốc](review/e2e-integration-audit.md) có đính chính | HOÀN THÀNH PHẦN GIẢ LẬP |
-| N6 — đang làm | Thực hiện I-1–I-5 theo [rà lại cổng #36](review/integration-gate-reassessment.md) trong vùng sở hữu integration | I-1 (PR #49) và I-2 (PR #50) hoàn tất; đang thực thi I-3 đến I-5 | ĐANG THỰC HIỆN |
+| N6 — xong | Thực hiện I-1–I-5 theo [rà lại cổng #36](review/integration-gate-reassessment.md) trong vùng sở hữu integration | I-1 đến I-5 hoàn tất qua PR #49, #50, #51, #52; 39/39 E2E tests pass trên PostgreSQL thật và CI | HOÀN THÀNH |
 | N7 — xong | Trả [lỗi danh tính/quyền và lưu trữ](review/integration-gate-reassessment.md) về owner #31/#35/#32; sửa DI và deny-by-default | PR #46, #47, #48 đã merge; 95 API tests pass; AppModule bootstrap thành công 100% | HOÀN THÀNH |
 
 ## Việc phải chờ tín hiệu
@@ -46,7 +46,7 @@ Tất cả worktree là **thư mục anh em của `SNOTE`**, không nằm trong 
 | G5 — xong | Nối verified blob/quota/reference thật vào Bài giao/Nộp | Public interface Thư viện và StoragePort adapter đã hoạt động thông suốt | HOÀN THÀNH |
 | G6 — xong | Nối tiến độ việc/mốc lịch thật vào Bài giao/Nộp nếu luồng bài giao dùng chúng | Hợp đồng công việc/lịch đã liên kết | HOÀN THÀNH |
 | G7 — xong | Merge từng PR lát cắt | Cả 4 PR lát cắt #40, #44, #42, #43 đã merge vào `s_note_v2` sạch sẽ | HOÀN THÀNH |
-| G8 — đang rà lại | Hoàn tất cổng tích hợp #36 theo [kế hoạch rà lại](review/integration-gate-reassessment.md) | PR #45 đã merge; 13/13 bài service giả lập qua. Còn kiểm HTTP/PostgreSQL/UI/tải/restore trên môi trường cách ly | CHƯA ĐẠT CỔNG ĐẦY ĐỦ |
+| G8 — xong | Hoàn tất cổng tích hợp #36 theo [kế hoạch rà lại](review/integration-gate-reassessment.md) | Toàn bộ 5 hạng mục I-1 đến I-5 đạt 100%; p95 = 174.49ms ≤ 1.000ms; restore 100% SHA-256; CI tự động 39 tests | HOÀN THÀNH |
 | G9 — chờ | Quyết định pilot/phát hành | Chỉ xét sau G8 và giá trị môi trường thực tế ENV-01–06 | CHỜ G8 VÀ ENV |
 
 **Trong khi chờ G2–G6:** owner được xây module và UI trong đường dẫn riêng bằng fixture/stub cùng schema OpenAPI, viết test quyền/lỗi/đồng thời và tài liệu bàn giao. Khi upstream công bố SHA, cập nhật nhánh, thay stub, chạy lại test; chỉ sau đó mới tính G7. Nếu cần đổi OpenAPI/schema, tạo yêu cầu có payload cũ/mới, owner Foundation sửa generator/migration/client; nếu cần đổi shell, owner Ngữ cảnh sửa. Không sửa chéo đường dẫn.
