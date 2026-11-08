@@ -398,3 +398,39 @@
   - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 10:57:36)
   - [x] **RESOLVED by Implementer** (Commit SHA: 850bd9d, Da dong bo s_note_v2@e454b0c va chay thanh cong 100% Full Regression Test Suite (39/39 tests PASS, p95=202ms, QA-14 khop 100% SHA-256, WEB-01-09, npm run build pass))
   - [x] **VERIFIED by Requester** (Pass Test: Pass 100% Full Regression Test Suite (39/39 E2E, p95=202ms, QA-14 SHA-256, WEB-01-09) tren toan bo code giao dien Stageshow moi merge, verified at 2026-11-08 11:04:10)
+
+
+### [TASK-20261108-163615] Che tac UI Bai giao & Nop bai, Bang tien do giao vien, Skeleton Zero-CLS va Empty State Showcase theo skill-driven-ui-guide.md: (1) Skeleton Loader giu nguyen dung pitch va hinh hoc cua the bai tap that (loai bo hoan toan giat layout CLS=0); (2) Bieu mau tao bai CUXD-01/02 (tieu de + nhom nhan bat buoc, han tuy chon, 2 dieu khien doc lap sau han Ke thua lop/Cho phep/Khoa); (3) Bang theo doi tien do giao vien CUXD-03 phan tach ro 3 chi so (viec xong/tong viec, checklist %, cap nhat van ban); (4) Nop bai & phien ban CUXD-04/05/06 co bien nhan phien ban, ma thao tac chong gui trung, xu ly xung dot khi bai bi sua trong luc gui; (5) Empty State Miniature Showcase demo card bai tap va nut CTA; (6) 5 tang muc, inset >= 12px, bo goc long nhau, khong dung emoji; (7) Chay impeccable.exe detect apps/web/src va build web truoc khi resolve.
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/ui-assignments (2026-11-08 16:36:15)
+- **Tep dinh kem:** docs/ux/skill-driven-ui-guide.md
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 16:36:24)
+  - [x] **RESOLVED by Implementer** (Commit SHA: e451ba823458548cf9e974433de468d130d97879, Pass 9/9 node tests, build web dist success, impeccable detect clean)
+  - [x] **VERIFIED by Requester** (Pass Test: Pass 9/9 unit tests (CLS-01/02, CUXD-01-04, STR-16, ASG-16, STAGESHOW emoji-free), impeccable clean, build web pass 100%, verified at 2026-11-08 16:51:24)
+
+
+### [TASK-20261108-165131] Mo Pull Request tu feat/v2/ui-assignments vao s_note_v2 kem day du bang chung test (9/9 unit tests pass, impeccable detect clean, build web thanh cong).
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/ui-assignments (2026-11-08 16:51:31)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 16:52:00)
+  - [x] **RESOLVED by Implementer** (Commit SHA: e451ba823458548cf9e974433de468d130d97879, PR #60 da mo thanh cong vao s_note_v2 kem day du bang chung test va impeccable detect clean)
+  - [x] **VERIFIED by Requester** (Pass Test: Da mo PR #60 tren GitHub (ready for review), mo ta chi tiet, bang chung 9/9 unit tests pass, impeccable detect clean, verified at 2026-11-08 16:54:35)
+
+
+### [TASK-20261108-163608] Che tac UI Thu vien 3 cot CUXB-01, Upload tien do that va Empty State Miniature Showcase theo skill-driven-ui-guide.md: (1) Loai bo Quota 1 GiB gia dinh khi loi, hien trang thai Chua tai duoc dung luong va nut Thu lai; (2) Bo cuc 3 cot CUXB-01 (Cay thu muc, Danh sach muc, Chi tiet muc), ho tro tao/doi ten/xoa thu muc rong CUXB-05/06; (3) Trinh soan thao Markdown bullet/so tu dong CUXB-07, sua tep co 2 nut Ghi de muc nay / Tao ban sao CUXB-08, tien do upload theo bytes that co dau tich xanh hoan tat CUXB-09; (4) Empty State theo Recipe 2 Miniature Showcase (demo card thu muc/docs mau va placeholder mo, nut CTA + Tai tai lieu dau tien); (5) 5 tang muc, inset >= 12px, bo goc long nhau, khong dung emoji; (6) Chay impeccable.exe detect apps/web/src va build web truoc khi resolve.
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/ui-library (2026-11-08 16:36:08)
+- **Tep dinh kem:** docs/ux/skill-driven-ui-guide.md
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 16:36:27)
+  - [x] **RESOLVED by Implementer** (Commit SHA: ecda3fd82eee0e568014a06a7bd4d3963d7b2a4f, Pass 12/12 unit tests, impeccable detect scan 0 findings, web build pass)
+  - [x] **VERIFIED by Requester** (Pass Test: Pass 12/12 unit tests (CUXB-01/06/07/09, LIB-07/10/11/14/15, formatBytes), impeccable detect clean (64 files), web build pass 100%, verified at 2026-11-08 16:56:55)
+
+
+### [TASK-20261108-163534] Che tac UI Cong viec (Tasks) va Lich trinh (Calendar) chuan Stageshow va skill-driven-ui-guide.md: (1) Xoa triet de fixture gia khi API loi 403/404/500, hien loi va nut Thu lai that, dung workspace ID that; (2) The Task theo Recipe 1 Stageshow: inset >= 12px, hairline 1px, 5 tang muc, micro-interaction checkbox nay nhe scale 1.15x->1.0x (120ms), ngan sach chu <= 7 cum tu, thay emoji bang lucide-react; (3) Empty State Tasks va Calendar theo Recipe 2 Miniature Showcase voi demo card thu nho va nut CTA; (4) Chuyen doi Gantt/Danh sach 140-220ms khong giat layout (CLS=0), Lich Tuan tren desktop / Ngay tren mobile CUXA-01/04; (5) Chay impeccable.exe detect apps/web/src va build web truoc khi resolve.
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/ui-planning (2026-11-08 16:35:34)
+- **Tep dinh kem:** docs/ux/skill-driven-ui-guide.md
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 16:35:43)
+  - [x] **RESOLVED by Implementer** (Commit SHA: 7993016af50cb96d30806bfaa37d7815aeedbc2f, Che tac UI Tasks va Calendar theo Recipe 1 va Recipe 2 Stageshow: xoa triet de fixture gia khi API loi, hien nut Thu lai that; the Task voi inset 12px, hairline 1px, 5 tang muc, micro-interaction checkbox pop 120ms, ngan sach chu <= 7 cum tu, thay 100% emoji bang lucide-react; Recipe 2 Miniature Showcase empty state cho ca Tasks va Calendar; chuyen doi Gantt/Danh sach 160ms khong giat layout (CLS=0) kem skeleton loader; lich Tuan desktop / Ngay mobile theo CUXA-01/04; impeccable detect 0 anti-patterns va build web dat 100%)
+  - [x] **VERIFIED by Requester** (Pass Test: Pass 11/11 unit tests (QA-10/13, EC-13/17/24, CAL-06, TASK-11/17, CUXA-01/04, Stageshow Recipe 1 <=7 words, 0 fixture fallback), impeccable detect clean (59 files), web build pass 100%, verified at 2026-11-08 16:58:04)
