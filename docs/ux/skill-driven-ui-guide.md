@@ -240,3 +240,4 @@ Trước khi ký nghiệm thu qua `winwork verify`, Bộ chỉ huy sẽ đánh g
 2. **Hình học & Lề thẻ:** Các khối chữ có giữ đúng lề $\ge 12\text{px}$ không? Bo góc lồng nhau có mượt mà không?
 3. **Chuyển động & Không giật layout (CLS = 0):** Dữ liệu khi tải có giữ nguyên pitch dòng bằng skeleton không? Có tôn trọng `prefers-reduced-motion` không?
 4. **Không lỗi Anti-pattern:** Đạt kết quả quét sạch từ công cụ detector `impeccable.exe detect`.
+
