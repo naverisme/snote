@@ -1,5 +1,5 @@
 import React from 'react';
-import { GanttChart, List, Plus, Search } from 'lucide-react';
+import { GanttChart, List, Plus } from 'lucide-react';
 import type { TaskFilter, TaskSortMode, TaskViewMode } from './types';
 
 interface TaskFiltersProps {
@@ -28,9 +28,25 @@ export const TaskFilters: React.FC<TaskFiltersProps> = ({
   onCreateTaskClick,
 }) => {
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center', marginBottom: '16px' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '12px',
+        alignItems: 'center',
+        marginBottom: '16px',
+      }}
+    >
       {/* View Switcher (UXR-06, VIEW-01/02) */}
-      <div style={{ display: 'inline-flex', borderRadius: '6px', border: '1px solid #d0d7de', overflow: 'hidden' }}>
+      <div
+        style={{
+          display: 'inline-flex',
+          borderRadius: 'var(--radius-sm, 6px)',
+          border: '1px solid var(--hairline)',
+          overflow: 'hidden',
+          background: 'var(--surface-ground, #f4f4f5)',
+        }}
+      >
         <button
           type="button"
           onClick={() => onViewModeChange('gantt')}
@@ -39,12 +55,17 @@ export const TaskFilters: React.FC<TaskFiltersProps> = ({
             fontSize: '13px',
             fontWeight: 600,
             border: 'none',
-            background: viewMode === 'gantt' ? '#0969da' : '#f6f8fa',
-            color: viewMode === 'gantt' ? '#ffffff' : '#24292f',
+            background:
+              viewMode === 'gantt'
+                ? 'var(--accent)'
+                : 'var(--surface-ground, #f4f4f5)',
+            color:
+              viewMode === 'gantt' ? '#ffffff' : 'var(--ink-body)',
             cursor: 'pointer',
             display: 'inline-flex',
             alignItems: 'center',
             gap: 6,
+            transition: 'background var(--transition-fast, 0.16s ease)',
           }}
           aria-pressed={viewMode === 'gantt'}
         >
@@ -59,13 +80,18 @@ export const TaskFilters: React.FC<TaskFiltersProps> = ({
             fontSize: '13px',
             fontWeight: 600,
             border: 'none',
-            borderLeft: '1px solid #d0d7de',
-            background: viewMode === 'list' ? '#0969da' : '#f6f8fa',
-            color: viewMode === 'list' ? '#ffffff' : '#24292f',
+            borderLeft: '1px solid var(--hairline)',
+            background:
+              viewMode === 'list'
+                ? 'var(--accent)'
+                : 'var(--surface-ground, #f4f4f5)',
+            color:
+              viewMode === 'list' ? '#ffffff' : 'var(--ink-body)',
             cursor: 'pointer',
             display: 'inline-flex',
             alignItems: 'center',
             gap: 6,
+            transition: 'background var(--transition-fast, 0.16s ease)',
           }}
           aria-pressed={viewMode === 'list'}
         >
@@ -90,14 +116,24 @@ export const TaskFilters: React.FC<TaskFiltersProps> = ({
             type="button"
             onClick={() => onFilterChange(f.id)}
             style={{
-              padding: '5px 10px',
+              padding: '5px 12px',
               fontSize: '12px',
               borderRadius: '20px',
-              border: activeFilter === f.id ? '1px solid #0969da' : '1px solid #d0d7de',
-              background: activeFilter === f.id ? '#ddf4ff' : '#ffffff',
-              color: activeFilter === f.id ? '#0969da' : '#57606a',
+              border:
+                activeFilter === f.id
+                  ? '1px solid var(--accent)'
+                  : '1px solid var(--hairline)',
+              background:
+                activeFilter === f.id
+                  ? 'rgba(37, 99, 235, 0.08)'
+                  : 'var(--surface-raised, #ffffff)',
+              color:
+                activeFilter === f.id
+                  ? 'var(--accent)'
+                  : 'var(--ink-subtle)',
               cursor: 'pointer',
               fontWeight: activeFilter === f.id ? 600 : 400,
+              transition: 'all var(--transition-fast, 0.16s ease)',
             }}
           >
             {f.label}
@@ -107,7 +143,10 @@ export const TaskFilters: React.FC<TaskFiltersProps> = ({
 
       {/* Sort Selector (UXR-09, TASK-11) */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-        <label htmlFor="task-sort-select" style={{ fontSize: '12px', color: '#57606a' }}>
+        <label
+          htmlFor="task-sort-select"
+          style={{ fontSize: '12px', color: 'var(--ink-muted)' }}
+        >
           Sắp xếp:
         </label>
         <select
@@ -117,10 +156,10 @@ export const TaskFilters: React.FC<TaskFiltersProps> = ({
           style={{
             padding: '5px 8px',
             fontSize: '12px',
-            borderRadius: '6px',
-            border: '1px solid #d0d7de',
-            background: '#ffffff',
-            color: '#24292f',
+            borderRadius: 'var(--radius-sm, 6px)',
+            border: '1px solid var(--hairline)',
+            background: 'var(--surface-raised, #ffffff)',
+            color: 'var(--ink-body)',
             cursor: 'pointer',
           }}
         >
@@ -137,10 +176,12 @@ export const TaskFilters: React.FC<TaskFiltersProps> = ({
         value={searchQuery}
         onChange={e => onSearchChange(e.target.value)}
         style={{
-          padding: '5px 10px',
+          padding: '6px 12px',
           fontSize: '12px',
-          borderRadius: '6px',
-          border: '1px solid #d0d7de',
+          borderRadius: 'var(--radius-sm, 6px)',
+          border: '1px solid var(--hairline)',
+          background: 'var(--surface-raised, #ffffff)',
+          color: 'var(--ink-title)',
           minWidth: '180px',
         }}
         aria-label="Tìm kiếm công việc"
@@ -155,14 +196,16 @@ export const TaskFilters: React.FC<TaskFiltersProps> = ({
             padding: '6px 14px',
             fontSize: '13px',
             fontWeight: 600,
-            borderRadius: '6px',
-            border: '1px solid #1a7f37',
-            background: '#1f883d',
+            borderRadius: 'var(--radius-sm, 6px)',
+            border: '1px solid var(--accent)',
+            background: 'var(--accent)',
             color: '#ffffff',
             cursor: 'pointer',
             display: 'inline-flex',
             alignItems: 'center',
             gap: 6,
+            boxShadow: 'var(--shadow-raised)',
+            transition: 'background var(--transition-fast, 0.16s ease)',
           }}
         >
           <Plus size={14} />
