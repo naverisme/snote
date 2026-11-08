@@ -54,7 +54,7 @@ eview/inbox/ hoặc WORK_QUEUE.md còn task tiếp theo trong phân vùng sở h
        - Tái chế tức thì (winwork recycle <nhánh_cũ> <nhánh_mới> [-Agent <agent>] [-DeleteBranch]): Tự động gỡ worktree cũ, tạo/liên kết worktree mới từ s_note_v2, đồng bộ AGENTS.md và tái kích hoạt ngay trên chính Pane cũ mà KHÔNG CẦN khởi động lại WezTerm hay làm gián đoạn các nhánh khác.
        - Tiếp quản ghế chờ (winwork recycle standby <nhánh_mới> hoặc winwork claim <nhánh_mới>): Tiếp quản ngay một Pane đang ở trạng thái [STANDBY] để triển khai feature mới vào một "Worker Slot" trống.
      * Giao thức luân chuyển Agent & Cầu dao đóng băng (Failover Chain & Circuit Breaker):
-       - Khi một Agent gặp sự cố hạn ngạch (Quota Exceeded / Rate Limit), chạy `winwork failover <tên_nhánh>` (hoặc đổi chủ động bằng `winwork switch <tên_nhánh> <agent_mới>`) để chuyển giao sang Agent kế tiếp trong chuỗi luân chuyển (mặc định: `agy -> codex`).
+       - Khi một Agent gặp sự cố hạn ngạch (Quota Exceeded / Rate Limit), chạy `winwork failover <tên_nhánh>` (hoặc đổi chủ động bằng `winwork switch <tên_nhánh> <agent_mới>`) để chuyển giao sang Agent kế tiếp trong chuỗi luân chuyển (mặc định: `agy -> codex --yolo` với toàn quyền tự hành, không hỏi proceed).
        - Agent mới tự động nhận prompt tiếp quản: đọc lại `git status`, `git log -1` và `review/inbox/` để hoàn thiện tiếp phần việc dở dang.
        - Khi toàn bộ Agent trong danh sách đều đã hết Quota, hệ thống lập tức tự động kích hoạt Cầu dao đóng băng (`winwork freeze`) bảo vệ toàn bộ tiến trình.
        - Có thể dùng `winwork check-quota` (hoặc `winwork monitor`) để quét tự động toàn bộ cửa sổ terminal và kích hoạt failover tự động.
