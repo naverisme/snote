@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileText, Folder, Link, Clock, RotateCcw } from 'lucide-react';
+import { FileText, Folder, Link, Clock, RotateCcw, Trash2 } from 'lucide-react';
 import type { ItemDetail } from '../types';
 
 export interface TrashViewProps {
@@ -63,9 +63,10 @@ export const TrashView: React.FC<TrashViewProps> = ({ trashItems, onRestore, loa
       )}
 
       {trashItems.length === 0 ? (
-        <div className="p-12 text-center text-gray-400 border border-dashed rounded-lg bg-gray-50">
-          <p className="text-base font-medium">Thùng rác trống</p>
-          <p className="text-xs mt-1">Không có tài liệu nào bị xóa trong 30 ngày qua.</p>
+        <div className="p-12 text-center text-gray-400 border border-dashed rounded-lg bg-gray-50 flex flex-col items-center justify-center">
+          <Trash2 size={36} className="text-gray-300 mb-2 stroke-1" aria-hidden="true" />
+          <p className="text-base font-medium text-gray-700">Thùng rác trống</p>
+          <p className="text-xs text-gray-400 mt-1">Không có tài liệu nào bị xóa trong 30 ngày qua.</p>
         </div>
       ) : (
         <div className="overflow-x-auto">

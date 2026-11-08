@@ -57,7 +57,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
 
   return (
     <article
-      className="item-card bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow p-4 flex flex-col justify-between gap-3"
+      className="item-card bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow p-3 flex flex-col justify-between gap-3"
       role="listitem"
       aria-label={`Mục thư viện: ${item.title || item.type}`}
     >
