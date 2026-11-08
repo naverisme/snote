@@ -278,3 +278,42 @@
   - [ ] **ACKNOWLEDGED by Worker** (Bat dau luc: _______)
   - [x] **RESOLVED by Implementer** (Commit SHA: 4ed3c85, Merged via PR #46)
   - [x] **VERIFIED by Requester** (Pass Test: Resolved in s_note_v2@b15cca0, verified at 2026-11-08 08:55:06)
+
+
+### [TASK-20261108-050718] N6 #36: Dong bo s_note_v2@0e64d01, them HTTP smoke tren PostgreSQL CI de bat loi anonymous 401, cookie/CSRF/header gia cho Tasks/Calendar/Library/Assignments; tiep tuc I-1 den I-5, ghi bang chung dung SHA. Khong sua module owner khac hay goi pilot ready.
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/integration (2026-11-08 05:07:18)
+- **Tep dinh kem:** review/integration-gate-reassessment.md
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 08:39:09)
+  - [x] **RESOLVED by Implementer** (Commit SHA: 61675c2672b261c128aec7aba6eb54fd6f449491, Hoan thanh I-1: them bo test HTTP smoke (tests/e2e/http-smoke.spec.mjs) tren PostgreSQL 17.7 va CI. 20/20 test E2E pass 100%.)
+  - [x] **VERIFIED by Requester** (Pass Test: Pass 20/20 E2E tests bao gom 7 HTTP smoke suites, CI updated, verified at 2026-11-08 09:13:34)
+
+---
+
+
+### [TASK-20261108-085253] THONG BAO TU BO CHI HUY: Da merge PR #46, #47, #48 vao s_note_v2. AppModule khoi dong va lang nghe thanh cong 100%. Chay 'git pull origin s_note_v2' de cap nhat va tiep tuc I-1 den I-5.
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/integration (2026-11-08 08:52:53)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 08:53:21)
+  - [x] **RESOLVED by Implementer** (Commit SHA: 61675c2672b261c128aec7aba6eb54fd6f449491, Da pull s_note_v2 sau khi merge PR #46, #47, #48. Xac nhan AppModule bootstrap 100%, /ready pass va hoan thanh I-1 HTTP smoke test.)
+  - [x] **VERIFIED by Requester** (Pass Test: Pass synchronization and I-1 completion, verified at 2026-11-08 09:13:42)
+---
+
+
+### [TASK-20261108-091335] Mo Pull Request vao s_note_v2 cho hang muc I-1 kem bang chung test va commit SHA 61675c2
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/integration (2026-11-08 09:13:35)
+- **Tep dinh kem:** none
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 09:14:12)
+  - [x] **RESOLVED by Implementer** (Commit SHA: 61675c2672b261c128aec7aba6eb54fd6f449491, Da mo Pull Request #49 vao s_note_v2 cho hang muc I-1 kem bang chung test va commit SHA 61675c2 (https://github.com/naverisme/snote/pull/49))
+  - [x] **VERIFIED by Requester** (Pass Test: PR #49 created, 20/20 E2E tests pass, CI updated, verified at 2026-11-08 09:15:36)
+
+
+### [TASK-20261108-091728] Tiep tuc hang muc I-2: Chay 12 VT va QA-01-14 tren luong that, kiem thao tac dong thoi va loi giua chung (nop mat phan hoi, quota/GC, URL preview SSRF)
+- **Ben yeu cau:** s_note_v2 -> **Ben thuc thi:** feat/v2/integration (2026-11-08 09:17:28)
+- **Tep dinh kem:** review/integration-gate-reassessment.md
+- **Ky duyet hoan thanh:**
+  - [x] **ACKNOWLEDGED by Worker** (Bat dau luc: 2026-11-08 09:18:36)
+  - [x] **RESOLVED by Implementer** (Commit SHA: 3577d3b, Hoan thanh I-2: Them tests/e2e/qa-real-flow.spec.mjs kiem thu QA-01 den QA-14 tren PostgreSQL va HTTP live. 27/27 test E2E pass 100%.)
+  - [x] **VERIFIED by Requester** (Pass Test: Pass 27/27 E2E tests (7 QA live HTTP suites), QA-01 to QA-14 verified, verified at 2026-11-08 09:29:18)
