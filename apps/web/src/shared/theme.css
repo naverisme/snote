@@ -1267,3 +1267,285 @@ body {
   color: var(--accent);
   font-weight: 600;
 }
+
+/* ChatGPT Aesthetics & Components from huongdanmanguon_chatgpt_com.html */
+.chatgpt-mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--surface-ground);
+  border: 1px solid var(--border-light);
+  border-radius: 9999px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.chatgpt-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 9999px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--ink-subtle);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.chatgpt-mode-btn:hover {
+  color: var(--ink-title);
+}
+
+.chatgpt-mode-btn.active {
+  background-color: var(--surface-raised);
+  color: var(--ink-title);
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--hairline);
+}
+
+.chatgpt-new-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  background: var(--surface-ground);
+  border: 1px solid var(--border-light);
+  color: var(--ink-title);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  margin-bottom: 12px;
+}
+
+.chatgpt-new-action-btn:hover {
+  background: var(--surface-raised);
+  border-color: var(--hairline);
+  box-shadow: var(--shadow-sm);
+}
+
+.chatgpt-hero-greeting {
+  text-align: center;
+  margin-bottom: 24px;
+  padding-top: 12px;
+}
+
+.chatgpt-hero-title {
+  font-size: 1.85rem;
+  font-weight: 600;
+  color: var(--ink-title);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.chatgpt-hero-title button {
+  color: var(--accent);
+  background: none;
+  border: none;
+  font-size: inherit;
+  font-weight: inherit;
+  font-family: inherit;
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.chatgpt-hero-subtitle {
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+  margin-top: 8px;
+}
+
+.chatgpt-composer-root {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  background-color: var(--surface-raised);
+  border: 1px solid var(--border-light);
+  border-radius: 24px;
+  box-shadow: var(--shadow-md);
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.chatgpt-composer-root:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+}
+
+.chatgpt-composer-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.chatgpt-composer-textarea {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  color: var(--ink-title);
+  font-size: 0.95rem;
+  line-height: 1.45;
+  font-family: inherit;
+  min-height: 24px;
+  max-height: 120px;
+}
+
+.chatgpt-composer-textarea::placeholder {
+  color: var(--ink-faint);
+}
+
+.chatgpt-composer-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ink-subtle);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.chatgpt-composer-action-btn:hover:not(:disabled) {
+  background-color: var(--surface-ground);
+  color: var(--ink-title);
+}
+
+.chatgpt-composer-send-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9999px;
+  border: none;
+  background-color: var(--ink-title);
+  color: var(--surface-ground);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.chatgpt-composer-send-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.chatgpt-composer-send-btn:not(:disabled):hover {
+  opacity: 0.85;
+  transform: scale(1.05);
+}
+
+.chatgpt-chips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  max-width: 720px;
+  margin: 16px auto 0;
+  width: 100%;
+}
+
+.chatgpt-chip-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  background-color: var(--surface-raised);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.chatgpt-chip-card:hover {
+  background-color: var(--surface-ground);
+  border-color: var(--hairline);
+  transform: translateY(-1px);
+}
+
+.chatgpt-chip-card-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink-title);
+}
+
+.chatgpt-chip-card-desc {
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+  line-height: 1.35;
+}
+
+.chatgpt-sidebar-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  border: 1px solid transparent;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+}
+
+.chatgpt-sidebar-profile:hover {
+  background-color: var(--surface-ground);
+  border-color: var(--border-light);
+}
+
+.chatgpt-sidebar-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  background-color: var(--accent);
+  color: var(--accent-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.chatgpt-sidebar-profile-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.chatgpt-sidebar-profile-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink-title);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chatgpt-sidebar-profile-sub {
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+}

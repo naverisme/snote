@@ -12,11 +12,15 @@ import {
   Mail,
   GraduationCap,
   ArrowRight,
+  ArrowUp,
   Sparkles,
   Menu,
   X,
   PanelLeft,
   User,
+  Plus,
+  Mic,
+  SquarePen,
 } from 'lucide-react';
 import type { Account, Class, Workspace } from '../shared/types';
 import { getMe, listClasses, listWorkspaces, getMyInvitations, login, changeUsages, register } from '../shared/api';
@@ -28,6 +32,7 @@ import { ClassMembersView } from '../features/classes/ClassMembersView';
 import { ClassGroupsView } from '../features/classes/ClassGroupsView';
 import { ClassSettingsView } from '../features/classes/ClassSettingsView';
 import { TasksContainer } from '../features/tasks';
+import { TaskApiClient } from '../features/tasks/api';
 import { CalendarContainer } from '../features/calendar';
 import { LibraryView } from '../features/library';
 import { AssignmentFeature } from '../features/assignments';
@@ -67,6 +72,75 @@ export function App() {
         setUser(res.data);
       } catch (err) {
         console.error('Auto-grant teacher usage error:', err);
+      }
+    }
+  };
+
+  const [composerText, setComposerText] = useState('');
+  const [composerSubmitting, setComposerSubmitting] = useState(false);
+  const [taskRefreshKey, setTaskRefreshKey] = useState(0);
+
+  const handleComposerSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const query = composerText.trim();
+    if (!query || composerSubmitting) return;
+
+    const lower = query.toLowerCase();
+    if (lower.includes('lịch') || lower.includes('calendar') || lower.includes('hẹn')) {
+      if (context.type === 'class') {
+        setClassTab('calendar');
+      } else {
+        setWorkspaceTab('calendar');
+      }
+      setComposerText('');
+      return;
+    }
+    if (lower.includes('thư viện') || lower.includes('tài liệu') || lower.includes('file')) {
+      if (context.type !== 'workspace') {
+        const defWs = workspaces.find(w => w.kind === 'default') || workspaces[0];
+        if (defWs) handleSelectWorkspace(defWs);
+      }
+      setWorkspaceTab('library');
+      setComposerText('');
+      return;
+    }
+    if (lower.includes('bài tập') || lower.includes('bài giao') || lower.includes('nộp bài') || lower.includes('chấm điểm')) {
+      if (context.type !== 'class' && activeClass) {
+        handleSelectClass(activeClass);
+      }
+      setClassTab('assignments');
+      setComposerText('');
+      return;
+    }
+    if (lower.includes('lớp') || lower.includes('thành viên') || lower.includes('nhóm')) {
+      if (context.type !== 'class' && activeClass) {
+        handleSelectClass(activeClass);
+      }
+      setClassTab('members');
+      setComposerText('');
+      return;
+    }
+
+    // Default action: Create a new task in active workspace
+    const targetWs = activeWorkspace || workspaces.find(w => w.kind === 'default') || workspaces[0];
+    if (targetWs) {
+      setComposerSubmitting(true);
+      try {
+        const taskApi = new TaskApiClient();
+        await taskApi.createTask(targetWs.id, {
+          title: query,
+          importance: lower.includes('khẩn') || lower.includes('gấp') || lower.includes('p1') ? 'high' : 'medium',
+        });
+        setComposerText('');
+        if (context.type !== 'workspace') {
+          handleSelectWorkspace(targetWs);
+        }
+        setWorkspaceTab('tasks');
+        setTaskRefreshKey(k => k + 1);
+      } catch (err) {
+        console.error('Error creating task from composer:', err);
+      } finally {
+        setComposerSubmitting(false);
       }
     }
   };
@@ -230,6 +304,43 @@ export function App() {
           )}
         </div>
 
+        {/* ChatGPT Center Mode Toggle Pill */}
+        {user && (
+          <div className="header-center">
+            <div className="chatgpt-mode-toggle" role="group" aria-label="Chế độ không gian">
+              <button
+                type="button"
+                className={`chatgpt-mode-btn ${context.type === 'workspace' ? 'active' : ''}`}
+                onClick={() => {
+                  const defWs = workspaces.find(w => w.kind === 'default') || workspaces[0];
+                  if (defWs) handleSelectWorkspace(defWs);
+                }}
+                aria-pressed={context.type === 'workspace'}
+              >
+                <Zap size={13} />
+                <span>Việc của tôi</span>
+              </button>
+              <button
+                type="button"
+                className={`chatgpt-mode-btn ${context.type === 'class' ? 'active' : ''}`}
+                onClick={() => {
+                  if (activeClass) {
+                    handleSelectClass(activeClass);
+                  } else if (classes.length > 0) {
+                    handleSelectClass(classes[0]);
+                  } else {
+                    setShowSettingsModal(true);
+                  }
+                }}
+                aria-pressed={context.type === 'class'}
+              >
+                <GraduationCap size={13} />
+                <span>Không gian Lớp</span>
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="header-right">
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -300,6 +411,28 @@ export function App() {
             if ((event.target as HTMLElement).closest('button')) setMobileNavOpen(false);
           }}
         >
+          {/* ChatGPT Sidebar Top Action Button */}
+          <button
+            type="button"
+            className="chatgpt-new-action-btn"
+            onClick={() => {
+              const defWs = workspaces.find(w => w.kind === 'default') || workspaces[0];
+              if (defWs) handleSelectWorkspace(defWs);
+              setWorkspaceTab('tasks');
+              const el = document.getElementById('chatgpt-composer-input');
+              if (el) el.focus();
+            }}
+            title="Thêm nhanh công việc hoặc ghi chú mới"
+          >
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              <SquarePen size={15} />
+              <span>Thêm việc mới</span>
+            </span>
+            <span style={{ fontSize: '11px', color: 'var(--ink-muted)', background: 'var(--surface-raised)', padding: '2px 6px', borderRadius: '4px', border: '1px solid var(--border-light)' }}>
+              Nhanh
+            </span>
+          </button>
+
           <div className="sidebar-nav-group">
             <div className="sidebar-section-label">
               {context.type === 'workspace' ? 'KHÔNG GIAN LÀM VIỆC' : `LỚP HỌC: ${activeClass?.name ?? ''}`}
@@ -386,16 +519,22 @@ export function App() {
           <div className="sidebar-footer">
             <button
               type="button"
-              className="btn btn-secondary btn-sm"
-              style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 10px', fontSize: '0.8rem' }}
+              className="chatgpt-sidebar-profile"
               onClick={() => setShowSettingsModal(true)}
-              title="Quản lý vai trò tài khoản"
+              title="Mở menu cài đặt tài khoản"
             >
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                {user.usages.includes('teacher') ? <GraduationCap size={14} /> : <User size={14} />}
-                <span>{user.usages.includes('teacher') ? 'Giáo viên' : 'Học sinh'}</span>
-              </span>
-              <span style={{ fontSize: '0.72rem', color: 'var(--ink-muted)' }}>Cài đặt</span>
+              <div className="chatgpt-sidebar-avatar">
+                {activePersona === 'teacher' ? 'G' : 'H'}
+              </div>
+              <div className="chatgpt-sidebar-profile-info">
+                <div className="chatgpt-sidebar-profile-name">
+                  {localStorage.getItem('snote_user_alias') || `Tài khoản: ${user.id.slice(0, 8)}`}
+                </div>
+                <div className="chatgpt-sidebar-profile-sub">
+                  {activePersona === 'teacher' ? 'Giáo viên (Plus)' : 'Học sinh'}
+                </div>
+              </div>
+              <Settings size={15} style={{ color: 'var(--ink-muted)', flexShrink: 0 }} />
             </button>
           </div>
         </aside>}
@@ -622,7 +761,150 @@ export function App() {
           ) : activeWorkspace ? (
             /* Workspace Context Views */
             <div className="section-box">
-              <div className="view-header">
+              {/* ChatGPT Hero Greeting & Signature Composer Bar */}
+              <div className="chatgpt-hero-greeting">
+                <h2 className="chatgpt-hero-title">
+                  Mình có thể giúp gì cho{' '}
+                  <button
+                    type="button"
+                    onClick={() => setShowSettingsModal(true)}
+                    title="Bấm để chỉnh sửa biệt danh trong Cài đặt"
+                  >
+                    {localStorage.getItem('snote_user_alias') || 'bạn'}
+                  </button>
+                  ?
+                </h2>
+                <p className="chatgpt-hero-subtitle">
+                  {activeWorkspace.kind === 'default'
+                    ? 'Không gian Cá nhân · Quản lý tập trung công việc, lịch trình và tài liệu'
+                    : `Không gian: ${activeWorkspace.name} · Nhóm`}
+                </p>
+
+                {/* ChatGPT Signature Composer */}
+                <form
+                  className="chatgpt-composer-root"
+                  onSubmit={handleComposerSubmit}
+                  style={{ marginTop: 14 }}
+                >
+                  <div className="chatgpt-composer-input-row">
+                    <button
+                      type="button"
+                      className="chatgpt-composer-action-btn"
+                      onClick={() => setWorkspaceTab('library')}
+                      title="Thêm tệp vào Thư viện"
+                      aria-label="Thêm tệp"
+                    >
+                      <Plus size={18} />
+                    </button>
+                    <textarea
+                      id="chatgpt-composer-input"
+                      className="chatgpt-composer-textarea"
+                      placeholder="Gõ công việc, ghi chú, bài tập hoặc hỏi Snote..."
+                      rows={1}
+                      value={composerText}
+                      onChange={e => setComposerText(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          void handleComposerSubmit();
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      className="chatgpt-composer-action-btn"
+                      title="Nhập bằng giọng nói (Demo)"
+                      aria-label="Giọng nói"
+                    >
+                      <Mic size={17} />
+                    </button>
+                    <button
+                      type="submit"
+                      className="chatgpt-composer-send-btn"
+                      disabled={!composerText.trim() || composerSubmitting}
+                      title="Gửi"
+                      aria-label="Gửi"
+                    >
+                      <ArrowUp size={16} />
+                    </button>
+                  </div>
+                </form>
+
+                {/* ChatGPT Suggestion Chips */}
+                <div className="chatgpt-chips-grid">
+                  <div
+                    className="chatgpt-chip-card"
+                    onClick={() => setWorkspaceTab('tasks')}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <div className="chatgpt-chip-card-title">
+                      <CheckSquare size={14} style={{ color: 'var(--accent)' }} />
+                      <span>Công việc & Gantt</span>
+                    </div>
+                    <div className="chatgpt-chip-card-desc">
+                      Chuyển đổi Gantt và Danh sách tức thì, nhãn ưu tiên P1/P2/P3.
+                    </div>
+                  </div>
+
+                  <div
+                    className="chatgpt-chip-card"
+                    onClick={() => setWorkspaceTab('calendar')}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <div className="chatgpt-chip-card-title">
+                      <Calendar size={14} style={{ color: 'var(--success)' }} />
+                      <span>Lịch trình Dân sự</span>
+                    </div>
+                    <div className="chatgpt-chip-card-desc">
+                      Giữ nguyên ngày cả ngày và phát hiện xung đột lịch.
+                    </div>
+                  </div>
+
+                  <div
+                    className="chatgpt-chip-card"
+                    onClick={() => setWorkspaceTab('library')}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <div className="chatgpt-chip-card-title">
+                      <BookOpen size={14} style={{ color: 'var(--warning)' }} />
+                      <span>Thư viện 100MB</span>
+                    </div>
+                    <div className="chatgpt-chip-card-desc">
+                      QuotaBar trực quan, xem trước an toàn và thùng rác 30 ngày.
+                    </div>
+                  </div>
+
+                  <div
+                    className="chatgpt-chip-card"
+                    onClick={() => {
+                      if (activeClass) {
+                        handleSelectClass(activeClass);
+                        setClassTab('assignments');
+                      } else if (classes.length > 0) {
+                        handleSelectClass(classes[0]);
+                        setClassTab('assignments');
+                      } else {
+                        setShowSettingsModal(true);
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <div className="chatgpt-chip-card-title">
+                      <ClipboardList size={14} style={{ color: 'var(--accent)' }} />
+                      <span>Bài giao & Lớp học</span>
+                    </div>
+                    <div className="chatgpt-chip-card-desc">
+                      Dropzone kéo thả 1px, theo dõi tiến độ và nộp bài kiểm định.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="view-header" style={{ marginTop: 20 }}>
                 <div>
                   <h1 className="view-title">{activeWorkspace.name}</h1>
                   <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
@@ -633,7 +915,7 @@ export function App() {
 
               {workspaceTab === 'tasks' && (
                 <TasksContainer
-                  key={activeWorkspace.id}
+                  key={`${activeWorkspace.id}-${taskRefreshKey}`}
                   workspaceId={activeWorkspace.kind === 'default' ? undefined : activeWorkspace.id}
                 />
               )}
