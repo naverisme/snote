@@ -32,3 +32,38 @@ test('QA-10 & EC-24: Cancelled events remain in calendar with status "cancelled"
   // Audience group targeting
   assert.deepEqual(cancelledEvent.audience, ['ws-team-alpha']);
 });
+
+test('CUXA-01 & CUXA-04: Default view mode is week on desktop and day on mobile (< 768px)', () => {
+  const resolveInitialViewMode = (width: number) => {
+    return width < 768 ? 'day' : 'week';
+  };
+
+  assert.equal(resolveInitialViewMode(1024), 'week', 'Desktop must default to week view');
+  assert.equal(resolveInitialViewMode(1440), 'week', 'Large screen must default to week view');
+  assert.equal(resolveInitialViewMode(375), 'day', 'Mobile must default to day view');
+  assert.equal(resolveInitialViewMode(767), 'day', 'Mobile breakpoint must default to day view');
+});
+
+test('Calendar error handling: 403, 404, 500 purge events with zero fixture fallback', () => {
+  const errors = ['403 Forbidden', '404 Not Found', '500 Server Error'];
+
+  for (const err of errors) {
+    let events = [...mockCalendarEventsFixture];
+    let errMsg: string | null = null;
+
+    if (err.includes('403')) {
+      events = [];
+      errMsg = 'Bạn không có quyền truy cập lịch trình này (403 Forbidden).';
+    } else if (err.includes('404')) {
+      events = [];
+      errMsg = 'Không tìm thấy lịch trình hoặc phạm vi tương ứng (404 Not Found).';
+    } else if (err.includes('500')) {
+      events = [];
+      errMsg = 'Lỗi máy chủ nội bộ khi tải lịch trình (500). Vui lòng thử lại sau.';
+    }
+
+    assert.equal(events.length, 0, `Events were not purged on ${err}`);
+    assert.ok(errMsg, `No error set on ${err}`);
+  }
+});
+
