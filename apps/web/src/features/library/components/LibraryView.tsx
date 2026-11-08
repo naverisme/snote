@@ -32,6 +32,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
   const [items, setItems] = useState<ItemDetail[]>([]);
   const [trashItems, setTrashItems] = useState<ItemDetail[]>([]);
   const [quota, setQuota] = useState<QuotaInfo | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -46,21 +47,14 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
   // Load workspace data
   const loadData = useCallback(async () => {
     setLoading(true);
+    setLoadError(null);
+    setQuota(null);
+    setFolders([]);
+    setItems([]);
+    setTrashItems([]);
     try {
-      // 1. Quota
-      try {
-        const quotaData = await libraryApi.getWorkspaceQuota(workspaceId, reqOpts);
-        setQuota(quotaData);
-      } catch {
-        // Fallback default quota info
-        setQuota({
-          usedBytes: 0,
-          totalBytes: 1024 * 1024 * 1024,
-          remainingBytes: 1024 * 1024 * 1024,
-          warning: false,
-          itemCount: 0,
-        });
-      }
+      const quotaData = await libraryApi.getWorkspaceQuota(workspaceId, reqOpts);
+      setQuota(quotaData);
 
       // 2. Folders
       const folderList = await libraryApi.listFolders(workspaceId, reqOpts);
@@ -80,11 +74,11 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
             const d = await libraryApi.getItem(it.id, reqOpts);
             return d.item;
           } catch {
-            return it as ItemDetail;
+            return null;
           }
         }),
       );
-      setItems(detailedItems);
+      setItems(detailedItems.filter((item): item is ItemDetail => item !== null));
 
       // 4. Trash items
       const trashRaw = await libraryApi.listItems(workspaceId, { status: 'trash' }, reqOpts);
@@ -94,13 +88,18 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
             const d = await libraryApi.getItem(it.id, reqOpts);
             return d.item;
           } catch {
-            return it as ItemDetail;
+            return null;
           }
         }),
       );
-      setTrashItems(detailedTrash);
+      setTrashItems(detailedTrash.filter((item): item is ItemDetail => item !== null));
     } catch (err) {
       console.error('Failed to load library data', err);
+      setLoadError('Không thể tải Thư viện. Vui lòng thử lại.');
+      setQuota(null);
+      setFolders([]);
+      setItems([]);
+      setTrashItems([]);
     } finally {
       setLoading(false);
     }
@@ -398,6 +397,12 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
       </div>
 
       {/* Main Content Area */}
+      {loadError && (
+        <div role="alert" className="mx-6 mt-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">
+          {loadError}
+          <button type="button" className="ml-3 underline" onClick={loadData}>Thử lại</button>
+        </div>
+      )}
       <div className="flex-1 flex overflow-hidden">
         {currentTab === 'documents' && (
           <>

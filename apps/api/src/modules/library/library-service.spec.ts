@@ -177,6 +177,45 @@ class MockUploadStore implements UploadStore {
   }
 }
 
+test('list filters each item by its own read action before returning metadata', async () => {
+  const store = new MockLibraryStore();
+  const now = new Date();
+  for (const type of ['text', 'link', 'file']) {
+    store.items.set(type, {
+      id: type, workspaceId: 'ws-1', folderId: null, currentRevisionId: null,
+      type, title: `${type} secret`, status: 'active', version: 1,
+      createdAt: now, updatedAt: now,
+    });
+  }
+  const service = new LibraryService(store, new QuotaService(new MockQuotaStore()), new MockUploadStore(), {
+    decide: async (_principal, action) => ({ allowed: action === 'library.read_text' }),
+  });
+  const visible = await service.listItems({ accountId: 'reader' }, 'ws-1');
+  assert.deepEqual(visible.map((item) => item.id), ['text']);
+});
+
+test('copying a file refuses a full target quota before creating a reference or item', async () => {
+  const store = new MockLibraryStore();
+  const quotaStore = new MockQuotaStore();
+  const uploadStore = new MockUploadStore();
+  const service = new LibraryService(store, new QuotaService(quotaStore), uploadStore, allowAuth);
+  uploadStore.stagings.set('upload-1', {
+    id: 'upload-1', actorId: 'author', scopeType: 'workspace', scopeId: 'source',
+    storageKey: 'blob-1', status: 'verified', expiresAt: new Date(Date.now() + 60000),
+  });
+  quotaStore.blobSizes.set('blob-1', 1024n);
+  const source = await service.createItem({ accountId: 'author' }, 'source', { type: 'file', uploadId: 'upload-1' });
+  quotaStore.activeBlobs.clear();
+  quotaStore.activeBlobs.set('full', 1024n * 1024n * 1024n);
+  const before = store.items.size;
+  await assert.rejects(
+    service.copyItem({ accountId: 'author' }, source.id, { targetWorkspaceId: 'target', sourceRevisionId: source.currentRevisionId! }),
+    (err: unknown) => err instanceof DomainError && err.code === 'QUOTA_EXCEEDED',
+  );
+  assert.equal(store.items.size, before);
+  assert.equal(quotaStore.references.has('workspace:target:blob-1:library_item'), false);
+});
+
 test('QA-05: Concurrent overwrites on same item enforce optimistic locking (If-Match)', async () => {
   const libStore = new MockLibraryStore();
   const quotaStore = new MockQuotaStore();

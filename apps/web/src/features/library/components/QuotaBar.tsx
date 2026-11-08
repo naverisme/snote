@@ -9,13 +9,17 @@ export interface QuotaBarProps {
 }
 
 export const QuotaBar: React.FC<QuotaBarProps> = ({ quota, loading }) => {
-  if (loading || !quota) {
+  if (loading) {
     return (
       <div className="quota-bar-skeleton p-3 bg-gray-50 rounded-lg border border-gray-200 animate-pulse" aria-busy="true">
         <div className="h-3.5 bg-gray-200 rounded w-1/3 mb-2" />
         <div className="h-[6px] bg-gray-200 rounded-full w-full" />
       </div>
     );
+  }
+
+  if (!quota) {
+    return <div role="status" className="rounded-lg border border-gray-200 bg-white p-3 text-xs text-gray-600">Chưa tải được dung lượng workspace.</div>;
   }
 
   const percent = Math.min(100, Math.round((quota.usedBytes / quota.totalBytes) * 100));

@@ -244,13 +244,18 @@ export class LibraryService {
     workspaceId: string,
     filter?: { folderId?: string | null; status?: string },
   ): Promise<Library[]> {
-    await this.requireAuth(principal, 'library.read_text', {
-      type: 'workspace',
-      id: workspaceId,
-    });
-
     const items = await this.store.listItems(workspaceId, filter);
-    return items.map((it) => ({
+    const visible: ItemRecord[] = [];
+    for (const item of items) {
+      const action = item.type === 'text' ? 'library.read_text'
+        : item.type === 'link' ? 'library.read_link'
+          : item.type === 'file' ? 'library.read_file' : null;
+      if (!action || !this.auth) continue;
+      if ((await this.auth.decide(principal, action, { type: 'workspace', id: workspaceId })).allowed) {
+        visible.push(item);
+      }
+    }
+    return visible.map((it) => ({
       id: it.id,
       workspaceId: it.workspaceId,
       type: it.type as 'text' | 'link' | 'file',
@@ -413,9 +418,7 @@ export class LibraryService {
 
     // If copying file to target workspace, track quota in target workspace (LIB-16)
     if (sourceItem.type === 'file' && sourceRevision.blobId) {
-      const quota = await this.quota.getWorkspaceQuota(copy.targetWorkspaceId);
-      const blobSize = (await this.store.findRevision(revisionToCopyId))?.blobId;
-      // Check quota reservation/commit
+      await this.quota.checkRestore(copy.targetWorkspaceId, sourceRevision.blobId);
       await this.quota.commitBlob(copy.targetWorkspaceId, sourceRevision.blobId);
     }
 
