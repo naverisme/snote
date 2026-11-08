@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { X, Trash2 } from 'lucide-react';
 import type { CalendarEventViewModel, EventInput, Scope } from './types';
 
@@ -8,6 +8,8 @@ interface EventModalProps {
   onSave: (input: EventInput) => Promise<void>;
   onCancelEvent?: (eventId: string) => Promise<void>;
   defaultTimeZone?: string;
+  defaultScopeType?: Scope['type'];
+  defaultScopeId?: string;
 }
 
 export const EventModal: React.FC<EventModalProps> = ({
@@ -16,17 +18,59 @@ export const EventModal: React.FC<EventModalProps> = ({
   onSave,
   onCancelEvent,
   defaultTimeZone = 'Asia/Ho_Chi_Minh',
+  defaultScopeType = 'workspace',
+  defaultScopeId = '',
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [title, setTitle] = useState(event?.title ?? '');
-  const [scopeType, setScopeType] = useState<Scope['type']>(event?.scope.type ?? 'workspace');
-  const [scopeId, setScopeId] = useState<string>(event?.scope.id ?? 'ws-team-alpha');
+  const [scopeType, setScopeType] = useState<Scope['type']>(
+    event?.scope.type ?? defaultScopeType,
+  );
+  const [scopeId, setScopeId] = useState<string>(
+    event?.scope.id ?? defaultScopeId,
+  );
+
+  // Dynamic realistic initial dates without static fixtures
+  const initialDates = useMemo(() => {
+    const now = new Date();
+    const todayStr = now.toISOString().slice(0, 10);
+    const tomorrow = new Date(now.getTime() + 86400000);
+    const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+    const start = new Date(now);
+    start.setHours(start.getHours() + 1, 0, 0, 0);
+    const end = new Date(start);
+    end.setHours(end.getHours() + 1);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const fmtDt = (d: Date) =>
+      `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    return {
+      todayStr,
+      tomorrowStr,
+      startsAt: fmtDt(start),
+      endsAt: fmtDt(end),
+    };
+  }, []);
+
   const [isAllDay, setIsAllDay] = useState<boolean>(Boolean(event?.allDay));
-  const [startDate, setStartDate] = useState(event?.allDay?.startDate ?? '2026-11-10');
-  const [endDateExclusive, setEndDateExclusive] = useState(event?.allDay?.endDateExclusive ?? '2026-11-11');
-  const [startsAt, setStartsAt] = useState(event?.timed?.startsAt ? event.timed.startsAt.slice(0, 16) : '2026-11-08T09:00');
-  const [endsAt, setEndsAt] = useState(event?.timed?.endsAt ? event.timed.endsAt.slice(0, 16) : '2026-11-08T10:30');
-  const [audience, setAudience] = useState<string>(event?.audience ? event.audience.join(', ') : '');
+  const [startDate, setStartDate] = useState(
+    event?.allDay?.startDate ?? initialDates.todayStr,
+  );
+  const [endDateExclusive, setEndDateExclusive] = useState(
+    event?.allDay?.endDateExclusive ?? initialDates.tomorrowStr,
+  );
+  const [startsAt, setStartsAt] = useState(
+    event?.timed?.startsAt
+      ? event.timed.startsAt.slice(0, 16)
+      : initialDates.startsAt,
+  );
+  const [endsAt, setEndsAt] = useState(
+    event?.timed?.endsAt
+      ? event.timed.endsAt.slice(0, 16)
+      : initialDates.endsAt,
+  );
+  const [audience, setAudience] = useState<string>(
+    event?.audience ? event.audience.join(', ') : '',
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,12 +91,23 @@ export const EventModal: React.FC<EventModalProps> = ({
       return;
     }
 
+    if (scopeType !== 'private' && !scopeId.trim()) {
+      setError('Vui lòng chọn hoặc nhập ID phạm vi (workspace hoặc lớp học)');
+      return;
+    }
+
     setIsSubmitting(true);
     setError(null);
 
     try {
-      const scope: Scope = { type: scopeType, id: scopeType === 'private' ? undefined : scopeId };
-      const audienceList = audience.split(',').map(s => s.trim()).filter(Boolean);
+      const scope: Scope = {
+        type: scopeType,
+        id: scopeType === 'private' ? undefined : scopeId.trim(),
+      };
+      const audienceList = audience
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean);
 
       let input: EventInput;
       if (isAllDay) {
@@ -94,7 +149,12 @@ export const EventModal: React.FC<EventModalProps> = ({
 
   const handleCancelClick = async () => {
     if (!event || !onCancelEvent) return;
-    if (!confirm('Bạn có chắc chắn muốn hủy sự kiện này? Sự kiện sẽ chuyển sang trạng thái "Đã hủy" và lưu vết audit.')) return;
+    if (
+      !confirm(
+        'Bạn có chắc chắn muốn hủy sự kiện này? Sự kiện sẽ chuyển sang trạng thái "Đã hủy" và lưu vết audit.',
+      )
+    )
+      return;
     setIsSubmitting(true);
     try {
       await onCancelEvent(event.id);
@@ -114,36 +174,67 @@ export const EventModal: React.FC<EventModalProps> = ({
         left: 0,
         right: 0,
         bottom: 0,
-        background: 'rgba(0, 0, 0, 0.4)',
+        background: 'rgba(0, 0, 0, 0.45)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 1000,
+        backdropFilter: 'blur(2px)',
+      }}
+      role="presentation"
+      onMouseDown={e => {
+        if (e.target === e.currentTarget && !isSubmitting) onClose();
       }}
     >
       <div
         ref={modalRef}
         tabIndex={-1}
         role="dialog"
+        aria-modal="true"
         aria-labelledby="event-modal-title"
         style={{
-          background: '#fff',
-          borderRadius: '8px',
+          background: 'var(--surface-overlay, #ffffff)',
+          borderRadius: 'var(--radius-md, 10px)',
+          border: '1px solid var(--hairline)',
           width: '100%',
           maxWidth: '480px',
           padding: '24px',
-          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
+          boxShadow: 'var(--shadow-overlay)',
           outline: 'none',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h3 id="event-modal-title" style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: '#24292f' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '16px',
+          }}
+        >
+          <h3
+            id="event-modal-title"
+            style={{
+              margin: 0,
+              fontSize: '16px',
+              fontWeight: 600,
+              color: 'var(--ink-title)',
+            }}
+          >
             {event ? 'Chi tiết sự kiện' : 'Tạo sự kiện mới'}
           </h3>
           <button
             type="button"
             onClick={onClose}
-            style={{ border: 'none', background: 'transparent', display: 'inline-flex', alignItems: 'center', cursor: 'pointer', color: '#57606a' }}
+            style={{
+              border: 'none',
+              background: 'transparent',
+              display: 'inline-flex',
+              alignItems: 'center',
+              cursor: 'pointer',
+              color: 'var(--ink-muted)',
+              padding: '4px',
+              borderRadius: 'var(--radius-sm, 6px)',
+            }}
             aria-label="Đóng"
           >
             <X size={16} />
@@ -151,35 +242,93 @@ export const EventModal: React.FC<EventModalProps> = ({
         </div>
 
         {error && (
-          <div style={{ padding: '8px 12px', background: '#ffebe9', color: '#cf222e', borderRadius: '6px', fontSize: '12px', marginBottom: '12px' }}>
+          <div
+            role="alert"
+            style={{
+              padding: '10px 14px',
+              background: '#fff4f2',
+              color: '#9f2d20',
+              border: '1px solid #f2cbc5',
+              borderRadius: 'var(--radius-sm, 6px)',
+              fontSize: '12px',
+              marginBottom: '14px',
+            }}
+          >
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <form
+          onSubmit={handleSubmit}
+          style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}
+        >
           <div>
-            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#24292f', marginBottom: '4px' }}>
+            <label
+              htmlFor="event-title-input"
+              style={{
+                display: 'block',
+                fontSize: '12px',
+                fontWeight: 600,
+                color: 'var(--ink-body)',
+                marginBottom: '6px',
+              }}
+            >
               Tiêu đề sự kiện *
             </label>
             <input
+              id="event-title-input"
               type="text"
               value={title}
               onChange={e => setTitle(e.target.value)}
               placeholder="Nhập tiêu đề..."
               required
-              style={{ width: '100%', padding: '6px 10px', fontSize: '13px', borderRadius: '6px', border: '1px solid #d0d7de', boxSizing: 'border-box' }}
+              style={{
+                width: '100%',
+                padding: '8px 12px',
+                fontSize: '13px',
+                borderRadius: 'var(--radius-sm, 6px)',
+                border: '1px solid var(--hairline)',
+                background: 'var(--surface-raised, #ffffff)',
+                color: 'var(--ink-title)',
+                boxSizing: 'border-box',
+              }}
             />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '12px',
+            }}
+          >
             <div>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#24292f', marginBottom: '4px' }}>
+              <label
+                htmlFor="event-scope-select"
+                style={{
+                  display: 'block',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: 'var(--ink-body)',
+                  marginBottom: '6px',
+                }}
+              >
                 Phạm vi
               </label>
               <select
+                id="event-scope-select"
                 value={scopeType}
                 onChange={e => setScopeType(e.target.value as Scope['type'])}
-                style={{ width: '100%', padding: '6px 8px', fontSize: '13px', borderRadius: '6px', border: '1px solid #d0d7de', boxSizing: 'border-box' }}
+                style={{
+                  width: '100%',
+                  padding: '8px 10px',
+                  fontSize: '13px',
+                  borderRadius: 'var(--radius-sm, 6px)',
+                  border: '1px solid var(--hairline)',
+                  background: 'var(--surface-raised, #ffffff)',
+                  color: 'var(--ink-body)',
+                  boxSizing: 'border-box',
+                }}
               >
                 <option value="workspace">Workspace nhóm</option>
                 <option value="class">Lớp học</option>
@@ -189,14 +338,34 @@ export const EventModal: React.FC<EventModalProps> = ({
 
             {scopeType !== 'private' && (
               <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#24292f', marginBottom: '4px' }}>
+                <label
+                  htmlFor="event-scope-id"
+                  style={{
+                    display: 'block',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    color: 'var(--ink-body)',
+                    marginBottom: '6px',
+                  }}
+                >
                   ID Phạm vi
                 </label>
                 <input
+                  id="event-scope-id"
                   type="text"
                   value={scopeId}
                   onChange={e => setScopeId(e.target.value)}
-                  style={{ width: '100%', padding: '6px 8px', fontSize: '13px', borderRadius: '6px', border: '1px solid #d0d7de', boxSizing: 'border-box' }}
+                  placeholder="ID workspace..."
+                  style={{
+                    width: '100%',
+                    padding: '8px 10px',
+                    fontSize: '13px',
+                    borderRadius: 'var(--radius-sm, 6px)',
+                    border: '1px solid var(--hairline)',
+                    background: 'var(--surface-raised, #ffffff)',
+                    color: 'var(--ink-body)',
+                    boxSizing: 'border-box',
+                  }}
                 />
               </div>
             )}
@@ -209,59 +378,155 @@ export const EventModal: React.FC<EventModalProps> = ({
               id="allday-chk"
               checked={isAllDay}
               onChange={e => setIsAllDay(e.target.checked)}
+              style={{ cursor: 'pointer' }}
             />
-            <label htmlFor="allday-chk" style={{ fontSize: '13px', color: '#24292f', cursor: 'pointer' }}>
+            <label
+              htmlFor="allday-chk"
+              style={{
+                fontSize: '12px',
+                color: 'var(--ink-body)',
+                cursor: 'pointer',
+              }}
+            >
               Sự kiện cả ngày (Giữ ngày dân sự không phụ thuộc múi giờ, QA-10)
             </label>
           </div>
 
           {isAllDay ? (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '12px',
+              }}
+            >
               <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#24292f', marginBottom: '4px' }}>
+                <label
+                  htmlFor="event-start-date"
+                  style={{
+                    display: 'block',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    color: 'var(--ink-body)',
+                    marginBottom: '6px',
+                  }}
+                >
                   Ngày bắt đầu
                 </label>
                 <input
+                  id="event-start-date"
                   type="date"
                   value={startDate}
                   onChange={e => setStartDate(e.target.value)}
-                  style={{ width: '100%', padding: '6px 8px', fontSize: '13px', borderRadius: '6px', border: '1px solid #d0d7de', boxSizing: 'border-box' }}
+                  style={{
+                    width: '100%',
+                    padding: '8px 10px',
+                    fontSize: '13px',
+                    borderRadius: 'var(--radius-sm, 6px)',
+                    border: '1px solid var(--hairline)',
+                    background: 'var(--surface-raised, #ffffff)',
+                    color: 'var(--ink-body)',
+                    boxSizing: 'border-box',
+                  }}
                 />
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#24292f', marginBottom: '4px' }}>
+                <label
+                  htmlFor="event-end-date"
+                  style={{
+                    display: 'block',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    color: 'var(--ink-body)',
+                    marginBottom: '6px',
+                  }}
+                >
                   Ngày kết thúc (Loại trừ)
                 </label>
                 <input
+                  id="event-end-date"
                   type="date"
                   value={endDateExclusive}
                   onChange={e => setEndDateExclusive(e.target.value)}
-                  style={{ width: '100%', padding: '6px 8px', fontSize: '13px', borderRadius: '6px', border: '1px solid #d0d7de', boxSizing: 'border-box' }}
+                  style={{
+                    width: '100%',
+                    padding: '8px 10px',
+                    fontSize: '13px',
+                    borderRadius: 'var(--radius-sm, 6px)',
+                    border: '1px solid var(--hairline)',
+                    background: 'var(--surface-raised, #ffffff)',
+                    color: 'var(--ink-body)',
+                    boxSizing: 'border-box',
+                  }}
                 />
               </div>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '12px',
+              }}
+            >
               <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#24292f', marginBottom: '4px' }}>
+                <label
+                  htmlFor="event-starts-at"
+                  style={{
+                    display: 'block',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    color: 'var(--ink-body)',
+                    marginBottom: '6px',
+                  }}
+                >
                   Bắt đầu
                 </label>
                 <input
+                  id="event-starts-at"
                   type="datetime-local"
                   value={startsAt}
                   onChange={e => setStartsAt(e.target.value)}
-                  style={{ width: '100%', padding: '6px 8px', fontSize: '13px', borderRadius: '6px', border: '1px solid #d0d7de', boxSizing: 'border-box' }}
+                  style={{
+                    width: '100%',
+                    padding: '8px 10px',
+                    fontSize: '13px',
+                    borderRadius: 'var(--radius-sm, 6px)',
+                    border: '1px solid var(--hairline)',
+                    background: 'var(--surface-raised, #ffffff)',
+                    color: 'var(--ink-body)',
+                    boxSizing: 'border-box',
+                  }}
                 />
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#24292f', marginBottom: '4px' }}>
+                <label
+                  htmlFor="event-ends-at"
+                  style={{
+                    display: 'block',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    color: 'var(--ink-body)',
+                    marginBottom: '6px',
+                  }}
+                >
                   Kết thúc
                 </label>
                 <input
+                  id="event-ends-at"
                   type="datetime-local"
                   value={endsAt}
                   onChange={e => setEndsAt(e.target.value)}
-                  style={{ width: '100%', padding: '6px 8px', fontSize: '13px', borderRadius: '6px', border: '1px solid #d0d7de', boxSizing: 'border-box' }}
+                  style={{
+                    width: '100%',
+                    padding: '8px 10px',
+                    fontSize: '13px',
+                    borderRadius: 'var(--radius-sm, 6px)',
+                    border: '1px solid var(--hairline)',
+                    background: 'var(--surface-raised, #ffffff)',
+                    color: 'var(--ink-body)',
+                    boxSizing: 'border-box',
+                  }}
                 />
               </div>
             </div>
@@ -269,21 +534,49 @@ export const EventModal: React.FC<EventModalProps> = ({
 
           {scopeType === 'class' && (
             <div>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#24292f', marginBottom: '4px' }}>
+              <label
+                htmlFor="event-audience"
+                style={{
+                  display: 'block',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: 'var(--ink-body)',
+                  marginBottom: '6px',
+                }}
+              >
                 Đối tượng nhận (Phân tách bằng dấu phẩy; để trống cho cả lớp)
               </label>
               <input
+                id="event-audience"
                 type="text"
                 value={audience}
                 onChange={e => setAudience(e.target.value)}
                 placeholder="ws-group-1, ws-group-2"
-                style={{ width: '100%', padding: '6px 10px', fontSize: '13px', borderRadius: '6px', border: '1px solid #d0d7de', boxSizing: 'border-box' }}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  fontSize: '13px',
+                  borderRadius: 'var(--radius-sm, 6px)',
+                  border: '1px solid var(--hairline)',
+                  background: 'var(--surface-raised, #ffffff)',
+                  color: 'var(--ink-body)',
+                  boxSizing: 'border-box',
+                }}
               />
             </div>
           )}
 
           {/* Footer Actions */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginTop: '12px',
+              paddingTop: '12px',
+              borderTop: '1px solid var(--hairline)',
+            }}
+          >
             {event && event.status === 'active' && onCancelEvent ? (
               <button
                 type="button"
@@ -293,10 +586,10 @@ export const EventModal: React.FC<EventModalProps> = ({
                   padding: '6px 12px',
                   fontSize: '12px',
                   fontWeight: 600,
-                  borderRadius: '6px',
-                  border: '1px solid #ff8182',
-                  background: '#ffebe9',
-                  color: '#cf222e',
+                  borderRadius: 'var(--radius-sm, 6px)',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  background: 'rgba(239, 68, 68, 0.08)',
+                  color: 'var(--danger)',
                   cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -306,22 +599,42 @@ export const EventModal: React.FC<EventModalProps> = ({
                 <Trash2 size={13} />
                 <span>Hủy sự kiện</span>
               </button>
-            ) : <div />}
+            ) : (
+              <div />
+            )}
 
             <div style={{ display: 'flex', gap: '8px' }}>
               <button
                 type="button"
                 onClick={onClose}
-                style={{ padding: '6px 14px', fontSize: '13px', borderRadius: '6px', border: '1px solid #d0d7de', background: '#fff', cursor: 'pointer' }}
+                style={{
+                  padding: '6px 14px',
+                  fontSize: '13px',
+                  borderRadius: 'var(--radius-sm, 6px)',
+                  border: '1px solid var(--hairline)',
+                  background: 'var(--surface-raised, #ffffff)',
+                  color: 'var(--ink-body)',
+                  cursor: 'pointer',
+                }}
               >
                 Đóng
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                style={{ padding: '6px 14px', fontSize: '13px', fontWeight: 600, borderRadius: '6px', border: '1px solid #1f883d', background: '#1f883d', color: '#fff', cursor: 'pointer' }}
+                style={{
+                  padding: '6px 16px',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  borderRadius: 'var(--radius-sm, 6px)',
+                  border: '1px solid var(--accent)',
+                  background: 'var(--accent)',
+                  color: '#ffffff',
+                  cursor: 'pointer',
+                  boxShadow: 'var(--shadow-raised)',
+                }}
               >
-                Lưu
+                {isSubmitting ? 'Đang lưu...' : 'Lưu'}
               </button>
             </div>
           </div>
@@ -330,3 +643,4 @@ export const EventModal: React.FC<EventModalProps> = ({
     </div>
   );
 };
+
