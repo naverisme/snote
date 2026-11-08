@@ -3,8 +3,8 @@
 | Trường | Giá trị |
 | --- | --- |
 | Phạm vi | Lịch của tôi, Lịch trình của workspace và Lịch lớp trên web máy tính/điện thoại |
-| Trạng thái | A1–A3, E6 và F10 được chủ sản phẩm chốt; các thành phần khác còn ở [phiếu rà soát](../../review/blocked/ux-q33-calendar.md) |
-| Nguồn | [SRC-19, SRC-21/22/26](../../review/provenance.md), [CAL-01–11](../requirements/calendar.md), [NAV-08](validated-navigation.md) |
+| Trạng thái | A1–A3, E6 và F10 được chủ sản phẩm chốt; các thành phần khác còn ở [phiếu rà soát](https://github.com/naverisme/snote/blob/49caff82e8b004ca0afc2ab52229c4711fdd9334/review/blocked/ux-q33-calendar.md) |
+| Nguồn | [SRC-19, SRC-21/22/26](../../review/provenance.md), [CAL-01–11](../requirements/calendar.md), [NAV-08](workspace-and-tasks.md) |
 
 | Mã | Cấp, vị trí | Số lượng, loại | Hành vi đã chốt |
 | --- | --- | --- | --- |

@@ -2,7 +2,7 @@
 
 | Trường | Giá trị |
 | --- | --- |
-| Trạng thái | Thiết kế kiểm quyền v2 theo [SRC-27](../../review/provenance.md) và [ma trận nghiệp vụ](../requirements/permission-matrix.md) |
+| Trạng thái | Thiết kế kiểm quyền v2 theo [SRC-27](../../review/provenance.md) và [ma trận nghiệp vụ](../requirements/access-control.md) |
 
 Mỗi request nhận principal đã xác thực; máy chủ tải quyền hiện hành theo đối tượng và hành động. Quyền hợp theo tư cách còn hiệu lực **trong đúng scope**, rồi giới hạn bởi nội dung riêng, lưu trữ, bàn giao, hạn và cài đặt bài. Chọn usage Giáo viên chỉ mở tạo lớp mới, không thay quyền trên lớp khác; tắt usage không bỏ quyền chủ lớp đã tạo. Thu hồi ngừng thao tác tiếp theo, lịch sử cũ không sửa lại. Kiểm lại tại lúc hoàn tất upload/Nộp, không chỉ lúc mở form.
 

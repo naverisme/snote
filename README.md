@@ -7,7 +7,6 @@ SNOTE hỗ trợ tổ chức công việc, lịch và tài liệu theo workspace
 - [Hồ sơ rà soát](review/README.md) ghi nguồn, phần còn thiếu và nội dung đưa ra duyệt.
 - [Hướng dẫn tác nhân](AGENTS.md) chỉ đường đọc và dùng tài liệu khi nhận việc trên `s_note_v2`.
 - [Use case](docs/requirements/use-cases.md) và [sơ đồ thuật toán](docs/architecture/decision-algorithms.md) nối mục tiêu với quy tắc và các nhánh quyết định.
-- [Hồ sơ điều phối đã hoàn thành](review/archive/coordination/README.md) lưu kế hoạch, phân vùng worktree và queue cũ để truy vết; không dùng làm lệnh hiện hành.
 
 ## Foundation local (issue #28)
 

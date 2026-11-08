@@ -21,4 +21,4 @@
 | CAL-10 | Bản đầu không có sự kiện lặp hoặc điều khiển lặp hằng ngày/hằng tuần. Người dùng tạo từng sự kiện riêng; sửa một lần/cả chuỗi ở ngoài phạm vi bản đầu. | J8, SRC-26 |
 | CAL-11 | Giáo viên chủ lớp, người tạo và người quản lý workspace của sự kiện được hủy sự kiện chung trong phạm vi họ có quyền. Lớp trưởng cần quyền Hủy riêng. Người nhận vẫn thấy dấu vết Đã hủy. Sự kiện riêng do chủ sự kiện sửa hoặc xóa. Giới hạn tư cách/lưu trữ theo PER-13 vẫn áp dụng. | J9, SRC-26 |
 
-Xem [ma trận quyền](permission-matrix.md). Nguồn múi giờ và khoảng ngày theo [STR-17](structural-rules.md); biểu mẫu và màn theo [thiết kế UX](../ux/ui-and-motion.md). Ca biên ở [EC-13/14](../../review/edge-case-audit.md).
+Xem [ma trận quyền](access-control.md). Nguồn múi giờ và khoảng ngày theo [STR-17](structural-rules.md); biểu mẫu và màn theo [thiết kế UX](../ux/ui-and-motion.md). Ca biên ở [EC-13/14](../../review/edge-case-audit.md).

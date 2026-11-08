@@ -20,4 +20,4 @@
 | ACC-09 | Thành viên workspace độc lập được tự rời sau khi bàn giao việc đang phụ trách. Chủ phải chuyển quyền theo ACC-08 và bàn giao việc trước khi rời. Nội dung, việc và lịch sử ở lại workspace. | I3, SRC-25 |
 | ACC-10 | Chủ workspace độc lập được lưu trữ và khôi phục workspace; khi lưu trữ chỉ đọc theo quyền. Bản đầu không có nút xóa vĩnh viễn workspace độc lập. Workspace cá nhân mặc định theo ACC-07 không được lưu trữ. | I4, SRC-25 |
 
-Xem [quyền theo phạm vi](permissions.md), [Hộp thu](library.md) và [điều hướng theo cách dùng](../ux/validated-navigation.md).
+Xem [quyền theo phạm vi](access-control.md), [Hộp thu](library.md) và [điều hướng theo cách dùng](../ux/workspace-and-tasks.md).

@@ -38,7 +38,7 @@ flowchart TD
 | CLS-07 | Có thể có nhiều lời mời đang chờ. Khi lớp giới hạn một nhóm và người học đã vào một nhóm, các lời mời đang chờ đến nhóm khác trong cùng lớp hết hiệu lực, rời danh sách chờ và được lưu trữ làm lịch sử. | SRC-10, Q04 |
 | CLS-11 | Lời mời đã vô hiệu và lưu trữ theo CLS-07 không tự có hiệu lực lại khi người học rời nhóm. Yêu cầu vào nhóm do người học gửi chỉ được duyệt khi giới hạn hiện hành còn cho phép. Khi giáo viên giảm giới hạn xuống thấp hơn số nhóm đang có, giữ nguyên tư cách đã có và chặn gia nhập mới đến khi đáp ứng giới hạn. | Q23 |
 
-Luồng nhóm áp dụng khi gia nhập thành công theo giới hạn đang dùng. Người duyệt mặc định và cách chỉnh quyền nằm tại [PER-04](permissions.md).
+Luồng nhóm áp dụng khi gia nhập thành công theo giới hạn đang dùng. Người duyệt mặc định và cách chỉnh quyền nằm tại [PER-04](access-control.md).
 
 ```mermaid
 flowchart TD
@@ -62,4 +62,4 @@ flowchart TD
 | CLS-15 | Giáo viên chủ lớp và người có quyền quản lý workspace nhóm được mời hoặc đề nghị đưa người ra khỏi nhóm. Lớp trưởng chỉ làm việc này khi giáo viên bật quyền tương ứng. Người được mời phải chấp nhận trước khi vào. Trước khi rời hoặc bị đưa ra, trưởng nhóm/người đang phụ trách việc cần bàn giao; việc và lịch sử ở lại workspace. Quyền quản lý nhóm không cho phép đổi vai trò hay cấu hình cấp lớp. | H2/H8, SRC-24 |
 | CLS-16 | Workspace nhóm luôn thuộc lớp của nó, không chuyển thành workspace độc lập. Giáo viên chủ lớp được lưu trữ hoặc khôi phục riêng một nhóm; nhóm lưu trữ chỉ đọc theo quyền. Lịch sử bài giao và bản nộp liên quan vẫn gắn với lớp. | I5, SRC-25 |
 
-Xem [ma trận quyền](permission-matrix.md) để phân biệt phạm vi lớp và nhóm. Lớp lưu trữ chỉ đọc theo CLS-14; quy trình lời mời chờ/lưu trữ và khôi phục nhóm khi xung đột ở [STR-07–10](structural-rules.md).
+Xem [ma trận quyền](access-control.md) để phân biệt phạm vi lớp và nhóm. Lớp lưu trữ chỉ đọc theo CLS-14; quy trình lời mời chờ/lưu trữ và khôi phục nhóm khi xung đột ở [STR-07–10](structural-rules.md).

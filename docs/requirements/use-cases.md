@@ -3,7 +3,7 @@
 | Trường | Giá trị |
 | --- | --- |
 | Câu hỏi | Tác nhân bên ngoài muốn đạt mục tiêu nào, điều kiện và đường ngoại lệ là gì? |
-| Phạm vi | Tài khoản, workspace, lớp/nhóm, việc, lịch, Thư viện và bài giao của [bản đầu](../product/first-release.md) |
+| Phạm vi | Tài khoản, workspace, lớp/nhóm, việc, lịch, Thư viện và bài giao của [bản đầu](../product/overview.md) |
 | Trạng thái | DCA-checked trên quy tắc v2 tại mốc `bdc1df38`; đây là **bản tổng hợp từ quy tắc**, không phải bằng chứng phần mềm đã chạy |
 | Giới hạn ký pháp | Mermaid dưới đây là **sơ đồ tác nhân–mục tiêu khái niệm**, không tự nhận tuân UML Use Case 2.5.1. Thứ tự và điều kiện ở bảng kịch bản, quyền chi tiết ở ma trận quyền |
 
@@ -22,9 +22,9 @@
 | UC-07 | Cá nhân lưu nhanh, phân loại, sửa hoặc sao chép mục Thư viện | Hộp thu nằm trong workspace cá nhân mặc định; mục chung theo workspace; bản sao độc lập, tệp chỉ thành công sau bytes và metadata | [LIB-01–18](library.md), QA-05–07/12 |
 | UC-08 | Giáo viên tạo bài giao và xem tiến độ nhóm | Bài thuộc lớp, có ít nhất một nhóm nhận; mỗi nhóm có tiến độ và chuỗi bản nộp riêng | [ASG-01/02/11/13](assignments-and-submissions.md), VT-10/11 |
 | UC-09 | Trưởng nhóm hoặc người được cấp quyền Nộp/sửa bản nộp | Nội dung không rỗng, xét quyền/hạn/phiên bản tại commit; mỗi lần sửa tạo revision bất biến; mất phản hồi tra cùng mã thao tác | [ASG-03–08/12/14–18](assignments-and-submissions.md), [STR-16](structural-rules.md), QA-08/09 |
-| UC-10 | Giáo viên nhận xét bản nộp và điều chỉnh quy tắc lớp | Nhận xét gắn đúng phiên bản; hai quyền sau hạn độc lập, giá trị tường minh của bài ưu tiên cài đặt lớp; quyền cấp riêng có scope | [ASG-05/06/09/15](assignments-and-submissions.md), [PER-01–12](permissions.md), QA-04/09 |
+| UC-10 | Giáo viên nhận xét bản nộp và điều chỉnh quy tắc lớp | Nhận xét gắn đúng phiên bản; hai quyền sau hạn độc lập, giá trị tường minh của bài ưu tiên cài đặt lớp; quyền cấp riêng có scope | [ASG-05/06/09/15](assignments-and-submissions.md), [PER-01–12](access-control.md), QA-04/09 |
 
-Hai hình dưới chỉ trả lời **ai theo đuổi mục tiêu nào**. Chúng không vẽ trình tự, không suy thêm quan hệ `include`/`extend` và không thay thế [ma trận hành động](permission-matrix.md). Mỗi cạnh trỏ tới ID use case trong bảng trên.[^UC-SRC-02]
+Hai hình dưới chỉ trả lời **ai theo đuổi mục tiêu nào**. Chúng không vẽ trình tự, không suy thêm quan hệ `include`/`extend` và không thay thế [ma trận hành động](access-control.md). Mỗi cạnh trỏ tới ID use case trong bảng trên.[^UC-SRC-02]
 
 ```mermaid
 flowchart TD
@@ -60,4 +60,4 @@ flowchart TD
 Quyết định thuật toán và ranh giới giao dịch ở [sơ đồ quyết định](../architecture/decision-algorithms.md). Kết quả chạy thực tế phải tra báo cáo theo commit trong `review/`, không suy từ hình này. Các giá trị hạ tầng cho pilot vẫn ở [sổ mở](../../review/unresolved.md).
 
 [^UC-SRC-01]: [SRC-01/02/05/07–10/24/27](../../review/provenance.md) và [STR-01–14](structural-rules.md), `s_note_v2` tại `bdc1df38`. Chứng minh mục tiêu và phạm vi quyền của bản đặc tả, không chứng minh mã chạy.
-[^UC-SRC-02]: [Phạm vi bản đầu](../product/first-release.md), [quy tắc theo chủ đề](README.md) và [ca nghiệm thu](../quality/acceptance-scenarios.md), `s_note_v2` tại `bdc1df38`. Bản đồ do DCA biên soạn từ các mục tiêu đã có; không tạo chức năng mới.
+[^UC-SRC-02]: [Phạm vi bản đầu](../product/overview.md), [quy tắc theo chủ đề](README.md) và [ca nghiệm thu](../quality/acceptance-scenarios.md), `s_note_v2` tại `bdc1df38`. Bản đồ do DCA biên soạn từ các mục tiêu đã có; không tạo chức năng mới.
