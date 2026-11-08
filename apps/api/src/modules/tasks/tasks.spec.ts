@@ -3,6 +3,16 @@ import { strict as assert } from 'node:assert';
 import { DomainError, type AuthorizationPort, type Principal } from '../../core/authorization';
 import { TasksService } from './tasks.service';
 
+const testAuth: AuthorizationPort = { decide: async () => ({ allowed: true }) };
+
+test('PM-04: service without an authorization port denies shared task creation', async () => {
+  const service = new TasksService();
+  await assert.rejects(
+    service.createTask({ accountId: 'actor' }, 'workspace', { title: 'Denied' }),
+    (err: unknown) => err instanceof DomainError && err.status === 403,
+  );
+});
+
 test('QA-04 & TASK-14: member can create unassigned task; reassigning requires task.assign', async () => {
   const allowedActions = new Set<string>(['task.create', 'task.read']);
   const mockAuth: AuthorizationPort = {
@@ -38,7 +48,7 @@ test('QA-04 & TASK-14: member can create unassigned task; reassigning requires t
 });
 
 test('QA-11 & EC-18: Reassigning task keeps private work sessions with previous owner (no leak or transfer)', async () => {
-  const service = new TasksService();
+  const service = new TasksService(testAuth);
   const teacher: Principal = { accountId: 'teacher-1' };
   const userA: Principal = { accountId: 'student-a' };
   const userB: Principal = { accountId: 'student-b' };
@@ -79,7 +89,7 @@ test('QA-11 & EC-18: Reassigning task keeps private work sessions with previous 
 });
 
 test('QA-11 & EC-17: Checklist 0 items does not show 100%; completion requires explicit confirmation', async () => {
-  const service = new TasksService();
+  const service = new TasksService(testAuth);
   const user: Principal = { accountId: 'user-checklist' };
 
   const { task, etag } = await service.createTask(user, 'ws-1', {
@@ -114,7 +124,7 @@ test('QA-11 & EC-17: Checklist 0 items does not show 100%; completion requires e
 });
 
 test('Bulk actions: version conflict rejects with 412 VERSION_CONFLICT', async () => {
-  const service = new TasksService();
+  const service = new TasksService(testAuth);
   const user: Principal = { accountId: 'user-bulk' };
 
   const { task: t1 } = await service.createTask(user, 'ws-1', { title: 'Viec 1' });
@@ -148,12 +158,13 @@ test('Bulk actions: version conflict rejects with 412 VERSION_CONFLICT', async (
 });
 
 test('TASK-07: Private work session after due date receives isLate = true ("Làm muộn")', async () => {
-  const service = new TasksService();
+  const service = new TasksService(testAuth);
   const user: Principal = { accountId: 'user-session' };
 
   const { task } = await service.createTask(user, 'ws-1', {
     title: 'Bao cao',
     dueAt: '2026-11-10T12:00:00Z',
+    assigneeId: user.accountId,
   });
 
   // Session before deadline -> isLate false
@@ -174,7 +185,7 @@ test('TASK-07: Private work session after due date receives isLate = true ("Làm
 });
 
 test('TASK-11 & TASK-17: listMyTasks sorts correctly (Overdue -> Today -> Session Today -> Unscheduled by priority)', async () => {
-  const service = new TasksService();
+  const service = new TasksService(testAuth);
   const user: Principal = { accountId: 'user-sort' };
   const now = new Date('2026-11-10T10:00:00Z');
 

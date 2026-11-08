@@ -21,14 +21,10 @@ export class TasksService {
   private workSessions = new Map<string, Worksession & { createdAt: Date; updatedAt: Date; isLate?: boolean }>();
   private audits: TaskAuditRecord[] = [];
 
-  constructor(private readonly authPort?: AuthorizationPort) {}
+  constructor(private readonly authPort: AuthorizationPort = { decide: async () => ({ allowed: false }) }) {}
 
   private getAuthorizer(): AuthorizationPort {
-    return (
-      this.authPort ?? {
-        decide: async () => ({ allowed: true }),
-      }
-    );
+    return this.authPort;
   }
 
   // --- Task Operations ---
@@ -100,9 +96,12 @@ export class TasksService {
     options: TaskFilterOptions = {},
   ): Promise<{ tasks: Task[] }> {
     const now = options.now ?? new Date();
-    const myTasks = Array.from(this.tasks.values()).filter(t => {
-      return t.assigneeId === principal.accountId;
-    });
+    const assigned = Array.from(this.tasks.values()).filter(t => t.assigneeId === principal.accountId);
+    const myTasks = [] as typeof assigned;
+    for (const task of assigned) {
+      const decision = await this.getAuthorizer().decide(principal, 'task.read', { type: 'workspace', id: task.workspaceId });
+      if (decision.allowed) myTasks.push(task);
+    }
 
     let filtered = myTasks;
 
@@ -416,6 +415,8 @@ export class TasksService {
   ): Promise<{ session: Worksession; isLate: boolean; etag: string }> {
     const task = this.tasks.get(input.taskId);
     if (!task) throw new DomainError('NOT_FOUND', 404);
+    if (task.assigneeId !== principal.accountId) throw new DomainError('FORBIDDEN', 403);
+    await requireAction(this.getAuthorizer(), principal, 'task.read', { type: 'workspace', id: task.workspaceId });
 
     const start = new Date(input.startAt).getTime();
     const end = new Date(input.endAt).getTime();

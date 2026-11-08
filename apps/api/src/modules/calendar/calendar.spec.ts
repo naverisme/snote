@@ -3,8 +3,21 @@ import { strict as assert } from 'node:assert';
 import { DomainError, type AuthorizationPort, type Principal } from '../../core/authorization';
 import { CalendarService } from './calendar.service';
 
-test('QA-10 & EC-13: All-day event civil date remains stable across timezones without drift', async () => {
+const testAuth: AuthorizationPort = { decide: async () => ({ allowed: true }) };
+
+test('PM-04: service without an authorization port denies shared event creation', async () => {
   const service = new CalendarService();
+  await assert.rejects(
+    service.createEvent({ accountId: 'actor' }, {
+      title: 'Denied', scope: { type: 'workspace', id: 'workspace' },
+      timed: { startsAt: '2026-11-10T08:00:00Z', endsAt: '2026-11-10T09:00:00Z' },
+    }),
+    (err: unknown) => err instanceof DomainError && err.status === 403,
+  );
+});
+
+test('QA-10 & EC-13: All-day event civil date remains stable across timezones without drift', async () => {
+  const service = new CalendarService(testAuth);
   const teacher: Principal = { accountId: 'teacher-1' };
 
   // Create an all-day event for 2026-11-10 (civil date) with source timezone Asia/Ho_Chi_Minh
@@ -35,7 +48,7 @@ test('QA-10 & EC-13: All-day event civil date remains stable across timezones wi
 });
 
 test('QA-10 & CAL-03: Class event with specific audience delivers only to targeted groups', async () => {
-  const service = new CalendarService();
+  const service = new CalendarService(testAuth);
   const teacher: Principal = { accountId: 'teacher-1' };
   const studentGroup1: Principal = { accountId: 'student-g1' };
   const studentGroup2: Principal = { accountId: 'student-g2' };
@@ -60,8 +73,29 @@ test('QA-10 & CAL-03: Class event with specific audience delivers only to target
   assert.equal(eventsG2.some(e => e.id === event.id), false);
 });
 
+test('CAL-03: class event detail and list hide events from other groups', async () => {
+  const auth: AuthorizationPort = {
+    decide: async (principal, action, scope) => ({
+      allowed: action === 'event.create' || scope.type === 'class' ||
+        (scope.type === 'workspace' && scope.id === (principal.accountId === 'member-1' ? 'group-1' : 'group-2')),
+    }),
+  };
+  const service = new CalendarService(auth);
+  const { event } = await service.createEvent({ accountId: 'teacher' }, {
+    title: 'For group 1', scope: { type: 'class', id: 'class-1' }, audience: ['group-1'],
+    timed: { startsAt: '2026-11-12T08:00:00Z', endsAt: '2026-11-12T09:00:00Z' },
+  });
+  const allowed = { accountId: 'member-1' };
+  const denied = { accountId: 'member-2' };
+  assert.equal((await service.getEvent(allowed, event.id)).event.id, event.id);
+  assert.equal((await service.listEvents(allowed, { scopeType: 'class', scopeId: 'class-1' })).events.length, 1);
+  await assert.rejects(service.getEvent(denied, event.id),
+    (err: unknown) => err instanceof DomainError && err.status === 404);
+  assert.equal((await service.listEvents(denied, { scopeType: 'class', scopeId: 'class-1' })).events.length, 0);
+});
+
 test('QA-10, CAL-08 & EC-24: Cancel event marks status as cancelled with audit trail and remains visible to audience', async () => {
-  const service = new CalendarService();
+  const service = new CalendarService(testAuth);
   const teacher: Principal = { accountId: 'teacher-1' };
   const student: Principal = { accountId: 'student-1' };
 
@@ -92,7 +126,7 @@ test('QA-10, CAL-08 & EC-24: Cancel event marks status as cancelled with audit t
 });
 
 test('EC-14 & Validations: Timed events reject endsAt <= startsAt; All-day events reject invalid dates', async () => {
-  const service = new CalendarService();
+  const service = new CalendarService(testAuth);
   const user: Principal = { accountId: 'user-val' };
 
   // Timed event where endsAt <= startsAt must throw 400
@@ -124,7 +158,7 @@ test('EC-14 & Validations: Timed events reject endsAt <= startsAt; All-day event
 });
 
 test('CAL-06: Overlapping event returns conflictWarning = true without blocking save', async () => {
-  const service = new CalendarService();
+  const service = new CalendarService(testAuth);
   const user: Principal = { accountId: 'user-overlap' };
 
   // First event: 09:00 - 11:00
