@@ -107,8 +107,8 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
         {info && <div style={{ color: 'var(--success)', marginBottom: 12, fontSize: '0.875rem' }}>{info}</div>}
 
         {import.meta.env.DEV && tab === 'login' && import.meta.env.VITE_DEMO_PASSWORD && (
-          <div style={{ marginBottom: 16, padding: '12px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-            <span style={{ fontSize: '12px', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '8px' }}>
+          <div style={{ marginBottom: 16, padding: '12px', background: 'var(--surface-ground)', borderRadius: '8px', border: '1px solid var(--border-light)' }}>
+            <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ink-subtle)', display: 'block', marginBottom: '8px' }}>
               Trải nghiệm tài khoản mẫu:
             </span>
             <div style={{ display: 'flex', gap: '8px' }}>

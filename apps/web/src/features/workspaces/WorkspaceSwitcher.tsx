@@ -18,6 +18,7 @@ const getInitials = (name: string) => name.trim().slice(0, 2).toLocaleUpperCase(
 export function WorkspaceSwitcher({ workspaces, classes, activeWorkspace, onSelectWorkspace, onWorkspaceCreated }: Props) {
   const [viewState, setViewState] = useState<'collapsed' | 'strip' | 'list'>('collapsed');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const stripRef = useRef<HTMLDivElement>(null);
@@ -64,10 +65,59 @@ export function WorkspaceSwitcher({ workspaces, classes, activeWorkspace, onSele
     const strip = stripRef.current;
     if (drag?.moved) {
       suppressClickRef.current = true;
-      window.setTimeout(() => { suppressClickRef.current = false; }, 0);
+      window.setTimeout(() => { suppressClickRef.current = false; }, 50);
     }
-    if (drag && strip?.hasPointerCapture(drag.pointerId)) strip.releasePointerCapture(drag.pointerId);
+    if (drag && strip && strip.hasPointerCapture(drag.pointerId)) {
+      strip.releasePointerCapture(drag.pointerId);
+    }
     dragRef.current = null;
+    setIsDragging(false);
+  };
+
+  const handleStripKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+      const items = stripRef.current?.querySelectorAll<HTMLButtonElement>('.ws-strip-item');
+      if (!items || items.length === 0) return;
+      const index = Array.from(items).indexOf(document.activeElement as HTMLButtonElement);
+      if (index === -1) return;
+      e.preventDefault();
+      if (e.key === 'ArrowRight') {
+        const next = (index + 1) % items.length;
+        items[next]?.focus();
+      } else {
+        const prev = (index - 1 + items.length) % items.length;
+        items[prev]?.focus();
+      }
+    } else if (e.key === 'Home') {
+      const items = stripRef.current?.querySelectorAll<HTMLButtonElement>('.ws-strip-item');
+      if (items && items[0]) {
+        e.preventDefault();
+        items[0].focus();
+      }
+    } else if (e.key === 'End') {
+      const items = stripRef.current?.querySelectorAll<HTMLButtonElement>('.ws-strip-item');
+      if (items && items[items.length - 1]) {
+        e.preventDefault();
+        items[items.length - 1].focus();
+      }
+    }
+  };
+
+  const handleListKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      const items = e.currentTarget.querySelectorAll<HTMLButtonElement>('.ws-list-item, .ws-list-create');
+      if (!items || items.length === 0) return;
+      const index = Array.from(items).indexOf(document.activeElement as HTMLButtonElement);
+      if (index === -1) return;
+      e.preventDefault();
+      if (e.key === 'ArrowDown') {
+        const next = (index + 1) % items.length;
+        items[next]?.focus();
+      } else {
+        const prev = (index - 1 + items.length) % items.length;
+        items[prev]?.focus();
+      }
+    }
   };
 
   return (
@@ -77,6 +127,12 @@ export function WorkspaceSwitcher({ workspaces, classes, activeWorkspace, onSele
         type="button"
         className={`workspace-cluster-trigger ${isOpen ? 'is-open' : ''}`}
         onClick={() => setViewState(isOpen ? 'collapsed' : 'strip')}
+        onKeyDown={e => {
+          if ((e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') && !isOpen) {
+            e.preventDefault();
+            setViewState('strip');
+          }
+        }}
         title="Bấm để bung danh sách workspace"
         aria-expanded={viewState !== 'collapsed'}
         aria-controls="workspace-picker"
@@ -92,7 +148,7 @@ export function WorkspaceSwitcher({ workspaces, classes, activeWorkspace, onSele
       </button>
 
       {isOpen && (
-        <div id="workspace-picker" className="workspace-expanded-panel" aria-label="Chọn workspace">
+        <div id="workspace-picker" className="workspace-expanded-panel" aria-label="Chọn workspace" role="dialog" aria-modal="false">
           <div className="ws-expanded-header">
             <div><p className="ws-panel-eyebrow">Không gian làm việc</p><p className="ws-panel-subtitle">Mỗi hình tròn là một workspace</p></div>
             <button type="button" className="ws-view-toggle" onClick={() => setViewState(viewState === 'strip' ? 'list' : 'strip')}>
@@ -103,10 +159,12 @@ export function WorkspaceSwitcher({ workspaces, classes, activeWorkspace, onSele
           {viewState === 'strip' ? (
             <div
               ref={stripRef}
-              className="ws-strip"
+              className={`ws-strip ${isDragging ? 'is-dragging' : ''}`}
               aria-label="Các workspace"
+              tabIndex={0}
+              onKeyDown={handleStripKeyDown}
               onPointerDown={event => {
-                if (event.pointerType !== 'mouse' || event.button !== 0) return;
+                if (event.button !== 0) return;
                 dragRef.current = { pointerId: event.pointerId, startX: event.clientX, scrollLeft: event.currentTarget.scrollLeft, moved: false };
               }}
               onPointerMove={event => {
@@ -115,6 +173,7 @@ export function WorkspaceSwitcher({ workspaces, classes, activeWorkspace, onSele
                 const delta = event.clientX - drag.startX;
                 if (Math.abs(delta) > 5 && !drag.moved) {
                   drag.moved = true;
+                  setIsDragging(true);
                   event.currentTarget.setPointerCapture(event.pointerId);
                 }
                 if (drag.moved) {
@@ -133,7 +192,7 @@ export function WorkspaceSwitcher({ workspaces, classes, activeWorkspace, onSele
               }}
             >
               {/* UXR-04: Tạo workspace ở đầu trái ngoài cùng */}
-              <button type="button" className="ws-strip-item ws-create-item" onClick={create}>
+              <button type="button" className="ws-strip-item ws-create-item" onClick={create} aria-label="Tạo workspace mới">
                 <span className="ws-icon-circle ws-icon-create"><Plus size={18} aria-hidden="true" /></span>
                 <span className="ws-item-name">Tạo mới</span>
               </button>
@@ -153,7 +212,7 @@ export function WorkspaceSwitcher({ workspaces, classes, activeWorkspace, onSele
               ))}
             </div>
           ) : (
-            <div className="ws-list" aria-label="Danh sách workspace">
+            <div className="ws-list" aria-label="Danh sách workspace" tabIndex={0} onKeyDown={handleListKeyDown}>
               <button type="button" className="ws-list-create" onClick={create}><Plus size={16} /> Tạo workspace độc lập</button>
               {workspaces.map(ws => (
                 <button

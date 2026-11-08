@@ -296,14 +296,14 @@ export function App() {
             <div style={{ maxWidth: '960px', margin: '0 auto', padding: '32px 16px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
               {/* Hero Banner */}
               <div style={{ textAlign: 'center', padding: '24px 16px' }}>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 12px', borderRadius: '16px', background: '#eff6ff', border: '1px solid #bfdbfe', color: '#1d4ed8', fontSize: '12px', fontWeight: 600, marginBottom: '16px' }}>
-                  <Sparkles size={13} />
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 12px', borderRadius: '16px', background: 'var(--accent-light)', border: '1px solid var(--accent-border)', color: 'var(--accent-hover)', fontSize: '12px', fontWeight: 600, marginBottom: '16px' }}>
+                  <GraduationCap size={13} />
                   <span>SNOTE v2 • Phiên bản Trải nghiệm Nâng cao (Stageshow UI)</span>
                 </div>
-                <h1 style={{ fontSize: '2.25rem', fontWeight: 700, color: 'var(--ink-title, #09090b)', letterSpacing: '-0.025em', marginBottom: '12px', lineHeight: 1.2 }}>
+                <h1 style={{ fontSize: '2.25rem', fontWeight: 700, color: 'var(--ink-title)', letterSpacing: '-0.025em', marginBottom: '12px', lineHeight: 1.2 }}>
                   Nền tảng Học tập & Cộng tác Nhóm Hiện đại
                 </h1>
-                <p style={{ fontSize: '1rem', color: 'var(--ink-muted, #71717a)', maxWidth: '640px', margin: '0 auto 24px', lineHeight: 1.5 }}>
+                <p style={{ fontSize: '1rem', color: 'var(--ink-muted)', maxWidth: '640px', margin: '0 auto 24px', lineHeight: 1.5 }}>
                   Giao diện điềm tĩnh (Quiet Modern Productivity) với quản lý công việc Gantt/List, lịch trình đa múi giờ, thư viện bảo mật và nộp bài kiểm định SHA-256.
                 </p>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
@@ -320,15 +320,15 @@ export function App() {
 
               {/* One-Click Demo Access Cards */}
               <div>
-                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ink-subtle, #52525b)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px', textAlign: 'center' }}>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ink-subtle)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px', textAlign: 'center' }}>
                   ⚡ Trải nghiệm Nhanh 1 Chạm (Đã nạp sẵn dữ liệu mẫu thực nghiệm)
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
                   {/* Student Card */}
                   <div
                     style={{
-                      background: 'var(--surface-raised, #ffffff)',
-                      border: '1px solid var(--border-light, #e4e4e7)',
+                      background: 'var(--surface-raised)',
+                      border: '1px solid var(--border-light)',
                       borderRadius: '12px',
                       padding: '20px',
                       display: 'flex',
@@ -340,17 +340,17 @@ export function App() {
                   >
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                        <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '8px', background: '#eff6ff', color: '#2563eb' }}>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '8px', background: 'var(--accent-light)', color: 'var(--accent)' }}>
                           <CheckSquare size={18} />
                         </div>
-                        <span style={{ fontSize: '11px', fontWeight: 600, padding: '2px 8px', borderRadius: '12px', background: '#f4f4f5', color: '#52525b' }}>
+                        <span style={{ fontSize: '11px', fontWeight: 600, padding: '2px 8px', borderRadius: '12px', background: 'var(--surface-ground)', color: 'var(--ink-subtle)' }}>
                           Học sinh demo
                         </span>
                       </div>
-                      <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink-title, #09090b)', marginBottom: '6px' }}>
+                      <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink-title)', marginBottom: '6px' }}>
                         Không gian Học sinh (Student Workspace)
                       </h3>
-                      <p style={{ fontSize: '13px', color: 'var(--ink-muted, #71717a)', lineHeight: 1.4, marginBottom: '16px' }}>
+                      <p style={{ fontSize: '13px', color: 'var(--ink-muted)', lineHeight: 1.4, marginBottom: '16px' }}>
                         Khám phá Bảng công việc Gantt & Danh sách (ưu tiên P1/P2/P3), Lịch trình cá nhân (Solid Disc ngày hiện tại), Hộp thu tài liệu riêng tư và Nộp bài với Dropzone 1px.
                       </p>
                     </div>
@@ -367,8 +367,8 @@ export function App() {
                   {/* Teacher Card */}
                   <div
                     style={{
-                      background: 'var(--surface-raised, #ffffff)',
-                      border: '1px solid var(--border-light, #e4e4e7)',
+                      background: 'var(--surface-raised)',
+                      border: '1px solid var(--border-light)',
                       borderRadius: '12px',
                       padding: '20px',
                       display: 'flex',
@@ -380,23 +380,23 @@ export function App() {
                   >
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                        <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '8px', background: '#fdf4ff', color: '#9333ea' }}>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '8px', background: 'var(--surface-ground)', color: 'var(--ink-title)' }}>
                           <GraduationCap size={18} />
                         </div>
-                        <span style={{ fontSize: '11px', fontWeight: 600, padding: '2px 8px', borderRadius: '12px', background: '#f4f4f5', color: '#52525b' }}>
+                        <span style={{ fontSize: '11px', fontWeight: 600, padding: '2px 8px', borderRadius: '12px', background: 'var(--surface-ground)', color: 'var(--ink-subtle)' }}>
                           Giáo viên demo
                         </span>
                       </div>
-                      <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink-title, #09090b)', marginBottom: '6px' }}>
+                      <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink-title)', marginBottom: '6px' }}>
                         Không gian Giáo viên (Teacher Workspace)
                       </h3>
-                      <p style={{ fontSize: '13px', color: 'var(--ink-muted, #71717a)', lineHeight: 1.4, marginBottom: '16px' }}>
+                      <p style={{ fontSize: '13px', color: 'var(--ink-muted)', lineHeight: 1.4, marginBottom: '16px' }}>
                         Quản lý Lớp học "Toán Ứng dụng & Giải thuật 2026", giao bài tập kiểm định, xem Bảng tiến độ nộp bài và chấm điểm qua Dòng thời gian phiên bản (Vertical Timeline).
                       </p>
                     </div>
                     <button
                       className="btn btn-secondary btn-sm"
-                      style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '8px 14px', background: '#faf5ff', borderColor: '#d8b4fe', color: '#7e22ce' }}
+                      style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '8px 14px', background: 'var(--surface-ground)', borderColor: 'var(--border-light)', color: 'var(--ink-title)' }}
                       onClick={() => handleQuickDemoLogin(import.meta.env.VITE_DEMO_TEACHER_EMAIL || '', import.meta.env.VITE_DEMO_PASSWORD || '')}
                     >
                       <span>Vào vai Giáo viên Demo</span>
@@ -408,46 +408,46 @@ export function App() {
 
               {/* Bento Grid: 4 Feature Showcase Previews */}
               <div>
-                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ink-subtle, #52525b)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ink-subtle)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>
                   Trụ cột Thiết kế Stageshow & Năng suất Hiện đại
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
-                  <div style={{ padding: '16px', background: '#ffffff', borderRadius: '8px', border: '1px solid #e4e4e7' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', color: '#2563eb', fontWeight: 600, fontSize: '13px' }}>
+                  <div style={{ padding: '16px', background: 'var(--surface-raised)', borderRadius: '8px', border: '1px solid var(--border-light)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', color: 'var(--accent)', fontWeight: 600, fontSize: '13px' }}>
                       <CheckSquare size={14} />
                       <span>Công việc & Gantt</span>
                     </div>
-                    <p style={{ fontSize: '12px', color: '#71717a', lineHeight: 1.4 }}>
+                    <p style={{ fontSize: '12px', color: 'var(--ink-muted)', lineHeight: 1.4 }}>
                       Chuyển đổi Gantt và Danh sách tức thì, thanh trượt thời gian, nhãn ưu tiên P1/P2/P3 và checklist việc con.
                     </p>
                   </div>
 
-                  <div style={{ padding: '16px', background: '#ffffff', borderRadius: '8px', border: '1px solid #e4e4e7' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', color: '#059669', fontWeight: 600, fontSize: '13px' }}>
+                  <div style={{ padding: '16px', background: 'var(--surface-raised)', borderRadius: '8px', border: '1px solid var(--border-light)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', color: 'var(--success)', fontWeight: 600, fontSize: '13px' }}>
                       <Calendar size={14} />
                       <span>Lịch trình Dân sự</span>
                     </div>
-                    <p style={{ fontSize: '12px', color: '#71717a', lineHeight: 1.4 }}>
+                    <p style={{ fontSize: '12px', color: 'var(--ink-muted)', lineHeight: 1.4 }}>
                       Nhận diện Solid Disc ngày hôm nay, giữ nguyên ngày dân sự cho sự kiện cả ngày và cảnh báo trùng lịch thông minh.
                     </p>
                   </div>
 
-                  <div style={{ padding: '16px', background: '#ffffff', borderRadius: '8px', border: '1px solid #e4e4e7' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', color: '#d97706', fontWeight: 600, fontSize: '13px' }}>
+                  <div style={{ padding: '16px', background: 'var(--surface-raised)', borderRadius: '8px', border: '1px solid var(--border-light)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', color: 'var(--warning)', fontWeight: 600, fontSize: '13px' }}>
                       <BookOpen size={14} />
                       <span>Thư viện Số 100MB</span>
                     </div>
-                    <p style={{ fontSize: '12px', color: '#71717a', lineHeight: 1.4 }}>
+                    <p style={{ fontSize: '12px', color: 'var(--ink-muted)', lineHeight: 1.4 }}>
                       Thanh hạn ngạch QuotaBar mảnh 6px, xem trước liên kết an toàn chống SSRF, thùng rác lưu trữ 30 ngày.
                     </p>
                   </div>
 
-                  <div style={{ padding: '16px', background: '#ffffff', borderRadius: '8px', border: '1px solid #e4e4e7' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', color: '#7c3aed', fontWeight: 600, fontSize: '13px' }}>
+                  <div style={{ padding: '16px', background: 'var(--surface-raised)', borderRadius: '8px', border: '1px solid var(--border-light)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', color: 'var(--accent)', fontWeight: 600, fontSize: '13px' }}>
                       <ClipboardList size={14} />
                       <span>Bài giao & Nộp bài</span>
                     </div>
-                    <p style={{ fontSize: '12px', color: '#71717a', lineHeight: 1.4 }}>
+                    <p style={{ fontSize: '12px', color: 'var(--ink-muted)', lineHeight: 1.4 }}>
                       Dropzone kéo thả 1px nét đứt, dòng thời gian phiên bản dọc nối điểm tròn và nhận xét giáo viên trực quan.
                     </p>
                   </div>
