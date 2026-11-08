@@ -1,5 +1,6 @@
 import {
   Controller,
+  Inject,
   Get,
   Post,
   Param,
@@ -11,6 +12,8 @@ import {
 } from '@nestjs/common';
 import { DomainError } from '../../core/authorization';
 import { requestId, success } from '../../core/http';
+import type { SessionPort } from '../../core/http';
+import { getSession, requireAuthAndCsrf, type Request } from '../identity/http-utils';
 import { SubmissionService } from './submission.service';
 import type {
   FeedbackInputDto,
@@ -20,18 +23,12 @@ import type {
   UpdateInputDto,
 } from './submission.types';
 
-interface RequestLike {
-  headers: Record<string, string | string[] | undefined>;
-  user?: { accountId: string };
-}
-
 @Controller()
 export class SubmissionController {
-  constructor(private readonly submissionService: SubmissionService) {}
-
-  private extractActorId(req: RequestLike): string {
-    return req.user?.accountId || (req.headers['x-actor-id'] as string) || 'student-leader-1';
-  }
+  constructor(
+    private readonly submissionService: SubmissionService,
+    @Inject('SESSION_PORT') private readonly sessionPort: SessionPort,
+  ) {}
 
   @Post('/assignment-recipients/:recipientId/submissions')
   async submit(
@@ -39,20 +36,17 @@ export class SubmissionController {
     @Body() body: SubmissionInputDto,
     @Headers('idempotency-key') idempotencyKey: string | undefined,
     @Headers('if-match') ifMatch: string | undefined,
-    @Headers('x-csrf-token') csrfToken: string | undefined,
-    @Req() req: RequestLike
+    @Req() req: Request
   ): Promise<SubmissionResultDto> {
     const reqId = requestId();
-    const actorId = this.extractActorId(req);
-
-    if (!idempotencyKey) {
-      throw new HttpException(
-        { error: { code: 'INVALID_INPUT', message: 'Missing Idempotency-Key header', details: {} }, requestId: reqId },
-        HttpStatus.BAD_REQUEST
-      );
-    }
-
     try {
+      const actorId = (await requireAuthAndCsrf(req, this.sessionPort)).accountId;
+      if (!idempotencyKey) {
+        throw new HttpException(
+          { error: { code: 'INVALID_INPUT', message: 'Missing Idempotency-Key header', details: {} }, requestId: reqId },
+          HttpStatus.BAD_REQUEST
+        );
+      }
       const data = await this.submissionService.submit(
         actorId,
         recipientId,
@@ -62,6 +56,7 @@ export class SubmissionController {
       );
       return success(data, reqId);
     } catch (err: any) {
+      if (err instanceof HttpException) throw err;
       if (err instanceof DomainError) {
         throw new HttpException(
           { error: { code: err.code, message: err.message, details: {} }, requestId: reqId },
@@ -78,12 +73,11 @@ export class SubmissionController {
   @Get('/assignment-recipients/:recipientId/submissions')
   async getSubmissions(
     @Param('recipientId') recipientId: string,
-    @Req() req: RequestLike
+    @Req() req: Request
   ): Promise<SubmissionListResultDto> {
     const reqId = requestId();
-    const actorId = this.extractActorId(req);
-
     try {
+      const actorId = (await getSession(req, this.sessionPort)).accountId;
       const data = await this.submissionService.getSubmissions(actorId, recipientId);
       return {
         data,
@@ -106,12 +100,11 @@ export class SubmissionController {
   @Get('/submissions/:submissionId')
   async getSubmission(
     @Param('submissionId') submissionId: string,
-    @Req() req: RequestLike
+    @Req() req: Request
   ): Promise<SubmissionResultDto> {
     const reqId = requestId();
-    const actorId = this.extractActorId(req);
-
     try {
+      const actorId = (await getSession(req, this.sessionPort)).accountId;
       const data = await this.submissionService.getSubmission(actorId, submissionId);
       return success(data, reqId);
     } catch (err: any) {
@@ -132,13 +125,11 @@ export class SubmissionController {
   async addFeedback(
     @Param('submissionId') submissionId: string,
     @Body() body: FeedbackInputDto,
-    @Headers('x-csrf-token') csrfToken: string | undefined,
-    @Req() req: RequestLike
+    @Req() req: Request
   ): Promise<SubmissionResultDto> {
     const reqId = requestId();
-    const actorId = this.extractActorId(req);
-
     try {
+      const actorId = (await requireAuthAndCsrf(req, this.sessionPort)).accountId;
       const data = await this.submissionService.addFeedback(actorId, submissionId, body.text);
       return success(data, reqId);
     } catch (err: any) {
@@ -160,13 +151,11 @@ export class SubmissionController {
     @Param('recipientId') recipientId: string,
     @Body() body: UpdateInputDto,
     @Headers('if-match') ifMatch: string | undefined,
-    @Headers('x-csrf-token') csrfToken: string | undefined,
-    @Req() req: RequestLike
+    @Req() req: Request
   ): Promise<any> {
     const reqId = requestId();
-    const actorId = this.extractActorId(req);
-
     try {
+      const actorId = (await requireAuthAndCsrf(req, this.sessionPort)).accountId;
       const data = await this.submissionService.updateProgress(actorId, recipientId, body.text, ifMatch);
       return success(data, reqId);
     } catch (err: any) {
