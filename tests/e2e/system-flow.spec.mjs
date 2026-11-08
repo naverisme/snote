@@ -23,8 +23,9 @@ test('System E2E Lifecycle: Luồng tích hợp toàn vẹn xuyên suốt từ A
   const classService = new ClassService(db.client);
   const groupLifecycle = new GroupLifecycle(db.client);
   const wsService = new WorkspaceService(db.client, groupLifecycle);
-  const tasksService = new TasksService();
-  const calService = new CalendarService();
+  const allowAuth = { decide: async () => ({ allowed: true }) };
+  const tasksService = new TasksService(allowAuth);
+  const calService = new CalendarService(allowAuth);
 
   // 2. Đăng ký tài khoản: 1 Giáo viên và 2 Sinh viên
   const { account: teacher } = await identity.register({
@@ -178,7 +179,7 @@ test('System E2E Lifecycle: Luồng tích hợp toàn vẹn xuyên suốt từ A
 
   const libStore = new MockStore();
   const quota = new MockQuota();
-  const libService = new LibraryService(libStore, quota, { findStaging: async () => null, updateStagingStatus: async () => {} });
+  const libService = new LibraryService(libStore, quota, { findStaging: async () => null, updateStagingStatus: async () => {} }, allowAuth);
 
   // Lưu tài liệu đặc tả vào Workspace Nhóm
   const docItem = await libService.createItem(
