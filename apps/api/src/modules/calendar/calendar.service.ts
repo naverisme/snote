@@ -22,14 +22,10 @@ export class CalendarService {
   >();
   private auditEvents: AuditEventRecord[] = [];
 
-  constructor(private readonly authPort?: AuthorizationPort) {}
+  constructor(private readonly authPort: AuthorizationPort = { decide: async () => ({ allowed: false }) }) {}
 
   private getAuthorizer(): AuthorizationPort {
-    return (
-      this.authPort ?? {
-        decide: async () => ({ allowed: true }),
-      }
-    );
+    return this.authPort;
   }
 
   // --- Create Event ---
@@ -123,6 +119,7 @@ export class CalendarService {
         type: event.scope.type as 'class' | 'workspace',
         id: event.scope.id ?? 'default',
       });
+      if (!(await this.canReadAudience(principal, event))) throw new DomainError('NOT_FOUND', 404);
     }
 
     return { event: this.toPublicEvent(event), etag: `"${event.version}"` };
@@ -156,11 +153,15 @@ export class CalendarService {
 
       return true;
     });
+    const visible = [] as typeof filtered;
+    for (const event of filtered) {
+      if (await this.canReadAudience(principal, event)) visible.push(event);
+    }
 
     const limit = query.limit ?? 50;
-    const startIndex = query.cursor ? filtered.findIndex(e => e.id === query.cursor) + 1 : 0;
-    const slice = filtered.slice(startIndex, startIndex + limit);
-    const nextCursor = startIndex + limit < filtered.length ? slice[slice.length - 1]?.id : undefined;
+    const startIndex = query.cursor ? visible.findIndex(e => e.id === query.cursor) + 1 : 0;
+    const slice = visible.slice(startIndex, startIndex + limit);
+    const nextCursor = startIndex + limit < visible.length ? slice[slice.length - 1]?.id : undefined;
 
     return { events: slice.map(e => this.toPublicEvent(e)), nextCursor };
   }
@@ -168,30 +169,44 @@ export class CalendarService {
   async listMyEvents(
     principal: Principal,
     viewerTimeZone?: string,
-    userWorkspaceIds: string[] = [],
+    userWorkspaceIds?: string[],
   ): Promise<{ events: Event[] }> {
     // CAL-01, CAL-03: Aggregates private events, workspace events, and class events targeted to audience
-    const results = Array.from(this.events.values()).filter(e => {
+    const results: Array<Event & { ownerId: string; audience?: string[]; content?: string; createdAt: Date; updatedAt: Date }> = [];
+    for (const e of this.events.values()) {
       // 1. Private events: only visible to owner
       if (e.scope.type === 'private') {
-        return e.ownerId === principal.accountId;
+        if (e.ownerId === principal.accountId) results.push(e);
+        continue;
       }
 
       // 2. Workspace events: visible if user belongs to workspace
       if (e.scope.type === 'workspace') {
-        if (!e.scope.id) return false;
-        return userWorkspaceIds.includes(e.scope.id);
+        if (!e.scope.id || (userWorkspaceIds && !userWorkspaceIds.includes(e.scope.id))) continue;
+        const decision = await this.getAuthorizer().decide(principal, 'event.read', { type: 'workspace', id: e.scope.id });
+        if (decision.allowed) results.push(e);
+        continue;
       }
 
       // 3. Class events: CAL-03 audience check
       if (e.scope.type === 'class') {
-        if (!e.audience || e.audience.length === 0) return true; // Entire class
-        // Specific groups
-        return e.audience.some(wsId => userWorkspaceIds.includes(wsId));
+        if (!e.scope.id) continue;
+        const classDecision = await this.getAuthorizer().decide(principal, 'event.read', { type: 'class', id: e.scope.id });
+        if (!classDecision.allowed) continue;
+        if (!e.audience || e.audience.length === 0 || e.ownerId === principal.accountId) {
+          results.push(e);
+          continue;
+        }
+        if (userWorkspaceIds) {
+          if (e.audience.some(wsId => userWorkspaceIds.includes(wsId))) results.push(e);
+          continue;
+        }
+        for (const wsId of e.audience) {
+          const groupDecision = await this.getAuthorizer().decide(principal, 'event.read', { type: 'workspace', id: wsId });
+          if (groupDecision.allowed) { results.push(e); break; }
+        }
       }
-
-      return false;
-    });
+    }
 
     // QA-10: Timed events display according to viewerTimeZone; All-day events retain civil date
     const formatted = results.map(e => {
@@ -290,6 +305,15 @@ export class CalendarService {
   }
 
   // --- Helpers ---
+
+  private async canReadAudience(principal: Principal, event: Event & { ownerId: string; audience?: string[] }): Promise<boolean> {
+    if (event.scope.type !== 'class' || !event.audience?.length || event.ownerId === principal.accountId) return true;
+    for (const workspaceId of event.audience) {
+      const decision = await this.getAuthorizer().decide(principal, 'event.read', { type: 'workspace', id: workspaceId });
+      if (decision.allowed) return true;
+    }
+    return false;
+  }
 
   private detectOverlap(scope: Scope, input: EventInput): boolean {
     const isInputTimed = 'timed' in input && input.timed !== undefined;
