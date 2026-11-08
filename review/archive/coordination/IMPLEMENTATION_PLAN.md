@@ -1,14 +1,16 @@
+> **LƯU TRỮ — KHÔNG CÒN LÀ HƯỚNG DẪN HIỆN HÀNH.** Ảnh chụp lịch sử từ `s_note_v2` tại `bdc1df38` để truy vết; các lệnh, trạng thái PR và phép kiểm trong bản này không được tự áp dụng.
+
 # Kế hoạch xây dựng SNOTE v2
 
 | Thuộc tính | Quy định |
 | --- | --- |
-| Phạm vi | Bản đầu theo [product/first-release](docs/product/first-release.md), chỉ nhánh `s_note_v2`; tuyệt đối không đọc hoặc tái sử dụng v1 |
+| Phạm vi | Bản đầu theo [product/first-release](../../../docs/product/first-release.md), chỉ nhánh `s_note_v2`; tuyệt đối không đọc hoặc tái sử dụng v1 |
 | Trạng thái | Kế hoạch thực thi; không phải báo cáo tính năng đã hoàn thành |
-| Nguồn đặc tả | [docs](docs/README.md), [OpenAPI](docs/contracts/openapi.yaml), [lược đồ](docs/architecture/physical-schema.md), [QA](docs/quality/README.md) |
-| Điều phối | [AGENTS.md](AGENTS.md), [WORKTREES.md](WORKTREES.md), [bảng công việc](WORK_QUEUE.md), Foundation #28, bốn lát cắt #29/#31/#35/#32, tích hợp #36; #30/#33/#34 là đầu việc UI nằm trong các lát cắt |
+| Nguồn đặc tả | [docs](../../../docs/README.md), [OpenAPI](../../../docs/contracts/openapi.yaml), [lược đồ](../../../docs/architecture/physical-schema.md), [QA](../../../docs/quality/README.md) |
+| Điều phối | [AGENTS.md](../../../AGENTS.md), [WORKTREES.md](WORKTREES.md), [bảng công việc](WORK_QUEUE.md), Foundation #28, bốn lát cắt #29/#31/#35/#32, tích hợp #36; #30/#33/#34 là đầu việc UI nằm trong các lát cắt |
 | Đơn vị hoàn thành | Một PR có build, kiểm tra liên quan, chứng cứ, phiên bản commit, người/vùng sở hữu; merge vào `s_note_v2` |
 
-Kế hoạch ở gốc repo vì nó mô tả **cách thực hiện và thứ tự công việc**; `docs/` giữ đặc tả sản phẩm/hệ thống phải đúng. Mọi ngày công, lịch và ngân sách chỉ được lập sau khi biết số người, môi trường và năng lực thực tế. Không điền con số giả. Có thể coding foundation bằng dữ liệu giả; không gọi pilot sẵn sàng khi chưa đóng các đầu vào môi trường trong [review/unresolved](review/unresolved.md).
+Kế hoạch ở gốc repo vì nó mô tả **cách thực hiện và thứ tự công việc**; `docs/` giữ đặc tả sản phẩm/hệ thống phải đúng. Mọi ngày công, lịch và ngân sách chỉ được lập sau khi biết số người, môi trường và năng lực thực tế. Không điền con số giả. Có thể coding foundation bằng dữ liệu giả; không gọi pilot sẵn sàng khi chưa đóng các đầu vào môi trường trong [review/unresolved](../../unresolved.md).
 
 **Bản điều chỉnh phân công:** Theo yêu cầu chủ sản phẩm trong cuộc trao đổi ngày 2026-11-07, worktree tính năng được chia theo luồng, mỗi worktree chịu trách nhiệm API và UI của luồng đó. Phân công bốn lát cắt ở mục 2 thay bảng bốn API/ba WEB của bản kế hoạch trước; quy tắc nghiệp vụ trong `docs/` giữ nguyên.
 

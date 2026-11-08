@@ -1,3 +1,5 @@
+> **LƯU TRỮ — báo cáo sẵn sàng API-A trước foundation; không còn là cổng hiện hành.** Mốc gốc `bdc1df38`.
+
 # API-A #29 — rà đầu vào trước triển khai
 
 | Trường | Giá trị |
@@ -6,25 +8,25 @@
 | Thời điểm đối chiếu | 2026-11-07, khoảng 15:39–15:41 UTC |
 | Checkout | `feat/v2/api-a`, HEAD `63a1ae7edf9dff69a913c236815ca3be156c5763` |
 | Trạng thái | Rà đầu vào; chưa triển khai hoặc nghiệm thu API-A. Cổng foundation chưa đạt |
-| Nguồn | [AGENTS](../AGENTS.md), [kế hoạch](../IMPLEMENTATION_PLAN.md), [worktrees](../WORKTREES.md), [SRC-26/27](provenance.md), các tài liệu v2 dẫn dưới đây; không dùng v1 |
+| Nguồn | [AGENTS](../../../AGENTS.md), [kế hoạch](IMPLEMENTATION_PLAN.md), [worktrees](WORKTREES.md), [SRC-26/27](../../provenance.md), các tài liệu v2 dẫn dưới đây; không dùng v1 |
 
 ## Cổng bắt đầu
 
 [PR foundation #39](https://github.com/naverisme/snote/pull/39) đang mở, `draft=true`, `merged_at=null`; head trùng HEAD checkout này. Nhánh đích `s_note_v2` vẫn ở `269efe03ce0beeeb12cd5811fc088dbbfffe6c58` khi đối chiếu. Có mã foundation trong checkout không chứng minh foundation đã merge hoặc qua kiểm migration.
 
-[Workflow run 42386449645](https://github.com/naverisme/snote/actions/runs/42386449645), gắn với head foundation, trả `completed/failure`; job `build` số `128444759977` trả `failure`, không có steps trong phản hồi connector. Mô tả PR #39 và [hồ sơ foundation](foundation-audit.md) ghi lần chạy trước bị GitHub chặn do billing. Không suy nguyên nhân riêng của lần chạy mới từ thông tin lần trước. Chưa thu được bằng chứng PostgreSQL/migration thành công.
+[Workflow run 42386449645](https://github.com/naverisme/snote/actions/runs/42386449645), gắn với head foundation, trả `completed/failure`; job `build` số `128444759977` trả `failure`, không có steps trong phản hồi connector. Mô tả PR #39 và [hồ sơ foundation](../../foundation-audit.md) ghi lần chạy trước bị GitHub chặn do billing. Không suy nguyên nhân riêng của lần chạy mới từ thông tin lần trước. Chưa thu được bằng chứng PostgreSQL/migration thành công.
 
-[WORKTREES, cổng 1–2](../WORKTREES.md) yêu cầu merge foundation trước khi tách worktree tính năng; [kế hoạch F](../IMPLEMENTATION_PLAN.md) yêu cầu xử lý field/action/transaction quan trọng còn thiếu trong #28 trước khi phát client. Vì vậy chưa bắt đầu coding API-A, chưa đổi schema, generator, client hay core. Hồ sơ này thực hiện phần rà soát độc lập theo AGENTS mục 3–4; các yêu cầu bên dưới là bản nháp bàn giao cho owner #28, chưa được gửi lên GitHub.
+[WORKTREES, cổng 1–2](WORKTREES.md) yêu cầu merge foundation trước khi tách worktree tính năng; [kế hoạch F](IMPLEMENTATION_PLAN.md) yêu cầu xử lý field/action/transaction quan trọng còn thiếu trong #28 trước khi phát client. Vì vậy chưa bắt đầu coding API-A, chưa đổi schema, generator, client hay core. Hồ sơ này thực hiện phần rà soát độc lập theo AGENTS mục 3–4; các yêu cầu bên dưới là bản nháp bàn giao cho owner #28, chưa được gửi lên GitHub.
 
 ## Dấu vết đầu vào đã kiểm
 
 | Đầu vào tại HEAD | Git blob |
 | --- | --- |
-| [OpenAPI](../docs/contracts/openapi.yaml) | `0e2d61ce4e7d57f6fa2c98a65c351c6c55a5d167` |
-| [Prisma schema](../apps/api/prisma/schema.prisma) | `cd69066dd6098fadd86a0c86cde7d0e884ba8b07` |
-| [Types đã sinh](../packages/contracts/src/schema.ts) | `92c725300ea3150dd5659fd166cd5dde89c61d2d` |
+| [OpenAPI](../../../docs/contracts/openapi.yaml) | `0e2d61ce4e7d57f6fa2c98a65c351c6c55a5d167` |
+| [Prisma schema](../../../apps/api/prisma/schema.prisma) | `cd69066dd6098fadd86a0c86cde7d0e884ba8b07` |
+| [Types đã sinh](../../../packages/contracts/src/schema.ts) | `92c725300ea3150dd5659fd166cd5dde89c61d2d` |
 
-Đã đọc hợp đồng bằng `js-yaml` có sẵn trong `node_modules`, chỉ truy vấn dữ liệu, không chạy generator. Kết quả: 78 paths, 98 operations; 48 operations mang tag `auth/account/class/membership/workspace/grant` liên quan API-A. Đã đối chiếu [registry generator](../tools/build_openapi.py), [SQL migration](../apps/api/prisma/migrations/20261107105000_foundation/migration.sql), [lược đồ](../docs/architecture/physical-schema.md), [action catalog](../docs/contracts/action-catalog.md) và [core authorization](../apps/api/src/core/authorization.ts).
+Đã đọc hợp đồng bằng `js-yaml` có sẵn trong `node_modules`, chỉ truy vấn dữ liệu, không chạy generator. Kết quả: 78 paths, 98 operations; 48 operations mang tag `auth/account/class/membership/workspace/grant` liên quan API-A. Đã đối chiếu [registry generator](../../../tools/build_openapi.py), [SQL migration](../../../apps/api/prisma/migrations/20261107105000_foundation/migration.sql), [lược đồ](../../../docs/architecture/physical-schema.md), [action catalog](../../../docs/contracts/action-catalog.md) và [core authorization](../../../apps/api/src/core/authorization.ts).
 
 Đây là kết quả kiểm tĩnh, không thay validator OpenAPI chuẩn, build, kiểm PostgreSQL hoặc QA runtime. Python hiện không có `yaml`; không có `docker`/`psql` trên PATH trong phiên rà này. Không cài dependency hay sửa môi trường của owner khác để suy ra cổng đã đạt.
 
@@ -57,7 +59,7 @@ Phản biện phương án khóa: chỉ khóa `(classId,accountId)` trong accept
 
 ## Ma trận kiểm phải thực thi
 
-Các hàng sau là ca cần chạy, chưa phải kết quả pass. Kế thừa [QA-01–04](../docs/quality/README.md), [VT-01–04](../docs/quality/acceptance-scenarios.md), [EC-07/09–12/19](edge-case-audit.md) và [STR-01–14](../docs/requirements/structural-rules.md).
+Các hàng sau là ca cần chạy, chưa phải kết quả pass. Kế thừa [QA-01–04](../../../docs/quality/README.md), [VT-01–04](../../../docs/quality/acceptance-scenarios.md), [EC-07/09–12/19](../../edge-case-audit.md) và [STR-01–14](../../../docs/requirements/structural-rules.md).
 
 | Ca | Điều kiện/thao tác | Kết quả quan sát cần có |
 | --- | --- | --- |

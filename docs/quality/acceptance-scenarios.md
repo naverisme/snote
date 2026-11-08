@@ -5,7 +5,7 @@
 | Mục đích | Xác định tình huống và kết quả quan sát để kiểm quy tắc đã chốt |
 | Phạm vi | Mười hai tình huống nền; chưa bao phủ toàn bộ hành vi của bản đầu |
 | Kiểm định | Chủ sản phẩm duyệt Q36; [SRC-12](../../review/provenance.md) |
-| Giới hạn | Dữ liệu thử chi tiết, cách thực thi, thiết bị, mục tiêu hiệu năng và phục hồi còn ở [R-16](../../review/unresolved.md) |
+| Giới hạn | Đây là kết quả **cần quan sát**, không phải báo cáo đã đạt; mục tiêu và cách đo ở [quality/README](README.md), kết quả theo môi trường/SHA ở [review](../../review/README.md), môi trường pilot còn mở ở [unresolved](../../review/unresolved.md) |
 
 | Mã | Thiết lập và thao tác | Kết quả cần quan sát | Quy tắc |
 | --- | --- | --- | --- |
@@ -22,4 +22,4 @@
 | VT-11 | Nộp bản có tệp, sửa mục Thư viện, đổi hạn và nhận xét phiên bản | Phiên bản đã nộp giữ nội dung và trạng thái đúng hạn hoặc muộn tại lúc nộp. Nhận xét gắn phiên bản. Hạn mới áp dụng cho lần sau. | [ASG-04, ASG-08, ASG-09](../requirements/assignments-and-submissions.md) |
 | VT-12 | Mở Việc của tôi và Công việc workspace, chuyển Danh sách, mở chi tiết từ Gantt | Gantt mặc định trong cả hai phạm vi. Danh sách giữ đúng tập việc theo phạm vi. Sửa việc qua chi tiết. | [TASK-01](../requirements/tasks.md), [VIEW-01 đến VIEW-03](../ux/task-views.md) |
 
-Phương pháp chạy, bộ dữ liệu thử, phạm vi thiết bị và ngưỡng chất lượng sẽ được bổ sung sau khi các đầu vào tương ứng được chốt. Không suy ra mức đáp ứng hoặc mục tiêu khôi phục từ việc duyệt 12 ca này.
+Phương pháp, bộ dữ liệu thử và ngưỡng thiết kế tra ở [quality/README](README.md); báo cáo kết quả gắn môi trường và SHA nằm ngoài `docs/`. Không suy ra mức đáp ứng hay phục hồi trên môi trường pilot từ việc duyệt 12 ca hoặc từ phép thử cách ly.

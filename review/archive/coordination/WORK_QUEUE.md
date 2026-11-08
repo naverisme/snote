@@ -1,3 +1,5 @@
+> **LƯU TRỮ — KHÔNG CÒN LÀ HƯỚNG DẪN HIỆN HÀNH.** Ảnh chụp lịch sử từ `s_note_v2` tại `bdc1df38` để truy vết; các lệnh, trạng thái PR và phép kiểm trong bản này không được tự áp dụng.
+
 # Bảng điều phối công việc SNOTE v2
 
 | Thuộc tính | Giá trị |
@@ -5,7 +7,7 @@
 | Phạm vi | Chỉ `s_note_v2` và các nhánh tách từ đó; không dùng nguồn SNOTE v1 |
 | Loại tài liệu | Bảng điều phối thực thi, không thay đặc tả trong `docs/` hoặc trạng thái issue/PR trên GitHub |
 | Cập nhật | 2026-11-08; kiểm lại PR/commit trước khi dùng bảng trạng thái |
-| Nguồn | [Kế hoạch](IMPLEMENTATION_PLAN.md), [luật worktree](WORKTREES.md), [OpenAPI](docs/contracts/openapi.yaml), issues #28–36 và yêu cầu chia tính năng API + UI của chủ sản phẩm |
+| Nguồn | [Kế hoạch](IMPLEMENTATION_PLAN.md), [luật worktree](WORKTREES.md), [OpenAPI](../../../docs/contracts/openapi.yaml), issues #28–36 và yêu cầu chia tính năng API + UI của chủ sản phẩm |
 
 ## Thư mục và nhánh
 
@@ -31,10 +33,10 @@ Tất cả worktree là **thư mục anh em của `SNOTE`**, không nằm trong 
 | N2 — xong | Hoàn thiện #28 trong `snote-v2-foundation`: sửa khoảng trống contract/schema có bằng chứng, sinh lại client, kiểm diff sinh ổn định | Đã merge vào `s_note_v2` tại `bc8e6ff` (PR #39); pass F1–F6 và AA-F01–09 | HOÀN THÀNH |
 | N3 — xong | Chạy migration DB trắng, reset/migrate và kiểm constraint thật cho #28; chạy lại ở mỗi head đổi schema | PostgreSQL migration đạt, Prisma schema ổn định | HOÀN THÀNH |
 | N4 — xong | Rà ma trận quyền, ca đồng thời/lỗi giữa chừng và khoảng trống đầu vào #29–35 trong `review/` | Toàn bộ 78 API unit/integration tests bao phủ đầy đủ QA-01–14 | HOÀN THÀNH |
-| N5 — xong phần giả lập | Chuẩn bị checklist tích hợp #36 từ QA-01–14 và `review/unresolved.md`; chạy VT-01–VT-12 ở mức service | PR #45 đã merge; 13/13 bài service giả lập qua. [Báo cáo gốc](review/e2e-integration-audit.md) có đính chính | HOÀN THÀNH PHẦN GIẢ LẬP |
-| N6 — xong | Thực hiện I-1–I-5 theo [rà lại cổng #36](review/integration-gate-reassessment.md) trong vùng sở hữu integration | I-1 đến I-5 hoàn tất qua PR #49, #50, #51, #52; 39/39 E2E tests pass trên PostgreSQL thật và CI | HOÀN THÀNH |
-| N7 — xong | Trả [lỗi danh tính/quyền và lưu trữ](review/integration-gate-reassessment.md) về owner #31/#35/#32; sửa DI và deny-by-default | PR #46, #47, #48 đã merge; 95 API tests pass; AppModule bootstrap thành công 100% | HOÀN THÀNH |
-| N8 — xong | Chiến dịch nâng cấp UI/UX toàn diện theo [skill-driven-ui-guide.md](docs/ux/skill-driven-ui-guide.md) trên 4 worktree chuyên trách | Đã nghiệm thu và merge 100% 4 PR: #60 (Assignments UI), #59 (Library UI), #58 (Planning UI), #56 (Review/Shell/A11y) vào `s_note_v2`; pass toàn bộ 44/44 web unit/e2e tests, build web thành công, quét sạch 68 files mã nguồn UI không có anti-pattern | HOÀN THÀNH |
+| N5 — xong phần giả lập | Chuẩn bị checklist tích hợp #36 từ QA-01–14 và `review/unresolved.md`; chạy VT-01–VT-12 ở mức service | PR #45 đã merge; 13/13 bài service giả lập qua. [Báo cáo gốc](../../e2e-integration-audit.md) có đính chính | HOÀN THÀNH PHẦN GIẢ LẬP |
+| N6 — xong | Thực hiện I-1–I-5 theo [rà lại cổng #36](../../integration-gate-reassessment.md) trong vùng sở hữu integration | I-1 đến I-5 hoàn tất qua PR #49, #50, #51, #52; 39/39 E2E tests pass trên PostgreSQL thật và CI | HOÀN THÀNH |
+| N7 — xong | Trả [lỗi danh tính/quyền và lưu trữ](../../integration-gate-reassessment.md) về owner #31/#35/#32; sửa DI và deny-by-default | PR #46, #47, #48 đã merge; 95 API tests pass; AppModule bootstrap thành công 100% | HOÀN THÀNH |
+| N8 — xong | Chiến dịch nâng cấp UI/UX toàn diện theo [skill-driven-ui-guide.md](skill-driven-ui-guide.md) trên 4 worktree chuyên trách | Đã nghiệm thu và merge 100% 4 PR: #60 (Assignments UI), #59 (Library UI), #58 (Planning UI), #56 (Review/Shell/A11y) vào `s_note_v2`; pass toàn bộ 44/44 web unit/e2e tests, build web thành công, quét sạch 68 files mã nguồn UI không có anti-pattern | HOÀN THÀNH |
 
 ## Việc phải chờ tín hiệu
 
@@ -47,7 +49,7 @@ Tất cả worktree là **thư mục anh em của `SNOTE`**, không nằm trong 
 | G5 — xong | Nối verified blob/quota/reference thật vào Bài giao/Nộp | Public interface Thư viện và StoragePort adapter đã hoạt động thông suốt | HOÀN THÀNH |
 | G6 — xong | Nối tiến độ việc/mốc lịch thật vào Bài giao/Nộp nếu luồng bài giao dùng chúng | Hợp đồng công việc/lịch đã liên kết | HOÀN THÀNH |
 | G7 — xong | Merge từng PR lát cắt | Cả 4 PR lát cắt #40, #44, #42, #43 đã merge vào `s_note_v2` sạch sẽ | HOÀN THÀNH |
-| G8 — xong | Hoàn tất cổng tích hợp #36 theo [kế hoạch rà lại](review/integration-gate-reassessment.md) | Toàn bộ 5 hạng mục I-1 đến I-5 đạt 100%; p95 = 174.49ms ≤ 1.000ms; restore 100% SHA-256; CI tự động 39 tests | HOÀN THÀNH |
+| G8 — xong | Hoàn tất cổng tích hợp #36 theo [kế hoạch rà lại](../../integration-gate-reassessment.md) | Toàn bộ 5 hạng mục I-1 đến I-5 đạt 100%; p95 = 174.49ms ≤ 1.000ms; restore 100% SHA-256; CI tự động 39 tests | HOÀN THÀNH |
 | G9 — chờ | Quyết định pilot/phát hành | Chỉ xét sau G8 và giá trị môi trường thực tế ENV-01–06 | CHỜ G8 VÀ ENV |
 
 **Trong khi chờ G2–G6:** owner được xây module và UI trong đường dẫn riêng bằng fixture/stub cùng schema OpenAPI, viết test quyền/lỗi/đồng thời và tài liệu bàn giao. Khi upstream công bố SHA, cập nhật nhánh, thay stub, chạy lại test; chỉ sau đó mới tính G7. Nếu cần đổi OpenAPI/schema, tạo yêu cầu có payload cũ/mới, owner Foundation sửa generator/migration/client; nếu cần đổi shell, owner Ngữ cảnh sửa. Không sửa chéo đường dẫn.
@@ -60,7 +62,7 @@ Không cần lệnh mới của chủ sản phẩm cho việc code, phân tích 
 | --- | --- | --- |
 | Review/merge PR #41, #39 và PR tính năng | Reviewer/quy trình GitHub theo [kế hoạch](IMPLEMENTATION_PLAN.md) | Hoàn tất bằng chứng và sửa phản hồi review; làm việc độc lập ở N2–N5 |
 | GitHub Actions trên head mới | Trạng thái check của PR #39/#40 | Actions đã chạy lại; theo dõi kết quả của đúng SHA, dùng PostgreSQL cách ly để lặp lỗi nếu cần |
-| Máy chủ, lưu trữ, chi phí, nhóm thử, email reset, kết quả backup/thiết bị thật | Người vận hành/chủ sản phẩm và phép đo thực; [ENV-01–06](review/unresolved.md) | Xây/test với dữ liệu giả, giữ pilot ở trạng thái chờ; không tự điền số hoặc provider |
+| Máy chủ, lưu trữ, chi phí, nhóm thử, email reset, kết quả backup/thiết bị thật | Người vận hành/chủ sản phẩm và phép đo thực; [ENV-01–06](../../unresolved.md) | Xây/test với dữ liệu giả, giữ pilot ở trạng thái chờ; không tự điền số hoặc provider |
 | Quyết định nghiệp vụ còn mâu thuẫn sau khi tra nguồn v2 | Chủ sản phẩm hoặc SRC-27 nếu nằm trong quyền tự quyết thiết kế | Ghi `review/unresolved.md` với phương án/kiểm chứng; tiếp tục phần không phụ thuộc |
 
 Khi trạng thái GitHub hoặc máy cục bộ thay đổi, cập nhật **hàng trạng thái và SHA**, không viết lại đặc tả nghiệp vụ. Issue/PR là nguồn tiến độ cuối cùng; bảng này là bản đồ để chọn đúng việc tiếp theo.

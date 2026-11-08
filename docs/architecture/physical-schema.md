@@ -2,8 +2,8 @@
 
 | Trường | Giá trị |
 | --- | --- |
-| Phạm vi | Bảng/khóa/quan hệ tối thiểu làm đầu vào cho Prisma migrations của issue #28; logic nguồn ở [data-and-transactions.md](data-and-transactions.md) |
-| Trạng thái | Quyết định kỹ thuật v2 theo SRC-27; khi tạo migration phải kiểm lại ràng buộc với PostgreSQL/Prisma đã cài |
+| Phạm vi | Bảng/khóa/quan hệ thiết kế để đối chiếu [Prisma schema](../../apps/api/prisma/schema.prisma) và migrations; logic nguồn ở [data-and-transactions.md](data-and-transactions.md) |
+| Trạng thái | Quyết định kỹ thuật v2 theo SRC-27; bằng chứng migration chạy theo SHA ở [hồ sơ foundation](../../review/foundation-audit.md), không suy từ tài liệu thiết kế |
 
 Khóa chính dùng ID opaque (UUID hoặc chuỗi có độ ngẫu nhiên phù hợp). Mọi bảng nghiệp vụ có `createdAt`, `updatedAt` khi thích hợp; thay đổi có cạnh tranh có `version` tăng trong cùng giao dịch. Quan hệ `classId` và `workspaceId` luôn được kiểm cùng quyền, không tra bằng ID một mình rồi trả dữ liệu khác phạm vi.
 
