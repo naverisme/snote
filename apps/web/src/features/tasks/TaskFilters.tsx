@@ -38,35 +38,11 @@ export const TaskFilters: React.FC<TaskFiltersProps> = ({
       }}
     >
       {/* View Switcher (UXR-06, VIEW-01/02) */}
-      <div
-        style={{
-          display: 'inline-flex',
-          borderRadius: 'var(--radius-sm, 6px)',
-          border: '1px solid var(--hairline)',
-          overflow: 'hidden',
-          background: 'var(--surface-ground, #f4f4f5)',
-        }}
-      >
+      <div className="task-segmented-control" role="group" aria-label="Chế độ xem">
         <button
           type="button"
           onClick={() => onViewModeChange('gantt')}
-          style={{
-            padding: '6px 14px',
-            fontSize: '13px',
-            fontWeight: 600,
-            border: 'none',
-            background:
-              viewMode === 'gantt'
-                ? 'var(--accent)'
-                : 'var(--surface-ground, #f4f4f5)',
-            color:
-              viewMode === 'gantt' ? '#ffffff' : 'var(--ink-body)',
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            transition: 'background var(--transition-fast, 0.16s ease)',
-          }}
+          className={`task-segmented-btn ${viewMode === 'gantt' ? 'active' : ''}`}
           aria-pressed={viewMode === 'gantt'}
         >
           <GanttChart size={14} />
@@ -75,24 +51,7 @@ export const TaskFilters: React.FC<TaskFiltersProps> = ({
         <button
           type="button"
           onClick={() => onViewModeChange('list')}
-          style={{
-            padding: '6px 14px',
-            fontSize: '13px',
-            fontWeight: 600,
-            border: 'none',
-            borderLeft: '1px solid var(--hairline)',
-            background:
-              viewMode === 'list'
-                ? 'var(--accent)'
-                : 'var(--surface-ground, #f4f4f5)',
-            color:
-              viewMode === 'list' ? '#ffffff' : 'var(--ink-body)',
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            transition: 'background var(--transition-fast, 0.16s ease)',
-          }}
+          className={`task-segmented-btn ${viewMode === 'list' ? 'active' : ''}`}
           aria-pressed={viewMode === 'list'}
         >
           <List size={14} />
@@ -115,26 +74,7 @@ export const TaskFilters: React.FC<TaskFiltersProps> = ({
             key={f.id}
             type="button"
             onClick={() => onFilterChange(f.id)}
-            style={{
-              padding: '5px 12px',
-              fontSize: '12px',
-              borderRadius: '20px',
-              border:
-                activeFilter === f.id
-                  ? '1px solid var(--accent)'
-                  : '1px solid var(--hairline)',
-              background:
-                activeFilter === f.id
-                  ? 'rgba(37, 99, 235, 0.08)'
-                  : 'var(--surface-raised, #ffffff)',
-              color:
-                activeFilter === f.id
-                  ? 'var(--accent)'
-                  : 'var(--ink-subtle)',
-              cursor: 'pointer',
-              fontWeight: activeFilter === f.id ? 600 : 400,
-              transition: 'all var(--transition-fast, 0.16s ease)',
-            }}
+            className={`task-filter-pill-btn ${activeFilter === f.id ? 'active' : ''}`}
           >
             {f.label}
           </button>

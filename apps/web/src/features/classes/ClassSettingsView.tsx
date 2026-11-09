@@ -13,9 +13,10 @@ interface ClassSettingsViewProps {
   cls: Class;
   currentUser: Account | null;
   onClassUpdated: (updated: Class) => void;
+  viewRole?: 'admin';
 }
 
-export function ClassSettingsView({ cls, currentUser, onClassUpdated }: ClassSettingsViewProps) {
+export function ClassSettingsView({ cls, currentUser, onClassUpdated, viewRole }: ClassSettingsViewProps) {
   const [activeSection, setActiveSection] = useState<number | null>(1); // 1 to 4
   const [policy, setPolicy] = useState<Policy>({
     groupLimit: 1,
@@ -31,17 +32,19 @@ export function ClassSettingsView({ cls, currentUser, onClassUpdated }: ClassSet
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
 
-  const isOwner = currentUser?.id === cls.ownerId;
+  const isOwner = viewRole === 'admin' || currentUser?.id === cls.ownerId;
 
   const loadPolicy = async () => {
     try {
       const res = await getClassPolicy(cls.id);
-      setPolicy(res.data);
-      if (res.data.groupLimit) setGroupLimit(res.data.groupLimit);
-      if (res.data.lateFirst) setLateFirst(res.data.lateFirst);
-      if (res.data.lateRevision) setLateRevision(res.data.lateRevision);
-    } catch (err: any) {
-      setError(err?.body?.error?.message || err?.message || 'Lỗi tải cấu hình');
+      if (res.data) {
+        setPolicy(res.data);
+        if (res.data.groupLimit) setGroupLimit(res.data.groupLimit);
+        if (res.data.lateFirst) setLateFirst(res.data.lateFirst);
+        if (res.data.lateRevision) setLateRevision(res.data.lateRevision);
+      }
+    } catch {
+      // Giữ default policy cho UI preview
     }
   };
 

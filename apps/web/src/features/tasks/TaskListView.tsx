@@ -3,6 +3,7 @@ import {
   Archive,
   Trash2,
   CheckCircle2,
+  CheckSquare,
   Clock,
   Plus,
   ArrowRight,
@@ -93,12 +94,11 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
     await onToggleTaskStatus(task.id, task.status);
   };
 
-  // Recipe 2: Stageshow Miniature Showcase Empty State
   if (tasks.length === 0) {
     return (
       <div
         style={{
-          border: '1px solid var(--hairline)',
+          border: '1px solid var(--border-light)',
           borderRadius: 'var(--radius-md, 10px)',
           background: 'var(--surface-raised, #ffffff)',
           boxShadow: 'var(--shadow-raised)',
@@ -110,148 +110,23 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
           textAlign: 'center',
         }}
       >
-        {/* Miniature Showcase Demo Card */}
         <div
           style={{
-            width: '280px',
-            padding: '16px',
-            marginBottom: '20px',
-            borderRadius: 'var(--radius-md, 10px)',
-            border: '1px solid var(--hairline)',
+            width: '44px',
+            height: '44px',
+            borderRadius: '50%',
             background: 'var(--surface-ground, #f4f4f5)',
-            boxShadow: 'var(--shadow-sm)',
-            opacity: 0.95,
-            userSelect: 'none',
-            pointerEvents: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: '16px',
+            color: 'var(--ink-muted)',
           }}
         >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              paddingBottom: '10px',
-              marginBottom: '10px',
-              borderBottom: '1px solid var(--hairline)',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <div
-                style={{
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  background: 'rgba(239, 68, 68, 0.75)',
-                }}
-              />
-              <div
-                style={{
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  background: 'rgba(245, 158, 11, 0.75)',
-                }}
-              />
-              <div
-                style={{
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  background: 'rgba(16, 185, 129, 0.75)',
-                }}
-              />
-            </div>
-            <span
-              style={{
-                fontSize: '10px',
-                color: 'var(--ink-muted)',
-                fontFamily: 'monospace',
-              }}
-            >
-              tasks/demo
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '8px 10px',
-                borderRadius: 'var(--radius-sm, 6px)',
-                background: 'var(--surface-raised, #ffffff)',
-                border: '1px solid rgba(37, 99, 235, 0.25)',
-              }}
-            >
-              <div
-                style={{
-                  width: '18px',
-                  height: '18px',
-                  borderRadius: '50%',
-                  background: 'var(--accent)',
-                  color: '#ffffff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <CheckCircle2 size={12} />
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
-                  gap: '2px',
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: '12px',
-                    fontWeight: 600,
-                    color: 'var(--ink-title)',
-                  }}
-                >
-                  Nộp đề cương đồ án
-                </span>
-                <span style={{ fontSize: '10px', color: 'var(--ink-muted)' }}>
-                  Hạn: 17:00 hôm nay
-                </span>
-              </div>
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '6px 10px',
-                borderRadius: 'var(--radius-sm, 6px)',
-                background: 'var(--surface-raised, #ffffff)',
-                opacity: 0.5,
-              }}
-            >
-              <div
-                style={{
-                  width: '18px',
-                  height: '18px',
-                  borderRadius: '50%',
-                  border: '1px solid var(--ink-faint)',
-                }}
-              />
-              <div
-                style={{
-                  width: '120px',
-                  height: '10px',
-                  borderRadius: '3px',
-                  background: 'var(--ink-faint)',
-                }}
-              />
-            </div>
-          </div>
+          <CheckSquare size={22} />
         </div>
 
-        <h3
+        <h2
           style={{
             fontSize: '15px',
             fontWeight: 600,
@@ -260,7 +135,7 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
           }}
         >
           Chưa có công việc nào
-        </h3>
+        </h2>
         <p
           style={{
             fontSize: '13px',

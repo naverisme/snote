@@ -11,52 +11,25 @@ export const AssignmentEmptyState: React.FC<AssignmentEmptyStateProps> = ({
   onCreateAssignment,
 }) => {
   return (
-    <div className="miniature-showcase-container">
-      {/* Stageshow Miniature Demo Card (CUXD-03 Showcase) */}
-      <div className="miniature-demo-card">
-        <div className="miniature-card-header">
-          <div className="miniature-window-dots">
-            <div className="miniature-dot" style={{ backgroundColor: '#f87171' }} />
-            <div className="miniature-dot" style={{ backgroundColor: '#fbbf24' }} />
-            <div className="miniature-dot" style={{ backgroundColor: '#34d399' }} />
-          </div>
-          <span style={{ fontSize: '10px', color: 'var(--ink-muted)', fontFamily: 'monospace' }}>
-            lop_hoc / bai_giao_mau
-          </span>
-        </div>
-
-        <div className="miniature-title">
-          Đồ án Chuyên ngành: Xây dựng Hệ thống SNOTE v2
-        </div>
-
-        <div className="miniature-meta-row">
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-            <Clock size={11} style={{ color: 'var(--ink-muted)' }} />
-            <span>Hạn: 23:59 Thứ Sáu</span>
-          </span>
-          <span>•</span>
-          <span style={{ color: 'var(--success)', fontWeight: 500 }}>Nhóm 01 (Đúng hạn)</span>
-        </div>
-
-        {/* 3 independent progress tracks preview (CUXD-03) */}
-        <div className="miniature-metrics-grid">
-          <div className="miniature-metric-box">
-            <div>Công việc</div>
-            <div className="miniature-metric-val">4/5 việc (80%)</div>
-          </div>
-          <div className="miniature-metric-box">
-            <div>Checklist</div>
-            <div className="miniature-metric-val">12/15 mục (80%)</div>
-          </div>
-        </div>
-
-        <div className="miniature-progress-quote">
-          "Đã hoàn thành kiểm thử giao diện Zero-CLS và API contracts..."
-        </div>
+    <div className="miniature-showcase-container" style={{ textAlign: 'center', padding: '48px 16px' }}>
+      <div
+        style={{
+          width: '44px',
+          height: '44px',
+          borderRadius: '50%',
+          background: 'var(--surface-ground, #f4f4f5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          margin: '0 auto 16px',
+          color: 'var(--ink-muted)',
+        }}
+      >
+        <ClipboardCheck size={22} />
       </div>
 
       {/* Narrative & Call-to-Action */}
-      <h3
+      <h2
         style={{
           fontSize: '16px',
           fontWeight: 600,
@@ -65,7 +38,7 @@ export const AssignmentEmptyState: React.FC<AssignmentEmptyStateProps> = ({
         }}
       >
         Chưa có bài giao nào trong lớp này
-      </h3>
+      </h2>
       <p
         style={{
           fontSize: '13px',
@@ -84,26 +57,12 @@ export const AssignmentEmptyState: React.FC<AssignmentEmptyStateProps> = ({
         <button
           type="button"
           onClick={onCreateAssignment}
+          className="btn btn-primary btn-sm"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: '8px',
             padding: '10px 18px',
-            borderRadius: 'var(--radius-sm)',
-            backgroundColor: 'var(--accent)',
-            color: '#ffffff',
-            fontSize: '13px',
-            fontWeight: 500,
-            border: 'none',
-            cursor: 'pointer',
-            boxShadow: 'var(--shadow-raised)',
-            transition: 'background-color var(--transition-fast)',
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.backgroundColor = 'var(--accent-hover)';
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.backgroundColor = 'var(--accent)';
           }}
         >
           <Plus size={15} />

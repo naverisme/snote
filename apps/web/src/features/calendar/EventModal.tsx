@@ -211,7 +211,7 @@ export const EventModal: React.FC<EventModalProps> = ({
             marginBottom: '16px',
           }}
         >
-          <h3
+          <h2
             id="event-modal-title"
             style={{
               margin: 0,
@@ -221,7 +221,7 @@ export const EventModal: React.FC<EventModalProps> = ({
             }}
           >
             {event ? 'Chi tiết sự kiện' : 'Tạo sự kiện mới'}
-          </h3>
+          </h2>
           <button
             type="button"
             onClick={onClose}
