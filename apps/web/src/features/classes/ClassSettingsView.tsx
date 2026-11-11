@@ -13,10 +13,9 @@ interface ClassSettingsViewProps {
   cls: Class;
   currentUser: Account | null;
   onClassUpdated: (updated: Class) => void;
-  viewRole?: 'admin';
 }
 
-export function ClassSettingsView({ cls, currentUser, onClassUpdated, viewRole }: ClassSettingsViewProps) {
+export function ClassSettingsView({ cls, currentUser, onClassUpdated }: ClassSettingsViewProps) {
   const [activeSection, setActiveSection] = useState<number | null>(1); // 1 to 4
   const [policy, setPolicy] = useState<Policy>({
     groupLimit: 1,
@@ -32,7 +31,7 @@ export function ClassSettingsView({ cls, currentUser, onClassUpdated, viewRole }
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
 
-  const isOwner = viewRole === 'admin' || currentUser?.id === cls.ownerId;
+  const isOwner = currentUser?.id === cls.ownerId;
 
   const loadPolicy = async () => {
     try {

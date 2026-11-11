@@ -149,7 +149,9 @@ test('WEB-03: Modal components provide WCAG dialog semantics and focus indicator
   const themeCss = await readFile(join(process.cwd(), 'apps/web/src/shared/theme.css'), 'utf-8');
   assert.ok(themeCss.includes('.form-input:focus'), 'Inputs must define :focus styling');
   assert.ok(themeCss.includes('border-color: var(--accent)'), 'Focused inputs must show accent border');
-  assert.ok(themeCss.includes('box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2)'), 'Focused inputs must have high-contrast focus ring');
+  const focusRule = themeCss.match(/\.form-input:focus,\s*\.form-select:focus\s*\{([^}]+)\}/)?.[1] ?? '';
+  assert.match(focusRule, /outline:\s*[2-9]px\s+solid\s+var\(--(?:text-primary|accent)\)/, 'Focused inputs need a visible token-based outline');
+  assert.match(focusRule, /outline-offset:\s*[1-9]px/, 'Focus outline must be offset from the input border');
 });
 
 test('WEB-04: Keyboard dismissal logic and backdrop containment', () => {

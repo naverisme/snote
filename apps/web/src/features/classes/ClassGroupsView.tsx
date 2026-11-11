@@ -13,10 +13,9 @@ interface ClassGroupsViewProps {
   cls: Class;
   currentUser: Account | null;
   onOpenGroupWorkspace: (ws: Workspace) => void;
-  viewRole?: 'admin' | 'member';
 }
 
-export function ClassGroupsView({ cls, currentUser, onOpenGroupWorkspace, viewRole }: ClassGroupsViewProps) {
+export function ClassGroupsView({ cls, currentUser, onOpenGroupWorkspace }: ClassGroupsViewProps) {
   const [groups, setGroups] = useState<Workspace[]>([]);
   const [newGroupName, setNewGroupName] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -24,7 +23,7 @@ export function ClassGroupsView({ cls, currentUser, onOpenGroupWorkspace, viewRo
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
 
-  const isOwner = viewRole ? viewRole === 'admin' : currentUser?.id === cls.ownerId;
+  const isOwner = currentUser?.id === cls.ownerId;
 
   const loadGroups = async () => {
     setLoading(true);

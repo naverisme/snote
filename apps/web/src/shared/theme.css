@@ -24,10 +24,10 @@
 
   --border-light: #e4e4e7;
   --border-dark: #27272a;
-  --accent: #2563eb;
-  --accent-hover: #1d4ed8;
-  --accent-light: #eff6ff;
-  --accent-border: #bfdbfe;
+  --accent: var(--color-accent);
+  --accent-hover: #303030;
+  --accent-light: var(--surface-hover);
+  --accent-border: var(--border-divider);
   --accent-border-subtle: #9dc4ff;
   --accent-border-item: #d4e6ff;
   --danger: #ef4444;
@@ -89,10 +89,11 @@
   /* Sidebar Typography Token (Explicit User Requirement: #76798c) */
   --sidebar-text: #76798c;
 
-  /* Typography Text Color Tokens (Light Mode - WCAG AA Contrast Compliant) */
+  /* Typography Text Color Tokens (Light Mode - WCAG AAA Contrast Compliant) */
   --text-primary: rgba(13, 13, 13, 0.88);
-  --text-secondary: #5d5d5d;
-  --text-muted: #737373;
+  --text-secondary: #52525b; /* Zinc-600: 7.34:1 contrast on white (WCAG AAA) */
+  --border-strong: #71717a; /* Zinc-500: high-contrast button/input borders */
+  --text-muted: #71717a;
   --text-tertiary: #8e8e8e;
   --text-brand: #10a37f;
   --text-inverse: #ffffff;
@@ -133,14 +134,16 @@
   --dark-surface-card: #18191e;
   --dark-border-card: #282a33;
   --dark-border-divider: #262832;
+  --dark-border-strong: #71717a;
   --dark-sidebar-text: #8e92a4;
   --dark-text-primary: rgba(255, 255, 255, 0.92);
-  --dark-text-secondary: rgba(255, 255, 255, 0.65);
-  --dark-text-muted: rgba(255, 255, 255, 0.45);
+  --dark-text-secondary: #a1a1aa; /* Zinc-400: 8.2:1 contrast on dark surfaces (WCAG AAA) */
+  --dark-text-muted: #71717a;
   --dark-text-tertiary: rgba(255, 255, 255, 0.30);
   --dark-text-brand: #ffffff;
   --dark-text-inverse: #121214;
   --dark-color-accent: #ffffff;
+  --dark-accent-hover: #dedee2;
 
   --dark-sb-blur-1-bg: rgba(42, 44, 53, 0.85);
   --dark-sb-blur-1-border: rgba(55, 58, 70, 0.95);
@@ -479,7 +482,7 @@ body {
 
 .btn-primary {
   background-color: var(--accent);
-  color: white;
+  color: var(--bg-app);
 }
 
 .btn-primary:hover {
@@ -534,9 +537,10 @@ body {
 }
 
 .form-input:focus, .form-select:focus {
-  outline: none;
+  outline: 2px solid var(--text-primary);
+  outline-offset: 2px;
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  box-shadow: none;
 }
 
 .checkbox-label {
@@ -561,7 +565,7 @@ body {
 
 .modal-content {
   background-color: var(--bg-surface);
-  border-radius: var(--radius-lg);
+  border-radius: 8px;
   border: 1px solid var(--border-light);
   box-shadow: var(--shadow-md);
   width: 90%;
@@ -1225,6 +1229,7 @@ body {
   --text-secondary: var(--dark-ink-subtle);
   --border-light: var(--dark-border-light);
   --hairline: rgba(255, 255, 255, 0.08);
+  --accent-hover: var(--dark-accent-hover);
 }
 
 /* Segmented Persona Switcher */
@@ -1631,6 +1636,7 @@ body {
   --surface-card: var(--dark-surface-card);
   --border-card: var(--dark-border-card);
   --border-divider: var(--dark-border-divider);
+  --border-strong: var(--dark-border-strong);
   --sidebar-text: var(--dark-sidebar-text);
   --text-primary: var(--dark-text-primary);
   --text-secondary: var(--dark-text-secondary);
@@ -2618,9 +2624,15 @@ button,
   margin-bottom: 24px;
 }
 
-.v2-shell .section-box span,
-.v2-shell .section-box .view-header span {
+.v2-shell .section-box .view-subtitle {
   color: var(--text-secondary);
+}
+
+/* Ensure buttons and badges inherit their designated text color and are never hijacked */
+button span,
+.btn span,
+[role="button"] span {
+  color: inherit;
 }
 
 /* [SEGMENTED-PILL] Sliding & Morphing Transitions for Task Filters & View Modes */

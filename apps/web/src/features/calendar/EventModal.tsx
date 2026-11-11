@@ -629,7 +629,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                   borderRadius: 'var(--radius-sm, 6px)',
                   border: '1px solid var(--accent)',
                   background: 'var(--accent)',
-                  color: '#ffffff',
+                  color: 'var(--bg-app)',
                   cursor: 'pointer',
                   boxShadow: 'var(--shadow-raised)',
                 }}

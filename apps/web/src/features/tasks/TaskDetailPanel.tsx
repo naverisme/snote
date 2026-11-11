@@ -271,7 +271,7 @@ export const TaskDetailPanel: React.FC<TaskDetailPanelProps> = ({
                 <button
                   type="button"
                   onClick={handleReassign}
-                  style={{ padding: '4px 10px', fontSize: '11px', fontWeight: 600, background: 'var(--accent)', color: '#ffffff', border: 'none', borderRadius: 'var(--radius-sm, 6px)', cursor: 'pointer' }}
+                  style={{ padding: '4px 10px', fontSize: '11px', fontWeight: 600, background: 'var(--accent)', color: 'var(--bg-app)', border: 'none', borderRadius: 'var(--radius-sm, 6px)', cursor: 'pointer' }}
                 >
                   Xác nhận
                 </button>
