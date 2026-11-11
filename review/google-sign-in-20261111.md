@@ -26,3 +26,5 @@
 ## Kiểm sau merge (2026-11-12)
 
 Trên `s_note_v2` tại SHA `819321873c2351b9d97638f8c3a860a77775aee3`, Windows/PowerShell, PostgreSQL 18 local (`snote`, schema `public`): `npm.cmd install --offline`, `npm.cmd run prisma:generate -w @snote/api`, `npm.cmd run prisma:migrate -w @snote/api`, `npm.cmd run build`, `node --test apps/api/dist/modules/identity/google-sign-in.spec.js apps/api/dist/modules/identity/google-token-verifier.spec.js` (3/3) và `npm.cmd run contract:http` đều PASS. Migration Google áp dụng thành công vào database phát triển. API và web chưa có Google Client ID trong cấu hình local; kiểm với Google thực vẫn UNKNOWN.
+
+Trên SHA `8b7fa0b92e4d934944e990267266967bb17757c1`, API khởi động ở cổng 3000, `GET /api/v2/ready` trả 200; route `POST /api/v2/auth/google` trả `503 GOOGLE_NOT_CONFIGURED` khi thiếu Client ID như dự kiến. Web khởi động ở cổng 5173 và proxy `/api/v2/ready` trả 200. Nút Google chưa xuất hiện khi chưa cấu hình Client ID.
