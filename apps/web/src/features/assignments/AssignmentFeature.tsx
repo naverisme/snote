@@ -173,7 +173,7 @@ export const AssignmentFeature: React.FC<AssignmentFeatureProps> = ({
             style={{
               padding: '8px 16px',
               backgroundColor: 'var(--accent)',
-              color: '#ffffff',
+              color: 'var(--bg-app)',
               border: 'none',
               borderRadius: 'var(--radius-sm)',
               fontSize: '13px',

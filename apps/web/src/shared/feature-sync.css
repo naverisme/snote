@@ -1,0 +1,354 @@
+/* Visual bridge from the 14 review tabs to the live, API-backed feature views.
+   Keep this scoped: preview tabs remain the visual reference and retain their own styles. */
+.feature-page {
+  --surface-ground: var(--bg-app);
+  --surface-raised: var(--surface-card);
+  --surface-overlay: var(--surface-card);
+  --bg-primary: var(--bg-app);
+  --bg-secondary: var(--surface-input);
+  --bg-surface: var(--surface-card);
+  --ink-title: var(--text-primary);
+  --ink-body: var(--text-primary);
+  --ink-subtle: var(--text-secondary);
+  --ink-muted: var(--text-muted);
+  --hairline: var(--border-divider);
+  --border-light: var(--border-divider);
+  --accent: var(--text-primary);
+  --accent-hover: #303030;
+  --accent-light: var(--surface-hover);
+  --accent-border: var(--border-divider);
+  --shadow-raised: none;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+/* Tailwind utility views omit Preflight so the app reset remains in control. */
+:where(.feature-page) button {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  white-space: nowrap;
+}
+
+[data-theme="dark"] .feature-page {
+  --accent-hover: #dedee2;
+}
+
+.v2-shell .section-box.feature-page {
+  min-width: 0;
+  min-height: 100%;
+  height: auto;
+  padding: 22px 28px;
+  background: var(--bg-app);
+  animation: none;
+  backdrop-filter: none;
+}
+
+.v2-shell .feature-page .section-box {
+  height: auto;
+  min-height: 0;
+  padding: 16px 20px;
+  margin: 0 0 16px;
+  border: 1px solid var(--border-divider);
+  border-radius: 8px;
+  background: var(--surface-card);
+  backdrop-filter: none;
+  animation: none;
+  display: block;
+}
+
+.v2-shell .feature-page .view-header {
+  min-height: 42px;
+  padding-bottom: 14px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--border-divider);
+  gap: 12px;
+}
+
+.feature-page .view-title,
+.feature-page .library-feature h1,
+.feature-page .assignment-header h1 {
+  font-size: 18px;
+  line-height: 1.4;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.feature-page .section-title {
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: 600;
+}
+
+.feature-page .btn,
+.feature-page .form-input,
+.feature-page .form-select,
+.feature-page .accordion-trigger {
+  font-family: var(--font-sans);
+  font-size: 13px;
+}
+
+.feature-page .btn {
+  min-height: 32px;
+  border-radius: 6px;
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.feature-page .btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg-app);
+}
+
+.feature-page .btn-primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.feature-page .btn-secondary,
+.feature-page .btn-outline {
+  background: var(--surface-card);
+  border: 1px solid var(--border-divider);
+  color: var(--text-primary);
+}
+
+.feature-page .btn-secondary:hover,
+.feature-page .btn-outline:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+}
+
+.feature-page .form-input,
+.feature-page .form-select {
+  min-height: 34px;
+  background: var(--surface-input);
+  border-color: var(--border-divider);
+  color: var(--text-primary);
+  border-radius: 6px;
+}
+
+.feature-page :is(button, input, select, textarea, [role="button"]):focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 2px;
+}
+
+.feature-page .form-input:focus,
+.feature-page .form-select:focus {
+  box-shadow: none;
+  border-color: var(--border-strong);
+}
+
+.feature-page :is(input, textarea)::placeholder {
+  color: var(--text-secondary);
+  opacity: 1;
+}
+
+.feature-page .table-container {
+  margin-top: 12px;
+  border-color: var(--border-divider);
+  border-radius: 8px;
+}
+
+.feature-page .data-table {
+  font-size: 13px;
+}
+
+.feature-page .data-table th,
+.feature-page .data-table td {
+  padding: 10px 14px;
+  border-bottom-color: var(--border-divider);
+}
+
+.feature-page .data-table th {
+  background: var(--surface-input);
+  color: var(--text-secondary);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.feature-page .data-table tbody tr:hover td {
+  background: var(--surface-hover);
+}
+
+.feature-page .badge {
+  border-radius: 4px;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.feature-page .badge-info {
+  background: var(--surface-input);
+  color: var(--text-primary);
+  border: 1px solid var(--border-divider);
+}
+
+.v2-shell .feature-page .class-join-bar > div:last-child {
+  flex-grow: 0;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.feature-page .accordion-item {
+  border-color: var(--border-divider);
+  border-radius: 8px;
+}
+
+.feature-page .accordion-trigger {
+  background: var(--surface-card);
+  color: var(--text-primary);
+}
+
+.feature-page .accordion-trigger:hover {
+  background: var(--surface-hover);
+}
+
+.feature-page[data-feature="notes"] .card-box {
+  max-width: 720px;
+  border-radius: 8px;
+  backdrop-filter: none;
+}
+
+.feature-page[data-feature="notes"] .card-box:hover {
+  background: var(--surface-card);
+  transform: none;
+}
+
+.feature-page[data-feature="notes"] .notes-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Assignments use their own layout stylesheet; align it with the same canvas. */
+.feature-page .assignment-feature,
+.feature-page .assignment-skeleton-container {
+  max-width: none;
+  padding: 0;
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+}
+
+.feature-page .assignment-header {
+  border-bottom-color: var(--border-divider);
+}
+
+/* The library has a full-height explorer instead of a page card. */
+.feature-page .library-feature {
+  min-width: 0;
+  width: 100%;
+  min-height: 0;
+  height: min(800px, calc(100vh - 180px));
+  border: 1px solid var(--border-divider);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--surface-card);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+.feature-page .library-feature header,
+.feature-page .library-feature nav {
+  background: var(--surface-card);
+}
+
+.feature-page .library-feature button:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: -2px;
+}
+
+.feature-page .library-feature header button {
+  box-shadow: none;
+  border-radius: 6px;
+}
+
+.feature-page .library-feature header button:first-of-type {
+  background: var(--surface-input);
+  color: var(--text-primary);
+  border: 1px solid var(--border-divider);
+}
+
+.feature-page .library-feature header button:last-of-type {
+  background: var(--accent);
+  color: var(--bg-app);
+  border: 1px solid var(--accent);
+}
+
+.feature-page .library-feature [class*="bg-[var(--accent)]"] {
+  background: var(--accent);
+  color: var(--bg-app);
+  box-shadow: none;
+}
+
+.feature-page .library-feature [class*="bg-[var(--accent)]"]:hover {
+  background: var(--accent-hover);
+}
+
+.feature-page .library-feature [class*="bg-emerald-600"] {
+  background: var(--surface-input);
+  color: var(--text-primary);
+  border: 1px solid var(--border-divider);
+  box-shadow: none;
+}
+
+.feature-page .library-feature [class*="bg-emerald-600"]:hover,
+.feature-page .library-feature [class*="bg-blue-50"] {
+  background: var(--surface-hover);
+}
+
+.feature-page .library-feature [class*="text-blue-"],
+.feature-page .library-feature [class*="text-emerald-600"] {
+  color: var(--text-primary);
+}
+
+.feature-page .library-feature [class*="border-blue-"] {
+  border-color: var(--border-divider);
+}
+
+.feature-page .library-feature .bg-white {
+  background: var(--surface-card);
+}
+
+.feature-page .library-feature :is(input, textarea, select) {
+  background: var(--surface-input);
+  color: var(--text-primary);
+  border-color: var(--border-divider);
+}
+
+@media (max-width: 767px) {
+  .v2-shell .main-content-viewport,
+  .v2-shell .main-content-canvas {
+    min-width: 0;
+  }
+
+  .v2-shell .section-box.feature-page {
+    padding: 58px 16px 16px;
+  }
+
+  .v2-shell .feature-page .view-header {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .feature-page .library-feature {
+    height: calc(100dvh - 132px);
+  }
+
+  .feature-page .library-feature header > div,
+  .feature-page .library-feature header h1 {
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+
+  .feature-page .library-feature [role="alert"] {
+    flex-wrap: wrap;
+  }
+
+  .feature-page .library-feature nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import '../shared/theme.css';
+import '../shared/feature-sync.css';
 import {
   Zap,
   CheckSquare,
@@ -14,7 +15,6 @@ import {
   Sun,
   Moon,
   Bell,
-  Layers,
 } from 'lucide-react';
 import type { Account, Class, Workspace } from '../shared/types';
 import { getMe, listClasses, listWorkspaces } from '../shared/api';
@@ -30,7 +30,6 @@ import { CalendarContainer } from '../features/calendar';
 import { LibraryView } from '../features/library';
 import { AssignmentFeature } from '../features/assignments';
 import { GroupMembersView } from '../features/workspaces/GroupMembersView';
-import { PreviewHarness } from '../previews/PreviewHarness';
 
 type AppContext =
   | { type: 'workspace'; workspaceId: string }
@@ -81,68 +80,6 @@ export function App() {
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showCreateWsModal, setShowCreateWsModal] = useState(false);
   const [showCreateClassModal, setShowCreateClassModal] = useState(false);
-
-  // Parallel Tab Preview State & Dispatcher
-  const [isHarnessMode, setIsHarnessMode] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    const p = new URLSearchParams(window.location.search);
-    return p.has('tab') || p.get('mode') === 'preview' || p.get('preview') === 'harness';
-  });
-  const [previewModule, setPreviewModule] = useState<string | null>(null);
-  const [previewRole, setPreviewRole] = useState<'admin' | 'member'>('admin');
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const params = new URLSearchParams(window.location.search);
-    const tabParam = params.get('tab');
-    if (tabParam || params.get('mode') === 'preview' || params.get('preview') === 'harness') {
-      setIsHarnessMode(true);
-    }
-    const viewParam = params.get('view');
-    const roleParam = (params.get('role') as 'admin' | 'member') || 'admin';
-
-    if (viewParam) {
-      setPreviewModule(viewParam);
-      setPreviewRole(roleParam);
-
-      if (viewParam === 'class-members') {
-        setContext({ type: 'class', classId: 'cls-cs101' });
-        setClassTab('members');
-      } else if (viewParam === 'class-groups') {
-        setContext({ type: 'class', classId: 'cls-cs101' });
-        setClassTab('groups');
-      } else if (viewParam === 'class-settings') {
-        setContext({ type: 'class', classId: 'cls-cs101' });
-        setClassTab('settings');
-      } else if (viewParam === 'assignments-teacher') {
-        setContext({ type: 'class', classId: 'cls-cs101' });
-        setClassTab('assignments');
-        setPreviewRole('admin');
-      } else if (viewParam === 'assignments-student') {
-        setContext({ type: 'class', classId: 'cls-cs101' });
-        setClassTab('assignments');
-        setPreviewRole('member');
-      } else if (viewParam === 'tasks-gantt' || viewParam === 'tasks') {
-        setContext({ type: 'workspace', workspaceId: 'ws-personal' });
-        setWorkspaceTab('tasks');
-      } else if (viewParam === 'tasks-list') {
-        setContext({ type: 'workspace', workspaceId: 'ws-personal' });
-        setWorkspaceTab('tasks');
-      } else if (viewParam === 'calendar') {
-        setContext({ type: 'workspace', workspaceId: 'ws-personal' });
-        setWorkspaceTab('calendar');
-      } else if (viewParam === 'library') {
-        setContext({ type: 'workspace', workspaceId: 'ws-personal' });
-        setWorkspaceTab('library');
-      } else if (viewParam === 'group-members') {
-        setContext({ type: 'workspace', workspaceId: 'ws-group4' });
-        setWorkspaceTab('members');
-      } else if (viewParam === 'notes') {
-        setContext({ type: 'workspace', workspaceId: 'ws-personal' });
-        setWorkspaceTab('notes');
-      }
-    }
-  }, []);
 
   const spacePickerRef = useRef<HTMLDivElement>(null);
 
@@ -445,16 +382,6 @@ export function App() {
 
         {/* Danh mục điều hướng: Mỗi mục cao 36px, khi thu gọn căn giữa icon chuẩn 18px */}
         <div className="sb-body">
-          {/* Quick Mode Toggle: 14 Tab Kiểm duyệt ảo */}
-          <button
-            type="button"
-            className={`nav-block-item ${isHarnessMode ? 'active' : ''}`}
-            onClick={() => setIsHarnessMode(!isHarnessMode)}
-            title="14 Tab Kiểm duyệt độc lập"
-          >
-            <Layers size={18} className="nav-block-icon" />
-            <span>14 Tab Kiểm duyệt</span>
-          </button>
           {/* CẤU HÌNH 1: WORKSPACE CÁ NHÂN */}
           {context.type === 'workspace' && activeWorkspace?.kind === 'default' && (
             <>
@@ -731,19 +658,14 @@ export function App() {
 
         {/* Nội dung bên trong Main Viewport: Cuộn dọc trực tiếp (overflow-y: auto) */}
         <div className="main-content-canvas">
-          {isHarnessMode ? (
-            <div className="section-box" style={{ padding: 0, overflow: 'hidden' }}>
-              <PreviewHarness />
-            </div>
-          ) : context.type === 'class' && activeClass ? (
+          {context.type === 'class' && activeClass ? (
             /* Nội dung Context Lớp học */
-            <div className="section-box">
+            <div className="section-box feature-page" data-feature={classTab}>
               {classTab === 'members' && (
                 <ClassMembersView
                   key={activeClass.id}
                   cls={activeClass}
                   currentUser={user ?? MOCK_USER}
-                  viewRole={previewRole}
                   onClassUpdated={updated => {
                     setClasses(classes.map(c => (c.id === updated.id ? updated : c)));
                   }}
@@ -754,7 +676,6 @@ export function App() {
                   key={activeClass.id}
                   cls={activeClass}
                   currentUser={user ?? MOCK_USER}
-                  viewRole={previewRole}
                   onOpenGroupWorkspace={groupWs => {
                     handleSelectWorkspace(groupWs);
                   }}
@@ -765,7 +686,6 @@ export function App() {
                   key={activeClass.id}
                   cls={activeClass}
                   currentUser={user ?? MOCK_USER}
-                  viewRole="admin"
                   onClassUpdated={updated => {
                     setClasses(classes.map(c => (c.id === updated.id ? updated : c)));
                   }}
@@ -775,7 +695,7 @@ export function App() {
                 <AssignmentFeature
                   key={activeClass.id}
                   classId={activeClass.id}
-                  isTeacher={previewModule === 'assignments-student' ? false : previewModule === 'assignments-teacher' ? true : Boolean(isClassOwner || isTeacher)}
+                  isTeacher={Boolean(isClassOwner || isTeacher)}
                   activeWorkspaceId={classGroupWs?.id}
                 />
               )}
@@ -799,7 +719,7 @@ export function App() {
             </div>
           ) : activeWorkspace ? (
             /* Nội dung Context Workspace */
-            <div className="section-box">
+            <div className="section-box feature-page" data-feature={workspaceTab}>
               <div className="view-header">
                 <div>
                   <h1 className="view-title">{activeWorkspace.name}</h1>
@@ -830,12 +750,11 @@ export function App() {
                 <GroupMembersView
                   workspace={activeWorkspace}
                   currentUser={user ?? MOCK_USER}
-                  viewRole={previewRole === 'admin' ? 'owner' : 'member'}
                 />
               )}
               {workspaceTab === 'notes' && (
                 <div className="card-box">
-                  <h2 style={{ fontSize: '1.15rem', fontWeight: 600 }}>Mục lưu ý</h2>
+                  <h2 className="notes-title">Mục lưu ý</h2>
                   <p style={{ marginTop: '8px', color: 'var(--text-secondary)' }}>
                     Ghi chú nhanh và mục quan sát dành riêng cho không gian làm việc này.
                   </p>

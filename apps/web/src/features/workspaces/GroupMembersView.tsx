@@ -14,7 +14,6 @@ interface GroupMemberItem {
 interface GroupMembersViewProps {
   workspace: Workspace;
   currentUser?: Account | null;
-  viewRole?: 'owner' | 'member';
 }
 
 const MOCK_GROUP_MEMBERS: GroupMemberItem[] = [
@@ -58,9 +57,9 @@ const MOCK_PENDING_REQUESTS = [
 
 export const GroupMembersView: React.FC<GroupMembersViewProps> = ({
   workspace,
-  viewRole: initialRole,
+  currentUser,
 }) => {
-  const [role, setRole] = useState<'owner' | 'member'>(initialRole ?? 'owner');
+  const [transferredAway, setTransferredAway] = useState(false);
   const [members, setMembers] = useState<GroupMemberItem[]>(MOCK_GROUP_MEMBERS);
   const [requests, setRequests] = useState(MOCK_PENDING_REQUESTS);
   const [inviteEmail, setInviteEmail] = useState('');
@@ -68,7 +67,7 @@ export const GroupMembersView: React.FC<GroupMembersViewProps> = ({
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
 
-  const isOwner = role === 'owner';
+  const isOwner = !transferredAway && Boolean(currentUser?.id && currentUser.id === workspace.ownerId);
 
   // Personal workspace guard
   if (workspace.kind === 'default') {
@@ -138,7 +137,7 @@ export const GroupMembersView: React.FC<GroupMembersViewProps> = ({
         if (m.role === 'owner') return { ...m, role: 'member' };
         return m;
       }));
-      setRole('member');
+      setTransferredAway(true);
       setActionSuccess(`Đã chuyển quyền Trưởng nhóm cho ${name}`);
       setTimeout(() => setActionSuccess(null), 3000);
     }
@@ -146,48 +145,6 @@ export const GroupMembersView: React.FC<GroupMembersViewProps> = ({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
-      {/* Role Switcher Toolbar (Preview Mode) */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          background: 'var(--surface-hover)',
-          padding: '10px 16px',
-          borderRadius: '8px',
-          border: '1px solid var(--border-divider)',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Users size={16} style={{ color: 'var(--text-primary)' }} />
-          <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>
-            Góc nhìn quyền hạn (Preview):
-          </span>
-          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-            {isOwner ? 'Trưởng nhóm (Owner/Lead)' : 'Thành viên (Member)'}
-          </span>
-        </div>
-
-        <div style={{ display: 'flex', gap: '4px' }}>
-          <button
-            type="button"
-            className={`btn btn-sm ${isOwner ? 'btn-primary' : 'btn-outline'}`}
-            style={{ fontSize: '12px', padding: '4px 10px', height: '28px' }}
-            onClick={() => setRole('owner')}
-          >
-            Trưởng nhóm (Owner)
-          </button>
-          <button
-            type="button"
-            className={`btn btn-sm ${!isOwner ? 'btn-primary' : 'btn-outline'}`}
-            style={{ fontSize: '12px', padding: '4px 10px', height: '28px' }}
-            onClick={() => setRole('member')}
-          >
-            Thành viên (Member)
-          </button>
-        </div>
-      </div>
-
       {actionSuccess && (
         <div
           style={{

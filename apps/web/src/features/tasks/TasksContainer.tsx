@@ -374,7 +374,7 @@ export const TasksContainer: React.FC<TasksContainerProps> = ({
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        fontFamily: 'var(--font-sans)',
       }}
     >
       {/* Filters & Actions Bar */}
@@ -732,7 +732,7 @@ export const TasksContainer: React.FC<TasksContainerProps> = ({
                     borderRadius: 'var(--radius-sm, 6px)',
                     border: '1px solid var(--accent)',
                     background: 'var(--accent)',
-                    color: '#ffffff',
+                    color: 'var(--bg-app)',
                     cursor: (creating || !newTitle.trim()) ? 'not-allowed' : 'pointer',
                     boxShadow: 'var(--shadow-raised)',
                   }}

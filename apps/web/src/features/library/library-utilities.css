@@ -1,0 +1,4 @@
+/* Compile the existing library utility classes without replacing the app reset. */
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" source(none);
+@source "./components";

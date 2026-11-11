@@ -21,10 +21,9 @@ interface ClassMembersViewProps {
   cls: Class;
   currentUser: Account | null;
   onClassUpdated?: (updated: Class) => void;
-  viewRole?: 'admin' | 'member';
 }
 
-export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }: ClassMembersViewProps) {
+export function ClassMembersView({ cls, currentUser, onClassUpdated }: ClassMembersViewProps) {
   const [members, setMembers] = useState<Membership[]>([]);
   const [myInvitations, setMyInvitations] = useState<Invitation[]>([]);
   const [pendingRequests, setPendingRequests] = useState<JoinRequest[]>([]);
@@ -36,7 +35,7 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
 
-  const isOwner = viewRole ? viewRole === 'admin' : currentUser?.id === cls.ownerId;
+  const isOwner = currentUser?.id === cls.ownerId;
 
   const loadData = async () => {
     setLoading(true);
@@ -224,7 +223,7 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
       {info && <div style={{ color: 'var(--success)', marginBottom: 12, fontSize: '0.875rem' }}>{info}</div>}
 
       {/* Class Join Code & Invitation Bar */}
-      <div className="section-box" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+      <div className="section-box class-join-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         {isOwner ? (
           <>
             <div>
@@ -240,7 +239,7 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
                 {joinCodeEnabled ? 'Tắt mã lớp' : 'Bật mã tham gia lớp'}
               </button>
 
-              <form onSubmit={handleInvite} style={{ display: 'flex', gap: 6, marginLeft: 16 }}>
+              <form onSubmit={handleInvite} style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 <input
                   className="form-input"
                   type="text"
@@ -271,7 +270,7 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
 
       {/* Zone 2: My Invitations for this class */}
       {myInvitations.length > 0 && (
-        <div className="section-box" style={{ borderLeft: '4px solid var(--accent)' }}>
+        <div className="section-box">
           <div className="section-title">Lời mời tham gia lớp học dành cho bạn</div>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 12 }}>
             Giáo viên đã gửi lời mời tham gia lớp học này cho bạn.
@@ -294,7 +293,7 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
 
       {/* Zone 3: Pending Join Requests (Owner only) */}
       {isOwner && pendingRequests.length > 0 && (
-        <div className="section-box" style={{ borderLeft: '4px solid var(--warning)' }}>
+        <div className="section-box">
           <div className="section-title">Yêu cầu tham gia đang chờ duyệt ({pendingRequests.length})</div>
           <div className="table-container" style={{ marginTop: 8 }}>
             <table className="data-table">

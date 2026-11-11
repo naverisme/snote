@@ -136,7 +136,7 @@ export const TaskGanttView: React.FC<TaskGanttViewProps> = ({
               padding: '8px 18px',
               borderRadius: 'var(--radius-md, 8px)',
               background: 'var(--accent)',
-              color: '#ffffff',
+              color: 'var(--bg-app)',
               fontSize: '13px',
               fontWeight: 600,
               border: '1px solid var(--accent)',

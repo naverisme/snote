@@ -159,7 +159,7 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
               padding: '8px 18px',
               borderRadius: 'var(--radius-md, 8px)',
               background: 'var(--accent)',
-              color: '#ffffff',
+              color: 'var(--bg-app)',
               fontSize: '13px',
               fontWeight: 600,
               border: '1px solid var(--accent)',
@@ -370,7 +370,7 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
                     background: isDone
                       ? 'var(--accent)'
                       : 'var(--surface-raised, #ffffff)',
-                    color: '#ffffff',
+                    color: isDone ? 'var(--bg-app)' : 'var(--text-primary)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
