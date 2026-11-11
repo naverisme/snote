@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import '../shared/theme.css';
 import '../shared/feature-sync.css';
 import {
@@ -38,32 +38,13 @@ type AppContext =
 type ClassTab = 'members' | 'groups' | 'assignments' | 'tasks' | 'calendar' | 'library' | 'settings';
 type WorkspaceTab = 'members' | 'tasks' | 'calendar' | 'library' | 'notes';
 
-// Giả lập dữ liệu phong phú để quan sát trực quan ngay lập tức
-const MOCK_USER: Account = {
-  id: 'u-giangvien-01',
-  usages: ['student', 'teacher'],
-  timeZone: 'Asia/Ho_Chi_Minh',
-  version: 1,
-};
-
-const MOCK_WORKSPACES: Workspace[] = [
-  { id: 'ws-personal', name: 'Cá nhân mặc định', kind: 'default', status: 'active', timeZone: 'Asia/Ho_Chi_Minh', version: 1 },
-  { id: 'ws-thesis', name: 'Đồ án Tốt nghiệp SNOTE', kind: 'independent', status: 'active', timeZone: 'Asia/Ho_Chi_Minh', version: 1 },
-  { id: 'ws-group4', name: 'Nhóm 4 - CNPM', kind: 'class_group', classId: 'cls-cs101', status: 'active', timeZone: 'Asia/Ho_Chi_Minh', version: 1 },
-  { id: 'ws-ai-lab', name: 'Lab AI & Data', kind: 'independent', status: 'active', timeZone: 'Asia/Ho_Chi_Minh', version: 1 },
-];
-
-const MOCK_CLASSES: Class[] = [
-  { id: 'cls-cs101', name: 'CS101 - Lập trình Nâng cao', ownerId: 'u-giangvien-01', timeZone: 'Asia/Ho_Chi_Minh', status: 'active', version: 1 },
-  { id: 'cls-se302', name: 'SE302 - Kiến trúc Phần mềm', ownerId: 'u-giaovien-khac', timeZone: 'Asia/Ho_Chi_Minh', status: 'active', version: 1 },
-  { id: 'cls-math201', name: 'MATH201 - Đại số Tuyến tính', ownerId: 'u-giaovien-khac', timeZone: 'Asia/Ho_Chi_Minh', status: 'active', version: 1 },
-];
-
 export function App() {
-  const [user, setUser] = useState<Account | null>(MOCK_USER);
-  const [workspaces, setWorkspaces] = useState<Workspace[]>(MOCK_WORKSPACES);
-  const [classes, setClasses] = useState<Class[]>(MOCK_CLASSES);
-  const [context, setContext] = useState<AppContext>({ type: 'workspace', workspaceId: 'ws-personal' });
+  const [user, setUser] = useState<Account | null>(null);
+  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+  const [classes, setClasses] = useState<Class[]>([]);
+  const [context, setContext] = useState<AppContext>({ type: 'workspace', workspaceId: '' });
+  const [checkingSession, setCheckingSession] = useState(true);
+  const [contextError, setContextError] = useState(false);
   const [classTab, setClassTab] = useState<ClassTab>('members');
   const [workspaceTab, setWorkspaceTab] = useState<WorkspaceTab>('tasks');
 
@@ -100,10 +81,14 @@ export function App() {
   const checkSession = async () => {
     try {
       const res = await getMe();
-      if (res.data) setUser(res.data);
+      setUser(res.data);
       await loadContextData();
     } catch {
-      // Giữ mock user để người dùng quan sát trực quan
+      setUser(null);
+      setWorkspaces([]);
+      setClasses([]);
+    } finally {
+      setCheckingSession(false);
     }
   };
 
@@ -113,12 +98,30 @@ export function App() {
         listWorkspaces(),
         listClasses(),
       ]);
-      if (wsRes.data && wsRes.data.length > 0) setWorkspaces(wsRes.data);
-      if (clsRes.data && clsRes.data.length > 0) setClasses(clsRes.data);
+      const nextWorkspaces = wsRes.data ?? [];
+      const nextClasses = clsRes.data ?? [];
+      setWorkspaces(nextWorkspaces);
+      setClasses(nextClasses);
+      setContext(current => {
+        if (current.type === 'workspace' && nextWorkspaces.some(ws => ws.id === current.workspaceId)) return current;
+        if (current.type === 'class' && nextClasses.some(cls => cls.id === current.classId)) return current;
+        const personal = nextWorkspaces.find(ws => ws.kind === 'default') ?? nextWorkspaces[0];
+        if (personal) return { type: 'workspace', workspaceId: personal.id };
+        if (nextClasses[0]) return { type: 'class', classId: nextClasses[0].id };
+        return { type: 'workspace', workspaceId: '' };
+      });
+      setContextError(false);
     } catch {
-      // Giữ mock workspaces và classes để kiểm duyệt
+      setContextError(true);
     }
   };
+
+  const handleUnauthorized = useCallback(() => {
+    setUser(null);
+    setWorkspaces([]);
+    setClasses([]);
+    setContext({ type: 'workspace', workspaceId: '' });
+  }, []);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('snote_theme');
@@ -165,11 +168,11 @@ export function App() {
   }, [mobileNavOpen]);
 
   const activeWorkspace = context.type === 'workspace'
-    ? workspaces.find(w => w.id === context.workspaceId) ?? workspaces[0]
+    ? workspaces.find(w => w.id === context.workspaceId) ?? null
     : null;
 
   const activeClass = context.type === 'class'
-    ? classes.find(c => c.id === context.classId) ?? classes[0]
+    ? classes.find(c => c.id === context.classId) ?? null
     : null;
 
   const isTeacher = Boolean(
@@ -416,7 +419,7 @@ export function App() {
           )}
 
           {/* CẤU HÌNH 2: WORKSPACE NHÓM */}
-          {context.type === 'workspace' && activeWorkspace?.kind !== 'default' && (
+          {context.type === 'workspace' && activeWorkspace && activeWorkspace.kind !== 'default' && (
             <>
               <button
                 type="button"
@@ -615,9 +618,9 @@ export function App() {
           <button
             type="button"
             className="sb-avt-circle"
-            onClick={() => setShowSettingsModal(true)}
-            title="Tài khoản & Cài đặt hệ thống"
-            aria-label="Tài khoản & Cài đặt hệ thống"
+            onClick={() => user ? setShowSettingsModal(true) : setShowAuthModal(true)}
+            title={user ? 'Tài khoản & Cài đặt hệ thống' : 'Đăng nhập'}
+            aria-label={user ? 'Tài khoản & Cài đặt hệ thống' : 'Đăng nhập'}
           >
             {user ? (user.usages.includes('teacher') ? 'G' : 'H') : 'U'}
           </button>
@@ -658,14 +661,26 @@ export function App() {
 
         {/* Nội dung bên trong Main Viewport: Cuộn dọc trực tiếp (overflow-y: auto) */}
         <div className="main-content-canvas">
-          {context.type === 'class' && activeClass ? (
+          {!user ? (
+            <div className="section-box" style={{ maxWidth: 520, margin: 'auto', padding: 32, textAlign: 'center' }}>
+              <h1 className="view-title">{checkingSession ? 'Đang kiểm tra phiên đăng nhập' : 'Đăng nhập để xem công việc'}</h1>
+              {!checkingSession && (
+                <>
+                  <p style={{ color: 'var(--text-secondary)', margin: '12px 0 20px' }}>
+                    Công việc và không gian làm việc của bạn chỉ hiển thị sau khi đăng nhập.
+                  </p>
+                  <button type="button" className="btn btn-primary" onClick={() => setShowAuthModal(true)}>Đăng nhập hoặc tạo tài khoản</button>
+                </>
+              )}
+            </div>
+          ) : context.type === 'class' && activeClass ? (
             /* Nội dung Context Lớp học */
             <div className="section-box feature-page" data-feature={classTab}>
               {classTab === 'members' && (
                 <ClassMembersView
                   key={activeClass.id}
                   cls={activeClass}
-                  currentUser={user ?? MOCK_USER}
+                  currentUser={user}
                   onClassUpdated={updated => {
                     setClasses(classes.map(c => (c.id === updated.id ? updated : c)));
                   }}
@@ -675,7 +690,7 @@ export function App() {
                 <ClassGroupsView
                   key={activeClass.id}
                   cls={activeClass}
-                  currentUser={user ?? MOCK_USER}
+                  currentUser={user}
                   onOpenGroupWorkspace={groupWs => {
                     handleSelectWorkspace(groupWs);
                   }}
@@ -685,7 +700,7 @@ export function App() {
                 <ClassSettingsView
                   key={activeClass.id}
                   cls={activeClass}
-                  currentUser={user ?? MOCK_USER}
+                  currentUser={user}
                   onClassUpdated={updated => {
                     setClasses(classes.map(c => (c.id === updated.id ? updated : c)));
                   }}
@@ -703,6 +718,7 @@ export function App() {
                 <TasksContainer
                   key={classGroupWs ? classGroupWs.id : activeClass.id}
                   workspaceId={classGroupWs ? classGroupWs.id : activeClass.id}
+                  onUnauthorized={handleUnauthorized}
                 />
               )}
               {classTab === 'calendar' && (
@@ -733,6 +749,7 @@ export function App() {
                 <TasksContainer
                   key={activeWorkspace.id}
                   workspaceId={activeWorkspace.id}
+                  onUnauthorized={handleUnauthorized}
                 />
               )}
               {workspaceTab === 'calendar' && (
@@ -749,7 +766,7 @@ export function App() {
               {workspaceTab === 'members' && (
                 <GroupMembersView
                   workspace={activeWorkspace}
-                  currentUser={user ?? MOCK_USER}
+                  currentUser={user}
                 />
               )}
               {workspaceTab === 'notes' && (
@@ -763,7 +780,7 @@ export function App() {
             </div>
           ) : (
             <div className="section-box" style={{ textAlign: 'center', padding: '40px 0' }}>
-              <p>Đang tải dữ liệu không gian làm việc...</p>
+              <p>{contextError ? 'Không thể tải không gian làm việc. Vui lòng tải lại trang.' : 'Đang tải dữ liệu không gian làm việc...'}</p>
             </div>
           )}
         </div>
@@ -791,6 +808,7 @@ export function App() {
             setUser(null);
             setClasses([]);
             setWorkspaces([]);
+          setContext({ type: 'workspace', workspaceId: '' });
           }}
         />
       )}

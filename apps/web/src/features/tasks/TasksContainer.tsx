@@ -99,7 +99,12 @@ export const TasksContainer: React.FC<TasksContainerProps> = ({
       if (err instanceof Error && err.name === 'AbortError') return;
 
       const msg = err instanceof Error ? err.message : String(err);
-      if (msg.includes('403') || msg.includes('FORBIDDEN')) {
+      if (msg.includes('401') || msg.includes('UNAUTHENTICATED')) {
+        setTasks([]);
+        setWorkSessions([]);
+        setSelectedTaskId(undefined);
+        onUnauthorized?.();
+      } else if (msg.includes('403') || msg.includes('FORBIDDEN')) {
         // QA-13: Immediate purge on revoked access
         setTasks([]);
         setWorkSessions([]);
