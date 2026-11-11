@@ -10,7 +10,7 @@
 | Mã | Quy tắc |
 | --- | --- |
 | STR-01 | Tài khoản có một workspace cá nhân mặc định. Workspace cộng tác độc lập nằm ngoài lớp; workspace nhóm thuộc đúng một lớp suốt vòng đời, không chuyển sang lớp khác hay chuyển thành workspace độc lập. Cùng một loại workspace được gọi là nhóm theo ngữ cảnh lớp. |
-| STR-02 | Đăng ký chọn một hoặc nhiều cách dùng Sinh viên/Giáo viên/Quản lý cá nhân; Cài đặt **tài khoản** cho bật/tắt sau đó. Chỉ khi bật Giáo viên mới được tạo lớp mới; tài khoản chỉ bật Sinh viên được tham gia lớp, không tạo lớp. Lựa chọn tự khai, không mang nhãn đã xác minh. |
+| STR-02 | Mọi tài khoản có workspace cá nhân mặc định. Đăng ký và Cài đặt tài khoản cho bật/tắt nhu cầu Người học và Giáo viên độc lập; không chọn mục nào được lưu là `personal`. Chỉ khi bật Giáo viên mới được tạo lớp mới; tài khoản chỉ bật Người học không tạo lớp. Lựa chọn tự khai, không mang nhãn đã xác minh. [SRC-31](../../review/provenance.md) |
 | STR-03 | Tắt Giáo viên chặn tạo lớp mới nhưng không tước quyền chủ lớp đang sở hữu; chuyển chủ lớp là luồng bàn giao riêng. Bật Giáo viên không cấp quyền trong lớp của người khác. Cách dùng tài khoản khác với vai trò Member/Lớp trưởng trong từng lớp và trưởng nhóm trong từng workspace. |
 | STR-04 | Tư cách nhóm chỉ có hiệu lực nếu tư cách lớp còn hiệu lực. Hai quan hệ tư cách được lưu riêng và có lịch sử; mỗi cách gia nhập đều kiểm giới hạn nhóm hiện hành tại lúc kích hoạt. Không dùng ràng buộc cứng một nhóm trong cơ sở dữ liệu vì giáo viên được đổi giới hạn. |
 | STR-05 | Bài giao thuộc một lớp; với mỗi nhóm nhận có một phần theo dõi tiến độ và chuỗi phiên bản nộp riêng. Một sự kiện lớp có một nguồn với các đối tượng nhận; nhiều lịch chỉ là cách hiển thị theo quyền, không phải nhiều sự kiện độc lập. |
