@@ -5,7 +5,7 @@
 | Mục đích | Thống nhất đối tượng, bài toán và tên gọi giữa tài liệu nghiệp vụ, giao diện và thiết kế |
 | Phạm vi | Khái niệm sản phẩm của `s_note_v2` |
 | Kiểm định | DCA-checked theo quyết định về sản phẩm |
-| Bằng chứng duyệt | [SRC-01 đến SRC-04, SRC-07 đến SRC-11, SRC-20, SRC-25](../../review/provenance.md) |
+| Bằng chứng duyệt | [SRC-01 đến SRC-04, SRC-07 đến SRC-11, SRC-20, SRC-25, SRC-31](../../review/provenance.md) |
 
 SNOTE hướng tới người học, người quản lý công việc cá nhân và giáo viên. Người dùng cần lưu nhanh thông tin để tìm lại, biết việc nào cần làm tiếp và giữ dự án riêng theo từng workspace. Khi cộng tác, nhóm cần thấy rõ người phụ trách, hạn, lịch và tiến độ. Giáo viên cần theo dõi bài giao và kết quả của nhiều nhóm trong lớp. [Nguồn sản phẩm](../../review/provenance.md)
 
@@ -24,7 +24,7 @@ flowchart TD
 
 | Khái niệm | Nghĩa trong SNOTE |
 | --- | --- |
-| Cách dùng tài khoản | Các lựa chọn Người học, Giáo viên và Quản lý cá nhân để điều chỉnh chức năng hiển thị. Quyền trên dữ liệu còn phụ thuộc vai trò tại lớp hoặc workspace cụ thể. |
+| Cách dùng tài khoản | Mọi tài khoản có phạm vi cá nhân; người dùng có thể bật Người học, Giáo viên hoặc cả hai cho nhu cầu lớp học. Quyền trên dữ liệu còn phụ thuộc vai trò tại lớp hoặc workspace cụ thể. |
 | Workspace | Không gian làm việc có Công việc, Lịch và Thư viện. Một người có thể dùng nhiều workspace và mời người khác cộng tác. |
 | Workspace cá nhân mặc định | Workspace được tạo khi đăng ký cho mọi tài khoản, không cho thêm thành viên, đổi chủ, lưu trữ hoặc chuyển thành nhóm. Hộp thu luôn có đích lưu tại đây trong bản đầu. Muốn cộng tác, người dùng tạo workspace khác. |
 | Lớp | Cấp trên các workspace nhóm thuộc lớp. Giáo viên chủ lớp tổ chức người học, bài giao và các nhóm. |

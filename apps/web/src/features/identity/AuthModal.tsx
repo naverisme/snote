@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { X, GraduationCap, User, Sparkles, Check } from 'lucide-react';
+import { X, GraduationCap, User, Check } from 'lucide-react';
 import { register, login, passwordResetRequest, passwordReset } from '../../shared/api';
 import type { Account } from '../../shared/types';
+import { toAccountUsages } from './usage-selection';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -9,24 +10,18 @@ interface AuthModalProps {
   onAuthenticated: (account: Account) => void;
 }
 
-const ROLE_OPTIONS: { id: 'student' | 'teacher' | 'personal'; title: string; desc: string; icon: React.ComponentType<{ size: number }> }[] = [
+const CLASSROOM_OPTIONS: { id: 'student' | 'teacher'; title: string; desc: string; icon: React.ComponentType<{ size: number }> }[] = [
   {
     id: 'student',
-    title: 'Người học (Student)',
-    desc: 'Tham gia lớp học, làm bài tập, theo dõi lịch và thư viện',
+    title: 'Tôi tham gia lớp học',
+    desc: 'Xem bài giao và nội dung trong các lớp mình tham gia',
     icon: User,
   },
   {
     id: 'teacher',
-    title: 'Giáo viên (Teacher)',
-    desc: 'Tạo và quản lý lớp học, giao bài tập, chấm điểm và theo dõi tiến độ',
+    title: 'Tôi tạo và quản lý lớp học',
+    desc: 'Tạo lớp, giao bài và theo dõi tiến độ của lớp mình',
     icon: GraduationCap,
-  },
-  {
-    id: 'personal',
-    title: 'Cá nhân (Personal)',
-    desc: 'Quản lý công việc cá nhân, tài liệu và lịch trình độc lập',
-    icon: Sparkles,
   },
 ];
 
@@ -34,7 +29,7 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
   const [tab, setTab] = useState<'login' | 'register' | 'forgot' | 'reset'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [usages, setUsages] = useState<Account['usages']>(['student']);
+  const [classroomUsages, setClassroomUsages] = useState<Array<'student' | 'teacher'>>([]);
   const [timeZone, setTimeZone] = useState(
     Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Ho_Chi_Minh',
   );
@@ -46,23 +41,10 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
 
   if (!isOpen) return null;
 
-  const handleToggleUsage = (usage: 'student' | 'teacher' | 'personal') => {
-    if (usages.includes(usage)) {
-      if (usages.length > 1) {
-        setUsages(usages.filter(u => u !== usage));
-        setError(null);
-      } else {
-        setError('Tài khoản cần duy trì ít nhất 1 vai trò');
-      }
-    } else {
-      setUsages([...usages, usage]);
-      setError(null);
-    }
-  };
-
-  const handleSelectOnly = (e: React.MouseEvent, usage: 'student' | 'teacher' | 'personal') => {
-    e.stopPropagation();
-    setUsages([usage]);
+  const handleToggleUsage = (usage: 'student' | 'teacher') => {
+    setClassroomUsages(current => current.includes(usage)
+      ? current.filter(value => value !== usage)
+      : [...current, usage]);
     setError(null);
   };
 
@@ -83,6 +65,7 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
           setLoading(false);
           return;
         }
+        const usages = toAccountUsages(classroomUsages);
         const res = await register({ email, password, usages, timeZone });
         onAuthenticated(res.data);
         onClose();
@@ -200,30 +183,26 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
 
           {tab === 'register' && (
             <>
-              <div className="form-group">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                  <label className="form-label" style={{ marginBottom: 0 }}>Vai trò sử dụng</label>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--ink-muted)' }}>Chọn một hoặc nhiều vai trò</span>
-                </div>
+              <fieldset className="form-group" style={{ border: 0, padding: 0, margin: '0 0 16px' }}>
+                <legend className="form-label">Bạn có dùng SNOTE trong lớp học không?</legend>
+                <p style={{ fontSize: '0.78rem', color: 'var(--ink-muted)', margin: '0 0 8px' }}>
+                  Có thể chọn cả hai. Không chọn mục nào nếu bạn chỉ dùng SNOTE cho công việc cá nhân.
+                </p>
                 <div className="role-cards-container">
-                  {ROLE_OPTIONS.map(role => {
-                    const isSelected = usages.includes(role.id);
+                  {CLASSROOM_OPTIONS.map(role => {
+                    const isSelected = classroomUsages.includes(role.id);
                     const Icon = role.icon;
                     return (
-                      <div
+                      <label
                         key={role.id}
                         className={`role-card ${isSelected ? 'active' : ''}`}
-                        onClick={() => handleToggleUsage(role.id)}
-                        role="checkbox"
-                        aria-checked={isSelected}
-                        tabIndex={0}
-                        onKeyDown={e => {
-                          if (e.key === ' ' || e.key === 'Enter') {
-                            e.preventDefault();
-                            handleToggleUsage(role.id);
-                          }
-                        }}
                       >
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => handleToggleUsage(role.id)}
+                          style={{ position: 'absolute', opacity: 0, width: 1, height: 1 }}
+                        />
                         <div className="role-card-body">
                           <div className="role-card-icon-box">
                             <Icon size={18} />
@@ -233,34 +212,17 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
                             <span className="role-card-desc">{role.desc}</span>
                           </div>
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                          {isSelected && usages.length > 1 && (
-                            <button
-                              type="button"
-                              className="btn-link"
-                              style={{ fontSize: '0.72rem', color: 'var(--ink-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px' }}
-                              onClick={e => handleSelectOnly(e, role.id)}
-                              title="Chỉ chọn vai trò này"
-                            >
-                              Chỉ chọn
-                            </button>
-                          )}
-                          <div className="role-check-indicator" aria-hidden="true">
-                            {isSelected && <Check size={12} strokeWidth={3} />}
-                          </div>
+                        <div className="role-check-indicator" aria-hidden="true">
+                          {isSelected && <Check size={12} strokeWidth={3} />}
                         </div>
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => {}}
-                          tabIndex={-1}
-                          style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }}
-                        />
-                      </div>
+                      </label>
                     );
                   })}
                 </div>
-              </div>
+                <p style={{ fontSize: '0.78rem', color: 'var(--ink-muted)', margin: '10px 0 0' }}>
+                  Mọi tài khoản đều có không gian cá nhân để quản lý công việc, lịch và tài liệu.
+                </p>
+              </fieldset>
 
               <div className="form-group">
                 <label className="form-label" htmlFor="auth-timezone">Múi giờ</label>

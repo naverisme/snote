@@ -4,7 +4,6 @@ import {
   LogOut,
   GraduationCap,
   User,
-  Sparkles,
   Check,
   CheckCircle2,
   Sun,
@@ -18,6 +17,7 @@ import {
 } from 'lucide-react';
 import { changeUsages, logout, getMe, passwordReset } from '../../shared/api';
 import type { Account } from '../../shared/types';
+import { toggleClassroomUsage } from './usage-selection';
 
 interface AccountSettingsModalProps {
   isOpen: boolean;
@@ -25,35 +25,27 @@ interface AccountSettingsModalProps {
   account: Account;
   onUpdated: (updated: Account) => void;
   onLoggedOut: () => void;
-  activePersona?: 'student' | 'teacher';
-  onPersonaChanged?: (persona: 'student' | 'teacher') => void;
 }
 
 type SettingsTab = 'persona' | 'appearance' | 'account';
 
-const SETTINGS_ROLES: {
-  id: 'student' | 'teacher' | 'personal';
+const CLASSROOM_OPTIONS: {
+  id: 'student' | 'teacher';
   title: string;
   desc: string;
   icon: React.ComponentType<{ size: number }>;
 }[] = [
   {
     id: 'student',
-    title: 'Người học (Student)',
-    desc: 'Tham gia lớp học, làm bài tập, theo dõi lịch và thư viện học tập',
+    title: 'Tôi tham gia lớp học',
+    desc: 'Xem bài giao và nội dung trong các lớp mình tham gia',
     icon: User,
   },
   {
     id: 'teacher',
-    title: 'Giáo viên (Teacher)',
-    desc: 'Tạo và quản lý lớp học, phân công bài tập và theo dõi tiến độ',
+    title: 'Tôi tạo và quản lý lớp học',
+    desc: 'Tạo lớp, giao bài và theo dõi tiến độ của lớp mình',
     icon: GraduationCap,
-  },
-  {
-    id: 'personal',
-    title: 'Cá nhân (Personal)',
-    desc: 'Quản lý công việc cá nhân, tài liệu và lịch trình độc lập',
-    icon: Sparkles,
   },
 ];
 
@@ -63,8 +55,6 @@ export function AccountSettingsModal({
   account,
   onUpdated,
   onLoggedOut,
-  activePersona = 'student',
-  onPersonaChanged,
 }: AccountSettingsModalProps) {
   const [activeTab, setActiveTab] = useState<SettingsTab>('persona');
   const [usages, setUsages] = useState<Account['usages']>(account.usages);
@@ -126,17 +116,8 @@ export function AccountSettingsModal({
     setTimeout(() => setCopiedId(false), 2000);
   };
 
-  const handleToggleUsage = async (usage: 'student' | 'teacher' | 'personal') => {
-    let next: Account['usages'];
-    if (usages.includes(usage)) {
-      if (usages.length <= 1) {
-        setError('Tài khoản cần duy trì ít nhất một vai trò');
-        return;
-      }
-      next = usages.filter(u => u !== usage);
-    } else {
-      next = [...usages, usage];
-    }
+  const handleToggleUsage = async (usage: 'student' | 'teacher') => {
+    const next = toggleClassroomUsage(usages, usage);
 
     setUsages(next);
     setLoading(true);
@@ -146,34 +127,22 @@ export function AccountSettingsModal({
     try {
       const res = await changeUsages(next, currentVersion);
       setCurrentVersion(res.data.version);
-      onUpdated(res.data);
-      setSuccess('Đã cập nhật quyền tài khoản thành công!');
+      onUpdated({ ...account, usages: res.data.usages, version: res.data.version });
+      setSuccess('Đã cập nhật cách dùng SNOTE.');
     } catch (err: any) {
       try {
         const freshRes = await getMe();
         setCurrentVersion(freshRes.data.version);
         const retryRes = await changeUsages(next, freshRes.data.version);
         setCurrentVersion(retryRes.data.version);
-        onUpdated(retryRes.data);
-        setSuccess('Đã cập nhật quyền tài khoản thành công!');
+        onUpdated({ ...freshRes.data, usages: retryRes.data.usages, version: retryRes.data.version });
+        setSuccess('Đã cập nhật cách dùng SNOTE.');
       } catch (retryErr: any) {
-        setError(retryErr?.body?.error?.message || err?.body?.error?.message || 'Lỗi cập nhật vai trò');
+        setError(retryErr?.body?.error?.message || err?.body?.error?.message || 'Không thể cập nhật cách dùng SNOTE');
         setUsages(account.usages);
       }
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleSelectPersona = async (persona: 'student' | 'teacher') => {
-    if (onPersonaChanged) {
-      onPersonaChanged(persona);
-    }
-    if (persona === 'teacher' && !usages.includes('teacher')) {
-      // Auto-grant teacher usage
-      await handleToggleUsage('teacher');
-    } else {
-      setSuccess(`Đã chuyển sang tư cách: ${persona === 'teacher' ? 'Giáo viên' : 'Học sinh'}`);
     }
   };
 
@@ -238,7 +207,7 @@ export function AccountSettingsModal({
             onClick={() => setActiveTab('persona')}
           >
             <UserCheck size={15} />
-            <span>Tư cách & Vai trò</span>
+            <span>Cách dùng SNOTE</span>
           </button>
           <button
             type="button"
@@ -262,98 +231,32 @@ export function AccountSettingsModal({
           </button>
         </div>
 
-        {/* TAB 1: PERSONA & USAGES */}
+        {/* TAB 1: ACCOUNT USAGES */}
         {activeTab === 'persona' && (
           <div>
-            {/* Active Working Persona Segmented Cards */}
-            <div style={{ marginBottom: 20 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--ink-title)' }}>
-                  Tư cách làm việc hiện tại
-                </span>
-                <span style={{ fontSize: '0.75rem', color: 'var(--accent)', fontWeight: 600 }}>
-                  Đang hoạt động: {activePersona === 'teacher' ? 'Giáo viên' : 'Học sinh'}
-                </span>
-              </div>
+            <fieldset style={{ border: 0, padding: 0, margin: 0 }}>
+              <legend className="form-label">Bạn có dùng SNOTE trong lớp học không?</legend>
               <p style={{ fontSize: '0.78rem', color: 'var(--ink-muted)', marginBottom: 10, lineHeight: 1.45 }}>
-                Chọn góc nhìn làm việc chính của bạn. Tư cách Giáo viên mở quyền quản trị lớp, tạo bài giao và chấm bài; tư cách Học sinh dành cho làm bài và nộp bài.
-              </p>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                {/* Student Persona Option */}
-                <div
-                  className={`role-card ${activePersona === 'student' ? 'active' : ''}`}
-                  onClick={() => handleSelectPersona('student')}
-                  role="radio"
-                  aria-checked={activePersona === 'student'}
-                  tabIndex={0}
-                >
-                  <div className="role-card-body">
-                    <div className="role-card-icon-box">
-                      <User size={18} />
-                    </div>
-                    <div className="role-card-info">
-                      <span className="role-card-title">Học sinh (Learner)</span>
-                      <span className="role-card-desc">Làm bài tập, nộp bài, lịch học</span>
-                    </div>
-                  </div>
-                  <div className="role-check-indicator" aria-hidden="true">
-                    {activePersona === 'student' && <Check size={12} strokeWidth={3} />}
-                  </div>
-                </div>
-
-                {/* Teacher Persona Option */}
-                <div
-                  className={`role-card ${activePersona === 'teacher' ? 'active' : ''}`}
-                  onClick={() => handleSelectPersona('teacher')}
-                  role="radio"
-                  aria-checked={activePersona === 'teacher'}
-                  tabIndex={0}
-                >
-                  <div className="role-card-body">
-                    <div className="role-card-icon-box">
-                      <GraduationCap size={18} />
-                    </div>
-                    <div className="role-card-info">
-                      <span className="role-card-title">Giáo viên (Teacher)</span>
-                      <span className="role-card-desc">Tạo lớp, giao bài tập & chấm bài</span>
-                    </div>
-                  </div>
-                  <div className="role-check-indicator" aria-hidden="true">
-                    {activePersona === 'teacher' && <Check size={12} strokeWidth={3} />}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Account Usages & Capabilities */}
-            <div style={{ paddingTop: 16, borderTop: '1px solid var(--border-light)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                <span className="section-title" style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--ink-title)' }}>
-                  Cấp quyền tính năng tài khoản (QA-01)
-                </span>
-                <span style={{ fontSize: '0.75rem', color: 'var(--ink-muted)' }}>
-                  {usages.length} quyền kích hoạt
-                </span>
-              </div>
-              <p style={{ fontSize: '0.78rem', color: 'var(--ink-muted)', marginBottom: 10, lineHeight: 1.45 }}>
-                Bật tính năng "Giáo viên" để kích hoạt quyền tạo lớp mới. Khi tắt, các lớp học cũ vẫn được bảo lưu quyền quản trị (STR-03).
+                Có thể chọn cả hai. Không chọn mục nào nếu bạn chỉ dùng SNOTE cho công việc cá nhân.
               </p>
 
               <div className="role-cards-container">
-                {SETTINGS_ROLES.map(role => {
+                {CLASSROOM_OPTIONS.map(role => {
                   const isSelected = usages.includes(role.id);
                   const Icon = role.icon;
                   return (
-                    <div
+                    <label
                       key={role.id}
                       className={`role-card ${isSelected ? 'active' : ''}`}
-                      onClick={() => !loading && handleToggleUsage(role.id)}
-                      role="checkbox"
-                      aria-checked={isSelected}
-                      tabIndex={0}
                       style={{ opacity: loading ? 0.7 : 1 }}
                     >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        disabled={loading}
+                        onChange={() => void handleToggleUsage(role.id)}
+                        style={{ position: 'absolute', opacity: 0, width: 1, height: 1 }}
+                      />
                       <div className="role-card-body">
                         <div className="role-card-icon-box">
                           <Icon size={18} />
@@ -363,19 +266,17 @@ export function AccountSettingsModal({
                           <span className="role-card-desc">{role.desc}</span>
                         </div>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <span className={`role-toggle-switch ${isSelected ? 'is-active' : ''}`}>
-                          {isSelected ? 'Đang bật' : 'Tắt'}
-                        </span>
-                        <div className="role-check-indicator" aria-hidden="true">
-                          {isSelected && <Check size={12} strokeWidth={3} />}
-                        </div>
+                      <div className="role-check-indicator" aria-hidden="true">
+                        {isSelected && <Check size={12} strokeWidth={3} />}
                       </div>
-                    </div>
+                    </label>
                   );
                 })}
               </div>
-            </div>
+              <p style={{ fontSize: '0.78rem', color: 'var(--ink-muted)', marginTop: 10, lineHeight: 1.45 }}>
+                Mọi tài khoản đều có không gian cá nhân. Bật Giáo viên để tạo lớp mới; tắt mục này không làm mất quyền chủ của lớp đã tạo.
+              </p>
+            </fieldset>
           </div>
         )}
 
