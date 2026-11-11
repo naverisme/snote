@@ -5,6 +5,7 @@ import { MeController } from './me.controller';
 import { IdentityService } from './identity.service';
 import { AccountService } from './account-service';
 import { PrismaSessionStore } from './session-store';
+import { GoogleIdTokenVerifier } from './google-token-verifier';
 
 const prisma = new PrismaClient();
 const sessionStore = new PrismaSessionStore(prisma);
@@ -17,7 +18,8 @@ const sessionStore = new PrismaSessionStore(prisma);
     { provide: 'SESSION_STORE', useValue: sessionStore },
     {
       provide: IdentityService,
-      useFactory: (db: PrismaClient, store: PrismaSessionStore) => new IdentityService(db, store),
+      useFactory: (db: PrismaClient, store: PrismaSessionStore) =>
+        new IdentityService(db, store, undefined, new GoogleIdTokenVerifier(process.env.GOOGLE_CLIENT_ID || '')),
       inject: [PrismaClient, 'SESSION_PORT'],
     },
     {

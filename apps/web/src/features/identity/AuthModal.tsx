@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { X, GraduationCap, User, Check } from 'lucide-react';
-import { register, login, passwordResetRequest, passwordReset } from '../../shared/api';
+import { register, login, googleSignIn, passwordResetRequest, passwordReset } from '../../shared/api';
 import type { Account } from '../../shared/types';
 import { toAccountUsages } from './usage-selection';
+import { GoogleSignInButton } from './GoogleSignInButton';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -104,6 +105,23 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
     }
   };
 
+  const handleGoogleCredential = async (credential: string) => {
+    setError(null);
+    setLoading(true);
+    try {
+      const usages = tab === 'register' ? toAccountUsages(classroomUsages) : ['personal'] as Account['usages'];
+      const result = await googleSignIn({ credential, usages, timeZone });
+      onAuthenticated(result.data);
+      onClose();
+    } catch (err: any) {
+      const code = err?.body?.error?.code;
+      setError(code === 'ACCOUNT_LINK_REQUIRED'
+        ? 'Email này đã có tài khoản SNOTE. Hãy đăng nhập bằng mật khẩu; liên kết Google cần xác minh tài khoản hiện có.'
+        : code === 'INVALID_GOOGLE_CREDENTIAL' ? 'Thông tin đăng nhập Google không hợp lệ. Vui lòng thử lại.'
+        : err?.body?.error?.message || err?.message || 'Không thể đăng nhập bằng Google.');
+    } finally { setLoading(false); }
+  };
+
   return (
     <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true">
       <div className="modal-content" onClick={e => e.stopPropagation()}>
@@ -147,6 +165,19 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
                 <span>Giáo viên Demo</span>
               </button>
             </div>
+          </div>
+        )}
+
+        {(tab === 'login' || tab === 'register') && import.meta.env.VITE_GOOGLE_CLIENT_ID && (
+          <div style={{ marginBottom: 16 }}>
+            <GoogleSignInButton
+              clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+              mode={tab}
+              onCredential={handleGoogleCredential}
+              onError={setError}
+            />
+            {loading && <p style={{ textAlign: 'center', fontSize: '0.8rem' }}>Đang xác thực Google...</p>}
+            <p style={{ textAlign: 'center', color: 'var(--ink-muted)', fontSize: '0.8rem', margin: '12px 0 0' }}>Hoặc tiếp tục bằng email</p>
           </div>
         )}
 

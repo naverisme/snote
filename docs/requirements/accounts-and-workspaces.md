@@ -21,3 +21,5 @@
 | ACC-10 | Chủ workspace độc lập được lưu trữ và khôi phục workspace; khi lưu trữ chỉ đọc theo quyền. Bản đầu không có nút xóa vĩnh viễn workspace độc lập. Workspace cá nhân mặc định theo ACC-07 không được lưu trữ. | I4, SRC-25 |
 
 Xem [quyền theo phạm vi](access-control.md), [Hộp thu](library.md) và [điều hướng theo cách dùng](../ux/workspace-and-tasks.md).
+
+**Đăng ký qua Google (INFERRED từ yêu cầu tích hợp Google ngày 2026-11-11 và SRC-27):** Google là một cách xác thực cho cùng tài khoản SNOTE, không là cách dùng `student`/`teacher`/`personal` mới. Lần đầu dùng Google vẫn chọn nhu cầu lớp học và múi giờ theo ACC-01, được tạo workspace cá nhân theo ACC-02. Lần sau nhận lại cùng tài khoản theo `sub` đã xác minh. Email trùng tài khoản mật khẩu không tự liên kết; người dùng tiếp tục đăng nhập bằng phương thức cũ cho tới khi có luồng liên kết đã xác minh. Giới hạn: cơ chế liên kết tài khoản và chính sách thay đổi email Google chưa được quyết định trong yêu cầu này.
