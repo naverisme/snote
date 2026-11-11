@@ -4,6 +4,7 @@ import type { components } from '@snote/contracts';
 import { DomainError } from '../../core/authorization';
 import { createSession, hashSecret, type SessionPort, type SessionStore } from '../../core/http';
 import { validateUsages } from './account-service';
+import type { GoogleTokenVerifier } from './google-token-verifier';
 
 type Register = components['schemas']['Register'];
 type Login = components['schemas']['Login'];
@@ -32,6 +33,7 @@ export class IdentityService {
     private readonly db: PrismaClient,
     private readonly sessionStore: SessionStore & SessionPort,
     private readonly ttlMs = 7 * 24 * 60 * 60 * 1000,
+    private readonly googleVerifier?: GoogleTokenVerifier,
   ) {}
 
   async register(input: Register) {
@@ -122,7 +124,7 @@ export class IdentityService {
       include: { usages: true },
     });
 
-    if (!account || !verifyPassword(input.password, account.passwordHash)) {
+    if (!account?.passwordHash || !verifyPassword(input.password, account.passwordHash)) {
       throw new DomainError('UNAUTHENTICATED', 401);
     }
 
@@ -135,6 +137,60 @@ export class IdentityService {
       version: account.version,
     };
 
+    return { account: accountData, session };
+  }
+
+  async googleSignIn(input: { credential: string; usages: AccountSchema['usages']; timeZone: string }) {
+    if (typeof input?.credential !== 'string' || input.credential.length > 8192 || !this.googleVerifier) {
+      throw new DomainError('INVALID_INPUT', 422);
+    }
+    const identity = await this.googleVerifier.verify(input.credential);
+    let account = await this.db.account.findUnique({
+      where: { googleSubject: identity.subject }, include: { usages: true },
+    });
+    if (!account) {
+      const email = identity.email.toLowerCase();
+      if (await this.db.account.findUnique({ where: { email } })) {
+        throw new DomainError('ACCOUNT_LINK_REQUIRED', 409);
+      }
+      const usages = validateUsages(input.usages);
+      if (!input.timeZone) throw new DomainError('INVALID_INPUT', 422);
+      try { new Intl.DateTimeFormat('en', { timeZone: input.timeZone }).format(); }
+      catch { throw new DomainError('INVALID_INPUT', 422); }
+      try {
+        account = await this.db.$transaction(async tx => {
+          const created = await tx.account.create({
+            data: { email, googleSubject: identity.subject, passwordHash: null, timeZone: input.timeZone,
+              usages: { create: usages.map(usage => ({ usage })) } },
+            include: { usages: true },
+          });
+          const workspace = await tx.workspace.create({
+            data: { name: 'Cá nhân', kind: 'default', timeZone: input.timeZone,
+              ownerId: created.id, status: 'active' },
+          });
+          await tx.workspaceMembership.create({ data: {
+            workspaceId: workspace.id, accountId: created.id, role: 'leader', status: 'active',
+          } });
+          await tx.auditEvent.create({ data: {
+            actorId: created.id, scopeType: 'account', scopeId: created.id,
+            action: 'account.register_google', targetId: created.id,
+          } });
+          return created;
+        });
+      } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+          account = await this.db.account.findUnique({
+            where: { googleSubject: identity.subject }, include: { usages: true },
+          });
+          if (!account) throw new DomainError('ACCOUNT_LINK_REQUIRED', 409);
+        } else throw error;
+      }
+    }
+    const session = await createSession(this.sessionStore, account.id, this.ttlMs);
+    const accountData: AccountSchema = {
+      id: account.id, usages: account.usages.map(u => u.usage) as AccountSchema['usages'],
+      timeZone: account.timeZone, version: account.version,
+    };
     return { account: accountData, session };
   }
 

@@ -66,6 +66,12 @@ export async function login(body: { email: string; password: string }) {
   return res;
 }
 
+export async function googleSignIn(body: { credential: string; usages: Account['usages']; timeZone: string }) {
+  const res = await request<AuthSessionResponse>('/auth/google', 'POST', body);
+  setCsrfToken(res.csrfToken);
+  return res;
+}
+
 export async function logout() {
   const res = await request<ApiResponse<{ success: boolean }>>('/auth/logout', 'POST', undefined, {
     csrfToken: currentCsrfToken,

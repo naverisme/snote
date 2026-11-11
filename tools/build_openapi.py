@@ -20,6 +20,7 @@ STR = string()
 S = {
  "Register": obj({"email":string(format="email"),"password":string(minLength=12),"usages":arr(string(enum=["student","teacher","personal"])),"timeZone":ID}, ("email","password","usages","timeZone")),
  "Login": obj({"email":string(format="email"),"password":ID}, ("email","password")),
+ "GoogleSignIn": obj({"credential":ID,"usages":arr(string(enum=["student","teacher","personal"])),"timeZone":ID}, ("credential","usages","timeZone")),
  "PasswordResetRequest": obj({"email":string(format="email")}, ("email",)),
  "PasswordReset": obj({"token":ID,"newPassword":string(minLength=12)}, ("token","newPassword")),
  "Error": obj({"error": obj({"code": STR, "message": STR, "details": {"type":"object"}}, ("code","message")), "requestId": ID}, ("error","requestId")),
@@ -106,6 +107,7 @@ for family,entity in entities.items():
 S["AuthSessionResult"]=obj({"data":ref("Account"),"csrfToken":ID,"requestId":ID}, ("data","csrfToken","requestId"))
 S["UsageUpdate"]["properties"]["usages"]["minItems"]=1
 S["Register"]["properties"]["usages"]["minItems"]=1
+S["GoogleSignIn"]["properties"]["usages"]["minItems"]=1
 S["AssignmentInput"]["properties"]["recipientWorkspaceIds"]["minItems"]=1
 S["BulkTasks"]["properties"]["items"]["minItems"]=1
 for name, left, right in (("TaskCreate","dueAt","dueDate"),("TaskUpdate","dueAt","dueDate"),("AssignmentInput","deadline","deadlineDate")):
@@ -119,6 +121,7 @@ S["SubmissionInput"]["anyOf"]=[{"required":[x]} for x in ("text","links","upload
 O = [
  ("post","/auth/register","Register","AuthSessionResult","auth"),
  ("post","/auth/login","Login","AuthSessionResult","auth"),
+ ("post","/auth/google","GoogleSignIn","AuthSessionResult","auth"),
  ("post","/auth/logout",None,"Result","auth"),
  ("post","/auth/password-reset-request","PasswordResetRequest","Result","auth"),
  ("post","/auth/password-reset","PasswordReset","Result","auth"),
@@ -297,7 +300,7 @@ def operation(method, path, request, response, family):
         typed="FolderResult"
     op={"operationId":family+method.title()+"".join(x.strip("{}").title() for x in path.split("/") if x),
         "tags":[family],"responses":{"200":{"description":"Committed result", "content":{"application/json":{"schema":ref(typed)}}}}}
-    if path in ("/auth/register", "/auth/login", "/auth/logout"):
+    if path in ("/auth/register", "/auth/login", "/auth/google", "/auth/logout"):
         op["responses"]["200"].setdefault("headers", {})["Set-Cookie"]={"description":"snote_session HttpOnly Secure SameSite=Lax; Max-Age=0 on logout", "schema":STR}
     if method in ("get", "patch", "put", "post"):
         op["responses"]["200"].setdefault("headers", {})["ETag"]={"description":"Version of returned resource when applicable", "schema":STR}
@@ -334,7 +337,7 @@ for method,path,request,response,family in O:
 spec={"openapi":"3.1.0","info":{"title":"SNOTE v2 REST", "version":"0.1.0", "description":"Contract baseline for web v2; domain invariants in docs/requirements. No v1 input."},
       "servers":[{"url":"/api/v2"}],"security":[{"sessionCookie":[]}],"paths":paths,
       "components":{"securitySchemes":{"sessionCookie":{"type":"apiKey","in":"cookie","name":"snote_session"}},"schemas":S}}
-for path in ("/auth/register","/auth/login","/auth/password-reset-request","/auth/password-reset"):
+for path in ("/auth/register","/auth/login","/auth/google","/auth/password-reset-request","/auth/password-reset"):
     spec["paths"][path]["post"]["security"]=[]
 OUT.parent.mkdir(parents=True, exist_ok=True)
 OUT.write_text(yaml.safe_dump(spec,allow_unicode=True,sort_keys=False,default_flow_style=True,width=1000000))

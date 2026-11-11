@@ -10,7 +10,8 @@ datasource db {
 model Account {
   id           String   @id @default(uuid()) @db.Uuid
   email        String   @unique
-  passwordHash String
+  passwordHash String?
+  googleSubject String? @unique
   timeZone     String
   version      Int      @default(1)
   createdAt    DateTime @default(now())

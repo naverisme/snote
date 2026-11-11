@@ -34,6 +34,10 @@ export class TestDb {
               break;
             }
           }
+        } else if (where.googleSubject) {
+          for (const it of map.values()) {
+            if (it.googleSubject === where.googleSubject) { item = it; break; }
+          }
         } else if (where.accountId_usage) {
           item = map.get(`${where.accountId_usage.accountId}:${where.accountId_usage.usage}`) ?? null;
         } else if (where.classId) {
@@ -119,6 +123,9 @@ export class TestDb {
           }
         } else {
           map.set(id, record);
+        }
+        if (name === 'account' && data.usages?.create) {
+          return { ...record, usages: [...self.accountUsages.values()].filter(u => u.accountId === id) };
         }
         return record;
       },

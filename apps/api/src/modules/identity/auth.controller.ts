@@ -6,6 +6,7 @@ import type { SessionPort } from '../../core/http';
 
 type Register = components['schemas']['Register'];
 type Login = components['schemas']['Login'];
+type GoogleSignIn = components['schemas']['GoogleSignIn'];
 type PasswordResetRequest = components['schemas']['PasswordResetRequest'];
 type PasswordReset = components['schemas']['PasswordReset'];
 
@@ -38,6 +39,14 @@ export class AuthController {
       csrfToken: session.csrfToken,
       requestId: session.token.slice(0, 16),
     };
+  }
+
+  @Post('google')
+  async google(@Body() body: GoogleSignIn, @Res({ passthrough: true }) res: Response) {
+    const { account, session } = await this.identityService.googleSignIn(body);
+    res.setHeader('Set-Cookie', session.cookie);
+    res.setHeader('ETag', `"${account.version}"`);
+    return { data: account, csrfToken: session.csrfToken, requestId: session.token.slice(0, 16) };
   }
 
   @Post('logout')
