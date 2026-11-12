@@ -3,7 +3,7 @@
 | Mục | Kết quả |
 | --- | --- |
 | Nguồn | Nhánh `feat/release-readiness` từ `s_note_v2` SHA `6f9e816224d23a713f05b4940718d3df5e719021`; không dùng SNOTE v1 |
-| Môi trường | Windows PowerShell, Node.js 22, Docker Desktop/Engine 29.9.2, PostgreSQL 17.7 trong Docker |
+| Môi trường | Windows PowerShell, Node.js 24.15.0 trên host; image API dùng Node.js 22; Docker Engine 29.9.2, PostgreSQL 17.7 trong Docker |
 | Phạm vi | Cấu hình Compose một máy, API/Web, PostgreSQL, Mailpit thử nghiệm; sửa phân quyền thao tác nhóm và dữ liệu giả trên UI; reset mật khẩu qua SMTP |
 
 ## VERIFIED
