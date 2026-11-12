@@ -52,7 +52,7 @@ export const RevisionHistoryModal: React.FC<RevisionHistoryModalProps> = ({
       onClose();
     } catch (err: any) {
       if (err.status === 412 || err.code === 'VERSION_CONFLICT') {
-        setErrorMessage('Xung đột phiên bản (QA-05): Mục đã bị người khác cập nhật trước đó. Vui lòng tải lại trang để xem phiên bản mới nhất!');
+        setErrorMessage('Mục đã được người khác cập nhật. Vui lòng tải lại để xem phiên bản mới nhất.');
       } else {
         setErrorMessage(err.message || 'Không thể tạo phiên bản mới');
       }

@@ -130,7 +130,7 @@ export const StudentSubmissionForm: React.FC<StudentSubmissionFormProps> = ({
     if (failedCount > 0) {
       setStatusMessage({
         type: 'error',
-        message: `${failedCount} tệp chưa tải được hoặc vượt quá 25 MB (ASG-16). Chọn lại tệp trước khi nộp.`,
+        message: `${failedCount} tệp chưa tải được hoặc vượt quá 25 MB. Chọn lại tệp trước khi nộp.`,
       });
     } else if (uploadedCount > 0) {
       setStatusMessage({
@@ -172,7 +172,7 @@ export const StudentSubmissionForm: React.FC<StudentSubmissionFormProps> = ({
     if (uploadFailed) {
       setStatusMessage({
         type: 'error',
-        message: 'Có tệp đính kèm tải lên chưa thành công (ASG-17). Vui lòng thử lại trước khi nộp.',
+        message: 'Có tệp đính kèm tải lên chưa thành công. Vui lòng thử lại trước khi nộp.',
       });
       return;
     }
@@ -185,7 +185,7 @@ export const StudentSubmissionForm: React.FC<StudentSubmissionFormProps> = ({
     if (!validText && validLinks.length === 0 && validUploads.length === 0) {
       setStatusMessage({
         type: 'error',
-        message: 'Bản nộp cần ít nhất một nội dung có giá trị (văn bản, đường dẫn hoặc tệp đính kèm) theo ASG-14.',
+        message: 'Bản nộp cần ít nhất một nội dung có giá trị: văn bản, đường dẫn hoặc tệp đính kèm.',
       });
       return;
     }
@@ -236,7 +236,7 @@ export const StudentSubmissionForm: React.FC<StudentSubmissionFormProps> = ({
         // CUXD-06: Version conflict while submitting — preserve form draft, prompt user to review latest
         setStatusMessage({
           type: 'conflict',
-          message: 'Bản nộp đã có phiên bản mới do thành viên khác gửi trong lúc thao tác! Bản nháp của bạn vẫn được giữ nguyên. Vui lòng xem bản hiện hành trước khi quyết định gửi tiếp (CUXD-06 / ASG-12).',
+          message: 'Bản nộp đã có phiên bản mới do thành viên khác gửi trong lúc thao tác. Bản nháp của bạn vẫn được giữ nguyên. Vui lòng xem bản hiện hành trước khi quyết định gửi tiếp.',
         });
       } else if (
         err?.code === 'LATE_SUBMISSION_LOCKED' ||
@@ -245,7 +245,7 @@ export const StudentSubmissionForm: React.FC<StudentSubmissionFormProps> = ({
       ) {
         setStatusMessage({
           type: 'error',
-          message: 'Bài giao đã quá thời hạn và bị khóa theo chính sách của lớp/bài giao (ASG-05/15).',
+          message: 'Bài giao đã quá thời hạn và bị khóa theo chính sách của lớp hoặc bài giao.',
         });
       } else if (err?.code === 'IDEMPOTENCY_CONFLICT' || err?.status === 409) {
         setStatusMessage({
@@ -299,7 +299,7 @@ export const StudentSubmissionForm: React.FC<StudentSubmissionFormProps> = ({
             {isRevision ? `Gửi phiên bản sửa đổi (hiện tại: v${currentVersion})` : 'Nộp bài lần đầu'}
           </h3>
           <span style={{ fontSize: '12px', color: 'var(--ink-subtle)', marginTop: '2px', display: 'block' }}>
-            Nộp báo cáo văn bản, đường dẫn dự án hoặc đính kèm tệp sản phẩm (CUXD-04)
+            Nộp báo cáo văn bản, đường dẫn dự án hoặc đính kèm tệp sản phẩm
           </span>
         </div>
         {isRevision && (
@@ -447,7 +447,7 @@ export const StudentSubmissionForm: React.FC<StudentSubmissionFormProps> = ({
                 }}
               >
                 <RotateCcw size={12} />
-                <span>Xem bản hiện hành (CUXD-06)</span>
+                <span>Xem bản hiện hành</span>
               </button>
             </div>
           )}
@@ -598,7 +598,7 @@ export const StudentSubmissionForm: React.FC<StudentSubmissionFormProps> = ({
               color: 'var(--ink-title)',
             }}
           >
-            Tệp đính kèm sản phẩm (Tối đa 25 MB/tệp — ASG-16)
+            Tệp đính kèm sản phẩm (tối đa 25 MB/tệp)
           </label>
 
           <input

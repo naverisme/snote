@@ -45,7 +45,7 @@ export const TeacherFeedbackForm: React.FC<TeacherFeedbackFormProps> = ({
         }}
       >
         <MessageSquare size={13} style={{ color: 'var(--ink-muted)' }} />
-        <span>Thêm nhận xét của giáo viên cho phiên bản này (ASG-09)</span>
+        <span>Thêm nhận xét của giáo viên cho phiên bản này</span>
       </label>
       {error && (
         <div style={{ fontSize: '12px', color: 'var(--danger)', marginBottom: '6px' }}>

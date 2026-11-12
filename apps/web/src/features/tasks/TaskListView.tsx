@@ -36,6 +36,7 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isProcessing, setIsProcessing] = useState(false);
   const [bouncingId, setBouncingId] = useState<string | null>(null);
+  const [listFilter, setListFilter] = useState<'all' | 'today' | 'overdue' | 'high' | 'done' | 'unscheduled'>('all');
   const today = vietnamDateTimeParts(new Date()).date;
   const doneCount = tasks.filter(task => task.status === 'done').length;
   const dueCount = tasks.filter(task => task.status !== 'done' && task.dueAt && vietnamDateTimeParts(task.dueAt).date === today).length;
@@ -43,6 +44,23 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
   const highCount = tasks.filter(task => task.importance === 'high' && task.status !== 'done').length;
   const checklist = Object.values(checklistItems).flat();
   const checklistDone = checklist.filter(item => item.done).length;
+  const filterCounts = {
+    all: tasks.length,
+    today: dueCount,
+    overdue: overdueCount,
+    high: highCount,
+    done: doneCount,
+    unscheduled: tasks.filter(task => !task.dueAt).length,
+  };
+  const visibleTasks = tasks.filter(task => {
+    const dueDate = task.dueAt ? vietnamDateTimeParts(task.dueAt).date : null;
+    if (listFilter === 'today') return task.status !== 'done' && dueDate === today;
+    if (listFilter === 'overdue') return task.status !== 'done' && dueDate !== null && dueDate < today;
+    if (listFilter === 'high') return task.status !== 'done' && task.importance === 'high';
+    if (listFilter === 'done') return task.status === 'done';
+    if (listFilter === 'unscheduled') return !task.dueAt;
+    return true;
+  });
 
   const toggleSelect = (id: string, e: React.MouseEvent | React.ChangeEvent) => {
     e.stopPropagation();
@@ -196,6 +214,7 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
         <div><span>Ưu tiên cao</span><strong>{highCount}</strong><small>việc chưa xong</small></div>
         <div><span>Tiến độ kiểm tra</span><strong>{checklist.length ? `${Math.round(checklistDone / checklist.length * 100)}%` : '—'}</strong><small>{checklistDone}/{checklist.length} mục</small></div>
       </div>
+      <div className="review-toolbar task-list-toolbar"><div className="review-filters" role="group" aria-label="Lọc danh sách công việc">{(['all', 'today', 'overdue', 'high', 'done', 'unscheduled'] as const).map(option => <button key={option} type="button" className={listFilter === option ? 'active' : ''} onClick={() => setListFilter(option)}>{{ all: 'Tất cả việc', today: 'Hôm nay', overdue: 'Quá hạn', high: 'Quan trọng', done: 'Đã hoàn thành', unscheduled: 'Chưa có mốc' }[option]} <span>{filterCounts[option]}</span></button>)}</div></div>
       {/* Scoped Checkbox Micro-Interaction Pop Keyframes (scale 1.15x -> 1.0x in 120ms) */}
       <style>{`
         @keyframes checkbox-pop {
@@ -306,12 +325,13 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
           />
           <span>Chọn tất cả ({tasks.length})</span>
         </div>
-        <span>Ngân sách hiển thị: Tiêu điểm & Chi tiết chính</span>
+        <span>Hiển thị {visibleTasks.length}/{tasks.length} công việc</span>
       </div>
 
       {/* Task Rows Stack (Recipe 1 Stageshow Card Pattern) */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        {tasks.map(task => {
+        {visibleTasks.length === 0 && <div className="review-panel review-empty">Không có công việc khớp bộ lọc.</div>}
+        {visibleTasks.map(task => {
           const isSelectedRow = task.id === selectedTaskId;
           const isChecked = selectedIds.has(task.id);
           const chk = getChecklistSummary(task.id);

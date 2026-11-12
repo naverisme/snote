@@ -112,7 +112,7 @@ export function ClassSelector({
         aria-expanded={isOpen}
         aria-haspopup="listbox"
         aria-controls="class-picker"
-        aria-label={`Lớp học: ${activeClass?.name ?? 'Chưa chọn'}. Bấm để mở danh sách lớp (CUXC-01)`}
+        aria-label={`Lớp học: ${activeClass?.name ?? 'Chưa chọn'}. Bấm để mở danh sách lớp`}
       >
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
           <GraduationCap size={15} />

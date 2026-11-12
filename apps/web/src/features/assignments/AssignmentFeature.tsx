@@ -415,7 +415,7 @@ export const AssignmentFeature: React.FC<AssignmentFeatureProps> = ({
                       }}
                     >
                       <Users size={15} style={{ color: 'var(--accent)' }} />
-                      <span>Tiến độ các nhóm nhận bài ({recipients.length} nhóm — CUXD-03)</span>
+                      <span>Tiến độ các nhóm nhận bài ({recipients.length} nhóm)</span>
                     </h3>
                     <TeacherProgressDashboard
                       recipients={recipients}
@@ -435,7 +435,7 @@ export const AssignmentFeature: React.FC<AssignmentFeatureProps> = ({
                       }}
                     >
                       <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--ink-title)', margin: '0 0 12px 0' }}>
-                        Chi tiết bản nộp nhóm: {selectedRecipient.workspaceName || selectedRecipient.workspaceId} (CUXD-05)
+                        Chi tiết bản nộp nhóm: {selectedRecipient.workspaceName || selectedRecipient.workspaceId}
                       </h3>
                       <RevisionHistoryView
                         submissions={submissions}
@@ -480,7 +480,7 @@ export const AssignmentFeature: React.FC<AssignmentFeatureProps> = ({
                       }}
                     >
                       <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--ink-title)', margin: '0 0 12px 0' }}>
-                        Lịch sử các phiên bản đã nộp và Nhận xét của giáo viên (CUXD-05/07)
+                        Lịch sử các phiên bản đã nộp và nhận xét của giáo viên
                       </h3>
                       <RevisionHistoryView submissions={submissions} isTeacher={false} />
                     </div>

@@ -31,6 +31,7 @@ import {
   listClassMembers,
   changeMemberRole,
   setClassJoinCode,
+  getClassJoinCode,
   createClassJoinRequest,
   listClassJoinRequests,
   approveClassJoinRequest,
@@ -56,8 +57,8 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
   const [members, setMembers] = useState<Membership[]>([]);
   const [myInvitations, setMyInvitations] = useState<Invitation[]>([]);
   const [pendingRequests, setPendingRequests] = useState<JoinRequest[]>([]);
-  const [joinCode, setJoinCode] = useState<string | null>((cls as any).joinCode ?? null);
-  const [joinCodeEnabled, setJoinCodeEnabled] = useState<boolean>(Boolean((cls as any).joinCode));
+  const [joinCode, setJoinCode] = useState<string | null>(null);
+  const [joinCodeEnabled, setJoinCodeEnabled] = useState<boolean | null>(null);
   const [showCodePlaintext, setShowCodePlaintext] = useState(true);
   const [copiedCode, setCopiedCode] = useState(false);
   const [inputCode, setInputCode] = useState('');
@@ -115,12 +116,17 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
       if (isOwner) {
         const reqsRes = await listClassJoinRequests(cls.id).catch(() => null);
         setPendingRequests(reqsRes?.data ?? []);
+        const codeRes = await getClassJoinCode(cls.id).catch(() => null);
+        setJoinCodeEnabled(codeRes?.data.enabled ?? null);
+        setJoinCode(codeRes?.data.code ?? null);
       }
     } catch (cause: any) {
       setMembers([]);
       setMyInvitations([]);
       setPendingRequests([]);
       setGroupNameByMemberId({});
+      setJoinCodeEnabled(null);
+      setJoinCode(null);
       setError(cause?.body?.error?.message || cause?.message || 'Không thể tải thành viên lớp.');
     } finally {
       setLoading(false);
@@ -172,7 +178,8 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
 
   // Actions
   const handleCopyCode = () => {
-    const code = joinCode || (cls as any).joinCode || 'SNOTE-CS101-2026';
+    const code = joinCode;
+    if (!code) return;
     if (navigator.clipboard) {
       navigator.clipboard.writeText(code);
     }
@@ -181,17 +188,16 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
     setTimeout(() => setCopiedCode(false), 2000);
   };
 
-  const handleToggleJoinCode = async () => {
+  const handleSetJoinCode = async (enabled: boolean) => {
     if (!isOwner) return;
     try {
-      const nextState = !joinCodeEnabled;
-      const res = await setClassJoinCode(cls.id, nextState, cls.version);
+      const res = await setClassJoinCode(cls.id, enabled, cls.version);
       setJoinCodeEnabled(res.data.enabled);
       setJoinCode(res.data.code ?? null);
       if (onClassUpdated) {
         onClassUpdated({ ...cls, version: res.data.version });
       }
-      showNotice(nextState ? `Mã lớp mới: ${res.data.code}` : 'Đã tạm khóa mã tham gia lớp');
+      showNotice(enabled ? `Mã lớp mới: ${res.data.code}` : 'Đã khóa mã tham gia lớp');
     } catch (err: any) {
       setError(err?.body?.error?.message || err?.message || 'Lỗi cập nhật mã lớp');
     }
@@ -219,10 +225,10 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
 
   const handleApproveAllRequests = async () => {
     if (pendingRequests.length === 0) return;
-    const count = pendingRequests.length;
     try {
-      await Promise.allSettled(pendingRequests.map(r => approveClassJoinRequest(r.id, r.version)));
-      showNotice(`Đã duyệt đồng loạt ${count} học sinh vào lớp học.`);
+      const results = await Promise.allSettled(pendingRequests.map(r => approveClassJoinRequest(r.id, r.version)));
+      const completed = results.filter(result => result.status === 'fulfilled').length;
+      showNotice(`Đã duyệt ${completed}/${results.length} yêu cầu.`);
       await loadData();
     } catch (err: any) {
       setError(err?.body?.error?.message || err?.message || 'Lỗi duyệt đồng loạt');
@@ -231,10 +237,10 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
 
   const handleDeclineAllRequests = async () => {
     if (pendingRequests.length === 0) return;
-    const count = pendingRequests.length;
     try {
-      await Promise.allSettled(pendingRequests.map(r => declineClassJoinRequest(r.id, r.version)));
-      showNotice(`Đã từ chối đồng loạt ${count} yêu cầu gia nhập.`);
+      const results = await Promise.allSettled(pendingRequests.map(r => declineClassJoinRequest(r.id, r.version)));
+      const completed = results.filter(result => result.status === 'fulfilled').length;
+      showNotice(`Đã từ chối ${completed}/${results.length} yêu cầu.`);
       await loadData();
     } catch (err: any) {
       setError(err?.body?.error?.message || err?.message || 'Lỗi từ chối đồng loạt');
@@ -266,21 +272,21 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
     }
   };
 
-  const parsedEmails = useMemo(() => Array.from(new Set(
+  const parsedInviteeIds = useMemo(() => Array.from(new Set(
     inviteInput
       .split(/[\n,;]+/)
-      .map(e => e.trim())
-      .filter(e => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e))
+      .map(value => value.trim())
+      .filter(Boolean)
   )), [inviteInput]);
 
   const handleSendBulkInvites = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (parsedEmails.length === 0) return;
+    if (parsedInviteeIds.length === 0) return;
     try {
-      await Promise.allSettled(parsedEmails.map(email => createClassInvitation(cls.id, email)));
-      showNotice(`Đã gửi đồng loạt ${parsedEmails.length} lời mời tham gia lớp học.`);
-      setInviteInput('');
-      setShowInviteModal(false);
+      const results = await Promise.allSettled(parsedInviteeIds.map(inviteeId => createClassInvitation(cls.id, inviteeId)));
+      const completed = results.filter(result => result.status === 'fulfilled').length;
+      showNotice(`Đã gửi ${completed}/${results.length} lời mời.`);
+      if (completed === results.length) { setInviteInput(''); setShowInviteModal(false); }
       await loadData();
     } catch (err: any) {
       setError(err?.body?.error?.message || err?.message || 'Lỗi gửi lời mời');
@@ -315,10 +321,8 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
   // GÓC NHÌN GIÁO VIÊN (TAB 01: Class Members Admin)
   // =========================================================================
   if (isOwner) {
-    const displayJoinCode = joinCode || (cls as any).joinCode || 'SNOTE-CS101-2026';
-    const teacherName = (currentUser as any)?.name || (currentUser as any)?.displayName || currentUser?.id || cls.ownerId || 'TS. Nguyễn Văn Toàn (Bạn)';
-    const teacherEmail = (currentUser as any)?.email || (currentUser ? `${currentUser.id}@snote.edu.vn` : 'toan.nv@hcmut.edu.vn');
-    const teacherInitials = (((currentUser as any)?.name || currentUser?.id || cls.ownerId || 'NVT') as string).slice(0, 3).toUpperCase();
+    const teacherName = currentUser?.id || cls.ownerId;
+    const teacherInitials = teacherName.slice(0, 2).toUpperCase();
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
@@ -414,7 +418,7 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
                   </span>
                 </div>
                 <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '3px' }}>
-                  {teacherEmail} • Quản trị viên lớp học
+                  Mã tài khoản: {teacherName} • Chủ lớp
                 </div>
               </div>
             </div>
@@ -467,7 +471,8 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
                 <button
                   type="button"
                   onClick={handleCopyCode}
-                  title="Bấm để sao chép mã tham gia"
+                  disabled={!joinCode}
+                  title={joinCode ? 'Sao chép mã tham gia' : 'Chưa có mã đang mở'}
                   style={{
                     background: 'var(--surface-card)',
                     border: '1.5px solid var(--border-strong)',
@@ -484,11 +489,11 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
                     fontFamily: 'monospace',
                   }}
                 >
-                  <span>{(!joinCodeEnabled && !showCodePlaintext) ? '••••••••••••••••' : displayJoinCode}</span>
+                  <span>{joinCode ? (showCodePlaintext ? joinCode : '••••••••') : 'Chưa có mã đang mở'}</span>
                   {copiedCode ? <CheckCheck size={14} /> : <Copy size={14} style={{ color: 'var(--text-primary)' }} />}
                 </button>
 
-                {!joinCodeEnabled && (
+                {joinCode && (
                   <button
                     type="button"
                     onClick={() => setShowCodePlaintext(!showCodePlaintext)}
@@ -505,7 +510,7 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <button
                 type="button"
-                onClick={handleToggleJoinCode}
+                onClick={() => void handleSetJoinCode(true)}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -526,7 +531,7 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
 
               <button
                 type="button"
-                onClick={handleToggleJoinCode}
+                onClick={() => void handleSetJoinCode(false)}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -547,12 +552,12 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
                     width: '7px',
                     height: '7px',
                     borderRadius: '50%',
-                    background: joinCodeEnabled ? 'var(--text-primary)' : 'transparent',
-                    border: joinCodeEnabled ? 'none' : '1.5px solid var(--border-strong)',
+                    background: joinCodeEnabled === true ? 'var(--text-primary)' : 'transparent',
+                    border: joinCodeEnabled === true ? 'none' : '1.5px solid var(--border-strong)',
                     display: 'inline-block',
                   }}
                 />
-                <span>{joinCodeEnabled ? '• Mã đang Mở' : 'Mã đang Khóa'}</span>
+                <span>{joinCodeEnabled === null ? 'Khóa mã lớp' : joinCodeEnabled ? 'Khóa mã đang mở' : 'Mã đã khóa'}</span>
               </button>
             </div>
           </div>
@@ -1480,7 +1485,7 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
           </div>
         )}
 
-        {/* MODAL 3: Mời học sinh tham gia lớp qua Email */}
+        {/* Mời học sinh bằng mã tài khoản theo hợp đồng hiện hành. */}
         {showInviteModal && (
           <div
             role="dialog"
@@ -1530,19 +1535,19 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
 
               <form onSubmit={handleSendBulkInvites}>
                 <div style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: '1.6', marginBottom: '14px' }}>
-                  Nhập một hoặc nhiều địa chỉ email hoặc mã tài khoản. Lời mời sẽ có hiệu lực sau khi người học xác nhận.
+                  Nhập mã tài khoản của người học, mỗi mã một dòng hoặc ngăn bằng dấu phẩy. Người học cần chấp nhận lời mời để vào lớp.
                 </div>
 
                 <div style={{ marginBottom: '14px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
                     <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>
-                      Danh sách Email / Mã tài khoản học sinh <span style={{ color: 'var(--text-secondary)' }}>*</span>
+                      Danh sách mã tài khoản học sinh <span style={{ color: 'var(--text-secondary)' }}>*</span>
                     </label>
                   </div>
                   <textarea
                     required
                     rows={4}
-                    placeholder="sv1@student.edu.vn, sv2@student.edu.vn&#10;sv3@student.edu.vn"
+                    placeholder="Mã tài khoản thứ nhất, mã tài khoản thứ hai"
                     value={inviteInput}
                     onChange={e => setInviteInput(e.target.value)}
                     style={{
@@ -1616,9 +1621,10 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
     <div className="review-screen class-members-screen">
       <div className="review-hero">
         <div>
-          <span className="review-eyebrow">Thành viên lớp · {cls.timeZone}</span>
+          <span className="review-eyebrow">HỌC PHẦN CHÍNH KHÓA</span>
           <h1>{cls.name}</h1>
-          <p>{members.length} người học · Tra cứu danh bạ thành viên lớp</p>
+          <p>Tổng sĩ số: {members.length} học sinh · Múi giờ {cls.timeZone}</p>
+          {currentUser && <div className="review-student-identity"><span className="student-member-avatar">{currentUser.id.slice(0, 2).toUpperCase()}</span><div><strong>{currentUser.id} (Bạn)</strong><small>Học sinh chính thức · {groupNameByMemberId[currentUser.id] ?? 'Chưa có nhóm'}</small></div><span>Quyền hạn: tra cứu danh bạ thành viên lớp</span></div>}
         </div>
 
         <div style={{ display: 'flex', gap: 8 }}>
@@ -1636,24 +1642,8 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
       {loading && <p>Đang tải thành viên lớp...</p>}
 
       <div className="review-leadership">
-        <article className="review-panel"><span className="review-eyebrow"><ShieldCheck size={13} /> Giáo viên chủ lớp</span><h2>{cls.ownerId}</h2></article>
-        <article className="review-panel"><span className="review-eyebrow"><Award size={13} /> Lớp trưởng</span><h2>{currentMonitor?.memberId ?? 'Chưa bổ nhiệm'}</h2></article>
-      </div>
-
-      {/* Class Join Code Input */}
-      <div className="section-box class-join-bar review-join-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
-        <form onSubmit={handleSubmitCode} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>Nhập mã vào lớp:</span>
-          <input
-            className="form-input"
-            type="text"
-            placeholder="Nhập mã 8 ký tự..."
-            value={inputCode}
-            onChange={e => setInputCode(e.target.value)}
-            style={{ width: 160, padding: '4px 8px', fontSize: '0.85rem' }}
-          />
-          <button type="submit" className="btn btn-primary btn-sm">Gửi yêu cầu</button>
-        </form>
+        <article className="review-panel review-contact-card"><span className="review-eyebrow"><ShieldCheck size={13} /> Giáo viên chủ lớp</span><h2>{cls.ownerId}</h2><button type="button" className="btn btn-secondary btn-sm" onClick={() => { void navigator.clipboard.writeText(cls.ownerId); showNotice('Đã sao chép mã tài khoản giáo viên.'); }}><Copy size={13} /> Sao chép mã</button></article>
+        <article className="review-panel review-contact-card"><span className="review-eyebrow"><Award size={13} /> Lớp trưởng</span><h2>{currentMonitor?.memberId ?? 'Chưa bổ nhiệm'}</h2>{currentMonitor && <button type="button" className="btn btn-secondary btn-sm" onClick={() => { void navigator.clipboard.writeText(currentMonitor.memberId); showNotice('Đã sao chép mã tài khoản lớp trưởng.'); }}><Copy size={13} /> Sao chép mã</button>}</article>
       </div>
 
       {/* My Invitations */}
@@ -1698,14 +1688,15 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
       {/* Main Student Directory Table */}
       <div className="section-box review-members-directory">
         <div className="section-header">
-          <div className="section-title">Danh bạ bạn học trong lớp ({sortedStudents.length}/{members.length})</div>
+          <div className="section-title">Danh bạ bạn học trong lớp</div>
+          <span className="review-directory-count">Hiển thị {sortedStudents.length}/{members.length} học sinh</span>
         </div>
 
         <div className="review-toolbar">
-          <div className="review-filters" role="group" aria-label="Lọc vai trò">
-            {(['all', 'monitor', 'member'] as const).map(option => (
-              <button key={option} type="button" className={roleFilter === option ? 'active' : ''} onClick={() => setRoleFilter(option)}>
-                {{ all: 'Tất cả', monitor: 'Lớp trưởng', member: 'Học sinh' }[option]}
+          <div className="review-filters" role="group" aria-label="Lọc nhóm">
+            {(['all', 'assigned', 'unassigned'] as const).map(option => (
+              <button key={option} type="button" className={groupFilter === option ? 'active' : ''} onClick={() => setGroupFilter(option)}>
+                {{ all: `Tất cả (${members.length})`, assigned: `Đã có nhóm (${assignedCount})`, unassigned: `Chưa có nhóm (${unassignedCount})` }[option]}
               </button>
             ))}
           </div>
@@ -1713,15 +1704,17 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
             <Search size={15} />
             <input value={search} onChange={event => setSearch(event.target.value)} placeholder="Tìm theo mã tài khoản" aria-label="Tìm thành viên lớp" />
           </label>
+          <label className="review-directory-sort">Sắp xếp <select value={sortBy} onChange={event => setSortBy(event.target.value as typeof sortBy)}><option value="recent">Mặc định</option><option value="name">Mã tài khoản</option></select></label>
         </div>
 
         <div className="table-container class-members-container">
           <table className="data-table class-members-table">
             <thead>
               <tr>
-                <th className="col-learner">Người học (Learner)</th>
-                <th>Vai trò (Role)</th>
+                <th className="col-learner">Học sinh / Sinh viên</th>
+                <th>Vai trò</th>
                 <th>Nhóm đang tham gia</th>
+                <th>Liên hệ</th>
               </tr>
             </thead>
             <tbody>
@@ -1730,7 +1723,8 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
                   <strong>{cls.ownerId}</strong> <span className="badge badge-info" style={{ marginLeft: 6 }}>Giáo viên chủ lớp</span>
                 </td>
                 <td>Chủ lớp</td>
-                <td>Tất cả các nhóm</td>
+                <td>Chủ lớp</td>
+                <td><button type="button" className="btn btn-secondary btn-sm" onClick={() => { void navigator.clipboard.writeText(cls.ownerId); showNotice('Đã sao chép mã tài khoản.'); }} aria-label="Sao chép mã tài khoản giáo viên"><Copy size={13} /></button></td>
               </tr>
               {sortedStudents.map(member => (
                 <tr key={member.id}>
@@ -1751,6 +1745,7 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
                     </span>
                   </td>
                   <td>{groupNameByMemberId[member.memberId] ?? 'Chưa có dữ liệu nhóm'}</td>
+                  <td><button type="button" className="btn btn-secondary btn-sm" onClick={() => { void navigator.clipboard.writeText(member.memberId); showNotice('Đã sao chép mã tài khoản.'); }} aria-label={`Sao chép mã tài khoản ${member.memberId}`}><Copy size={13} /></button></td>
                 </tr>
               ))}
             </tbody>

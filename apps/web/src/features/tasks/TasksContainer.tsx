@@ -96,10 +96,14 @@ export const TasksContainer: React.FC<TasksContainerProps> = ({
       // If a newer request has started, discard this result (QA-13)
       if (reqId !== activeRequestIdRef.current) return;
 
-      const loadedSessions = await taskApi.listWorkSessions({ signal: controller.signal });
+      const [loadedSessions, loadedChecklists] = await Promise.all([
+        taskApi.listWorkSessions({ signal: controller.signal }),
+        Promise.all(loadedTasks.map(task => taskApi.listChecklistItems(task.id, { signal: controller.signal }))),
+      ]);
       if (reqId !== activeRequestIdRef.current) return;
 
       setTasks(loadedTasks);
+      setChecklistMap(Object.fromEntries(loadedTasks.map((task, index) => [task.id, loadedChecklists[index]])));
       setWorkSessions(loadedSessions);
       setError(null);
     } catch (err: unknown) {
@@ -109,28 +113,33 @@ export const TasksContainer: React.FC<TasksContainerProps> = ({
       const msg = err instanceof Error ? err.message : String(err);
       if (msg.includes('401') || msg.includes('UNAUTHENTICATED')) {
         setTasks([]);
+        setChecklistMap({});
         setWorkSessions([]);
         setSelectedTaskId(undefined);
         onUnauthorized?.();
       } else if (msg.includes('403') || msg.includes('FORBIDDEN')) {
         // QA-13: Immediate purge on revoked access
         setTasks([]);
+        setChecklistMap({});
         setWorkSessions([]);
         setSelectedTaskId(undefined);
         onUnauthorized?.();
         setError('Bạn không có quyền truy cập danh sách công việc này (403 Forbidden).');
       } else if (msg.includes('404') || msg.includes('NOT_FOUND')) {
         setTasks([]);
+        setChecklistMap({});
         setWorkSessions([]);
         setSelectedTaskId(undefined);
         setError('Không tìm thấy workspace công việc tương ứng (404 Not Found).');
       } else if (msg.includes('500')) {
         setTasks([]);
+        setChecklistMap({});
         setWorkSessions([]);
         setSelectedTaskId(undefined);
         setError('Lỗi máy chủ nội bộ khi tải danh sách công việc (500). Vui lòng thử lại sau.');
       } else {
         setTasks([]);
+        setChecklistMap({});
         setWorkSessions([]);
         setSelectedTaskId(undefined);
         setError('Không thể tải danh sách công việc. Vui lòng thử lại.');
@@ -327,33 +336,41 @@ export const TasksContainer: React.FC<TasksContainerProps> = ({
 
   const handleAddChecklistItem = async (text: string) => {
     if (!selectedTaskId) return;
-    const newItem: ChecklistItemViewModel = {
-      id: `chk-${Date.now()}`,
-      taskId: selectedTaskId,
-      text,
-      done: false,
-      position: (checklistMap[selectedTaskId] ?? []).length,
-    };
-    setChecklistMap(prev => ({
-      ...prev,
-      [selectedTaskId]: [...(prev[selectedTaskId] ?? []), newItem],
-    }));
+    const task = tasks.find(item => item.id === selectedTaskId);
+    if (!task) return;
+    const updated = await taskApi.addChecklistItem(task.id, { text }, { etag: `"${task.version}"` });
+    const items = await taskApi.listChecklistItems(task.id);
+    setTasks(prev => prev.map(item => item.id === task.id ? updated : item));
+    setChecklistMap(prev => ({ ...prev, [task.id]: items }));
   };
 
   const handleToggleChecklistItem = async (itemId: string, done: boolean) => {
     if (!selectedTaskId) return;
-    setChecklistMap(prev => ({
-      ...prev,
-      [selectedTaskId]: (prev[selectedTaskId] ?? []).map(i => (i.id === itemId ? { ...i, done } : i)),
-    }));
+    const task = tasks.find(item => item.id === selectedTaskId);
+    const checklistItem = (checklistMap[selectedTaskId] ?? []).find(item => item.id === itemId);
+    if (!task || !checklistItem) return;
+    try {
+      const updated = await taskApi.updateChecklistItem(task.id, itemId, { text: checklistItem.text, done }, { etag: `"${task.version}"` });
+      const items = await taskApi.listChecklistItems(task.id);
+      setTasks(prev => prev.map(item => item.id === task.id ? updated : item));
+      setChecklistMap(prev => ({ ...prev, [task.id]: items }));
+    } catch {
+      setError('Chưa thể cập nhật checklist. Vui lòng tải lại và thử lại.');
+    }
   };
 
   const handleDeleteChecklistItem = async (itemId: string) => {
     if (!selectedTaskId) return;
-    setChecklistMap(prev => ({
-      ...prev,
-      [selectedTaskId]: (prev[selectedTaskId] ?? []).filter(i => i.id !== itemId),
-    }));
+    const task = tasks.find(item => item.id === selectedTaskId);
+    if (!task) return;
+    try {
+      const updated = await taskApi.deleteChecklistItem(task.id, itemId, { etag: `"${task.version}"` });
+      const items = await taskApi.listChecklistItems(task.id);
+      setTasks(prev => prev.map(item => item.id === task.id ? updated : item));
+      setChecklistMap(prev => ({ ...prev, [task.id]: items }));
+    } catch {
+      setError('Chưa thể xóa mục checklist. Vui lòng tải lại và thử lại.');
+    }
   };
 
   const handleAddWorkSession = async (startAt: string, endAt: string) => {

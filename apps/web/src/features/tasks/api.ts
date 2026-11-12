@@ -2,6 +2,8 @@ import { request } from '../../api/generated/client';
 import { getCsrfToken } from '../../shared/api';
 import type {
   BulkTasks,
+  Checklist,
+  ChecklistItem,
   Reassign,
   Task,
   TaskCreate,
@@ -69,6 +71,34 @@ export class TaskApiClient {
   async reopenTask(taskId: string, options: RequestOptions = {}): Promise<Task> {
     const result = await request<Data<Task>>(
       `/tasks/${encodeURIComponent(taskId)}/reopen`, 'POST', undefined, withAuth(options),
+    );
+    return result.data;
+  }
+
+  async listChecklistItems(taskId: string, options: RequestOptions = {}): Promise<ChecklistItem[]> {
+    const result = await request<Data<ChecklistItem[]>>(
+      `/tasks/${encodeURIComponent(taskId)}/checklist-items`, 'GET', undefined, options,
+    );
+    return result.data;
+  }
+
+  async addChecklistItem(taskId: string, body: Checklist, options: RequestOptions = {}): Promise<Task> {
+    const result = await request<Data<Task>>(
+      `/tasks/${encodeURIComponent(taskId)}/checklist-items`, 'POST', body, withAuth(options),
+    );
+    return result.data;
+  }
+
+  async updateChecklistItem(taskId: string, itemId: string, body: Checklist, options: RequestOptions = {}): Promise<Task> {
+    const result = await request<Data<Task>>(
+      `/tasks/${encodeURIComponent(taskId)}/checklist-items/${encodeURIComponent(itemId)}`, 'PATCH', body, withAuth(options),
+    );
+    return result.data;
+  }
+
+  async deleteChecklistItem(taskId: string, itemId: string, options: RequestOptions = {}): Promise<Task> {
+    const result = await request<Data<Task>>(
+      `/tasks/${encodeURIComponent(taskId)}/checklist-items/${encodeURIComponent(itemId)}`, 'DELETE', undefined, withAuth(options),
     );
     return result.data;
   }

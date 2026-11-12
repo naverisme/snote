@@ -136,6 +136,10 @@ export async function changeMemberRole(classId: string, membershipId: string, ro
   );
 }
 
+export async function getClassJoinCode(classId: string) {
+  return request<ApiResponse<JoinCodeState>>(`/classes/${encodeURIComponent(classId)}/join-code`, 'GET');
+}
+
 export async function setClassJoinCode(classId: string, enabled: boolean, version: number) {
   return request<ApiResponse<JoinCodeState>>(`/classes/${encodeURIComponent(classId)}/join-code`, 'POST', { enabled }, {
     csrfToken: currentCsrfToken,

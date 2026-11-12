@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Crown, UserMinus, UserPlus, Users, Search, Clock } from 'lucide-react';
+import { Crown, UserMinus, UserPlus, Users, Search, Clock, ListTodo, Library, ArrowRight } from 'lucide-react';
+import { taskApi } from '../tasks/api';
+import type { Task } from '../tasks/types';
 import type { Account, JoinRequest, Membership, Workspace } from '../../shared/types';
 import {
   approveGroupJoinRequest, changeGroupLeader, createGroupInvitation,
@@ -14,6 +16,7 @@ interface Props {
   classOwnerId?: string;
   onMembershipChanged?: () => void;
   viewRole?: 'leader' | 'member';
+  onNavigate?: (tab: 'tasks' | 'library') => void;
 }
 
 function errorText(error: unknown): string {
@@ -21,7 +24,7 @@ function errorText(error: unknown): string {
   return response?.body?.error?.message || response?.message || 'Thao tác không thành công. Vui lòng thử lại.';
 }
 
-export function GroupMembersView({ workspace, currentUser, classOwnerId, onMembershipChanged, viewRole }: Props) {
+export function GroupMembersView({ workspace, currentUser, classOwnerId, onMembershipChanged, viewRole, onNavigate }: Props) {
   const [members, setMembers] = useState<Membership[]>([]);
   const [requests, setRequests] = useState<JoinRequest[]>([]);
   const [inviteeId, setInviteeId] = useState('');
@@ -31,6 +34,7 @@ export function GroupMembersView({ workspace, currentUser, classOwnerId, onMembe
   const [info, setInfo] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState<'members' | 'requests'>('members');
+  const [tasks, setTasks] = useState<Task[] | null>(null);
   const isClassGroup = workspace.kind === 'class_group';
   const me = members.find(member => member.memberId === currentUser?.id);
   const canManage = Boolean(viewRole ? viewRole === 'leader' : (
@@ -40,6 +44,13 @@ export function GroupMembersView({ workspace, currentUser, classOwnerId, onMembe
   ));
   const leader = members.find(member => member.role === 'leader');
   const visibleMembers = members.filter(member => !search || member.memberId.toLocaleLowerCase('vi').includes(search.toLocaleLowerCase('vi')));
+  const assignedTasks = tasks?.filter(task => task.assigneeId) ?? [];
+  const doneTasks = assignedTasks.filter(task => task.status === 'done');
+  const myTasks = tasks?.filter(task => task.assigneeId === currentUser?.id) ?? [];
+  const memberProgress = (memberId: string) => {
+    const assigned = tasks?.filter(task => task.assigneeId === memberId) ?? [];
+    return { total: assigned.length, done: assigned.filter(task => task.status === 'done').length };
+  };
 
   const load = async () => {
     setLoading(true);
@@ -51,9 +62,12 @@ export function GroupMembersView({ workspace, currentUser, classOwnerId, onMembe
         classOwnerId === currentUser.id || response.data.some(member => member.memberId === currentUser.id && member.role === 'leader')
       ));
       setRequests(canReadRequests ? (await listGroupJoinRequests(workspace.id)).data : []);
+      try { setTasks(await taskApi.listWorkspaceTasks(workspace.id)); }
+      catch { setTasks(null); }
     } catch (cause) {
       setMembers([]);
       setRequests([]);
+      setTasks(null);
       setError(errorText(cause));
     } finally { setLoading(false); }
   };
@@ -90,7 +104,7 @@ export function GroupMembersView({ workspace, currentUser, classOwnerId, onMembe
           {loading ? 'Đang tải thành viên...' : `${members.length} thành viên đang hoạt động`}
         </p>
       </div>
-      <button type="button" className="btn btn-secondary btn-sm" onClick={() => void load()} disabled={busy}>Làm mới</button>
+      <div className="review-group-shortcuts"><button type="button" className="btn btn-secondary btn-sm" onClick={() => onNavigate?.('tasks')}><ListTodo size={13} /> Tiến độ Gantt <ArrowRight size={12} /></button><button type="button" className="btn btn-secondary btn-sm" onClick={() => onNavigate?.('library')}><Library size={13} /> Thư viện tệp <ArrowRight size={12} /></button><button type="button" className="btn btn-secondary btn-sm" onClick={() => void load()} disabled={busy}>Làm mới</button></div>
     </div>
 
     {error && <div role="alert" style={{ color: 'var(--danger)' }}>{error}</div>}
@@ -98,11 +112,11 @@ export function GroupMembersView({ workspace, currentUser, classOwnerId, onMembe
 
     {canManage ? <div className="review-stats" aria-label="Tổng quan thành viên nhóm">
       <div><span><Users size={14} /> Sĩ số nhóm</span><strong>{members.length}</strong></div>
-      <div><span><Crown size={14} /> Trưởng nhóm</span><strong className="review-stat-name">{leader?.memberId ?? 'Chưa có'}</strong></div>
+      <div><span><ListTodo size={14} /> Điều phối công việc</span><strong>{tasks ? `${doneTasks.length}/${assignedTasks.length}` : '—'}</strong><small>{tasks ? 'Việc được giao đã hoàn thành' : 'Chưa tải được công việc'}</small></div>
       <div><span><Clock size={14} /> Yêu cầu chờ xử lý</span><strong>{requests.length}</strong></div>
     </div> : <div className="review-leadership">
       <article className="review-panel"><span className="review-eyebrow"><Crown size={13} /> Trưởng nhóm phụ trách</span><h2>{leader?.memberId ?? 'Chưa có'}</h2></article>
-      <article className="review-panel"><span className="review-eyebrow"><Users size={13} /> Tư cách của bạn</span><h2>{me ? 'Thành viên nhóm' : 'Chưa tham gia'}</h2></article>
+      <article className="review-panel"><span className="review-eyebrow"><ListTodo size={13} /> Công việc của bạn</span><h2>{tasks ? `${myTasks.filter(task => task.status === 'done').length}/${myTasks.length} việc hoàn thành` : 'Chưa tải được'}</h2><button type="button" className="btn btn-secondary btn-sm" onClick={() => onNavigate?.('tasks')}>Xem chi tiết việc của tôi <ArrowRight size={12} /></button></article>
     </div>}
 
     {canManage && <form className="review-panel review-invite-form" onSubmit={event => {
@@ -142,10 +156,11 @@ export function GroupMembersView({ workspace, currentUser, classOwnerId, onMembe
       <div className="review-panel-line"><h2>Danh sách thành viên</h2><label className="review-search"><Search size={15} /><input value={search} onChange={event => setSearch(event.target.value)} placeholder="Tìm theo mã tài khoản" aria-label="Tìm thành viên nhóm" /></label></div>
       <div className="table-container">
       <table className="data-table">
-        <thead><tr><th>Thành viên</th><th>Vai trò</th>{canManage && <th>Thao tác</th>}</tr></thead>
+        <thead><tr><th>Thành viên</th><th>Vai trò</th><th>Công việc được giao</th>{canManage && <th>Thao tác</th>}</tr></thead>
         <tbody>{visibleMembers.map(member => <tr key={member.id}>
           <td style={{ overflowWrap: 'anywhere' }}>{member.memberId}{member.memberId === currentUser?.id ? ' (Bạn)' : ''}</td>
           <td>{member.role === 'leader' ? <><Crown size={14} /> Trưởng nhóm</> : 'Thành viên'}</td>
+          <td>{tasks ? (() => { const progress = memberProgress(member.memberId); return <span>{progress.done}/{progress.total} việc xong</span>; })() : 'Chưa có dữ liệu'}</td>
           {canManage && <td>
             {member.memberId !== currentUser?.id && <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               <button type="button" className="btn btn-secondary btn-sm" disabled={busy}

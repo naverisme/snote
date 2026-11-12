@@ -79,11 +79,11 @@ export const AssignmentCreateModal: React.FC<AssignmentCreateModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
-      setError('Tiêu đề bài giao là bắt buộc (CUXD-01).');
+      setError('Vui lòng nhập tiêu đề bài giao.');
       return;
     }
     if (selectedGroupIds.length === 0) {
-      setError('Cần chọn ít nhất một nhóm nhận bài (CUXD-01 / ASG-13).');
+      setError('Vui lòng chọn ít nhất một nhóm nhận bài.');
       return;
     }
 
@@ -181,7 +181,7 @@ export const AssignmentCreateModal: React.FC<AssignmentCreateModalProps> = ({
               Tạo bài giao mới
             </h2>
             <span style={{ fontSize: '12px', color: 'var(--ink-subtle)' }}>
-              Đặc tả CUXD-01/02 — Phân công nhóm & Cài đặt sau hạn
+              Phân công nhóm và cài đặt sau hạn
             </span>
           </div>
           <button
@@ -553,7 +553,7 @@ export const AssignmentCreateModal: React.FC<AssignmentCreateModalProps> = ({
           >
             <div>
               <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ink-title)' }}>
-                Cài đặt chính sách sau hạn (CUXD-02 / ASG-05/06/15)
+                Cài đặt chính sách sau hạn
               </span>
               <div style={{ fontSize: '11px', color: 'var(--ink-muted)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <Info size={12} />

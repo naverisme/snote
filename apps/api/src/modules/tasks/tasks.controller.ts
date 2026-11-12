@@ -23,6 +23,7 @@ import { TasksService } from './tasks.service';
 import type {
   BulkTasks,
   Checklist,
+  ChecklistItemListResult,
   Reassign,
   TaskCreate,
   TaskListResult,
@@ -221,6 +222,25 @@ export class TasksController {
       const { task, etag } = await this.tasksService.reopenTask(principal, taskId, ifMatch);
       res.setHeader('ETag', etag);
       return success(task, reqId);
+    } catch (err) {
+      this.handleError(err, reqId);
+    }
+  }
+
+  @Get('/tasks/:taskId/checklist-items')
+  async getChecklistItems(
+    @Req() req: Request,
+    @Param('taskId') taskId: string,
+  ): Promise<ChecklistItemListResult> {
+    const reqId = requestId();
+    try {
+      const principal = await this.getPrincipal(req);
+      const items = await this.tasksService.getChecklistItems(principal, taskId);
+      return success(items.map(item => ({
+        ...item,
+        createdAt: item.createdAt.toISOString(),
+        updatedAt: item.updatedAt.toISOString(),
+      })), reqId);
     } catch (err) {
       this.handleError(err, reqId);
     }

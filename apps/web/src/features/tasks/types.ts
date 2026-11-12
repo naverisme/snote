@@ -6,6 +6,7 @@ export type TaskUpdate = components['schemas']['TaskUpdate'];
 export type BulkTasks = components['schemas']['BulkTasks'];
 export type Reassign = components['schemas']['Reassign'];
 export type Checklist = components['schemas']['Checklist'];
+export type ChecklistItem = components['schemas']['ChecklistItem'];
 export type WorkSession = components['schemas']['WorkSession'];
 export type Worksession = components['schemas']['Worksession'];
 export type DueDate = components['schemas']['DueDate'];

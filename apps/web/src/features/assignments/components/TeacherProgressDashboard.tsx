@@ -29,7 +29,7 @@ export const TeacherProgressDashboard: React.FC<TeacherProgressDashboardProps> =
           Chưa có nhóm nào nhận bài giao này
         </div>
         <div style={{ fontSize: '12px', color: 'var(--ink-subtle)' }}>
-          Các nhóm được giao sẽ xuất hiện tại đây kèm theo 3 nguồn tiến độ độc lập (CUXD-03).
+          Các nhóm được giao sẽ xuất hiện tại đây cùng trạng thái công việc, bản nộp và cập nhật tiến độ.
         </div>
       </div>
     );

@@ -100,6 +100,13 @@ export class ClassesController {
     return replySuccess(res, cls, cls.version);
   }
 
+  @Get(':classId/join-code')
+  async getJoinCode(@Param('classId') classId: string, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const session = await getSession(req, this.sessionPort);
+    const state = await this.classService.getJoinCode(session.accountId, classId);
+    return replySuccess(res, state, state.version);
+  }
+
   @Post(':classId/join-code')
   async setJoinCode(
     @Param('classId') classId: string,

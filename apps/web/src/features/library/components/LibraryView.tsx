@@ -151,6 +151,11 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
       setTrashItems(detailedTrash);
     } catch (err) {
       console.error('Failed to load library data', err);
+      setFolders([]);
+      setItems([]);
+      setTrashItems([]);
+      setQuota(null);
+      setSelectedItemId(null);
       setLoadError(true);
     } finally {
       setLoading(false);

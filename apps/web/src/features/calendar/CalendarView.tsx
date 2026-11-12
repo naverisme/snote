@@ -394,7 +394,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 }}
               >
                 <CalendarIcon size={13} />
-                <span>Sự kiện cả ngày (Giữ nguyên ngày dân sự theo QA-10)</span>
+                <span>Sự kiện cả ngày</span>
               </span>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>

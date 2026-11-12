@@ -390,7 +390,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                 cursor: 'pointer',
               }}
             >
-              Sự kiện cả ngày (Giữ ngày dân sự không phụ thuộc múi giờ, QA-10)
+              Sự kiện cả ngày
             </label>
           </div>
 

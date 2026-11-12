@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { CheckCircle2, Archive } from 'lucide-react';
-import type { Class, Policy, Account } from '../../shared/types';
+import { CheckCircle2, Archive, Copy, KeyRound, RefreshCw } from 'lucide-react';
+import type { Class, Policy, Account, JoinCodeState } from '../../shared/types';
 import {
   getClassPolicy,
   updateClassPolicy,
   archiveClass,
   restoreClass,
   transferClassOwnership,
+  setClassJoinCode,
+  getClassJoinCode,
 } from '../../shared/api';
 
 interface ClassSettingsViewProps {
@@ -31,11 +33,14 @@ export function ClassSettingsView({ cls, currentUser, onClassUpdated }: ClassSet
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [policyLoaded, setPolicyLoaded] = useState(false);
+  const [joinCodeState, setJoinCodeState] = useState<JoinCodeState | null>(null);
 
   const isOwner = currentUser?.id === cls.ownerId;
 
   const loadPolicy = async () => {
     setPolicyLoaded(false);
+    try { setJoinCodeState((await getClassJoinCode(cls.id)).data); }
+    catch { setJoinCodeState(null); }
     try {
       const res = await getClassPolicy(cls.id);
       if (res.data) {
@@ -107,6 +112,21 @@ export function ClassSettingsView({ cls, currentUser, onClassUpdated }: ClassSet
     }
   };
 
+  const handleJoinCode = async (enabled: boolean) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await setClassJoinCode(cls.id, enabled, cls.version);
+      setJoinCodeState(response.data);
+      onClassUpdated({ ...cls, version: response.data.version });
+      setInfo(enabled ? 'Đã tạo mã mời mới.' : 'Đã khóa mã mời vào lớp.');
+    } catch (err: any) {
+      setError(err?.body?.error?.message || err?.message || 'Không thể cập nhật mã mời. Hãy tải lại lớp rồi thử lại.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!isOwner) {
     return (
       <div className="section-box" style={{ textAlign: 'center', padding: '40px 0' }}>
@@ -150,6 +170,12 @@ export function ClassSettingsView({ cls, currentUser, onClassUpdated }: ClassSet
 
       {error && <div style={{ color: 'var(--danger)', marginBottom: 12, fontSize: '0.875rem' }}>{error}</div>}
       {info && <div style={{ color: 'var(--success)', marginBottom: 12, fontSize: '0.875rem' }}>{info}</div>}
+
+      <section className="review-panel review-settings-join-code" aria-label="Mã mời tham gia lớp">
+        <div className="review-panel-line"><h2><KeyRound size={16} /> Mã mời tham gia</h2><span className="review-badge">{joinCodeState ? (joinCodeState.enabled ? 'Đang mở tiếp nhận' : 'Đã khóa') : 'Không thể tải trạng thái'}</span></div>
+        <div className="review-settings-code-value"><div><small>MÃ MỜI HIỆN TẠI</small><strong>{joinCodeState?.code ?? 'Chưa có mã đang mở'}</strong></div><div><button type="button" className="btn btn-secondary btn-sm" disabled={!joinCodeState?.code} onClick={() => { if (joinCodeState?.code) { void navigator.clipboard.writeText(joinCodeState.code); setInfo('Đã sao chép mã mời.'); } }}><Copy size={13} /> Sao chép mã</button><button type="button" className="btn btn-secondary btn-sm" disabled={loading || cls.status !== 'active'} onClick={() => void handleJoinCode(true)}><RefreshCw size={13} /> Đổi mã mới</button><button type="button" className="btn btn-secondary btn-sm" disabled={loading || cls.status !== 'active'} onClick={() => void handleJoinCode(false)}>Khóa mã</button></div></div>
+        <p>Đổi mã sẽ làm mã cũ hết hiệu lực.</p>
+      </section>
 
       <section className="review-panel review-class-profile" aria-label="Thông tin lớp">
         <h2>Thông tin học phần</h2>
@@ -233,7 +259,7 @@ export function ClassSettingsView({ cls, currentUser, onClassUpdated }: ClassSet
                 <li>Duyệt yêu cầu vào nhóm (<code>group.approve</code>)</li>
                 <li>Chỉnh sửa nội dung ghi chú/văn bản chung (<code>task.edit_common</code>, <code>library.edit_text</code>, <code>library.edit_link</code>)</li>
                 <li>Chỉnh sửa lịch sự kiện chung (<code>event.edit</code>)</li>
-                <li><em>Không có quyền xóa tệp, hủy sự kiện hay mở hộp thu riêng của người khác (QA-04).</em></li>
+                <li><em>Không có quyền xóa tệp, hủy sự kiện hay mở hộp thư riêng của người khác.</em></li>
               </ul>
             </div>
           )}

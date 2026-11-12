@@ -793,6 +793,7 @@ export function App() {
                   currentUser={user}
                   classOwnerId={classes.find(cls => cls.id === activeWorkspace.classId)?.ownerId}
                   onMembershipChanged={() => void loadContextData()}
+                  onNavigate={tab => setWorkspaceTab(tab)}
                 />
               )}
               {workspaceTab === 'notes' && (

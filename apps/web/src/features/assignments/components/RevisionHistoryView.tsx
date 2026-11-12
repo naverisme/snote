@@ -46,7 +46,7 @@ export const RevisionHistoryView: React.FC<RevisionHistoryViewProps> = ({
           Chưa có phiên bản nộp nào
         </div>
         <div style={{ fontSize: '12px', color: 'var(--ink-subtle)' }}>
-          Lịch sử các lần nộp và sửa đổi bài sẽ xuất hiện dưới dạng dòng thời gian tại đây (CUXD-05/07).
+          Lịch sử các lần nộp và sửa đổi bài sẽ xuất hiện tại đây.
         </div>
       </div>
     );
@@ -73,7 +73,7 @@ export const RevisionHistoryView: React.FC<RevisionHistoryViewProps> = ({
           Lịch sử phiên bản nộp bài ({submissions.length} phiên bản)
         </span>
         <span style={{ fontSize: '12px', color: 'var(--ink-muted)' }}>
-          Bấm vào phiên bản trên timeline để xem chi tiết (CUXD-07)
+          Chọn một phiên bản để xem chi tiết
         </span>
       </div>
 

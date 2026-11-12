@@ -6,6 +6,7 @@ import {
   createClassGroup,
   createGroupJoinRequest,
   listGroupMembers,
+  listClassMembers,
   getMyInvitations,
   acceptGroupInvitation,
   declineGroupInvitation,
@@ -33,6 +34,8 @@ export function ClassGroupsView({ cls, currentUser, onOpenGroupWorkspace, access
   const [studentFilter, setStudentFilter] = useState<'all' | 'joinable' | 'joined'>('all');
   const [memberCounts, setMemberCounts] = useState<Record<string, number>>({});
   const [membersByGroup, setMembersByGroup] = useState<Record<string, Membership[]>>({});
+  const [groupMembersComplete, setGroupMembersComplete] = useState(false);
+  const [classMembers, setClassMembers] = useState<Membership[] | null>(null);
   const [invitations, setInvitations] = useState<Invitation[]>([]);
 
   const isOwner = viewRole ? viewRole === 'teacher' : currentUser?.id === cls.ownerId;
@@ -44,6 +47,14 @@ export function ClassGroupsView({ cls, currentUser, onOpenGroupWorkspace, access
       const res = await listClassGroups(cls.id);
       const nextGroups = res.data ?? [];
       setGroups(nextGroups);
+      if (isOwner) {
+        try {
+          const classResponse = await listClassMembers(cls.id);
+          setClassMembers(classResponse.data.filter(member => member.status === 'active' && member.memberId !== cls.ownerId));
+        } catch {
+          setClassMembers(null);
+        }
+      } else setClassMembers(null);
       if (!isOwner) {
         try {
           const myInvitations = await getMyInvitations();
@@ -58,6 +69,7 @@ export function ClassGroupsView({ cls, currentUser, onOpenGroupWorkspace, access
         const response = await listGroupMembers(group.id);
         return { id: group.id, members: response.data.filter(member => member.status === 'active') };
       }));
+      setGroupMembersComplete(counts.every((result, index) => nextGroups[index].status !== 'active' || result.status === 'fulfilled' && result.value !== null));
       setMemberCounts(Object.fromEntries(counts.flatMap(result =>
         result.status === 'fulfilled' && result.value ? [[result.value.id, result.value.members.length]] : [],
       )));
@@ -66,6 +78,8 @@ export function ClassGroupsView({ cls, currentUser, onOpenGroupWorkspace, access
       )));
     } catch (cause: any) {
       setGroups([]);
+      setClassMembers(null);
+      setGroupMembersComplete(false);
       setError(cause?.body?.error?.message || cause?.message || 'Không thể tải danh sách nhóm.');
     } finally {
       setLoading(false);
@@ -133,6 +147,8 @@ export function ClassGroupsView({ cls, currentUser, onOpenGroupWorkspace, access
     return true;
   }), [groups, search, filter, accessibleGroupIds]);
   const activeCount = groups.filter(group => group.status === 'active').length;
+  const allocatedIds = new Set(groups.filter(group => group.status === 'active').flatMap(group => membersByGroup[group.id] ?? []).map(member => member.memberId));
+  const ungroupedCount = classMembers === null || !groupMembersComplete ? null : classMembers.filter(member => !allocatedIds.has(member.memberId)).length;
   const ownGroup = groups.find(group => accessibleGroupIds.includes(group.id) && group.status === 'active');
   const ownMembers = ownGroup ? membersByGroup[ownGroup.id] : undefined;
   const otherGroups = groups.filter(group => group.id !== ownGroup?.id && group.status === 'active');
@@ -144,7 +160,7 @@ export function ClassGroupsView({ cls, currentUser, onOpenGroupWorkspace, access
   return (
     <div className={`review-screen class-groups-screen ${isOwner ? '' : 'student-groups-screen'}`}>
       {isOwner ? <div className="review-hero">
-        <div><span className="review-eyebrow">{cls.name} · Giáo viên chủ lớp</span><h1>Quản trị Nhóm trong Lớp học</h1><p>Theo dõi các workspace nhóm trực thuộc lớp.</p></div>
+        <div><span className="review-eyebrow">{cls.name} · Giáo viên chủ lớp</span><h1>Quản trị Nhóm trong Lớp học</h1><p>Theo dõi các workspace nhóm trực thuộc lớp.</p><div className="review-group-context"><FolderKanban size={15} /> Workspace nhóm trực thuộc lớp học</div></div>
         <button type="button" className="btn btn-primary" onClick={() => setShowCreateModal(true)}><Plus size={15} /> Tạo nhóm mới</button>
       </div> : <header className="review-panel student-groups-header">
         <div className="student-groups-top">
@@ -166,8 +182,9 @@ export function ClassGroupsView({ cls, currentUser, onOpenGroupWorkspace, access
       {isOwner ? (
         <div className="review-stats" aria-label="Tổng quan nhóm">
           <div><span>Nhóm đang hoạt động</span><strong>{activeCount}</strong></div>
+          <div><span>Học sinh đã phân nhóm</span><strong>{classMembers === null || !groupMembersComplete ? '—' : allocatedIds.size} {classMembers !== null && groupMembersComplete && <small>/ {classMembers.length}</small>}</strong></div>
+          <div><span>Học sinh chưa có nhóm</span><strong>{ungroupedCount ?? '—'}</strong><small>{ungroupedCount === null ? 'Chưa tải đủ thành viên lớp hoặc nhóm' : 'Tính từ thành viên lớp đang hoạt động'}</small></div>
           <div><span>Kho lưu trữ</span><strong>{groups.length - activeCount}</strong></div>
-          <div><span>Nhóm bạn có thể mở</span><strong>{groups.filter(group => accessibleGroupIds.includes(group.id) || isOwner).length}</strong></div>
         </div>
       ) : <>
         {ownGroup && <section className="review-panel student-own-group">
@@ -207,6 +224,7 @@ export function ClassGroupsView({ cls, currentUser, onOpenGroupWorkspace, access
                 <span className="review-badge">{group.status === 'active' ? 'Đang hoạt động' : 'Lưu trữ'}</span>
               </div>
               <p>{canOpen ? 'Workspace nhóm trực thuộc lớp' : 'Gửi yêu cầu để tham gia nhóm này'}</p>
+              <div className="review-group-leader"><ShieldCheck size={13} /> Trưởng nhóm: <strong>{membersByGroup[group.id]?.find(member => member.role === 'leader')?.memberId ?? 'Chưa có dữ liệu'}</strong></div>
               <div className="review-group-card-meta"><Users size={14} /> {memberCounts[group.id] !== undefined ? `${memberCounts[group.id]} thành viên` : 'Sĩ số chưa có dữ liệu'}</div>
               <div className="review-panel-line review-group-card-footer">
                 <span>{group.status === 'active' ? 'Có thể truy cập theo quyền' : <><Archive size={13} /> Đã lưu trữ</>}</span>

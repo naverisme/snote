@@ -212,6 +212,15 @@ export class ClassService {
     }, { isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted });
   }
 
+  async getJoinCode(actorId: string, classId: string): Promise<JoinCodeStateSchema> {
+    const cls = await this.db.class.findUnique({ where: { id: classId } });
+    if (!cls || cls.ownerId !== actorId) throw new DomainError('NOT_FOUND', 404);
+    const state = await this.db.classJoinCode.findUnique({ where: { classId } });
+    return state?.enabled && state.codeHash
+      ? { classId, enabled: true, code: state.codeHash, version: cls.version }
+      : { classId, enabled: false, version: cls.version };
+  }
+
   async setJoinCode(actorId: string, classId: string, enabled: boolean, ifMatch: string): Promise<JoinCodeStateSchema> {
     return this.db.$transaction(async tx => {
       await tx.$queryRaw`SELECT "id" FROM "Class" WHERE "id" = ${classId}::uuid FOR UPDATE`;

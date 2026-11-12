@@ -51,7 +51,7 @@ export const GroupProgressUpdateWidget: React.FC<GroupProgressUpdateWidgetProps>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <MessageSquare size={14} style={{ color: 'var(--accent)' }} />
           <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ink-title)' }}>
-            Cập nhật tiến độ của nhóm (ASG-11 / CUXD-03 Nguồn 3)
+            Cập nhật tiến độ của nhóm
           </span>
         </div>
         {!isEditing && (

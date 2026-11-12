@@ -24,7 +24,7 @@ export const TrashView: React.FC<TrashViewProps> = ({ trashItems, onRestore, loa
       if (err.code === 'QUOTA_EXCEEDED') {
         // QA-06: Quota check on restore - do not assume fixed 1 GiB
         setErrorMessage(
-          'Không thể khôi phục: Dung lượng workspace đã đầy. Theo quy tắc QA-06, mục trong Thùng rác không chiếm hạn mức, nhưng khôi phục cần đủ chỗ trống. Vui lòng dọn bớt tệp hoạt động trước!',
+          'Không thể khôi phục vì dung lượng workspace đã đầy. Vui lòng dọn bớt tệp đang hoạt động rồi thử lại.',
         );
       } else {
         setErrorMessage(err.message || 'Không thể khôi phục mục');
