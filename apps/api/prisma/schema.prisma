@@ -10,6 +10,7 @@ datasource db {
 model Account {
   id           String   @id @default(uuid()) @db.Uuid
   email        String   @unique
+  displayName  String?
   passwordHash String?
   googleSubject String? @unique
   timeZone     String
@@ -289,6 +290,7 @@ model LibraryItem {
   currentRevisionId String? @db.Uuid
   type String
   title String?
+  pinned Boolean @default(false)
   status String @default("active")
   version Int @default(1)
   createdAt DateTime @default(now())

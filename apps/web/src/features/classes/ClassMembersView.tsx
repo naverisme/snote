@@ -604,7 +604,7 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
                   <Award size={16} />
                 </dt>
                 <dd style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {currentMonitor ? currentMonitor.memberId : 'Chưa bổ nhiệm'}
+                  {currentMonitor ? currentMonitor.displayName || currentMonitor.memberId : 'Chưa bổ nhiệm'}
                 </dd>
                 <dd style={{ margin: '4px 0 0 0', fontSize: '11px', color: 'var(--text-secondary)' }}>
                   {currentMonitor ? 'Được ủy quyền hỗ trợ việc chung' : 'Tối đa 1 lớp trưởng chính'}
@@ -1076,7 +1076,8 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
                     sortedStudents.map(m => (
                       <tr key={m.id} style={{ borderBottom: '1px solid var(--border-divider)' }}>
                         <td className="col-learner" style={{ padding: '12px 20px', position: 'sticky', left: 0, zIndex: 2, background: 'var(--surface-card)', boxShadow: '2px 0 4px -2px rgba(0,0,0,0.1)' }}>
-                          <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{m.memberId}</div>
+                          <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{m.displayName || m.memberId}</div>
+                          {m.displayName && <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{m.memberId}</div>}
                           <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Mã: {m.id.slice(0, 8)}</div>
                         </td>
 
@@ -1186,7 +1187,7 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                         <div style={{ fontWeight: 600, fontSize: '14px', color: 'var(--text-primary)' }}>
-                          {m.memberId}
+                          {m.displayName || m.memberId}
                         </div>
                         {m.role === 'monitor' ? (
                           <span
@@ -1629,7 +1630,7 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
 
       <div className="review-leadership">
         <article className="review-panel review-contact-card"><span className="review-eyebrow"><ShieldCheck size={13} /> Giáo viên chủ lớp</span><h2>{cls.ownerId}</h2><button type="button" className="btn btn-secondary btn-sm" onClick={() => { void navigator.clipboard.writeText(cls.ownerId); showNotice('Đã sao chép mã tài khoản giáo viên.'); }}><Copy size={13} /> Sao chép mã</button></article>
-        <article className="review-panel review-contact-card"><span className="review-eyebrow"><Award size={13} /> Lớp trưởng</span><h2>{currentMonitor?.memberId ?? 'Chưa bổ nhiệm'}</h2>{currentMonitor && <button type="button" className="btn btn-secondary btn-sm" onClick={() => { void navigator.clipboard.writeText(currentMonitor.memberId); showNotice('Đã sao chép mã tài khoản lớp trưởng.'); }}><Copy size={13} /> Sao chép mã</button>}</article>
+        <article className="review-panel review-contact-card"><span className="review-eyebrow"><Award size={13} /> Lớp trưởng</span><h2>{currentMonitor?.displayName || currentMonitor?.memberId || 'Chưa bổ nhiệm'}</h2>{currentMonitor && <button type="button" className="btn btn-secondary btn-sm" onClick={() => { void navigator.clipboard.writeText(currentMonitor.memberId); showNotice('Đã sao chép mã tài khoản lớp trưởng.'); }}><Copy size={13} /> Sao chép mã</button>}</article>
       </div>
 
       {/* My Invitations */}
@@ -1714,7 +1715,7 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
               </tr>
               {sortedStudents.map(member => (
                 <tr key={member.id}>
-                  <td className="col-learner" style={{ fontFamily: 'monospace' }}>{member.memberId}</td>
+                  <td className="col-learner">{member.displayName || member.memberId}{member.displayName && <small style={{ display: 'block', fontFamily: 'monospace' }}>{member.memberId}</small>}</td>
                   <td>
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                       {member.role === 'monitor' ? (

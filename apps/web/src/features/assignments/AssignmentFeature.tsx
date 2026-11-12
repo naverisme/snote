@@ -11,7 +11,6 @@ import { GroupProgressUpdateWidget } from './components/GroupProgressUpdateWidge
 import { AssignmentEmptyState } from './components/AssignmentEmptyState';
 import * as api from './api';
 import { listClassGroups } from '../../shared/api';
-import { taskApi } from '../tasks/api';
 import './assignments.css';
 
 export interface AssignmentFeatureProps {
@@ -48,7 +47,6 @@ export const AssignmentFeature: React.FC<AssignmentFeatureProps> = ({
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [classGroups, setClassGroups] = useState<WorkspaceGroup[]>(availableGroups);
-  const [progressByWorkspace, setProgressByWorkspace] = useState<Record<string, Pick<import('./types').RecipientProgress, 'tasksCompleted' | 'tasksTotal' | 'checklistCompleted' | 'checklistTotal'>>>({});
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
@@ -64,21 +62,6 @@ export const AssignmentFeature: React.FC<AssignmentFeatureProps> = ({
     return () => { current = false; };
   }, [classId]);
 
-  useEffect(() => {
-    if (!isTeacher || recipients.length === 0) { setProgressByWorkspace({}); return; }
-    let current = true;
-    void Promise.allSettled(recipients.map(async recipient => {
-      const tasks = await taskApi.listWorkspaceTasks(recipient.workspaceId);
-      const checklists = await Promise.all(tasks.map(task => taskApi.listChecklistItems(task.id)));
-      const items = checklists.flat();
-      return { workspaceId: recipient.workspaceId, tasksCompleted: tasks.filter(task => task.status === 'done').length, tasksTotal: tasks.length, checklistCompleted: items.filter(item => item.done).length, checklistTotal: items.length };
-    })).then(results => {
-      if (!current) return;
-      setProgressByWorkspace(Object.fromEntries(results.flatMap(result => result.status === 'fulfilled' ? [[result.value.workspaceId, result.value]] : [])));
-    });
-    return () => { current = false; };
-  }, [isTeacher, recipients]);
-
   const latePolicyLabel = (value: 'inherit' | 'allow' | 'lock' | undefined) =>
     value === 'allow' ? 'Cho phép' : value === 'lock' ? 'Khóa sau hạn' : 'Theo cài đặt lớp';
 
@@ -86,7 +69,6 @@ export const AssignmentFeature: React.FC<AssignmentFeatureProps> = ({
   const displayRecipients = recipients.map(recipient => ({
     ...recipient,
     workspaceName: classGroups.find(group => group.id === recipient.workspaceId)?.name ?? recipient.workspaceName,
-    ...progressByWorkspace[recipient.workspaceId],
   }));
   const selectedRecipient = displayRecipients.find(r => r.id === selectedRecipientId);
 

@@ -20,6 +20,7 @@ export interface ItemRecord {
   currentRevisionId: string | null;
   type: string;
   title?: string | null;
+  pinned?: boolean;
   status: string; // 'active' | 'trash'
   version: number;
   createdAt: Date;
@@ -102,6 +103,19 @@ export class LibraryService {
     }
   }
 
+  private async requireItemEdit(principal: Principal, item: ItemRecord, action: string): Promise<void> {
+    const scope = { type: 'workspace' as const, id: item.workspaceId };
+    if ((await this.auth?.decide(principal, action, scope))?.allowed) return;
+    if (!['library.edit_text', 'library.edit_file', 'library.delete'].includes(action)) {
+      throw new DomainError('FORBIDDEN', 403);
+    }
+    const revisions = await this.store.listRevisions(item.id);
+    const creator = revisions.sort((a, b) => a.at.getTime() - b.at.getTime())[0]?.actorId;
+    if (creator !== principal.accountId) throw new DomainError('FORBIDDEN', 403);
+    const readAction = item.type === 'text' ? 'library.read_text' : item.type === 'link' ? 'library.read_link' : 'library.read_file';
+    await this.requireAuth(principal, readAction, scope);
+  }
+
   public async createItem(
     principal: Principal,
     workspaceId: string,
@@ -161,6 +175,7 @@ export class LibraryService {
       currentRevisionId: revisionId,
       type: input.type,
       title: input.title ?? null,
+      pinned: input.pinned ?? false,
       status: 'active',
       version: 1,
       createdAt: now,
@@ -173,6 +188,7 @@ export class LibraryService {
       workspaceId,
       type: input.type as 'text' | 'link' | 'file',
       title: input.title ?? undefined,
+      pinned: input.pinned ?? false,
       currentRevisionId: revisionId,
       status: 'active',
       version: 1,
@@ -230,6 +246,7 @@ export class LibraryService {
         workspaceId: item.workspaceId,
         type: item.type as 'text' | 'link' | 'file',
         title: item.title ?? undefined,
+        pinned: item.pinned ?? false,
         currentRevisionId: item.currentRevisionId ?? undefined,
         status: item.status as 'active' | 'trash',
         version: item.version,
@@ -255,6 +272,7 @@ export class LibraryService {
       workspaceId: it.workspaceId,
       type: it.type as 'text' | 'link' | 'file',
       title: it.title ?? undefined,
+      pinned: it.pinned ?? false,
       currentRevisionId: it.currentRevisionId ?? undefined,
       status: it.status as 'active' | 'trash',
       version: it.version,
@@ -278,10 +296,7 @@ export class LibraryService {
         : item.type === 'link'
           ? 'library.edit_link'
           : 'library.edit_file';
-    await this.requireAuth(principal, editAction, {
-      type: 'workspace',
-      id: item.workspaceId,
-    });
+    await this.requireItemEdit(principal, item, editAction);
 
     // Moving between folders: must stay within the same workspace (LIB-06)
     if (input.folderId !== undefined) {
@@ -296,6 +311,7 @@ export class LibraryService {
     const nextVersion = item.version + 1;
     await this.store.updateItem(itemId, {
       title: input.title !== undefined ? input.title : item.title,
+      pinned: input.pinned !== undefined ? input.pinned : item.pinned,
       folderId: input.folderId !== undefined ? input.folderId : item.folderId,
       version: nextVersion,
       updatedAt: new Date(),
@@ -306,6 +322,7 @@ export class LibraryService {
       workspaceId: item.workspaceId,
       type: item.type as 'text' | 'link' | 'file',
       title: (input.title !== undefined ? input.title : item.title) ?? undefined,
+      pinned: input.pinned ?? item.pinned ?? false,
       currentRevisionId: item.currentRevisionId ?? undefined,
       status: item.status as 'active' | 'trash',
       version: nextVersion,
@@ -330,10 +347,7 @@ export class LibraryService {
         : item.type === 'link'
           ? 'library.edit_link'
           : 'library.edit_file';
-    await this.requireAuth(principal, editAction, {
-      type: 'workspace',
-      id: item.workspaceId,
-    });
+    await this.requireItemEdit(principal, item, editAction);
 
     const revisionId = randomUUID();
     let blobId: string | null = null;
@@ -381,6 +395,7 @@ export class LibraryService {
       workspaceId: item.workspaceId,
       type: item.type as 'text' | 'link' | 'file',
       title: (input.title !== undefined ? input.title : item.title) ?? undefined,
+      pinned: item.pinned ?? false,
       currentRevisionId: revisionId,
       status: item.status as 'active' | 'trash',
       version: nextVersion,
@@ -440,6 +455,7 @@ export class LibraryService {
       currentRevisionId: newRevisionId,
       type: sourceItem.type,
       title: sourceItem.title,
+      pinned: false,
       status: 'active',
       version: 1,
       createdAt: now,
@@ -452,6 +468,7 @@ export class LibraryService {
       workspaceId: copy.targetWorkspaceId,
       type: sourceItem.type as 'text' | 'link' | 'file',
       title: sourceItem.title ?? undefined,
+      pinned: false,
       currentRevisionId: newRevisionId,
       status: 'active',
       version: 1,
@@ -468,10 +485,7 @@ export class LibraryService {
 
     requireVersion(item.version, ifMatch);
 
-    await this.requireAuth(principal, 'library.delete', {
-      type: 'workspace',
-      id: item.workspaceId,
-    });
+    await this.requireItemEdit(principal, item, 'library.delete');
 
     const now = new Date();
     const purgeAfter = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days (LIB-14)
@@ -493,6 +507,7 @@ export class LibraryService {
       workspaceId: item.workspaceId,
       type: item.type as 'text' | 'link' | 'file',
       title: item.title ?? undefined,
+      pinned: item.pinned ?? false,
       currentRevisionId: item.currentRevisionId ?? undefined,
       status: 'trash',
       version: nextVersion,
@@ -536,6 +551,7 @@ export class LibraryService {
       workspaceId: item.workspaceId,
       type: item.type as 'text' | 'link' | 'file',
       title: item.title ?? undefined,
+      pinned: item.pinned ?? false,
       currentRevisionId: item.currentRevisionId ?? undefined,
       status: 'active',
       version: nextVersion,

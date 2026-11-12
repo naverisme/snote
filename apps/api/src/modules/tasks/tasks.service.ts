@@ -23,6 +23,28 @@ export class TasksService {
 
   constructor(private readonly authPort: AuthorizationPort = { decide: async () => ({ allowed: false }) }) {}
 
+  /** Restore a request-local domain instance from the persisted task state. */
+  loadState(state: {
+    tasks: (Task & { createdAt: Date; updatedAt: Date; dueDateZone?: string })[];
+    checklist: ChecklistItemRecord[];
+    workSessions: (Worksession & { createdAt: Date; updatedAt: Date; isLate?: boolean })[];
+    audits: TaskAuditRecord[];
+  }): void {
+    this.tasks = new Map(state.tasks.map(task => [task.id, task]));
+    this.checklist = new Map(state.checklist.map(item => [item.id, item]));
+    this.workSessions = new Map(state.workSessions.map(session => [session.id, session]));
+    this.audits = state.audits;
+  }
+
+  snapshot() {
+    return {
+      tasks: Array.from(this.tasks.values()),
+      checklist: Array.from(this.checklist.values()),
+      workSessions: Array.from(this.workSessions.values()),
+      audits: this.audits,
+    };
+  }
+
   private getAuthorizer(): AuthorizationPort {
     return this.authPort;
   }
@@ -216,6 +238,7 @@ export class TasksService {
     requireVersion(task.version, ifMatch);
 
     // TASK-04, TASK-08: Confirming completion
+    await requireAction(this.getAuthorizer(), principal, 'task.read', { type: 'workspace', id: task.workspaceId });
     if (task.assigneeId !== principal.accountId) {
       await requireAction(this.getAuthorizer(), principal, 'task.edit_common', { type: 'workspace', id: task.workspaceId });
     }
@@ -237,6 +260,7 @@ export class TasksService {
     if (!task) throw new DomainError('NOT_FOUND', 404);
     requireVersion(task.version, ifMatch);
 
+    await requireAction(this.getAuthorizer(), principal, 'task.read', { type: 'workspace', id: task.workspaceId });
     if (task.assigneeId !== principal.accountId) {
       await requireAction(this.getAuthorizer(), principal, 'task.edit_common', { type: 'workspace', id: task.workspaceId });
     }
@@ -304,7 +328,7 @@ export class TasksService {
       taskId,
       text: input.text.trim(),
       done: input.done ?? false,
-      position: items.length,
+      position: items.length ? Math.max(...items.map(item => item.position)) + 1 : 0,
       version: 1,
       createdAt: now,
       updatedAt: now,
@@ -378,6 +402,7 @@ export class TasksService {
   }
 
   private async requireChecklistPermission(principal: Principal, task: Task): Promise<void> {
+    await requireAction(this.getAuthorizer(), principal, 'task.read', { type: 'workspace', id: task.workspaceId });
     if (task.assigneeId === principal.accountId) {
       return; // Assignee has permission to edit checklist (TASK-04, TASK-15)
     }

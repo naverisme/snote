@@ -223,10 +223,14 @@ export class WorkspaceService {
       where: { workspaceId, status: 'active' },
       orderBy: { createdAt: 'asc' },
     });
+    const accounts = await this.db.account.findMany({ where: { id: { in: members.map(member => member.accountId) } },
+      select: { id: true, displayName: true } });
+    const names = new Map(accounts.map(account => [account.id, account.displayName]));
     return members.map(m => ({
       id: m.id,
       workspaceId: m.workspaceId,
       memberId: m.accountId,
+      displayName: names.get(m.accountId) ?? undefined,
       role: m.role as 'member' | 'leader',
       status: m.status as MembershipSchema['status'],
       version: m.version,

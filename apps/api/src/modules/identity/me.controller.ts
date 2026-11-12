@@ -6,6 +6,7 @@ import { getSession, replySuccess, requireAuthAndCsrf, type Request, type Respon
 import type { SessionPort } from '../../core/http';
 
 type UsageUpdate = components['schemas']['UsageUpdate'];
+type ProfileUpdate = components['schemas']['ProfileUpdate'];
 
 @Controller('me')
 export class MeController {
@@ -27,6 +28,15 @@ export class MeController {
     const session = await requireAuthAndCsrf(req, this.sessionPort);
     const ifMatch = req.headers['if-match'] as string | undefined;
     const account = await this.accountService.changeUsages(session.accountId, body.usages, ifMatch);
+    const full = await this.identityService.getMe(session.accountId);
+    return replySuccess(res, full, account.version);
+  }
+
+  @Patch('profile')
+  async changeProfile(@Body() body: ProfileUpdate, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const session = await requireAuthAndCsrf(req, this.sessionPort);
+    const ifMatch = req.headers['if-match'] as string | undefined;
+    const account = await this.accountService.changeProfile(session.accountId, body.displayName, ifMatch);
     const full = await this.identityService.getMe(session.accountId);
     return replySuccess(res, full, account.version);
   }

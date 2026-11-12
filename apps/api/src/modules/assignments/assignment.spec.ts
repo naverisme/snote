@@ -23,6 +23,8 @@ function createMockPrisma() {
   const classMemberships = new Map<string, any>();
   const workspaceMemberships = new Map<string, any>();
   const submissionRevisions = new Map<string, any>();
+  const tasks = new Map<string, any>();
+  const checklistItems = new Map<string, any>();
   const auditEvents: any[] = [];
   const outboxEvents: any[] = [];
 
@@ -35,7 +37,7 @@ function createMockPrisma() {
         const ids: string[] = where.id.in;
         return ids
           .map(id => workspaces.get(id))
-          .filter(w => w && w.classId === where.classId && w.status === where.status);
+          .filter(w => w && (where.classId === undefined || w.classId === where.classId) && (where.status === undefined || w.status === where.status));
       },
     },
     assignment: {
@@ -87,6 +89,7 @@ function createMockPrisma() {
       },
     },
     grant: {
+      findMany: async () => [],
       findFirst: async ({ where }: any) => {
         return Array.from(grants.values()).find(
           g => g.principalId === where.principalId && g.scopeType === where.scopeType && g.scopeId === where.scopeId && !g.revokedAt
@@ -101,12 +104,16 @@ function createMockPrisma() {
       },
     },
     workspaceMembership: {
+      findMany: async ({ where }: any) => Array.from(workspaceMemberships.values()).filter(
+        member => member.accountId === where.accountId && member.status === where.status && where.workspaceId.in.includes(member.workspaceId)),
       findFirst: async ({ where }: any) => {
         return Array.from(workspaceMemberships.values()).find(
           m => m.workspaceId === where.workspaceId && m.accountId === where.accountId && m.status === where.status
         ) || null;
       },
     },
+    task: { findMany: async ({ where }: any) => Array.from(tasks.values()).filter(task => where.workspaceId.in.includes(task.workspaceId)) },
+    checklistItem: { findMany: async ({ where }: any) => Array.from(checklistItems.values()).filter(item => where.taskId.in.includes(item.taskId)) },
     auditEvent: {
       create: async ({ data }: any) => {
         auditEvents.push(data);
@@ -122,7 +129,8 @@ function createMockPrisma() {
     $transaction: async (fn: any) => fn(mock),
   };
 
-  return { mock, classes, workspaces, assignments, recipients, outboxEvents, auditEvents };
+  return { mock, classes, workspaces, assignments, recipients, tasks, checklistItems,
+    classMemberships, workspaceMemberships, outboxEvents, auditEvents };
 }
 
 test('Assignment creation enforces required title and recipient workspaces (ASG-13)', async () => {
@@ -184,7 +192,7 @@ test('Assignment creation rejects unauthorized callers and archived classes', as
 });
 
 test('Teacher can create assignment with multiple recipient groups and late policy override', async () => {
-  const { mock, outboxEvents } = createMockPrisma();
+  const { mock, tasks, checklistItems, outboxEvents } = createMockPrisma();
   const notif = new NotificationService(new OutboxService());
   const service = new AssignmentService(mock, notif);
 
@@ -207,9 +215,31 @@ test('Teacher can create assignment with multiple recipient groups and late poli
   assert.equal(outboxEvents[0].topic, 'assignment.created');
 
   // Verify recipients listing
+  tasks.set('t_1', { id: 't_1', workspaceId: 'w_1', status: 'done' });
+  tasks.set('t_2', { id: 't_2', workspaceId: 'w_1', status: 'todo' });
+  checklistItems.set('i_1', { taskId: 't_1', done: true });
+  checklistItems.set('i_2', { taskId: 't_2', done: false });
   const recipients = await service.listRecipients('teacher_1', res.id);
   assert.equal(recipients.data.length, 2);
   assert.equal(recipients.data[0].assignmentId, res.id);
+  assert.deepEqual({ name: recipients.data[0].workspaceName, tasks: recipients.data[0].tasksTotal,
+    done: recipients.data[0].tasksCompleted, checklist: recipients.data[0].checklistTotal,
+    checklistDone: recipients.data[0].checklistCompleted },
+  { name: 'Group 1', tasks: 2, done: 1, checklist: 2, checklistDone: 1 });
+});
+
+test('recipient progress hides other groups from a class member without a progress grant', async () => {
+  const { mock, classMemberships, workspaceMemberships, tasks } = createMockPrisma();
+  const service = new AssignmentService(mock, new NotificationService(new OutboxService()));
+  const assignment = await service.createAssignment('teacher_1', 'c_1', {
+    title: 'Scoped progress', recipientWorkspaceIds: ['w_1', 'w_2'],
+  });
+  classMemberships.set('student_1', { classId: 'c_1', accountId: 'student_1', status: 'active' });
+  workspaceMemberships.set('student_1', { workspaceId: 'w_1', accountId: 'student_1', status: 'active' });
+  tasks.set('t_other', { id: 't_other', workspaceId: 'w_2', status: 'done' });
+  const visible = await service.listRecipients('student_1', assignment.id);
+  assert.deepEqual(visible.data.map(recipient => recipient.workspaceId), ['w_1']);
+  assert.equal(visible.data[0].tasksTotal, 0);
 });
 
 test('Assignment update checks version (If-Match) and records deadline changes (ASG-08)', async () => {

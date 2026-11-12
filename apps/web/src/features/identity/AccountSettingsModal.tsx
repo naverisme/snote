@@ -15,7 +15,7 @@ import {
   KeyRound,
   Copy,
 } from 'lucide-react';
-import { changeUsages, logout, getMe, passwordReset } from '../../shared/api';
+import { changeProfile, changeUsages, logout, getMe, passwordReset } from '../../shared/api';
 import type { Account } from '../../shared/types';
 import { toggleClassroomUsage } from './usage-selection';
 
@@ -67,9 +67,7 @@ export function AccountSettingsModal({
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>(() => {
     return (localStorage.getItem('snote_theme') as 'light' | 'dark' | 'system') || 'light';
   });
-  const [userAlias, setUserAlias] = useState(() => {
-    return localStorage.getItem('snote_user_alias') || '';
-  });
+  const [userAlias, setUserAlias] = useState(account.displayName || '');
   const [copiedId, setCopiedId] = useState(false);
 
   // Password reset states
@@ -80,6 +78,7 @@ export function AccountSettingsModal({
   useEffect(() => {
     setUsages(account.usages);
     setCurrentVersion(account.version);
+    setUserAlias(account.displayName || '');
     setError(null);
     setSuccess(null);
   }, [account, isOpen]);
@@ -104,10 +103,20 @@ export function AccountSettingsModal({
     setSuccess('Đã cập nhật giao diện hiển thị');
   };
 
-  const handleSaveAlias = (e: React.FormEvent) => {
+  const handleSaveAlias = async (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem('snote_user_alias', userAlias.trim());
-    setSuccess('Đã lưu tên hiển thị thành công');
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await changeProfile(userAlias.trim(), currentVersion);
+      setCurrentVersion(result.data.version);
+      onUpdated(result.data);
+      setSuccess('Đã lưu tên hiển thị.');
+    } catch (cause: any) {
+      setError(cause?.body?.error?.message || 'Không thể lưu tên hiển thị. Hãy tải lại và thử lại.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCopyId = () => {
@@ -383,9 +392,11 @@ export function AccountSettingsModal({
                     placeholder="Ví dụ: Thầy Hoàng, Cô Mai, Minh Triết..."
                     value={userAlias}
                     onChange={e => setUserAlias(e.target.value)}
+                    maxLength={120}
+                    required
                     style={{ flex: 1 }}
                   />
-                  <button type="submit" className="btn btn-primary btn-sm">
+                  <button type="submit" className="btn btn-primary btn-sm" disabled={loading}>
                     Lưu tên
                   </button>
                 </div>

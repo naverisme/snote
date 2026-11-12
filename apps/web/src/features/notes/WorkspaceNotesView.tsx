@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
-import { FileText, Plus, RefreshCw, Trash2 } from 'lucide-react';
+import { FileText, Pin, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import { libraryApi } from '../library/api';
 import type { ItemDetail } from '../library/types';
 
@@ -26,7 +26,8 @@ export function WorkspaceNotesView({ workspaceId, actorId }: Props) {
     try {
       const items = (await libraryApi.listItems(workspaceId, { status: 'active' })).filter(item => item.type === 'text');
       const details = await Promise.allSettled(items.map(item => libraryApi.getItem(item.id)));
-      setNotes(details.flatMap(result => result.status === 'fulfilled' ? [result.value.item] : []));
+      setNotes(details.flatMap(result => result.status === 'fulfilled' ? [result.value.item] : [])
+        .sort((a, b) => Number(b.pinned) - Number(a.pinned)));
       if (details.some(result => result.status === 'rejected')) setError('Một số ghi chú chưa tải được. Hãy thử lại.');
     } catch (cause) {
       setNotes([]);
@@ -63,6 +64,16 @@ export function WorkspaceNotesView({ workspaceId, actorId }: Props) {
     finally { setBusy(false); }
   };
 
+  const togglePin = async (note: ItemDetail) => {
+    setBusy(true);
+    setError(null);
+    try {
+      await libraryApi.updateItem(note.id, { pinned: !note.pinned }, { etag: `"${note.version}"` });
+      await load();
+    } catch (cause) { setError(errorMessage(cause)); }
+    finally { setBusy(false); }
+  };
+
   return <div className="review-screen notes-screen">
     <form className="review-panel notes-composer" onSubmit={event => void create(event)}>
       <h1>Ghi chú & Mục lưu ý Workspace</h1>
@@ -76,10 +87,10 @@ export function WorkspaceNotesView({ workspaceId, actorId }: Props) {
 
     {error && <div role="alert" className="review-panel notes-error">{error} <button type="button" className="btn btn-secondary btn-sm" onClick={() => void load()}><RefreshCw size={13} /> Thử lại</button></div>}
     {loading ? <div className="review-panel review-empty">Đang tải ghi chú...</div> : notes.length === 0 && !error ? <div className="review-panel review-empty">Chưa có ghi chú văn bản trong workspace này.</div> : <div className="notes-grid">
-      {notes.map(note => <article className="review-panel notes-card" key={note.id}>
+      {notes.map(note => <article className="review-panel notes-card" key={note.id} data-pinned={note.pinned ? 'true' : undefined}>
         <h2><FileText size={16} /> {note.title || 'Ghi chú không tiêu đề'}</h2>
         <p>{note.revision?.text || 'Chưa có nội dung.'}</p>
-        <div className="notes-card-footer"><span>{note.revision?.at ? new Date(note.revision.at).toLocaleDateString('vi-VN') : 'Đã lưu'}</span>{actorId && note.revision?.actorId === actorId && <button type="button" aria-label={`Xóa ${note.title || 'ghi chú'}`} title="Chuyển vào Thùng rác" disabled={busy} onClick={() => void remove(note)}><Trash2 size={14} /></button>}</div>
+        <div className="notes-card-footer"><span>{note.revision?.at ? new Date(note.revision.at).toLocaleDateString('vi-VN') : 'Đã lưu'}</span>{actorId && note.revision?.actorId === actorId && <span className="notes-card-actions"><button className="notes-pin" type="button" aria-label={`${note.pinned ? 'Bỏ ghim' : 'Ghim'} ${note.title || 'ghi chú'}`} title={note.pinned ? 'Bỏ ghim' : 'Ghim lên đầu'} disabled={busy} onClick={() => void togglePin(note)}><Pin size={14} fill={note.pinned ? 'currentColor' : 'none'} /></button><button type="button" aria-label={`Xóa ${note.title || 'ghi chú'}`} title="Chuyển vào Thùng rác" disabled={busy} onClick={() => void remove(note)}><Trash2 size={14} /></button></span>}</div>
       </article>)}
     </div>}
   </div>;

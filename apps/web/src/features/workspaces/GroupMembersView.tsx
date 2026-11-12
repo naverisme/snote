@@ -43,7 +43,7 @@ export function GroupMembersView({ workspace, currentUser, classOwnerId, onMembe
     )
   ));
   const leader = members.find(member => member.role === 'leader');
-  const visibleMembers = members.filter(member => !search || member.memberId.toLocaleLowerCase('vi').includes(search.toLocaleLowerCase('vi')));
+  const visibleMembers = members.filter(member => !search || `${member.displayName ?? ''} ${member.memberId}`.toLocaleLowerCase('vi').includes(search.toLocaleLowerCase('vi')));
   const assignedTasks = tasks?.filter(task => task.assigneeId) ?? [];
   const doneTasks = assignedTasks.filter(task => task.status === 'done');
   const myTasks = tasks?.filter(task => task.assigneeId === currentUser?.id) ?? [];
@@ -115,7 +115,7 @@ export function GroupMembersView({ workspace, currentUser, classOwnerId, onMembe
       <div><span><ListTodo size={14} /> Điều phối công việc</span><strong>{tasks ? `${doneTasks.length}/${assignedTasks.length}` : '—'}</strong><small>{tasks ? 'Việc được giao đã hoàn thành' : 'Chưa tải được công việc'}</small></div>
       <div><span><Clock size={14} /> Yêu cầu chờ xử lý</span><strong>{requests.length}</strong></div>
     </div> : <div className="review-leadership">
-      <article className="review-panel"><span className="review-eyebrow"><Crown size={13} /> Trưởng nhóm phụ trách</span><h2>{leader?.memberId ?? 'Chưa có'}</h2></article>
+      <article className="review-panel"><span className="review-eyebrow"><Crown size={13} /> Trưởng nhóm phụ trách</span><h2>{leader?.displayName || leader?.memberId || 'Chưa có'}</h2></article>
       <article className="review-panel"><span className="review-eyebrow"><ListTodo size={13} /> Công việc của bạn</span><h2>{tasks ? `${myTasks.filter(task => task.status === 'done').length}/${myTasks.length} việc hoàn thành` : 'Chưa tải được'}</h2><button type="button" className="btn btn-secondary btn-sm" onClick={() => onNavigate?.('tasks')}>Xem chi tiết việc của tôi <ArrowRight size={12} /></button></article>
     </div>}
 
@@ -158,7 +158,7 @@ export function GroupMembersView({ workspace, currentUser, classOwnerId, onMembe
       <table className="data-table">
         <thead><tr><th>Thành viên</th><th>Vai trò</th><th>Công việc được giao</th>{canManage && <th>Thao tác</th>}</tr></thead>
         <tbody>{visibleMembers.map(member => <tr key={member.id}>
-          <td style={{ overflowWrap: 'anywhere' }}>{member.memberId}{member.memberId === currentUser?.id ? ' (Bạn)' : ''}</td>
+          <td style={{ overflowWrap: 'anywhere' }}>{member.displayName || member.memberId}{member.memberId === currentUser?.id ? ' (Bạn)' : ''}{member.displayName && <small style={{ display: 'block', fontFamily: 'monospace' }}>{member.memberId}</small>}</td>
           <td>{member.role === 'leader' ? <><Crown size={14} /> Trưởng nhóm</> : 'Thành viên'}</td>
           <td>{tasks ? (() => { const progress = memberProgress(member.memberId); return <span>{progress.done}/{progress.total} việc xong</span>; })() : 'Chưa có dữ liệu'}</td>
           {canManage && <td>

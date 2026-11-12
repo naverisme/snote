@@ -636,10 +636,10 @@ export function App() {
             type="button"
             className="sb-avt-circle"
             onClick={() => setShowSettingsModal(true)}
-            title="Tài khoản & Cài đặt hệ thống"
+            title={user.displayName ? `${user.displayName} · Tài khoản & Cài đặt` : 'Tài khoản & Cài đặt hệ thống'}
             aria-label="Tài khoản & Cài đặt hệ thống"
           >
-            {user.usages.includes('teacher') ? 'G' : 'H'}
+            {user.displayName?.trim().charAt(0).toLocaleUpperCase('vi') || (user.usages.includes('teacher') ? 'G' : 'H')}
           </button>
         </div>
       </aside>

@@ -1,0 +1,1 @@
+ALTER TABLE "LibraryItem" ADD COLUMN "pinned" BOOLEAN NOT NULL DEFAULT false;

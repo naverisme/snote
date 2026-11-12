@@ -146,10 +146,14 @@ export class ClassService {
       where: { classId, status: 'active' },
       orderBy: { createdAt: 'asc' },
     });
+    const accounts = await this.db.account.findMany({ where: { id: { in: members.map(member => member.accountId) } },
+      select: { id: true, displayName: true } });
+    const names = new Map(accounts.map(account => [account.id, account.displayName]));
     return members.map(m => ({
       id: m.id,
       classId: m.classId,
       memberId: m.accountId,
+      displayName: names.get(m.accountId) ?? undefined,
       role: m.role as 'member' | 'monitor',
       status: m.status as MembershipSchema['status'],
       version: m.version,

@@ -14,6 +14,22 @@ export function validateUsages(input: unknown): Usages {
 
 export class AccountService {
   constructor(private readonly db: PrismaClient) {}
+  async changeProfile(accountId: string, displayName: unknown, ifMatch: string | undefined) {
+    if (typeof displayName !== 'string' || !displayName.trim() || displayName.trim().length > 120) {
+      throw new DomainError('INVALID_INPUT', 422);
+    }
+    return this.db.$transaction(async tx => {
+      await tx.$queryRaw`SELECT "id" FROM "Account" WHERE "id" = ${accountId}::uuid FOR UPDATE`;
+      const current = await tx.account.findUnique({ where: { id: accountId } });
+      if (!current) throw new DomainError('NOT_FOUND', 404);
+      requireVersion(current.version, ifMatch);
+      const account = await tx.account.update({ where: { id: accountId },
+        data: { displayName: displayName.trim(), version: { increment: 1 } } });
+      await tx.auditEvent.create({ data: { actorId: accountId, scopeType: 'account', scopeId: accountId,
+        action: 'account.profile', targetId: accountId } });
+      return account;
+    }, { isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted });
+  }
   async changeUsages(accountId: string, input: unknown, ifMatch: string | undefined) {
     const usages = validateUsages(input);
     return this.db.$transaction(async tx => {

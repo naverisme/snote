@@ -5,6 +5,21 @@ import { TasksService } from './tasks.service';
 
 const testAuth: AuthorizationPort = { decide: async () => ({ allowed: true }) };
 
+test('former assignee cannot complete or edit checklist after workspace access ends', async () => {
+  let active = true;
+  const auth: AuthorizationPort = { decide: async (_principal, action) => ({ allowed: active || action !== 'task.read' }) };
+  const service = new TasksService(auth);
+  const principal: Principal = { accountId: 'former-member' };
+  const { task, etag } = await service.createTask(principal, 'group-workspace', {
+    title: 'Hand over this task', assigneeId: principal.accountId,
+  });
+  active = false;
+  await assert.rejects(service.completeTask(principal, task.id, etag),
+    (err: unknown) => err instanceof DomainError && err.status === 403);
+  await assert.rejects(service.addChecklistItem(principal, task.id, { text: 'Should be denied' }, etag),
+    (err: unknown) => err instanceof DomainError && err.status === 403);
+});
+
 test('PM-04: service without an authorization port denies shared task creation', async () => {
   const service = new TasksService();
   await assert.rejects(

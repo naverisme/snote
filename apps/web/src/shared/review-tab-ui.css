@@ -53,10 +53,13 @@
 .notes-composer button { justify-self: start; }
 .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 16px; }
 .notes-card { min-height: 190px; display: flex; flex-direction: column; gap: 12px; }
+.notes-card[data-pinned="true"] { border-color: var(--text-primary); }
 .notes-card h2 { display: flex; align-items: center; gap: 7px; }
 .notes-card p { flex: 1; white-space: pre-wrap; overflow-wrap: anywhere; }
 .notes-card-footer { border-top: 1px solid var(--border-divider); padding-top: 10px; display: flex; justify-content: space-between; align-items: center; color: var(--text-secondary); font-size: 11px; }
 .notes-card-footer button { border: 0; background: transparent; color: var(--danger); padding: 4px; cursor: pointer; }
+.notes-card-actions { display: inline-flex; align-items: center; gap: 6px; }
+.notes-card-footer .notes-pin { color: var(--text-primary); }
 .notes-error { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--danger); }
 .class-settings-screen { width: min(100%, 860px); margin-inline: auto; }
 .class-settings-screen .review-settings-panel { border: 1px solid var(--border-divider); border-radius: 8px; background: var(--surface-card); padding: 20px; }

@@ -347,12 +347,54 @@ export class AssignmentService {
     assignmentId: string,
     options: { cursor?: string; limit?: number } = {}
   ): Promise<{ data: RecipientDto[]; nextCursor?: string }> {
-    await this.auth.requireCanViewAssignment(actorId, assignmentId);
+    const assignment = await this.auth.requireCanViewAssignment(actorId, assignmentId);
 
-    const recipients = await (this.prisma as any).assignmentRecipient.findMany({
+    const allRecipients = await (this.prisma as any).assignmentRecipient.findMany({
       where: { assignmentId },
       orderBy: { createdAt: 'asc' },
     });
+
+    const cls = await this.prisma.class.findUnique({ where: { id: assignment.classId }, select: { ownerId: true } });
+    let recipients = allRecipients;
+    if (cls?.ownerId !== actorId) {
+      const [memberships, grants] = await Promise.all([
+        this.prisma.workspaceMembership.findMany({ where: { accountId: actorId, status: 'active',
+          workspaceId: { in: allRecipients.map((recipient: { workspaceId: string }) => recipient.workspaceId) } }, select: { workspaceId: true } }),
+        this.prisma.grant.findMany({ where: { principalId: actorId, action: 'progress.read', revokedAt: null,
+          OR: [{ scopeType: 'class', scopeId: assignment.classId }, { scopeType: 'assignment', scopeId: assignmentId },
+            { scopeType: 'workspace', scopeId: { in: allRecipients.map((recipient: { workspaceId: string }) => recipient.workspaceId) } }] },
+          select: { scopeType: true, scopeId: true } }),
+      ]);
+      const allGranted = grants.some(grant => grant.scopeType === 'class' || grant.scopeType === 'assignment');
+      const allowed = new Set([...memberships.map(member => member.workspaceId),
+        ...grants.filter(grant => grant.scopeType === 'workspace').map(grant => grant.scopeId)]);
+      recipients = allGranted ? allRecipients : allRecipients.filter((recipient: { workspaceId: string }) => allowed.has(recipient.workspaceId));
+    }
+
+    const workspaceIds: string[] = recipients.map((recipient: { workspaceId: string }) => recipient.workspaceId);
+    const [workspaces, tasks] = await Promise.all([
+      this.prisma.workspace.findMany({ where: { id: { in: workspaceIds } }, select: { id: true, name: true } }),
+      this.prisma.task.findMany({ where: { workspaceId: { in: workspaceIds } }, select: { id: true, workspaceId: true, status: true } }),
+    ]);
+    const checklist = await this.prisma.checklistItem.findMany({
+      where: { taskId: { in: tasks.map(task => task.id) } }, select: { taskId: true, done: true },
+    });
+    const nameByWorkspace = new Map(workspaces.map(workspace => [workspace.id, workspace.name]));
+    const workspaceByTask = new Map(tasks.map(task => [task.id, task.workspaceId]));
+    const counts = new Map<string, { tasksCompleted: number; tasksTotal: number; checklistCompleted: number; checklistTotal: number }>();
+    for (const workspaceId of workspaceIds) counts.set(workspaceId, { tasksCompleted: 0, tasksTotal: 0, checklistCompleted: 0, checklistTotal: 0 });
+    for (const task of tasks) {
+      const count = counts.get(task.workspaceId);
+      if (!count) continue;
+      count.tasksTotal++;
+      if (task.status === 'done') count.tasksCompleted++;
+    }
+    for (const item of checklist) {
+      const count = counts.get(workspaceByTask.get(item.taskId) ?? '');
+      if (!count) continue;
+      count.checklistTotal++;
+      if (item.done) count.checklistCompleted++;
+    }
 
     const dtos: RecipientDto[] = await Promise.all(
       recipients.map(async (r: any) => {
@@ -367,6 +409,8 @@ export class AssignmentService {
           id: r.id,
           assignmentId: r.assignmentId,
           workspaceId: r.workspaceId,
+          workspaceName: nameByWorkspace.get(r.workspaceId),
+          ...counts.get(r.workspaceId),
           submissionVersion: latestRev ? latestRev.version : undefined,
           progressText: r.progressText ?? undefined,
           version: r.version,

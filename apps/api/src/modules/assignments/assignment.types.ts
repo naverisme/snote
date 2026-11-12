@@ -44,6 +44,11 @@ export interface RecipientDto {
   id: string;
   assignmentId: string;
   workspaceId: string;
+  workspaceName?: string;
+  tasksCompleted?: number;
+  tasksTotal?: number;
+  checklistCompleted?: number;
+  checklistTotal?: number;
   submissionVersion?: number;
   progressText?: string;
   version: number;

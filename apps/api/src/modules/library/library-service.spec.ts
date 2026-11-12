@@ -23,6 +23,22 @@ test('library service without a policy fails closed before writing an item', asy
   );
   assert.equal(store.items.size, 0);
 });
+
+test('note creator can pin with current version while another member cannot', async () => {
+  const store = new MockLibraryStore();
+  const auth = { decide: async (_principal: { accountId: string }, action: string) =>
+    ({ allowed: action === 'library.create' || action === 'library.read_text' }) };
+  const service = new LibraryService(store, new QuotaService(new MockQuotaStore()), new MockUploadStore(), auth);
+  const creator = { accountId: 'creator' };
+  const note = await service.createItem(creator, 'ws-note', { type: 'text', title: 'Pinned', content: 'Text' });
+  const pinned = await service.updateItem(creator, note.id, '"1"', { pinned: true });
+  assert.equal(pinned.pinned, true);
+  assert.equal((await service.listItems(creator, 'ws-note'))[0].pinned, true);
+  await assert.rejects(service.updateItem(creator, note.id, '"1"', { pinned: false }),
+    (error: unknown) => error instanceof DomainError && error.status === 412);
+  await assert.rejects(service.updateItem({ accountId: 'other' }, note.id, '"2"', { pinned: false }),
+    (error: unknown) => error instanceof DomainError && error.status === 403);
+});
 import { isPrivateOrBlockedHost, isPrivateOrBlockedIp, normalizeUrl, extractFirstUrl } from './url-preview';
 import type { UploadStore, UploadStagingRecord } from '../uploads/upload-service';
 

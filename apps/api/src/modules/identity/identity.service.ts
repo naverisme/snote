@@ -108,6 +108,7 @@ export class IdentityService {
     const session = await createSession(this.sessionStore, account.id, this.ttlMs);
     const accountData: AccountSchema = {
       id: account.id,
+      displayName: account.displayName ?? undefined,
       usages,
       timeZone: account.timeZone,
       version: account.version,
@@ -134,6 +135,7 @@ export class IdentityService {
     const usages = account.usages.map(u => u.usage) as AccountSchema['usages'];
     const accountData: AccountSchema = {
       id: account.id,
+      displayName: account.displayName ?? undefined,
       usages,
       timeZone: account.timeZone,
       version: account.version,
@@ -190,7 +192,8 @@ export class IdentityService {
     }
     const session = await createSession(this.sessionStore, account.id, this.ttlMs);
     const accountData: AccountSchema = {
-      id: account.id, usages: account.usages.map(u => u.usage) as AccountSchema['usages'],
+      id: account.id, displayName: account.displayName ?? undefined,
+      usages: account.usages.map(u => u.usage) as AccountSchema['usages'],
       timeZone: account.timeZone, version: account.version,
     };
     return { account: accountData, session };
@@ -290,6 +293,7 @@ export class IdentityService {
     if (!account) throw new DomainError('NOT_FOUND', 404);
     return {
       id: account.id,
+      displayName: account.displayName ?? undefined,
       usages: account.usages.map(u => u.usage) as AccountSchema['usages'],
       timeZone: account.timeZone,
       version: account.version,

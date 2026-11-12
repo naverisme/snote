@@ -100,6 +100,13 @@ export async function changeUsages(usages: Account['usages'], version: number) {
   });
 }
 
+export async function changeProfile(displayName: string, version: number) {
+  return request<ApiResponse<Account>>('/me/profile', 'PATCH', { displayName }, {
+    csrfToken: currentCsrfToken,
+    etag: `"${version}"`,
+  });
+}
+
 export async function getMyInvitations() {
   return request<ApiResponse<Invitation[]>>('/me/invitations', 'GET');
 }
