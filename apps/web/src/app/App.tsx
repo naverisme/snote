@@ -711,12 +711,13 @@ export function App() {
                 <AssignmentFeature
                   key={activeClass.id}
                   classId={activeClass.id}
+                  classTimeZone={activeClass.timeZone}
                   isTeacher={isClassOwner}
                   activeWorkspaceId={classGroupWs?.id}
                 />
               )}
               {classTab === 'calendar' && (
-                <CalendarContainer key={activeClass.id} scopeType="class" scopeId={activeClass.id} />
+                <CalendarContainer key={activeClass.id} scopeType="class" scopeId={activeClass.id} eventTimeZone={activeClass.timeZone} />
               )}
             </div>
           ) : activeWorkspace ? (
@@ -739,7 +740,7 @@ export function App() {
                 />
               )}
               {workspaceTab === 'calendar' && (
-                <CalendarContainer key={activeWorkspace.id} scopeType="workspace" scopeId={activeWorkspace.id} />
+                <CalendarContainer key={activeWorkspace.id} scopeType="workspace" scopeId={activeWorkspace.id} eventTimeZone={activeWorkspace.timeZone} />
               )}
               {workspaceTab === 'library' && (
                 <LibraryView

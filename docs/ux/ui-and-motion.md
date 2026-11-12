@@ -12,6 +12,8 @@ Mỗi thời điểm chỉ có **một ngữ cảnh** (lớp, workspace hoặc t
 
 **Trước khi đăng nhập:** theo yêu cầu trực tiếp của chủ sản phẩm ngày 2026-11-12, ứng dụng hiển thị ngay trang xác thực với form đăng nhập ở vùng chính, không dựng sidebar, điều hướng công việc hoặc nút trung gian “Đăng nhập hoặc tạo tài khoản”. Đăng ký, quên mật khẩu và liên kết đặt lại dùng cùng trang; sau khi xác thực mới dựng khung ứng dụng và sidebar. Trong lúc kiểm tra cookie phiên, dùng trạng thái chờ trung tính để tránh lóe khung chưa đúng quyền.
 
+**Múi giờ trên web (SRC-32):** không hiện trường chọn múi giờ ở đăng ký, tạo lớp, Lịch hoặc hạn bài. Lịch hiển thị theo giờ Việt Nam; tài khoản/lớp mới dùng `Asia/Ho_Chi_Minh`. Hạn bài chỉ có ngày lấy múi giờ lớp đã lưu theo ASG-07. Quy tắc dữ liệu ở [ACC-11](../requirements/accounts-and-workspaces.md).
+
 | Cấp / vị trí | Thành phần, số lượng và kiểu | Khi thao tác / dữ liệu hiện ra |
 | --- | --- | --- |
 | Thanh bên trên cùng | Nút Snote, một lối Lớp học và bộ chọn workspace **cùng cấp** | Snote về Việc của tôi; Lớp học mở danh sách lớp; chọn workspace đổi ngữ cảnh. Cụm workspace thu gọn tối đa hai icon, bung ngang có nút Tạo ở trái và lối danh sách; kéo chỉ cuộn, bấm mới chọn. |
@@ -33,7 +35,7 @@ Mỗi thời điểm chỉ có **một ngữ cảnh** (lớp, workspace hoặc t
 | Tải tệp | Ô tệp hiện tiến độ thật nếu có; tệp xong nhưng bản ghi chưa xong tiếp tục trạng thái Đang lưu. Chỉ sau cả bytes + metadata hoàn tất hiện dấu tích xanh giữa ô rồi mờ; lỗi hiện Thử lại, không báo đã lưu. |
 | Nộp bài | Gửi → Đang xác nhận → Thành công kèm số phiên bản/giờ nhận, hoặc Lỗi/Xung đột/Chưa rõ kết quả. Chưa rõ kết quả tra mã thao tác trước khi nút gửi tạo ý định mới. Nút Thu hồi không xuất hiện. |
 | Ghi đè Thư viện | Hiện hai lựa chọn Ghi đè mục / Tạo bản sao. Nếu phiên bản nền cũ, dừng và đưa lối Xem bản mới hoặc Tạo bản sao; không thay nội dung đang nhập trước khi người dùng chọn. |
-| Lịch | Sự kiện hủy vẫn có nhãn Đã hủy khi người nhận còn quyền. Đổi múi giờ giữ ngày sự kiện cả ngày; event có giờ dịch vị trí trên trục. Không có điều khiển sự kiện lặp trong bản đầu. |
+| Lịch | Sự kiện hủy vẫn có nhãn Đã hủy khi người nhận còn quyền. Sự kiện cả ngày giữ ngày đã lưu; sự kiện có giờ hiển thị theo giờ Việt Nam. Không có điều khiển sự kiện lặp trong bản đầu. |
 | Việc tiếp theo | Bốn nhóm ưu tiên đã chốt. “Sắp tới (n)” là một nút cạnh lọc, không tự bung thông tin tương lai; khi bấm mở tập việc có mốc tương lai. Không có checklist thì hiện chữ “Chưa có checklist”, không hiện 0/0. |
 
 ## Chuyển động và dữ liệu đổi liên tục
@@ -45,7 +47,7 @@ Thời lượng dưới đây là **ngân sách thiết kế** do tác nhân ch�
 | Cụm workspace thu ↔ bung | 180–240 ms, icon tách từ cụm, mờ phần còn lại nhẹ; icon đang chọn nổi rồi về vị trí mới; danh sách dùng cùng nhịp | Giữ-kéo ngang chỉ cuộn với quán tính nhẹ; thả không chọn. Bấm trong lúc đang bung kết thúc chuyển động cũ rồi chuyển đúng workspace đã bấm. |
 | Chuyển ngữ cảnh lớp/workspace hoặc mục tính năng | Chỉ báo chọn trượt 140–180 ms; vùng nội dung mờ/hiện 120–180 ms sau khi có dữ liệu. Không trượt toàn màn qua nhiều trang | Request đến muộn của ngữ cảnh cũ không được ghi đè ngữ cảnh mới. Giữ thanh bên và focus hợp lý; khi mất quyền xóa dữ liệu cũ ngay, không chờ fade. |
 | Gantt ↔ Danh sách | 140–220 ms mờ đổi vùng dữ liệu, giữ thanh điều khiển và bộ lọc; không giả vờ biến hàng Gantt thành bảng | Hủy transition cũ nếu bấm liên tiếp; chỉ một chế độ có thể thao tác. Khi cùng tập việc cập nhật, không reset vùng cuộn tùy tiện. |
-| Chuyển ngày/tuần/tháng trên Lịch | 180–240 ms dịch trục nhẹ theo hướng thời gian, ngày hôm nay có điểm nhấn tĩnh; event cập nhật vị trí có hoạt ảnh ngắn | Đổi múi giờ chỉ di chuyển event có giờ; event cả ngày giữ ô ngày. Chỉ vẽ event trong khoảng nhìn thấy, không phát nhắc từ hoạt ảnh. |
+| Chuyển ngày/tuần/tháng trên Lịch | 180–240 ms dịch trục nhẹ theo hướng thời gian, ngày hôm nay có điểm nhấn tĩnh; event cập nhật vị trí có hoạt ảnh ngắn | Sự kiện cả ngày giữ ô ngày đã lưu. Chỉ vẽ event trong khoảng nhìn thấy, không phát nhắc từ hoạt ảnh. |
 | Mở/đóng chi tiết việc, mục hoặc sự kiện | Máy tính: panel xuất hiện 180–240 ms, nền chính giữ vị trí; điện thoại: màn riêng 200–260 ms | Escape/Back trở về vị trí và phần tử đã mở; focus vào tiêu đề panel, đóng trả focus nút/hàng trước đó. |
 | Dữ liệu hàng thay đổi, lọc/sắp xếp | Hàng mới xuất hiện 120–180 ms; hàng bị loại mờ nhanh, vị trí còn lại dịch nhẹ tối đa 220 ms | Không animate hàng loạt >20 hàng hay khi refresh dữ liệu lớn; dùng cập nhật tức thời. Giữ khóa ID và vị trí cuộn để tránh nhảy khi dữ liệu đến liên tiếp. |
 | Upload → ghi metadata → thành công | Tiến độ xác thực, sau commit hiện tích xanh 500–700 ms rồi mờ 160–240 ms; lỗi hiện ngay với nhãn và thao tác thử lại | Không tự chạy tích nếu client chỉ tải bytes xong. Không để ảnh bìa URL cũ thay ảnh của URL mới; preview lỗi không đảo trạng thái mục đã lưu. |

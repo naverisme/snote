@@ -4,20 +4,21 @@ import { listWorkspaces } from '../../shared/api';
 import { CalendarView } from './CalendarView';
 import { EventModal } from './EventModal';
 import type { CalendarEventViewModel, EventInput, Scope } from './types';
+import { VIETNAM_TIME_ZONE } from '../../shared/time-zone';
 
 interface CalendarContainerProps {
   scopeType?: string;
   scopeId?: string;
-  initialTimeZone?: string;
+  eventTimeZone?: string;
 }
 
 export const CalendarContainer: React.FC<CalendarContainerProps> = ({
   scopeType,
   scopeId,
-  initialTimeZone = 'Asia/Ho_Chi_Minh',
+  eventTimeZone = VIETNAM_TIME_ZONE,
 }) => {
   const [events, setEvents] = useState<CalendarEventViewModel[]>([]);
-  const [timeZone, setTimeZone] = useState<string>(initialTimeZone);
+  const timeZone = VIETNAM_TIME_ZONE;
   const [selectedEvent, setSelectedEvent] = useState<CalendarEventViewModel | undefined>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -149,8 +150,6 @@ export const CalendarContainer: React.FC<CalendarContainerProps> = ({
           setIsModalOpen(true);
         }}
         selectedEventId={selectedEvent?.id}
-        timeZone={timeZone}
-        onTimeZoneChange={setTimeZone}
         onNewEventClick={() => {
           setSelectedEvent(undefined);
           setIsModalOpen(true);
@@ -166,7 +165,7 @@ export const CalendarContainer: React.FC<CalendarContainerProps> = ({
           }}
           onSave={handleSaveEvent}
           onCancelEvent={handleCancelEvent}
-          defaultTimeZone={timeZone}
+          defaultTimeZone={selectedEvent?.allDay?.timeZone ?? eventTimeZone}
           defaultScopeType={effectiveScopeType}
           defaultScopeId={resolvedWorkspaceId}
         />

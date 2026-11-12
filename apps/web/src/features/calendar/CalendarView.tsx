@@ -9,13 +9,12 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import type { CalendarEventViewModel, CalendarViewMode } from './types';
+import { vietnamDateTimeParts } from '../../shared/time-zone';
 
 interface CalendarViewProps {
   events: CalendarEventViewModel[];
   onSelectEvent: (event: CalendarEventViewModel) => void;
   selectedEventId?: string;
-  timeZone: string;
-  onTimeZoneChange: (tz: string) => void;
   onNewEventClick: () => void;
   now?: Date;
 }
@@ -24,8 +23,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   events,
   onSelectEvent,
   selectedEventId,
-  timeZone,
-  onTimeZoneChange,
   onNewEventClick,
   now = new Date(),
 }) => {
@@ -56,14 +53,13 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
   // Generate days based on viewMode
   const visibleDays = useMemo(() => {
-    const base = new Date(now);
-    base.setDate(base.getDate() + offsetDays);
-    base.setHours(0, 0, 0, 0);
+    const base = new Date(`${vietnamDateTimeParts(now).date}T12:00:00Z`);
+    base.setUTCDate(base.getUTCDate() + offsetDays);
 
     const count = viewMode === 'day' ? 1 : viewMode === 'week' ? 7 : 30;
     return Array.from({ length: count }, (_, i) => {
       const d = new Date(base);
-      d.setDate(d.getDate() + i);
+      d.setUTCDate(d.getUTCDate() + i);
       return d;
     });
   }, [now, offsetDays, viewMode]);
@@ -71,6 +67,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const headerLabel = useMemo(() => {
     if (visibleDays.length === 1) {
       return visibleDays[0].toLocaleDateString('vi-VN', {
+        timeZone: 'UTC',
         weekday: 'long',
         day: '2-digit',
         month: '2-digit',
@@ -79,14 +76,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     }
     const first = visibleDays[0];
     const last = visibleDays[visibleDays.length - 1];
-    return `${first.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })} - ${last.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}`;
+    return `${first.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', timeZone: 'UTC' })} - ${last.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' })}`;
   }, [visibleDays]);
 
   const hasConflict = useMemo(() => {
     return events.some(e => e.conflictWarning && e.status === 'active');
   }, [events]);
 
-  const isToday = (d: Date) => d.toDateString() === now.toDateString();
+  const isToday = (d: Date) => d.toISOString().slice(0, 10) === vietnamDateTimeParts(now).date;
 
   return (
     <div
@@ -187,35 +184,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {/* Timezone Selector (QA-10, CAL-01, CAL-07) */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <label
-              htmlFor="calendar-tz-select"
-              style={{ fontSize: '12px', color: 'var(--ink-muted)' }}
-            >
-              Múi giờ:
-            </label>
-            <select
-              id="calendar-tz-select"
-              value={timeZone}
-              onChange={e => onTimeZoneChange(e.target.value)}
-              style={{
-                padding: '5px 8px',
-                fontSize: '12px',
-                borderRadius: 'var(--radius-sm, 6px)',
-                border: '1px solid var(--hairline)',
-                background: 'var(--surface-raised, #ffffff)',
-                color: 'var(--ink-body)',
-                cursor: 'pointer',
-              }}
-            >
-              <option value="Asia/Ho_Chi_Minh">Hà Nội / HCM (UTC+7)</option>
-              <option value="UTC">UTC (GMT+0)</option>
-              <option value="America/New_York">New York (UTC-5)</option>
-              <option value="Asia/Tokyo">Tokyo (UTC+9)</option>
-            </select>
-          </div>
-
           {/* View Mode Switcher (CUXA-01) */}
           <div
             style={{
@@ -542,7 +510,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                           letterSpacing: '0.02em',
                         }}
                       >
-                        {day.toLocaleDateString('vi-VN', { weekday: 'short' })}
+                        {day.toLocaleDateString('vi-VN', { weekday: 'short', timeZone: 'UTC' })}
                       </div>
                       {/* Solid Disc cho ngày hiện tại (Stageshow Standard) */}
                       <div
@@ -568,7 +536,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                               boxShadow: '0 2px 4px rgba(37, 99, 235, 0.25)',
                             }}
                           >
-                            {day.toLocaleDateString('vi-VN', { day: '2-digit' })}
+                            {day.toLocaleDateString('vi-VN', { day: '2-digit', timeZone: 'UTC' })}
                           </span>
                         ) : (
                           <span
@@ -583,7 +551,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                               color: 'var(--ink-title)',
                             }}
                           >
-                            {day.toLocaleDateString('vi-VN', { day: '2-digit' })}
+                            {day.toLocaleDateString('vi-VN', { day: '2-digit', timeZone: 'UTC' })}
                           </span>
                         )}
                       </div>
@@ -597,7 +565,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     const dayStr = day.toISOString().slice(0, 10);
                     const dayEvents = events.filter(e => {
                       if (e.timed) {
-                        return e.timed.startsAt.slice(0, 10) === dayStr;
+                        return vietnamDateTimeParts(e.timed.startsAt).date === dayStr;
                       }
                       return false;
                     });
@@ -723,9 +691,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                                     style={{ color: 'var(--ink-muted)' }}
                                   />
                                   <span>
-                                    {ev.timed?.startsAt.slice(11, 16)} -{' '}
-                                    {ev.timed?.endsAt.slice(11, 16)} (
-                                    {timeZone.split('/')[1] ?? timeZone})
+                                    {ev.timed && `${vietnamDateTimeParts(ev.timed.startsAt).time} - ${vietnamDateTimeParts(ev.timed.endsAt).time}`} (Việt Nam)
                                   </span>
                                 </div>
                                 <div

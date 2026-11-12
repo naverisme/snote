@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ComponentType, type FormEvent } from 
 import { ArrowLeft, Check, Eye, EyeOff, GraduationCap, User, X } from 'lucide-react';
 import { googleSignIn, login, passwordReset, passwordResetRequest, register } from '../../shared/api';
 import type { Account } from '../../shared/types';
+import { VIETNAM_TIME_ZONE } from '../../shared/time-zone';
 import { GoogleSignInButton } from './GoogleSignInButton';
 import { toAccountUsages } from './usage-selection';
 import './auth.css';
@@ -71,7 +72,6 @@ export function AuthModal({ isOpen, presentation = 'modal', onClose, onAuthentic
   const [resetToken, setResetToken] = useState(readResetToken);
   const [showPassword, setShowPassword] = useState(false);
   const [classroomUsages, setClassroomUsages] = useState<ClassroomUsage[]>([]);
-  const [timeZone, setTimeZone] = useState(Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Ho_Chi_Minh');
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -159,7 +159,7 @@ export function AuthModal({ isOpen, presentation = 'modal', onClose, onAuthentic
         finishAuthentication(result.data);
       } else if (view === 'register') {
         if (password.length < 12) { setError('Mật khẩu cần ít nhất 12 ký tự.'); return; }
-        const result = await register({ email: email.trim(), password, usages: toAccountUsages(classroomUsages), timeZone });
+        const result = await register({ email: email.trim(), password, usages: toAccountUsages(classroomUsages), timeZone: VIETNAM_TIME_ZONE });
         finishAuthentication(result.data);
       } else if (view === 'forgot') {
         await passwordResetRequest(email.trim());
@@ -195,7 +195,7 @@ export function AuthModal({ isOpen, presentation = 'modal', onClose, onAuthentic
     setLoading(true);
     try {
       const usages = view === 'register' ? toAccountUsages(classroomUsages) : ['personal'] as Account['usages'];
-      const result = await googleSignIn({ credential, usages, timeZone });
+      const result = await googleSignIn({ credential, usages, timeZone: VIETNAM_TIME_ZONE });
       finishAuthentication(result.data);
     } catch (caught) {
       setError(authErrorMessage(caught, view));
@@ -284,10 +284,6 @@ export function AuthModal({ isOpen, presentation = 'modal', onClose, onAuthentic
                 </div>
                 <p className="auth-field-hint">Mọi tài khoản đều có không gian cá nhân.</p>
               </fieldset>
-              <div className="form-group">
-                <label className="form-label" htmlFor="auth-timezone">Múi giờ</label>
-                <input id="auth-timezone" className="form-input" type="text" autoComplete="off" required value={timeZone} onChange={event => setTimeZone(event.target.value)} />
-              </div>
             </>
           )}
 

@@ -5,7 +5,7 @@
 | Mục đích | Xác định cách dùng tài khoản, nơi lưu mặc định và phạm vi cộng tác |
 | Phạm vi | Đăng ký, lựa chọn cách dùng và workspace SNOTE v2 |
 | Kiểm định | DCA-checked theo các quyết định tài khoản và workspace |
-| Bằng chứng duyệt | [SRC-01, SRC-02, SRC-07, SRC-08, SRC-11, SRC-25, SRC-31](../../review/provenance.md) |
+| Bằng chứng duyệt | [SRC-01, SRC-02, SRC-07, SRC-08, SRC-11, SRC-25, SRC-31, SRC-32](../../review/provenance.md) |
 
 | Mã | Quy tắc đã duyệt | Nguồn |
 | --- | --- | --- |
@@ -19,7 +19,8 @@
 | ACC-08 | Chủ workspace cộng tác độc lập chọn một thành viên đang có tư cách làm chủ mới. Người nhận phải chấp nhận; quyền chủ cũ kết thúc khi người mới nhận thành công. Ghi lịch sử chuyển giao. | I2, SRC-25 |
 | ACC-09 | Thành viên workspace độc lập được tự rời sau khi bàn giao việc đang phụ trách. Chủ phải chuyển quyền theo ACC-08 và bàn giao việc trước khi rời. Nội dung, việc và lịch sử ở lại workspace. | I3, SRC-25 |
 | ACC-10 | Chủ workspace độc lập được lưu trữ và khôi phục workspace; khi lưu trữ chỉ đọc theo quyền. Bản đầu không có nút xóa vĩnh viễn workspace độc lập. Workspace cá nhân mặc định theo ACC-07 không được lưu trữ. | I4, SRC-25 |
+| ACC-11 | Web không hỏi múi giờ. Tài khoản mới (email hoặc Google) và lớp mới tạo trên web dùng `Asia/Ho_Chi_Minh`; lịch web hiển thị theo múi giờ Việt Nam. Múi giờ của tài khoản, lớp, workspace và sự kiện đã lưu không bị đổi tự động. Hạn bài chỉ có ngày vẫn dùng múi giờ lớp theo ASG-07. | SRC-32 |
 
 Xem [quyền theo phạm vi](access-control.md), [Hộp thu](library.md) và [điều hướng theo cách dùng](../ux/workspace-and-tasks.md).
 
-**Đăng ký qua Google (INFERRED từ yêu cầu tích hợp Google ngày 2026-11-11 và SRC-27):** Google là một cách xác thực cho cùng tài khoản SNOTE, không là cách dùng `student`/`teacher`/`personal` mới. Lần đầu dùng Google vẫn chọn nhu cầu lớp học và múi giờ theo ACC-01, được tạo workspace cá nhân theo ACC-02. Lần sau nhận lại cùng tài khoản theo `sub` đã xác minh. Email trùng tài khoản mật khẩu không tự liên kết; người dùng tiếp tục đăng nhập bằng phương thức cũ cho tới khi có luồng liên kết đã xác minh. Giới hạn: cơ chế liên kết tài khoản và chính sách thay đổi email Google chưa được quyết định trong yêu cầu này.
+**Đăng ký qua Google (INFERRED từ yêu cầu tích hợp Google ngày 2026-11-11 và SRC-27):** Google là một cách xác thực cho cùng tài khoản SNOTE, không là cách dùng `student`/`teacher`/`personal` mới. Lần đầu dùng Google vẫn chọn nhu cầu lớp học theo ACC-01, dùng múi giờ mặc định theo ACC-11 và được tạo workspace cá nhân theo ACC-02. Lần sau nhận lại cùng tài khoản theo `sub` đã xác minh. Email trùng tài khoản mật khẩu không tự liên kết; người dùng tiếp tục đăng nhập bằng phương thức cũ cho tới khi có luồng liên kết đã xác minh. Giới hạn: cơ chế liên kết tài khoản và chính sách thay đổi email Google chưa được quyết định trong yêu cầu này.

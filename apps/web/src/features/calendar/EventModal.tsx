@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { X, Trash2 } from 'lucide-react';
 import type { CalendarEventViewModel, EventInput, Scope } from './types';
+import { VIETNAM_TIME_ZONE, vietnamDateTimeParts, vietnamLocalToIso } from '../../shared/time-zone';
 
 interface EventModalProps {
   event?: CalendarEventViewModel;
@@ -17,7 +18,7 @@ export const EventModal: React.FC<EventModalProps> = ({
   onClose,
   onSave,
   onCancelEvent,
-  defaultTimeZone = 'Asia/Ho_Chi_Minh',
+  defaultTimeZone = VIETNAM_TIME_ZONE,
   defaultScopeType = 'workspace',
   defaultScopeId = '',
 }) => {
@@ -33,16 +34,17 @@ export const EventModal: React.FC<EventModalProps> = ({
   // Dynamic realistic initial dates without static fixtures
   const initialDates = useMemo(() => {
     const now = new Date();
-    const todayStr = now.toISOString().slice(0, 10);
+    const todayStr = vietnamDateTimeParts(now).date;
     const tomorrow = new Date(now.getTime() + 86400000);
-    const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+    const tomorrowStr = vietnamDateTimeParts(tomorrow).date;
     const start = new Date(now);
     start.setHours(start.getHours() + 1, 0, 0, 0);
     const end = new Date(start);
     end.setHours(end.getHours() + 1);
-    const pad = (n: number) => String(n).padStart(2, '0');
-    const fmtDt = (d: Date) =>
-      `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    const fmtDt = (d: Date) => {
+      const local = vietnamDateTimeParts(d);
+      return `${local.date}T${local.time}`;
+    };
     return {
       todayStr,
       tomorrowStr,
@@ -60,12 +62,12 @@ export const EventModal: React.FC<EventModalProps> = ({
   );
   const [startsAt, setStartsAt] = useState(
     event?.timed?.startsAt
-      ? event.timed.startsAt.slice(0, 16)
+      ? `${vietnamDateTimeParts(event.timed.startsAt).date}T${vietnamDateTimeParts(event.timed.startsAt).time}`
       : initialDates.startsAt,
   );
   const [endsAt, setEndsAt] = useState(
     event?.timed?.endsAt
-      ? event.timed.endsAt.slice(0, 16)
+      ? `${vietnamDateTimeParts(event.timed.endsAt).date}T${vietnamDateTimeParts(event.timed.endsAt).time}`
       : initialDates.endsAt,
   );
   const [audience, setAudience] = useState<string>(
@@ -123,8 +125,8 @@ export const EventModal: React.FC<EventModalProps> = ({
           audience: audienceList.length > 0 ? audienceList : undefined,
         };
       } else {
-        const startIso = new Date(startsAt).toISOString();
-        const endIso = new Date(endsAt).toISOString();
+        const startIso = vietnamLocalToIso(startsAt);
+        const endIso = vietnamLocalToIso(endsAt);
         if (new Date(endIso).getTime() <= new Date(startIso).getTime()) {
           setError('Thời điểm kết thúc phải sau thời điểm bắt đầu');
           setIsSubmitting(false);

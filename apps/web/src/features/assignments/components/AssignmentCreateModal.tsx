@@ -2,10 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, Clock, Users, X, Check, ShieldAlert, Info } from 'lucide-react';
 import type { AssignmentInput, LatePolicySetting, WorkspaceGroup } from '../types';
 import { useReducedMotion } from '../hooks/useReducedMotion';
+import { vietnamLocalToIso } from '../../../shared/time-zone';
 
 export interface AssignmentCreateModalProps {
   isOpen: boolean;
   classId: string;
+  classTimeZone: string;
   availableGroups: WorkspaceGroup[];
   onClose: () => void;
   onSubmit: (input: AssignmentInput) => Promise<void>;
@@ -13,6 +15,7 @@ export interface AssignmentCreateModalProps {
 
 export const AssignmentCreateModal: React.FC<AssignmentCreateModalProps> = ({
   isOpen,
+  classTimeZone,
   availableGroups,
   onClose,
   onSubmit,
@@ -23,7 +26,6 @@ export const AssignmentCreateModal: React.FC<AssignmentCreateModalProps> = ({
   const [deadlineType, setDeadlineType] = useState<'none' | 'datetime' | 'date'>('datetime');
   const [deadlineDateTime, setDeadlineDateTime] = useState('');
   const [deadlineDate, setDeadlineDate] = useState('');
-  const [deadlineZone, setDeadlineZone] = useState('Asia/Ho_Chi_Minh');
   const [lateFirst, setLateFirst] = useState<LatePolicySetting>('inherit');
   const [lateRevision, setLateRevision] = useState<LatePolicySetting>('inherit');
   const [submitting, setSubmitting] = useState(false);
@@ -94,11 +96,11 @@ export const AssignmentCreateModal: React.FC<AssignmentCreateModalProps> = ({
     };
 
     if (deadlineType === 'datetime' && deadlineDateTime) {
-      input.deadline = new Date(deadlineDateTime).toISOString();
+      input.deadline = vietnamLocalToIso(deadlineDateTime);
     } else if (deadlineType === 'date' && deadlineDate) {
       input.deadlineDate = {
         date: deadlineDate,
-        timeZone: deadlineZone,
+        timeZone: classTimeZone,
       };
     }
 
@@ -530,21 +532,6 @@ export const AssignmentCreateModal: React.FC<AssignmentCreateModalProps> = ({
                     backgroundColor: 'var(--surface-raised)',
                   }}
                 />
-                <select
-                  value={deadlineZone}
-                  onChange={e => setDeadlineZone(e.target.value)}
-                  style={{
-                    padding: '8px 10px',
-                    border: '1px solid var(--border-light)',
-                    borderRadius: 'var(--radius-sm)',
-                    fontSize: '12px',
-                    color: 'var(--ink-title)',
-                    backgroundColor: 'var(--surface-raised)',
-                  }}
-                >
-                  <option value="Asia/Ho_Chi_Minh">Asia/Ho_Chi_Minh (GMT+7)</option>
-                  <option value="UTC">UTC (GMT+0)</option>
-                </select>
                 <span style={{ fontSize: '11px', color: 'var(--ink-muted)' }}>
                   Hết hạn lúc 23:59:59 của ngày này
                 </span>

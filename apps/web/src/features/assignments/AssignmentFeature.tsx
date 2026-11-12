@@ -14,6 +14,7 @@ import './assignments.css';
 
 export interface AssignmentFeatureProps {
   classId: string;
+  classTimeZone: string;
   isTeacher?: boolean;
   activeWorkspaceId?: string;
   availableGroups?: WorkspaceGroup[];
@@ -22,6 +23,7 @@ export interface AssignmentFeatureProps {
 
 export const AssignmentFeature: React.FC<AssignmentFeatureProps> = ({
   classId,
+  classTimeZone,
   isTeacher = false,
   activeWorkspaceId,
   availableGroups = [],
@@ -494,6 +496,7 @@ export const AssignmentFeature: React.FC<AssignmentFeatureProps> = ({
       <AssignmentCreateModal
         isOpen={isCreateModalOpen}
         classId={classId}
+        classTimeZone={classTimeZone}
         availableGroups={availableGroups}
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreateAssignment}

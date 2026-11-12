@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { createClass } from '../../shared/api';
 import type { Class } from '../../shared/types';
+import { VIETNAM_TIME_ZONE } from '../../shared/time-zone';
 
 interface CreateClassModalProps {
   isOpen: boolean;
@@ -11,9 +12,6 @@ interface CreateClassModalProps {
 
 export function CreateClassModal({ isOpen, onClose, onCreated }: CreateClassModalProps) {
   const [name, setName] = useState('');
-  const [timeZone, setTimeZone] = useState(
-    Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Ho_Chi_Minh',
-  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,7 +23,7 @@ export function CreateClassModal({ isOpen, onClose, onCreated }: CreateClassModa
     setLoading(true);
     setError(null);
     try {
-      const res = await createClass({ name: name.trim(), timeZone });
+      const res = await createClass({ name: name.trim(), timeZone: VIETNAM_TIME_ZONE });
       onCreated(res.data);
       setName('');
       onClose();
@@ -57,17 +55,6 @@ export function CreateClassModal({ isOpen, onClose, onCreated }: CreateClassModa
               onChange={e => setName(e.target.value)}
               placeholder="Ví dụ: Lớp 10A Toán..."
               autoFocus
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">Múi giờ lớp</label>
-            <input
-              className="form-input"
-              type="text"
-              required
-              value={timeZone}
-              onChange={e => setTimeZone(e.target.value)}
             />
           </div>
 

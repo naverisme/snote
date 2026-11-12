@@ -392,14 +392,6 @@ export function AccountSettingsModal({
               </div>
             </form>
 
-            {/* Timezone Selector */}
-            <div className="form-group" style={{ marginBottom: 20 }}>
-              <label className="form-label">Múi giờ hoạt động</label>
-              <div style={{ padding: '8px 12px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-light)', background: 'var(--surface-ground)', fontSize: '0.85rem' }}>
-                {account.timeZone} (Múi giờ hệ thống của bạn)
-              </div>
-            </div>
-
             {/* Change Password Form */}
             <form onSubmit={handlePasswordUpdate} style={{ paddingTop: 16, borderTop: '1px solid var(--border-light)' }}>
               <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--ink-title)', display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
