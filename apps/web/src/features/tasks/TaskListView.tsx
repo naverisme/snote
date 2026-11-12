@@ -10,6 +10,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import type { ChecklistItemViewModel, Task } from './types';
+import { vietnamDateTimeParts } from '../../shared/time-zone';
 
 interface TaskListViewProps {
   tasks: Task[];
@@ -35,6 +36,13 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isProcessing, setIsProcessing] = useState(false);
   const [bouncingId, setBouncingId] = useState<string | null>(null);
+  const today = vietnamDateTimeParts(new Date()).date;
+  const doneCount = tasks.filter(task => task.status === 'done').length;
+  const dueCount = tasks.filter(task => task.status !== 'done' && task.dueAt && vietnamDateTimeParts(task.dueAt).date === today).length;
+  const overdueCount = tasks.filter(task => task.status !== 'done' && task.dueAt && vietnamDateTimeParts(task.dueAt).date < today).length;
+  const highCount = tasks.filter(task => task.importance === 'high' && task.status !== 'done').length;
+  const checklist = Object.values(checklistItems).flat();
+  const checklistDone = checklist.filter(item => item.done).length;
 
   const toggleSelect = (id: string, e: React.MouseEvent | React.ChangeEvent) => {
     e.stopPropagation();
@@ -177,7 +185,17 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+    <div className="review-screen task-list-screen">
+      <div className="review-hero">
+        <div><h1>Công việc & Tiêu chí kiểm tra</h1><p>Theo dõi danh sách công việc và tiến độ checklist trong phạm vi đang mở.</p></div>
+        {onCreateTaskClick && <button type="button" className="btn btn-primary" onClick={onCreateTaskClick}><Plus size={15} /> Thêm công việc</button>}
+      </div>
+      <div className="review-stats" aria-label="Tổng quan công việc">
+        <div><span>Tổng công việc</span><strong>{tasks.length}</strong><small>{doneCount} đã xong</small></div>
+        <div><span>Hôm nay & quá hạn</span><strong>{dueCount + overdueCount}</strong><small>{overdueCount} quá hạn</small></div>
+        <div><span>Ưu tiên cao</span><strong>{highCount}</strong><small>việc chưa xong</small></div>
+        <div><span>Tiến độ kiểm tra</span><strong>{checklist.length ? `${Math.round(checklistDone / checklist.length * 100)}%` : '—'}</strong><small>{checklistDone}/{checklist.length} mục</small></div>
+      </div>
       {/* Scoped Checkbox Micro-Interaction Pop Keyframes (scale 1.15x -> 1.0x in 120ms) */}
       <style>{`
         @keyframes checkbox-pop {

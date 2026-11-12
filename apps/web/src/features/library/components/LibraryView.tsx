@@ -594,7 +594,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
 
             {/* Cột 2: Danh sách mục (CUXB-01 Ở giữa, CUXB-04 Tìm kiếm, CUXB-09 Upload, Recipe 2 Empty State) */}
             <section
-              className={`w-full md:w-80 xl:w-96 flex-shrink-0 border-r border-[var(--hairline)] bg-[var(--surface-ground)]/40 flex flex-col h-full overflow-hidden ${
+              className={`w-full md:flex-1 min-w-0 border-r border-[var(--hairline)] bg-[var(--surface-ground)]/40 flex flex-col h-full overflow-hidden ${
                 mobileView === 'list' ? 'flex' : 'hidden md:flex'
               }`}
               aria-label="Danh sách tài liệu"
@@ -678,7 +678,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
                     onAction={() => setIsCreateOpen(true)}
                   />
                 ) : (
-                  <div className="space-y-3" role="list">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3" role="list">
                     {filteredItems.map((item) => (
                       <ItemCard
                         key={item.id}
@@ -703,8 +703,8 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
 
             {/* Cột 3: Chi tiết mục đã chọn (CUXB-01 Bên phải, CUXB-07 Markdown, CUXB-08 Sửa tệp) */}
             <section
-              className={`flex-1 h-full overflow-hidden bg-[var(--surface-raised)] ${
-                mobileView === 'detail' ? 'block' : 'hidden md:block'
+              className={`w-full md:w-[340px] md:flex-shrink-0 h-full overflow-hidden bg-[var(--surface-raised)] ${
+                mobileView === 'detail' ? 'block' : selectedItem ? 'hidden md:block' : 'hidden'
               }`}
               aria-label="Chi tiết tài liệu đã chọn"
             >

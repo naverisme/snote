@@ -30,10 +30,12 @@ export function ClassSettingsView({ cls, currentUser, onClassUpdated }: ClassSet
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
+  const [policyLoaded, setPolicyLoaded] = useState(false);
 
   const isOwner = currentUser?.id === cls.ownerId;
 
   const loadPolicy = async () => {
+    setPolicyLoaded(false);
     try {
       const res = await getClassPolicy(cls.id);
       if (res.data) {
@@ -41,9 +43,10 @@ export function ClassSettingsView({ cls, currentUser, onClassUpdated }: ClassSet
         if (res.data.groupLimit) setGroupLimit(res.data.groupLimit);
         if (res.data.lateFirst) setLateFirst(res.data.lateFirst);
         if (res.data.lateRevision) setLateRevision(res.data.lateRevision);
-      }
+        setPolicyLoaded(true);
+      } else setError('Chính sách lớp chưa có dữ liệu. Hãy tải lại trang trước khi chỉnh sửa.');
     } catch {
-      // Giữ default policy cho UI preview
+      setError('Không thể tải chính sách lớp. Hãy tải lại trang trước khi chỉnh sửa.');
     }
   };
 
@@ -52,6 +55,7 @@ export function ClassSettingsView({ cls, currentUser, onClassUpdated }: ClassSet
   }, [cls.id]);
 
   const handleSavePolicy = async (newPolicy: Policy) => {
+    if (!policyLoaded) return;
     setLoading(true);
     setError(null);
     try {
@@ -113,10 +117,11 @@ export function ClassSettingsView({ cls, currentUser, onClassUpdated }: ClassSet
   }
 
   return (
-    <div>
-      <div className="view-header">
+    <div className="review-screen class-settings-screen">
+      <div className="review-hero">
         <div>
-          <h1 className="view-title">Cài đặt lớp học: {cls.name}</h1>
+          <h1>Cài đặt lớp học</h1>
+          <p>{cls.name}</p>
           <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
             <span>Trạng thái:</span>
             {cls.status === 'active' ? (
@@ -146,8 +151,13 @@ export function ClassSettingsView({ cls, currentUser, onClassUpdated }: ClassSet
       {error && <div style={{ color: 'var(--danger)', marginBottom: 12, fontSize: '0.875rem' }}>{error}</div>}
       {info && <div style={{ color: 'var(--success)', marginBottom: 12, fontSize: '0.875rem' }}>{info}</div>}
 
+      <section className="review-panel review-class-profile" aria-label="Thông tin lớp">
+        <h2>Thông tin học phần</h2>
+        <div><label>Tên lớp học <input value={cls.name} readOnly /></label><label>Mã lớp <input value={cls.id} readOnly /></label><label>Múi giờ <input value={cls.timeZone} readOnly /></label></div>
+      </section>
+
       {/* Accordion 4 sections (CUXC-10, E5) */}
-      <div className="section-box">
+      <div className="section-box review-settings-panel">
         {/* Phần 1: Giới hạn nhóm */}
         <div className="accordion-item">
           <button
@@ -175,7 +185,7 @@ export function ClassSettingsView({ cls, currentUser, onClassUpdated }: ClassSet
                 <button
                   className="btn btn-primary btn-sm"
                   onClick={() => handleSavePolicy({ ...policy, groupLimit })}
-                  disabled={loading}
+                  disabled={loading || !policyLoaded}
                 >
                   Cập nhật giới hạn
                 </button>
@@ -267,7 +277,7 @@ export function ClassSettingsView({ cls, currentUser, onClassUpdated }: ClassSet
               <button
                 className="btn btn-primary btn-sm"
                 onClick={() => handleSavePolicy({ ...policy, lateFirst, lateRevision })}
-                disabled={loading}
+                disabled={loading || !policyLoaded}
               >
                 Lưu cài đặt nộp bài
               </button>
@@ -277,7 +287,7 @@ export function ClassSettingsView({ cls, currentUser, onClassUpdated }: ClassSet
       </div>
 
       {/* Bàn giao quyền sở hữu lớp */}
-      <div className="section-box">
+      <div className="section-box review-settings-panel">
         <div className="section-title">Bàn giao quyền chủ lớp (Ownership Transfer)</div>
         <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 12 }}>
           Chuyển giao toàn quyền sở hữu lớp học cho một giáo viên khác là thành viên trong lớp.

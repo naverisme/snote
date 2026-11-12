@@ -211,10 +211,10 @@ export function AuthModal({ isOpen, presentation = 'modal', onClose, onAuthentic
 
   return (
     <Container className={isPage ? 'auth-page' : 'modal-overlay auth-overlay'} onMouseDown={event => { if (!isPage && event.target === event.currentTarget) onClose?.(); }}>
-      <section className={isPage ? 'auth-dialog auth-page-dialog' : 'modal-content auth-dialog'} ref={dialogRef} role={isPage ? undefined : 'dialog'} aria-modal={isPage ? undefined : true} aria-labelledby="auth-title" aria-describedby="auth-description">
+      <section className={isPage ? 'auth-dialog auth-page-dialog' : 'modal-content auth-dialog'} ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="auth-title" aria-describedby="auth-description">
         <header className="auth-header">
           <div className="auth-brand"><span className="auth-brand-mark" aria-hidden="true">S</span><span>SNOTE</span></div>
-          {!isPage && <button type="button" className="auth-close" onClick={onClose} aria-label="Đóng cửa sổ tài khoản"><X size={19} /></button>}
+          {!isPage && <button type="button" className="auth-close" onClick={onClose} aria-label="Đóng"><X size={19} /></button>}
         </header>
 
         <div className="auth-intro">
@@ -295,6 +295,19 @@ export function AuthModal({ isOpen, presentation = 'modal', onClose, onAuthentic
           {view === 'register' && <p>Đã có tài khoản? <button type="button" className="auth-text-button" onClick={() => changeView('login')} disabled={loading}>Đăng nhập</button></p>}
           {(view === 'forgot' || view === 'reset') && <button type="button" className="auth-text-button auth-back" onClick={() => changeView('login')} disabled={loading}><ArrowLeft size={16} /> Quay lại đăng nhập</button>}
           {view === 'reset' && <button type="button" className="auth-text-button" onClick={() => changeView('forgot')} disabled={loading}>Yêu cầu liên kết mới</button>}
+          <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid var(--border-divider, #262832)', textAlign: 'center' }}>
+            <a
+              href="/?tab=1"
+              style={{
+                fontSize: '12px',
+                color: 'var(--text-secondary, #a0a2b0)',
+                textDecoration: 'underline',
+                fontWeight: 500,
+              }}
+            >
+              Xem 14 Tab Giao diện (Mẫu thiết kế chốt) ➔
+            </a>
+          </div>
         </footer>
       </section>
     </Container>

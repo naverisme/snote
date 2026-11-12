@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Award, User, ShieldCheck } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Award, User, ShieldCheck, Search, Users, Clock, Key, Copy } from 'lucide-react';
 import type { Class, Membership, Invitation, JoinRequest, Account } from '../../shared/types';
 import {
   listClassMembers,
@@ -15,15 +15,18 @@ import {
   removeClassMember,
   leaveClass,
   getMyInvitations,
+  listClassGroups,
+  listGroupMembers,
 } from '../../shared/api';
 
 interface ClassMembersViewProps {
   cls: Class;
   currentUser: Account | null;
   onClassUpdated?: (updated: Class) => void;
+  viewRole?: 'teacher' | 'student';
 }
 
-export function ClassMembersView({ cls, currentUser, onClassUpdated }: ClassMembersViewProps) {
+export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }: ClassMembersViewProps) {
   const [members, setMembers] = useState<Membership[]>([]);
   const [myInvitations, setMyInvitations] = useState<Invitation[]>([]);
   const [pendingRequests, setPendingRequests] = useState<JoinRequest[]>([]);
@@ -34,28 +37,46 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated }: ClassMemb
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [roleFilter, setRoleFilter] = useState<'all' | 'monitor' | 'member'>('all');
+  const [groupNameByMemberId, setGroupNameByMemberId] = useState<Record<string, string>>({});
 
-  const isOwner = currentUser?.id === cls.ownerId;
+  const isOwner = viewRole ? viewRole === 'teacher' : currentUser?.id === cls.ownerId;
+  const monitor = members.find(member => member.role === 'monitor');
+  const visibleMembers = useMemo(() => members.filter(member =>
+    (roleFilter === 'all' || member.role === roleFilter) &&
+    (!search || member.memberId.toLocaleLowerCase('vi').includes(search.toLocaleLowerCase('vi'))),
+  ), [members, roleFilter, search]);
 
   const loadData = async () => {
     setLoading(true);
     setError(null);
     try {
-      const [membersRes, myInvsRes] = await Promise.all([
-        listClassMembers(cls.id),
-        getMyInvitations(),
-      ]);
+      const membersRes = await listClassMembers(cls.id);
       setMembers(membersRes.data ?? []);
-      setMyInvitations(myInvsRes.data.filter(i => i.targetType === 'class' && i.targetId === cls.id && i.status === 'pending'));
+      const myInvsRes = await getMyInvitations().catch(() => null);
+      setMyInvitations(myInvsRes?.data.filter(i => i.targetType === 'class' && i.targetId === cls.id && i.status === 'pending') ?? []);
+
+      const groupsResult = await listClassGroups(cls.id).catch(() => null);
+      if (groupsResult) {
+        const groupMembers = await Promise.allSettled(groupsResult.data.map(async group => ({
+          name: group.name,
+          members: (await listGroupMembers(group.id)).data,
+        })));
+        setGroupNameByMemberId(Object.fromEntries(groupMembers.flatMap(result =>
+          result.status === 'fulfilled' ? result.value.members.map(member => [member.memberId, result.value.name] as const) : [],
+        )));
+      } else setGroupNameByMemberId({});
 
       if (isOwner) {
-        const reqsRes = await listClassJoinRequests(cls.id);
-        setPendingRequests(reqsRes.data);
+        const reqsRes = await listClassJoinRequests(cls.id).catch(() => null);
+        setPendingRequests(reqsRes?.data ?? []);
       }
     } catch (cause: any) {
       setMembers([]);
       setMyInvitations([]);
       setPendingRequests([]);
+      setGroupNameByMemberId({});
       setError(cause?.body?.error?.message || cause?.message || 'Không thể tải thành viên lớp.');
     } finally {
       setLoading(false);
@@ -183,11 +204,12 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated }: ClassMemb
   };
 
   return (
-    <div>
-      <div className="view-header">
+    <div className="review-screen class-members-screen">
+      <div className="review-hero">
         <div>
-          <h1 className="view-title">Thành viên lớp: {cls.name}</h1>
-          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Múi giờ: {cls.timeZone}</span>
+          <span className="review-eyebrow">{isOwner ? 'Giáo viên chủ lớp' : 'Thành viên lớp'} · {cls.timeZone}</span>
+          <h1>{isOwner ? 'Điều phối thành viên lớp' : cls.name}</h1>
+          <p>{isOwner ? cls.name : `${members.length} người học · Tra cứu danh bạ thành viên lớp`}</p>
         </div>
 
         <div style={{ display: 'flex', gap: 8 }}>
@@ -206,14 +228,27 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated }: ClassMemb
       {info && <div style={{ color: 'var(--success)', marginBottom: 12, fontSize: '0.875rem' }}>{info}</div>}
       {loading && <p>Đang tải thành viên lớp...</p>}
 
+      {isOwner ? (
+        <div className="review-stats" aria-label="Tổng quan lớp">
+          <div><span><Users size={14} /> Tổng sĩ số học sinh</span><strong>{members.length}</strong></div>
+          <div><span><Award size={14} /> Lớp trưởng</span><strong className="review-stat-name">{monitor?.memberId ?? 'Chưa bổ nhiệm'}</strong></div>
+          <div><span><Clock size={14} /> Yêu cầu chờ duyệt</span><strong>{pendingRequests.length}</strong></div>
+        </div>
+      ) : (
+        <div className="review-leadership">
+          <article className="review-panel"><span className="review-eyebrow"><ShieldCheck size={13} /> Giáo viên chủ lớp</span><h2>{cls.ownerId}</h2></article>
+          <article className="review-panel"><span className="review-eyebrow"><Award size={13} /> Lớp trưởng</span><h2>{monitor?.memberId ?? 'Chưa bổ nhiệm'}</h2></article>
+        </div>
+      )}
+
       {/* Class Join Code & Invitation Bar */}
-      <div className="section-box class-join-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+      <div className="section-box class-join-bar review-join-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         {isOwner ? (
           <>
             <div>
-              <span style={{ fontWeight: 600, marginRight: 8 }}>Mã tham gia lớp:</span>
+              <span style={{ fontWeight: 600, marginRight: 8 }}><Key size={14} /> Mã tham gia lớp:</span>
               {joinCode ? (
-                <code style={{ background: 'var(--surface-ground)', border: '1px solid var(--border-light)', padding: '3px 8px', borderRadius: 4, fontWeight: 700 }}>{joinCode}</code>
+                <button type="button" className="review-code" onClick={() => void navigator.clipboard.writeText(joinCode)} title="Sao chép mã tham gia lớp"><code>{joinCode}</code><Copy size={13} /></button>
               ) : (
                 <span style={{ color: 'var(--text-muted)' }}>Chưa bật</span>
               )}
@@ -319,9 +354,16 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated }: ClassMemb
       )}
 
       {/* Zone 1: Main Class Members Table (CUXC-07, CUXC-11) */}
-      <div className="section-box">
+      <div className="section-box review-members-directory">
         <div className="section-header">
-          <div className="section-title">Danh sách người trong lớp ({members.length + 1})</div>
+          <div className="section-title">{isOwner ? 'Học sinh trong lớp' : 'Danh bạ bạn học trong lớp'} ({visibleMembers.length}/{members.length})</div>
+        </div>
+
+        <div className="review-toolbar">
+          <div className="review-filters" role="group" aria-label="Lọc vai trò">
+            {(['all', 'monitor', 'member'] as const).map(option => <button key={option} type="button" className={roleFilter === option ? 'active' : ''} onClick={() => setRoleFilter(option)}>{{ all: 'Tất cả', monitor: 'Lớp trưởng', member: 'Học sinh' }[option]}</button>)}
+          </div>
+          <label className="review-search"><Search size={15} /><input value={search} onChange={event => setSearch(event.target.value)} placeholder="Tìm theo mã tài khoản" aria-label="Tìm thành viên lớp" /></label>
         </div>
 
         <div className="table-container class-members-container">
@@ -346,7 +388,7 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated }: ClassMemb
               </tr>
 
               {/* Members rows */}
-              {members.map(member => (
+              {visibleMembers.map(member => (
                 <tr key={member.id}>
                   <td className="col-learner" style={{ fontFamily: 'monospace' }}>{member.memberId}</td>
                   <td>
@@ -385,7 +427,7 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated }: ClassMemb
                       </span>
                     )}
                   </td>
-                  <td>Nhóm của lớp</td>
+                  <td>{groupNameByMemberId[member.memberId] ?? 'Chưa có dữ liệu nhóm'}</td>
                   {isOwner && (
                     <td style={{ textAlign: 'right' }}>
                       <button

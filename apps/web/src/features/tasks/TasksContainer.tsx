@@ -17,16 +17,24 @@ import type {
 
 interface TasksContainerProps {
   workspaceId?: string; // If undefined, represents "Việc của tôi" (TASK-01)
+  isPersonalWorkspace?: boolean;
   timeZone?: string;
   onUnauthorized?: () => void;
+  initialViewMode?: TaskViewMode;
 }
 
 export const TasksContainer: React.FC<TasksContainerProps> = ({
   workspaceId,
+  isPersonalWorkspace = false,
   timeZone = 'Asia/Ho_Chi_Minh',
   onUnauthorized,
+  initialViewMode,
 }) => {
-  const [viewMode, setViewMode] = useState<TaskViewMode>('gantt');
+  const [viewMode, setViewMode] = useState<TaskViewMode>(initialViewMode ?? 'gantt');
+
+  useEffect(() => {
+    if (initialViewMode) setViewMode(initialViewMode);
+  }, [initialViewMode]);
   const [isTransitioningView, setIsTransitioningView] = useState(false);
   const [activeFilter, setActiveFilter] = useState<TaskFilter>('all');
   const [sortMode, setSortMode] = useState<TaskSortMode>('next_tasks');
@@ -538,6 +546,8 @@ export const TasksContainer: React.FC<TasksContainerProps> = ({
             <TaskGanttView
               tasks={filteredTasks}
               workSessions={workSessions}
+              checklistMap={checklistMap}
+              isPersonalWorkspace={isPersonalWorkspace}
               onSelectTask={t => setSelectedTaskId(t.id)}
               selectedTaskId={selectedTaskId}
               onCreateTaskClick={() => {

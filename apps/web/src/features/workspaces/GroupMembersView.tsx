@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Crown, UserMinus, UserPlus } from 'lucide-react';
+import { Crown, UserMinus, UserPlus, Users, Search, Clock } from 'lucide-react';
 import type { Account, JoinRequest, Membership, Workspace } from '../../shared/types';
 import {
   approveGroupJoinRequest, changeGroupLeader, createGroupInvitation,
@@ -13,6 +13,7 @@ interface Props {
   currentUser?: Account | null;
   classOwnerId?: string;
   onMembershipChanged?: () => void;
+  viewRole?: 'leader' | 'member';
 }
 
 function errorText(error: unknown): string {
@@ -20,7 +21,7 @@ function errorText(error: unknown): string {
   return response?.body?.error?.message || response?.message || 'Thao tác không thành công. Vui lòng thử lại.';
 }
 
-export function GroupMembersView({ workspace, currentUser, classOwnerId, onMembershipChanged }: Props) {
+export function GroupMembersView({ workspace, currentUser, classOwnerId, onMembershipChanged, viewRole }: Props) {
   const [members, setMembers] = useState<Membership[]>([]);
   const [requests, setRequests] = useState<JoinRequest[]>([]);
   const [inviteeId, setInviteeId] = useState('');
@@ -28,11 +29,17 @@ export function GroupMembersView({ workspace, currentUser, classOwnerId, onMembe
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [activeTab, setActiveTab] = useState<'members' | 'requests'>('members');
   const isClassGroup = workspace.kind === 'class_group';
   const me = members.find(member => member.memberId === currentUser?.id);
-  const canManage = Boolean(currentUser?.id && (
-    workspace.ownerId === currentUser.id || classOwnerId === currentUser.id || me?.role === 'leader'
+  const canManage = Boolean(viewRole ? viewRole === 'leader' : (
+    currentUser?.id && (
+      workspace.ownerId === currentUser.id || classOwnerId === currentUser.id || me?.role === 'leader'
+    )
   ));
+  const leader = members.find(member => member.role === 'leader');
+  const visibleMembers = members.filter(member => !search || member.memberId.toLocaleLowerCase('vi').includes(search.toLocaleLowerCase('vi')));
 
   const load = async () => {
     setLoading(true);
@@ -74,11 +81,12 @@ export function GroupMembersView({ workspace, currentUser, classOwnerId, onMembe
     </div>;
   }
 
-  return <div className="section-box" style={{ display: 'grid', gap: 20 }}>
-    <div className="view-header">
+  return <div className="review-screen group-members-screen">
+    <div className="review-hero">
       <div>
-        <h1 className="view-title">Thành viên: {workspace.name}</h1>
-        <p style={{ color: 'var(--text-secondary)', margin: '6px 0 0' }}>
+        <span className="review-eyebrow">{canManage ? 'Điều phối workspace nhóm' : 'Thành viên chính thức'}</span>
+        <h1>{canManage ? `Quản trị Thành viên: ${workspace.name}` : workspace.name}</h1>
+        <p>
           {loading ? 'Đang tải thành viên...' : `${members.length} thành viên đang hoạt động`}
         </p>
       </div>
@@ -88,22 +96,39 @@ export function GroupMembersView({ workspace, currentUser, classOwnerId, onMembe
     {error && <div role="alert" style={{ color: 'var(--danger)' }}>{error}</div>}
     {info && <div role="status" style={{ color: 'var(--success)' }}>{info}</div>}
 
-    {canManage && <form onSubmit={event => {
+    {canManage ? <div className="review-stats" aria-label="Tổng quan thành viên nhóm">
+      <div><span><Users size={14} /> Sĩ số nhóm</span><strong>{members.length}</strong></div>
+      <div><span><Crown size={14} /> Trưởng nhóm</span><strong className="review-stat-name">{leader?.memberId ?? 'Chưa có'}</strong></div>
+      <div><span><Clock size={14} /> Yêu cầu chờ xử lý</span><strong>{requests.length}</strong></div>
+    </div> : <div className="review-leadership">
+      <article className="review-panel"><span className="review-eyebrow"><Crown size={13} /> Trưởng nhóm phụ trách</span><h2>{leader?.memberId ?? 'Chưa có'}</h2></article>
+      <article className="review-panel"><span className="review-eyebrow"><Users size={13} /> Tư cách của bạn</span><h2>{me ? 'Thành viên nhóm' : 'Chưa tham gia'}</h2></article>
+    </div>}
+
+    {canManage && <form className="review-panel review-invite-form" onSubmit={event => {
       event.preventDefault();
       const recipient = inviteeId.trim();
       if (!recipient) return;
       void run(() => isClassGroup
         ? createGroupInvitation(workspace.id, recipient)
         : createWorkspaceInvitation(workspace.id, recipient), 'Đã gửi lời mời.').then(ok => { if (ok) setInviteeId(''); });
-    }} style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+    }}>
       <label className="form-label" htmlFor="member-invite-id" style={{ width: '100%' }}>Mã tài khoản người được mời</label>
       <input id="member-invite-id" className="form-input" value={inviteeId} onChange={event => setInviteeId(event.target.value)}
         placeholder="UUID tài khoản" required style={{ maxWidth: 320 }} />
       <button type="submit" className="btn btn-primary" disabled={busy}><UserPlus size={15} /> Gửi lời mời</button>
     </form>}
 
-    {canManage && isClassGroup && requests.length > 0 && <div>
+    <div className="review-toolbar review-member-tabs">
+      <div className="review-filters" role="tablist" aria-label="Mục thành viên nhóm">
+        <button type="button" role="tab" aria-selected={activeTab === 'members'} className={activeTab === 'members' ? 'active' : ''} onClick={() => setActiveTab('members')}>Thành viên chính thức ({members.length})</button>
+        {canManage && isClassGroup && <button type="button" role="tab" aria-selected={activeTab === 'requests'} className={activeTab === 'requests' ? 'active' : ''} onClick={() => setActiveTab('requests')}>Đơn xin vào ({requests.length})</button>}
+      </div>
+    </div>
+
+    {canManage && isClassGroup && activeTab === 'requests' && <div className="review-panel">
       <h2 className="section-title">Yêu cầu vào nhóm ({requests.length})</h2>
+      {requests.length === 0 && <p>Không có yêu cầu đang chờ.</p>}
       {requests.map(request => <div key={request.id} style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 8 }}>
         <span style={{ flex: 1, overflowWrap: 'anywhere' }}>{request.initiatorId}</span>
         <button type="button" className="btn btn-primary btn-sm" disabled={busy}
@@ -113,10 +138,12 @@ export function GroupMembersView({ workspace, currentUser, classOwnerId, onMembe
       </div>)}
     </div>}
 
-    <div className="table-container">
+    {activeTab === 'members' && <div className="review-panel review-members-directory">
+      <div className="review-panel-line"><h2>Danh sách thành viên</h2><label className="review-search"><Search size={15} /><input value={search} onChange={event => setSearch(event.target.value)} placeholder="Tìm theo mã tài khoản" aria-label="Tìm thành viên nhóm" /></label></div>
+      <div className="table-container">
       <table className="data-table">
         <thead><tr><th>Thành viên</th><th>Vai trò</th>{canManage && <th>Thao tác</th>}</tr></thead>
-        <tbody>{members.map(member => <tr key={member.id}>
+        <tbody>{visibleMembers.map(member => <tr key={member.id}>
           <td style={{ overflowWrap: 'anywhere' }}>{member.memberId}{member.memberId === currentUser?.id ? ' (Bạn)' : ''}</td>
           <td>{member.role === 'leader' ? <><Crown size={14} /> Trưởng nhóm</> : 'Thành viên'}</td>
           {canManage && <td>
@@ -136,7 +163,8 @@ export function GroupMembersView({ workspace, currentUser, classOwnerId, onMembe
         </tr>)}</tbody>
       </table>
       {!loading && members.length === 0 && !error && <p style={{ padding: 16 }}>Chưa có thành viên.</p>}
-    </div>
+      </div>
+    </div>}
 
     {me && !canManage && <button type="button" className="btn btn-secondary" disabled={busy}
       onClick={() => { if (confirm('Rời workspace này?')) void run(() => leaveGroup(workspace.id, undefined, me.version), 'Đã rời workspace.', false); }}>

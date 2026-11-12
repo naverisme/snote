@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import '../shared/theme.css';
 import '../shared/feature-sync.css';
+import '../shared/review-tab-ui.css';
 import {
   Zap,
   CheckSquare,
@@ -15,6 +16,7 @@ import {
   Sun,
   Moon,
   Bell,
+  FileText,
 } from 'lucide-react';
 import type { Account, Class, Workspace } from '../shared/types';
 import { getMe, listClasses, listWorkspaces } from '../shared/api';
@@ -30,6 +32,50 @@ import { CalendarContainer } from '../features/calendar';
 import { LibraryView } from '../features/library';
 import { AssignmentFeature } from '../features/assignments';
 import { GroupMembersView } from '../features/workspaces/GroupMembersView';
+import { WorkspaceNotesView } from '../features/notes/WorkspaceNotesView';
+import { PreviewHarness } from '../previews/PreviewHarness';
+import { Tab01ClassMembersAdmin } from '../previews/Tab01ClassMembersAdmin';
+import { Tab02ClassMembersStudent } from '../previews/Tab02ClassMembersStudent';
+import { Tab03ClassGroupsAdmin } from '../previews/Tab03ClassGroupsAdmin';
+import { Tab04ClassGroupsStudent } from '../previews/Tab04ClassGroupsStudent';
+import { Tab05ClassSettingsAdmin } from '../previews/Tab05ClassSettingsAdmin';
+import { Tab06GroupMembersOwner } from '../previews/Tab06GroupMembersOwner';
+import { Tab07GroupMembersStudent } from '../previews/Tab07GroupMembersStudent';
+import { Tab08TasksGantt } from '../previews/Tab08TasksGantt';
+import { Tab09TasksList } from '../previews/Tab09TasksList';
+import { Tab10CalendarGrid } from '../previews/Tab10CalendarGrid';
+import { Tab11LibraryExplorer } from '../previews/Tab11LibraryExplorer';
+import { Tab12AssignmentsTeacher } from '../previews/Tab12AssignmentsTeacher';
+import { Tab13AssignmentsStudent } from '../previews/Tab13AssignmentsStudent';
+import { Tab14WorkspaceNotes } from '../previews/Tab14WorkspaceNotes';
+
+interface Tab14Item {
+  id: number;
+  label: string;
+  badge: string;
+  contextType: 'class' | 'workspace';
+  targetTab: string;
+  roleOverride?: 'teacher' | 'student' | 'leader' | 'member';
+  taskMode?: 'gantt' | 'list';
+  needsGroup?: boolean;
+}
+
+const TABS_14_LIST: Tab14Item[] = [
+  { id: 1, label: 'Thành viên lớp', badge: 'Giáo viên', contextType: 'class', targetTab: 'members', roleOverride: 'teacher' },
+  { id: 2, label: 'Thành viên lớp', badge: 'Học sinh', contextType: 'class', targetTab: 'members', roleOverride: 'student' },
+  { id: 3, label: 'Nhóm trong lớp', badge: 'Giáo viên', contextType: 'class', targetTab: 'groups', roleOverride: 'teacher' },
+  { id: 4, label: 'Nhóm trong lớp', badge: 'Học sinh', contextType: 'class', targetTab: 'groups', roleOverride: 'student' },
+  { id: 5, label: 'Cài đặt lớp', badge: 'Giáo viên', contextType: 'class', targetTab: 'settings', roleOverride: 'teacher' },
+  { id: 6, label: 'Thành viên nhóm', badge: 'Trưởng nhóm', contextType: 'workspace', targetTab: 'members', roleOverride: 'leader', needsGroup: true },
+  { id: 7, label: 'Thành viên nhóm', badge: 'Thành viên', contextType: 'workspace', targetTab: 'members', roleOverride: 'member', needsGroup: true },
+  { id: 8, label: 'Tiến độ Gantt', badge: 'Timeline', contextType: 'workspace', targetTab: 'tasks', taskMode: 'gantt' },
+  { id: 9, label: 'Công việc List', badge: 'Checklist', contextType: 'workspace', targetTab: 'tasks', taskMode: 'list' },
+  { id: 10, label: 'Lịch biểu', badge: 'Lưới tháng', contextType: 'workspace', targetTab: 'calendar' },
+  { id: 11, label: 'Thư viện tệp', badge: 'Quản lý file', contextType: 'workspace', targetTab: 'library' },
+  { id: 12, label: 'Quản lý bài giao', badge: 'Giáo viên', contextType: 'class', targetTab: 'assignments', roleOverride: 'teacher' },
+  { id: 13, label: 'Bài tập của tôi', badge: 'Học sinh', contextType: 'class', targetTab: 'assignments', roleOverride: 'student' },
+  { id: 14, label: 'Mục lưu ý', badge: 'Ghi chú', contextType: 'workspace', targetTab: 'notes' },
+];
 
 type AppContext =
   | { type: 'workspace'; workspaceId: string }
@@ -47,6 +93,29 @@ export function App() {
   const [contextError, setContextError] = useState(false);
   const [classTab, setClassTab] = useState<ClassTab>('members');
   const [workspaceTab, setWorkspaceTab] = useState<WorkspaceTab>('tasks');
+
+  // 14-Tab integration states
+  const [activeTab14, setActiveTab14] = useState<number | null>(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search).get('tab');
+      if (p) {
+        const n = parseInt(p, 10);
+        if (n >= 1 && n <= 14) return n;
+      }
+    }
+    return null;
+  });
+
+  const [viewMode14, setViewMode14] = useState<'live' | 'preview'>(() => {
+    if (typeof window !== 'undefined') {
+      const m = new URLSearchParams(window.location.search).get('mode');
+      if (m === 'preview') return 'preview';
+    }
+    return 'live';
+  });
+
+  const [roleOverride, setRoleOverride] = useState<'teacher' | 'student' | 'leader' | 'member' | null>(null);
+  const [taskViewOverride, setTaskViewOverride] = useState<'gantt' | 'list' | null>(null);
 
   // Shell states
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -219,6 +288,100 @@ export function App() {
   const currentSpaceFullName = context.type === 'workspace'
     ? (activeWorkspace?.name ?? 'Workspace')
     : (`Lớp: ${activeClass?.name ?? ''}`);
+
+  const handleSelectTab14 = (tabId: number) => {
+    setActiveTab14(tabId);
+    const item = TABS_14_LIST.find(t => t.id === tabId);
+    if (!item) return;
+
+    if (typeof window !== 'undefined' && window.history) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('tab', tabId.toString());
+      if (viewMode14 === 'preview') {
+        url.searchParams.set('mode', 'preview');
+      } else {
+        url.searchParams.delete('mode');
+      }
+      window.history.replaceState({}, '', url.toString());
+    }
+
+    if (item.contextType === 'class') {
+      if (classes.length > 0 && (context.type !== 'class' || !activeClass)) {
+        setContext({ type: 'class', classId: classes[0].id });
+      }
+      setClassTab(item.targetTab as ClassTab);
+      setRoleOverride(item.roleOverride ?? null);
+    } else {
+      if (item.needsGroup) {
+        const gw = workspaces.find(w => w.kind !== 'default') || workspaces[0];
+        if (gw && (context.type !== 'workspace' || activeWorkspace?.id !== gw.id)) {
+          setContext({ type: 'workspace', workspaceId: gw.id });
+        }
+      } else {
+        if (workspaces.length > 0 && (context.type !== 'workspace' || !activeWorkspace)) {
+          setContext({ type: 'workspace', workspaceId: workspaces[0].id });
+        }
+      }
+      setWorkspaceTab(item.targetTab as WorkspaceTab);
+      setRoleOverride(item.roleOverride ?? null);
+      if (item.taskMode) {
+        setTaskViewOverride(item.taskMode);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab14 && (classes.length > 0 || workspaces.length > 0)) {
+      const item = TABS_14_LIST.find(t => t.id === activeTab14);
+      if (!item) return;
+      if (item.contextType === 'class' && classes.length > 0) {
+        if (context.type !== 'class') {
+          setContext({ type: 'class', classId: classes[0].id });
+        }
+        setClassTab(item.targetTab as ClassTab);
+        setRoleOverride(item.roleOverride ?? null);
+      } else if (item.contextType === 'workspace' && workspaces.length > 0) {
+        if (item.needsGroup) {
+          const gw = workspaces.find(w => w.kind !== 'default') || workspaces[0];
+          if (gw) setContext({ type: 'workspace', workspaceId: gw.id });
+        } else if (context.type !== 'workspace') {
+          setContext({ type: 'workspace', workspaceId: workspaces[0].id });
+        }
+        setWorkspaceTab(item.targetTab as WorkspaceTab);
+        setRoleOverride(item.roleOverride ?? null);
+        if (item.taskMode) setTaskViewOverride(item.taskMode);
+      }
+    }
+  }, [classes.length, workspaces.length, activeTab14]);
+
+  const renderPreview14Component = (tabId: number) => {
+    switch (tabId) {
+      case 1: return <Tab01ClassMembersAdmin />;
+      case 2: return <Tab02ClassMembersStudent />;
+      case 3: return <Tab03ClassGroupsAdmin />;
+      case 4: return <Tab04ClassGroupsStudent />;
+      case 5: return <Tab05ClassSettingsAdmin />;
+      case 6: return <Tab06GroupMembersOwner />;
+      case 7: return <Tab07GroupMembersStudent />;
+      case 8: return <Tab08TasksGantt />;
+      case 9: return <Tab09TasksList />;
+      case 10: return <Tab10CalendarGrid />;
+      case 11: return <Tab11LibraryExplorer />;
+      case 12: return <Tab12AssignmentsTeacher />;
+      case 13: return <Tab13AssignmentsStudent />;
+      case 14: return <Tab14WorkspaceNotes />;
+      default: return <Tab01ClassMembersAdmin />;
+    }
+  };
+
+  const isHarnessMode = typeof window !== 'undefined' && (
+    new URLSearchParams(window.location.search).get('preview') === 'harness' ||
+    new URLSearchParams(window.location.search).get('mode') === 'preview_harness'
+  );
+
+  if (isHarnessMode) {
+    return <PreviewHarness />;
+  }
 
   if (checkingSession) {
     return <main className="auth-page"><div className="auth-page-status" role="status">Đang mở không gian SNOTE…</div></main>;
@@ -444,6 +607,15 @@ export function App() {
                 <BookOpen size={18} className="nav-block-icon" />
                 <span>Thư viện</span>
               </button>
+              <button
+                type="button"
+                className={`nav-block-item ${workspaceTab === 'notes' ? 'active' : ''}`}
+                onClick={() => setWorkspaceTab('notes')}
+                title="Ghi chú"
+              >
+                <FileText size={18} className="nav-block-icon" />
+                <span>Ghi chú</span>
+              </button>
             </>
           )}
 
@@ -485,6 +657,15 @@ export function App() {
               >
                 <BookOpen size={18} className="nav-block-icon" />
                 <span>Thư viện</span>
+              </button>
+              <button
+                type="button"
+                className={`nav-block-item ${workspaceTab === 'notes' ? 'active' : ''}`}
+                onClick={() => setWorkspaceTab('notes')}
+                title="Ghi chú"
+              >
+                <FileText size={18} className="nav-block-icon" />
+                <span>Ghi chú</span>
               </button>
             </>
           )}
@@ -616,6 +797,16 @@ export function App() {
 
         {/* 3.1 Footer Sidebar: Chiều cao 56px, chỉ có theme-toggle-btn và sb-avt-circle */}
         <div className="sb-footer">
+          <a
+            href="/?tab=1"
+            className="theme-toggle-btn"
+            title="Xem 14 Tab Giao diện (Mẫu ảnh chụp)"
+            aria-label="Xem 14 Tab Giao diện"
+            style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700, color: 'inherit' }}
+          >
+            14T
+          </a>
+
           <button
             type="button"
             className="theme-toggle-btn"
@@ -672,7 +863,170 @@ export function App() {
 
         {/* Nội dung bên trong Main Viewport: Cuộn dọc trực tiếp (overflow-y: auto) */}
         <div className="main-content-canvas">
-          {context.type === 'class' && activeClass ? (
+          {/* ===================================================================
+              14 TAB QUICK SELECTOR & ROLE / LIVE SWITCHER
+              =================================================================== */}
+          <div
+            className="tab14-top-bar"
+            style={{
+              background: 'var(--surface-card)',
+              border: '1px solid var(--border-divider)',
+              borderRadius: '8px',
+              padding: '10px 14px',
+              marginBottom: '16px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '10px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+                  14 Tab Tính Năng:
+                </span>
+                {activeTab14 && (
+                  <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>
+                    #{activeTab14 < 10 ? `0${activeTab14}` : activeTab14} · {TABS_14_LIST.find(t => t.id === activeTab14)?.label} ({TABS_14_LIST.find(t => t.id === activeTab14)?.badge})
+                  </span>
+                )}
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {/* Mode Toggle: Live API vs Preview Mock */}
+                <div style={{ display: 'inline-flex', padding: '2px', background: 'var(--surface-hover)', borderRadius: '6px', border: '1px solid var(--border-divider)' }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setViewMode14('live');
+                      if (typeof window !== 'undefined' && window.history) {
+                        const url = new URL(window.location.href);
+                        url.searchParams.delete('mode');
+                        window.history.replaceState({}, '', url.toString());
+                      }
+                    }}
+                    style={{
+                      padding: '4px 10px',
+                      borderRadius: '4px',
+                      border: 0,
+                      cursor: 'pointer',
+                      fontSize: '11px',
+                      fontWeight: 600,
+                      background: viewMode14 === 'live' ? 'var(--text-primary)' : 'transparent',
+                      color: viewMode14 === 'live' ? 'var(--bg-app)' : 'var(--text-secondary)',
+                      transition: 'all 120ms ease',
+                    }}
+                  >
+                    ● Dữ liệu thật (Live API)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setViewMode14('preview');
+                      if (typeof window !== 'undefined' && window.history) {
+                        const url = new URL(window.location.href);
+                        url.searchParams.set('mode', 'preview');
+                        window.history.replaceState({}, '', url.toString());
+                      }
+                    }}
+                    style={{
+                      padding: '4px 10px',
+                      borderRadius: '4px',
+                      border: 0,
+                      cursor: 'pointer',
+                      fontSize: '11px',
+                      fontWeight: 600,
+                      background: viewMode14 === 'preview' ? 'var(--text-primary)' : 'transparent',
+                      color: viewMode14 === 'preview' ? 'var(--bg-app)' : 'var(--text-secondary)',
+                      transition: 'all 120ms ease',
+                    }}
+                  >
+                    ◈ Mẫu thiết kế (Preview Mock)
+                  </button>
+                </div>
+
+                <a
+                  href={`/?preview=harness${activeTab14 ? `&tab=${activeTab14}` : ''}`}
+                  style={{
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    color: 'var(--text-secondary)',
+                    textDecoration: 'none',
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    border: '1px solid var(--border-divider)',
+                    background: 'var(--surface-hover)',
+                    whiteSpace: 'nowrap',
+                  }}
+                  title="Mở bảng Preview Harness chuyên dụng"
+                >
+                  Harness ↗
+                </a>
+              </div>
+            </div>
+
+            {/* 14 Tabs horizontal scrollable list */}
+            <div
+              style={{
+                display: 'flex',
+                gap: '6px',
+                overflowX: 'auto',
+                paddingBottom: '2px',
+              }}
+            >
+              {TABS_14_LIST.map(tab => {
+                const isActive = activeTab14 === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => handleSelectTab14(tab.id)}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      padding: '4px 8px',
+                      borderRadius: '5px',
+                      border: '1px solid',
+                      borderColor: isActive ? 'var(--text-primary)' : 'var(--border-divider)',
+                      background: isActive ? 'var(--surface-hover)' : 'transparent',
+                      color: 'var(--text-primary)',
+                      fontSize: '11px',
+                      fontWeight: isActive ? 600 : 400,
+                      whiteSpace: 'nowrap',
+                      cursor: 'pointer',
+                      transition: 'all 100ms ease',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '10px', color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)' }}>
+                      #{tab.id < 10 ? `0${tab.id}` : tab.id}
+                    </span>
+                    <span>{tab.label}</span>
+                    <span
+                      style={{
+                        fontSize: '9px',
+                        padding: '1px 4px',
+                        borderRadius: '3px',
+                        background: isActive ? 'var(--surface-card)' : 'var(--surface-hover)',
+                        border: '1px solid var(--border-divider)',
+                        color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {tab.badge}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {viewMode14 === 'preview' && activeTab14 ? (
+            /* Nội dung Preview Mẫu thiết kế */
+            <div className="section-box feature-page" style={{ padding: '20px 24px' }}>
+              {renderPreview14Component(activeTab14)}
+            </div>
+          ) : context.type === 'class' && activeClass ? (
             /* Nội dung Context Lớp học */
             <div className="section-box feature-page" data-feature={classTab}>
               {classTab === 'members' && (
@@ -680,6 +1034,7 @@ export function App() {
                   key={activeClass.id}
                   cls={activeClass}
                   currentUser={user}
+                  viewRole={roleOverride === 'teacher' || roleOverride === 'student' ? roleOverride : undefined}
                   onClassUpdated={updated => {
                     setClasses(classes.map(c => (c.id === updated.id ? updated : c)));
                   }}
@@ -690,7 +1045,9 @@ export function App() {
                   key={activeClass.id}
                   cls={activeClass}
                   currentUser={user}
+                  viewRole={roleOverride === 'teacher' || roleOverride === 'student' ? roleOverride : undefined}
                   accessibleGroupIds={workspaces.filter(ws => ws.classId === activeClass.id).map(ws => ws.id)}
+                  onMembershipChanged={() => void loadContextData()}
                   onOpenGroupWorkspace={groupWs => {
                     setWorkspaces(current => current.some(ws => ws.id === groupWs.id) ? current : [...current, groupWs]);
                     handleSelectWorkspace(groupWs);
@@ -712,7 +1069,7 @@ export function App() {
                   key={activeClass.id}
                   classId={activeClass.id}
                   classTimeZone={activeClass.timeZone}
-                  isTeacher={isClassOwner}
+                  isTeacher={roleOverride === 'teacher' ? true : roleOverride === 'student' ? false : isClassOwner}
                   activeWorkspaceId={classGroupWs?.id}
                 />
               )}
@@ -736,6 +1093,8 @@ export function App() {
                 <TasksContainer
                   key={activeWorkspace.id}
                   workspaceId={activeWorkspace.id}
+                  isPersonalWorkspace={activeWorkspace.kind === 'default'}
+                  initialViewMode={taskViewOverride ?? undefined}
                   onUnauthorized={handleUnauthorized}
                 />
               )}
@@ -755,16 +1114,12 @@ export function App() {
                   workspace={activeWorkspace}
                   currentUser={user}
                   classOwnerId={classes.find(cls => cls.id === activeWorkspace.classId)?.ownerId}
+                  viewRole={roleOverride === 'leader' || roleOverride === 'member' ? roleOverride : undefined}
                   onMembershipChanged={() => void loadContextData()}
                 />
               )}
               {workspaceTab === 'notes' && (
-                <div className="card-box">
-                  <h2 className="notes-title">Mục lưu ý</h2>
-                  <p style={{ marginTop: '8px', color: 'var(--text-secondary)' }}>
-                    Ghi chú nhanh và mục quan sát dành riêng cho không gian làm việc này.
-                  </p>
-                </div>
+                <WorkspaceNotesView key={activeWorkspace.id} workspaceId={activeWorkspace.id} actorId={user?.id} />
               )}
             </div>
           ) : (

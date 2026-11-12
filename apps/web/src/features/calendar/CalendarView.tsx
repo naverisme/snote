@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import type { CalendarEventViewModel, CalendarViewMode } from './types';
 import { vietnamDateTimeParts } from '../../shared/time-zone';
+import { MonthCalendar } from './MonthCalendar';
 
 interface CalendarViewProps {
   events: CalendarEventViewModel[];
@@ -36,6 +37,13 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     isMobileInitial() ? 'day' : 'week',
   );
   const [offsetDays, setOffsetDays] = useState(0);
+  const [monthOffset, setMonthOffset] = useState(0);
+  const currentMonth = useMemo(() => {
+    const parts = vietnamDateTimeParts(now);
+    const month = new Date(`${parts.date.slice(0, 7)}-01T12:00:00Z`);
+    month.setUTCMonth(month.getUTCMonth() + monthOffset);
+    return month;
+  }, [now, monthOffset]);
 
   // Sync with responsive viewport changes
   useEffect(() => {
@@ -65,6 +73,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   }, [now, offsetDays, viewMode]);
 
   const headerLabel = useMemo(() => {
+    if (viewMode === 'month') return currentMonth.toLocaleDateString('vi-VN', { month: 'long', year: 'numeric', timeZone: 'UTC' });
     if (visibleDays.length === 1) {
       return visibleDays[0].toLocaleDateString('vi-VN', {
         timeZone: 'UTC',
@@ -77,7 +86,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     const first = visibleDays[0];
     const last = visibleDays[visibleDays.length - 1];
     return `${first.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', timeZone: 'UTC' })} - ${last.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' })}`;
-  }, [visibleDays]);
+  }, [visibleDays, viewMode, currentMonth]);
 
   const hasConflict = useMemo(() => {
     return events.some(e => e.conflictWarning && e.status === 'active');
@@ -96,6 +105,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     >
       {/* Top Header & Controls */}
       <div
+        className="review-calendar-toolbar"
         style={{
           display: 'flex',
           flexWrap: 'wrap',
@@ -107,7 +117,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <button
             type="button"
-            onClick={() =>
+            onClick={() => viewMode === 'month' ? setMonthOffset(prev => prev - 1) :
               setOffsetDays(
                 prev => prev - (viewMode === 'day' ? 1 : viewMode === 'week' ? 7 : 30),
               )
@@ -130,7 +140,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           </button>
           <button
             type="button"
-            onClick={() => setOffsetDays(0)}
+            onClick={() => { setOffsetDays(0); setMonthOffset(0); }}
             style={{
               padding: '5px 12px',
               fontSize: '12px',
@@ -146,7 +156,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           </button>
           <button
             type="button"
-            onClick={() =>
+            onClick={() => viewMode === 'month' ? setMonthOffset(prev => prev + 1) :
               setOffsetDays(
                 prev => prev + (viewMode === 'day' ? 1 : viewMode === 'week' ? 7 : 30),
               )
@@ -277,7 +287,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       )}
 
       {/* When no events exist */}
-      {events.length === 0 ? (
+      {viewMode === 'month' ? (
+        <MonthCalendar month={currentMonth} events={events} onSelectEvent={onSelectEvent} today={vietnamDateTimeParts(now).date} />
+      ) : events.length === 0 ? (
         <div
           style={{
             border: '1px solid var(--border-light)',
