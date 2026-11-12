@@ -50,7 +50,8 @@ export function GoogleSignInButton({ clientId, mode, onCredential, onError }: {
       } });
       container.current.replaceChildren();
       accounts.renderButton(container.current, {
-        theme: 'outline', size: 'large', text: mode === 'register' ? 'signup_with' : 'signin_with', width: 280,
+        theme: 'outline', size: 'large', text: mode === 'register' ? 'signup_with' : 'signin_with',
+        width: Math.max(200, Math.min(360, Math.floor(container.current.clientWidth))),
       });
     }).catch(() => {
       if (active) { setFailed(true); errorCallback.current('Không tải được Google Sign-In.'); }

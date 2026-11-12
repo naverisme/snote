@@ -1,5 +1,7 @@
 # Chạy SNOTE v2 bằng Docker Compose
 
+Nếu cần lấy Google Client ID, tạo mật khẩu DB và điền từng giá trị trong tệp môi trường, xem [hướng dẫn cấu hình localhost](../docs/operations/localhost-configuration-guide.md).
+
 ## Thử trên localhost
 
 1. Sao chép `deploy/.env.example` thành `deploy/.env.local`. Thay cùng một mật khẩu ngẫu nhiên ở `POSTGRES_PASSWORD` và phần mật khẩu của `DATABASE_URL`. Không commit tệp này.

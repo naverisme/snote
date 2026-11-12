@@ -23,6 +23,8 @@
 
 Bản Compose và các bước chạy localhost/domain nằm ở [hướng dẫn Docker](../../deploy/README.md). Chỉ chạy `compose.local.yaml` cùng Mailpit cho dữ liệu thử; domain thật cần SMTP, DNS, TLS và kiểm backup/restore riêng.
 
+Hướng dẫn lấy Client ID Google, tạo tệp môi trường và tự kiểm localhost nằm ở [cấu hình localhost](localhost-configuration-guide.md).
+
 **Giám sát:** độ trễ/lỗi endpoint, lượng tệp staging, biên nhận pending quá lâu, quota logic và bytes vật lý, thất bại preview, lỗi đối soát, thất bại backup/restore, hàng nhắc lịch; cảnh báo trước khi chạm ngân sách vật lý. Log chứa requestId, actor/scope/action không chứa nội dung riêng, mật khẩu, token hoặc bytes. Không tự đặt ngưỡng byte vật lý trước khi chọn máy chủ: khi cấu hình triển khai phải đặt ngân sách và ngưỡng cảnh báo, thử tình huống hết chỗ theo QA-06/07.
 
 **Chưa thể đóng cổng triển khai thực tế:** nơi chạy, chi phí, công suất, ngân sách bytes vật lý, khóa bí mật, đối tượng thử và diễn tập restore phải được ghi bằng giá trị thực của môi trường. Đây là đầu vào vận hành, không làm thay đổi quy tắc sản phẩm đã chốt.
