@@ -295,19 +295,6 @@ export function AuthModal({ isOpen, presentation = 'modal', onClose, onAuthentic
           {view === 'register' && <p>Đã có tài khoản? <button type="button" className="auth-text-button" onClick={() => changeView('login')} disabled={loading}>Đăng nhập</button></p>}
           {(view === 'forgot' || view === 'reset') && <button type="button" className="auth-text-button auth-back" onClick={() => changeView('login')} disabled={loading}><ArrowLeft size={16} /> Quay lại đăng nhập</button>}
           {view === 'reset' && <button type="button" className="auth-text-button" onClick={() => changeView('forgot')} disabled={loading}>Yêu cầu liên kết mới</button>}
-          <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid var(--border-divider, #262832)', textAlign: 'center' }}>
-            <a
-              href="/?tab=1"
-              style={{
-                fontSize: '12px',
-                color: 'var(--text-secondary, #a0a2b0)',
-                textDecoration: 'underline',
-                fontWeight: 500,
-              }}
-            >
-              Xem 14 Tab Giao diện (Mẫu thiết kế chốt) ➔
-            </a>
-          </div>
         </footer>
       </section>
     </Container>
