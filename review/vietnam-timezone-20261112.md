@@ -8,3 +8,4 @@
 - `git diff --check`: đạt.
 - Ảnh chụp Edge ở 1280×900 cho thấy trang đăng nhập còn bố cục đầy đủ. Các ô chọn múi giờ trên form đăng ký/tạo lớp/Lịch/hạn bài đã được kiểm trong mã nguồn; chưa có ảnh chụp các màn sau xác thực trong lượt này.
 - Giới hạn: không di chuyển múi giờ bản ghi cũ; API vẫn nhận trường `timeZone` theo hợp đồng. Múi giờ nguồn của lớp/workspace đã lưu tiếp tục được dùng khi tạo sự kiện cả ngày, hạn bài chỉ ngày; giờ hiển thị ở web là giờ Việt Nam.
+- Sau khi fast-forward vào `s_note_v2` tại `4faec722bf494ca39838e897d5de3139191dbe8a`, chạy `docker compose --env-file deploy/.env.local -f compose.yaml -f compose.local.yaml build web` và `up -d --no-deps web`: đạt, image web dùng Vite 7.3.8. `GET http://localhost:8080/` và asset JS trả 200; asset không còn `calendar-tz-select` hay `auth-timezone`; `GET /api/v2/ready` trả `ready`. Các container db/api/mailpit/web đang chạy; db và api có health check đạt.
