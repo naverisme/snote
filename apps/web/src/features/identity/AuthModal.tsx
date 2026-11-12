@@ -8,7 +8,8 @@ import './auth.css';
 
 interface AuthModalProps {
   isOpen: boolean;
-  onClose: () => void;
+  presentation?: 'modal' | 'page';
+  onClose?: () => void;
   onAuthenticated: (account: Account) => void;
 }
 
@@ -20,9 +21,11 @@ const CLASSROOM_OPTIONS: { id: ClassroomUsage; title: string; desc: string; icon
   { id: 'teacher', title: 'Tạo và quản lý lớp', desc: 'Giao bài và theo dõi tiến độ của lớp.', icon: GraduationCap },
 ];
 
-const initialResetToken = typeof window === 'undefined'
-  ? ''
-  : /^#reset=([A-Za-z0-9_-]{20,})$/.exec(window.location.hash)?.[1] ?? '';
+function readResetToken(): string {
+  return typeof window === 'undefined'
+    ? ''
+    : /^#reset=([A-Za-z0-9_-]{20,})$/.exec(window.location.hash)?.[1] ?? '';
+}
 
 function authErrorMessage(error: unknown, view: AuthView): string {
   const response = error as { body?: { error?: { code?: string; message?: string } }; message?: string };
@@ -60,12 +63,12 @@ const VIEW_COPY: Record<AuthView, { title: string; description: string; action: 
   },
 };
 
-export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) {
-  const [view, setView] = useState<AuthView>(initialResetToken ? 'reset' : 'login');
+export function AuthModal({ isOpen, presentation = 'modal', onClose, onAuthenticated }: AuthModalProps) {
+  const [view, setView] = useState<AuthView>(() => readResetToken() ? 'reset' : 'login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
-  const [resetToken] = useState(initialResetToken);
+  const [resetToken, setResetToken] = useState(readResetToken);
   const [showPassword, setShowPassword] = useState(false);
   const [classroomUsages, setClassroomUsages] = useState<ClassroomUsage[]>([]);
   const [timeZone, setTimeZone] = useState(Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Ho_Chi_Minh');
@@ -77,17 +80,31 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
   closeRef.current = onClose;
 
   useEffect(() => {
-    if (!initialResetToken || typeof window === 'undefined') return;
+    if (!resetToken || typeof window === 'undefined') return;
     window.history.replaceState(null, '', window.location.pathname + window.location.search);
-  }, []);
+  }, [resetToken]);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || presentation !== 'page') return;
+    const handleResetLink = () => {
+      const token = readResetToken();
+      if (!token) return;
+      setResetToken(token);
+      setView('reset');
+      setError(null);
+      setInfo(null);
+    };
+    window.addEventListener('hashchange', handleResetLink);
+    return () => window.removeEventListener('hashchange', handleResetLink);
+  }, [isOpen, presentation]);
+
+  useEffect(() => {
+    if (!isOpen || presentation !== 'modal') return;
     const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault();
-        closeRef.current();
+        closeRef.current?.();
       }
       if (event.key !== 'Tab') return;
       const focusable = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>(
@@ -104,7 +121,7 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
       document.removeEventListener('keydown', onKeyDown);
       previouslyFocused?.focus();
     };
-  }, [isOpen]);
+  }, [isOpen, presentation]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -127,7 +144,7 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
 
   const finishAuthentication = (account: Account) => {
     onAuthenticated(account);
-    onClose();
+    onClose?.();
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -189,16 +206,19 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
   const passwordValue = view === 'reset' ? newPassword : password;
   const passwordSetter = view === 'reset' ? setNewPassword : setPassword;
 
+  const isPage = presentation === 'page';
+  const Container = isPage ? 'main' : 'div';
+
   return (
-    <div className="modal-overlay auth-overlay" onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}>
-      <div className="modal-content auth-dialog" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="auth-title" aria-describedby="auth-description">
+    <Container className={isPage ? 'auth-page' : 'modal-overlay auth-overlay'} onMouseDown={event => { if (!isPage && event.target === event.currentTarget) onClose?.(); }}>
+      <section className={isPage ? 'auth-dialog auth-page-dialog' : 'modal-content auth-dialog'} ref={dialogRef} role={isPage ? undefined : 'dialog'} aria-modal={isPage ? undefined : true} aria-labelledby="auth-title" aria-describedby="auth-description">
         <header className="auth-header">
           <div className="auth-brand"><span className="auth-brand-mark" aria-hidden="true">S</span><span>SNOTE</span></div>
-          <button type="button" className="auth-close" onClick={onClose} aria-label="Đóng cửa sổ tài khoản"><X size={19} /></button>
+          {!isPage && <button type="button" className="auth-close" onClick={onClose} aria-label="Đóng cửa sổ tài khoản"><X size={19} /></button>}
         </header>
 
         <div className="auth-intro">
-          <h2 id="auth-title">{copy.title}</h2>
+          {isPage ? <h1 id="auth-title">{copy.title}</h1> : <h2 id="auth-title">{copy.title}</h2>}
           <p id="auth-description">{copy.description}</p>
         </div>
 
@@ -280,7 +300,7 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
           {(view === 'forgot' || view === 'reset') && <button type="button" className="auth-text-button auth-back" onClick={() => changeView('login')} disabled={loading}><ArrowLeft size={16} /> Quay lại đăng nhập</button>}
           {view === 'reset' && <button type="button" className="auth-text-button" onClick={() => changeView('forgot')} disabled={loading}>Yêu cầu liên kết mới</button>}
         </footer>
-      </div>
-    </div>
+      </section>
+    </Container>
   );
 }

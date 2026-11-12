@@ -10,6 +10,8 @@
 
 Mỗi thời điểm chỉ có **một ngữ cảnh** (lớp, workspace hoặc tổng hợp của tôi), **một tính năng** trong ngữ cảnh và **một vùng dữ liệu chính**. Nền trung tính, đường phân cách mảnh, tương phản chữ đủ đọc, tối đa một hành động chính mỗi vùng; trạng thái bằng chữ/biểu tượng cùng nhau, không chỉ bằng màu. Nội dung dài cuộn trong vùng thích hợp; không cho các hiệu ứng che tiêu đề, quyền hoặc thông báo lỗi.
 
+**Trước khi đăng nhập:** theo yêu cầu trực tiếp của chủ sản phẩm ngày 2026-11-12, ứng dụng hiển thị ngay trang xác thực với form đăng nhập ở vùng chính, không dựng sidebar, điều hướng công việc hoặc nút trung gian “Đăng nhập hoặc tạo tài khoản”. Đăng ký, quên mật khẩu và liên kết đặt lại dùng cùng trang; sau khi xác thực mới dựng khung ứng dụng và sidebar. Trong lúc kiểm tra cookie phiên, dùng trạng thái chờ trung tính để tránh lóe khung chưa đúng quyền.
+
 | Cấp / vị trí | Thành phần, số lượng và kiểu | Khi thao tác / dữ liệu hiện ra |
 | --- | --- | --- |
 | Thanh bên trên cùng | Nút Snote, một lối Lớp học và bộ chọn workspace **cùng cấp** | Snote về Việc của tôi; Lớp học mở danh sách lớp; chọn workspace đổi ngữ cảnh. Cụm workspace thu gọn tối đa hai icon, bung ngang có nút Tạo ở trái và lối danh sách; kéo chỉ cuộn, bấm mới chọn. |

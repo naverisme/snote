@@ -57,7 +57,6 @@ export function App() {
   });
 
   // Modals
-  const [showAuthModal, setShowAuthModal] = useState(() => typeof window !== 'undefined' && window.location.hash.startsWith('#reset='));
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showCreateWsModal, setShowCreateWsModal] = useState(false);
   const [showCreateClassModal, setShowCreateClassModal] = useState(false);
@@ -79,6 +78,10 @@ export function App() {
 
   // Load current session
   const checkSession = async () => {
+    if (typeof window !== 'undefined' && window.location.hash.startsWith('#reset=')) {
+      setCheckingSession(false);
+      return;
+    }
     try {
       const res = await getMe();
       setUser(res.data);
@@ -121,7 +124,19 @@ export function App() {
     setWorkspaces([]);
     setClasses([]);
     setContext({ type: 'workspace', workspaceId: '' });
+    setShowSettingsModal(false);
+    setMobileNavOpen(false);
   }, []);
+
+  useEffect(() => {
+    const handleResetLink = () => {
+      if (!window.location.hash.startsWith('#reset=')) return;
+      handleUnauthorized();
+      setCheckingSession(false);
+    };
+    window.addEventListener('hashchange', handleResetLink);
+    return () => window.removeEventListener('hashchange', handleResetLink);
+  }, [handleUnauthorized]);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('snote_theme');
@@ -204,6 +219,23 @@ export function App() {
   const currentSpaceFullName = context.type === 'workspace'
     ? (activeWorkspace?.name ?? 'Workspace')
     : (`Lớp: ${activeClass?.name ?? ''}`);
+
+  if (checkingSession) {
+    return <main className="auth-page"><div className="auth-page-status" role="status">Đang mở không gian SNOTE…</div></main>;
+  }
+
+  if (!user) {
+    return (
+      <AuthModal
+        isOpen
+        presentation="page"
+        onAuthenticated={account => {
+          setUser(account);
+          void loadContextData();
+        }}
+      />
+    );
+  }
 
   return (
     <div className="app-shell v2-shell">
@@ -597,11 +629,11 @@ export function App() {
           <button
             type="button"
             className="sb-avt-circle"
-            onClick={() => user ? setShowSettingsModal(true) : setShowAuthModal(true)}
-            title={user ? 'Tài khoản & Cài đặt hệ thống' : 'Đăng nhập'}
-            aria-label={user ? 'Tài khoản & Cài đặt hệ thống' : 'Đăng nhập'}
+            onClick={() => setShowSettingsModal(true)}
+            title="Tài khoản & Cài đặt hệ thống"
+            aria-label="Tài khoản & Cài đặt hệ thống"
           >
-            {user ? (user.usages.includes('teacher') ? 'G' : 'H') : 'U'}
+            {user.usages.includes('teacher') ? 'G' : 'H'}
           </button>
         </div>
       </aside>
@@ -640,19 +672,7 @@ export function App() {
 
         {/* Nội dung bên trong Main Viewport: Cuộn dọc trực tiếp (overflow-y: auto) */}
         <div className="main-content-canvas">
-          {!user ? (
-            <div className="section-box" style={{ maxWidth: 520, margin: 'auto', padding: 32, textAlign: 'center' }}>
-              <h1 className="view-title">{checkingSession ? 'Đang kiểm tra phiên đăng nhập' : 'Đăng nhập để xem công việc'}</h1>
-              {!checkingSession && (
-                <>
-                  <p style={{ color: 'var(--text-secondary)', margin: '12px 0 20px' }}>
-                    Công việc và không gian làm việc của bạn chỉ hiển thị sau khi đăng nhập.
-                  </p>
-                  <button type="button" className="btn btn-primary" onClick={() => setShowAuthModal(true)}>Đăng nhập hoặc tạo tài khoản</button>
-                </>
-              )}
-            </div>
-          ) : context.type === 'class' && activeClass ? (
+          {context.type === 'class' && activeClass ? (
             /* Nội dung Context Lớp học */
             <div className="section-box feature-page" data-feature={classTab}>
               {classTab === 'members' && (
@@ -757,29 +777,13 @@ export function App() {
       {/* ===================================================================
           MODALS
           =================================================================== */}
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        onAuthenticated={acc => {
-          setUser(acc);
-          void loadContextData();
-        }}
-      />
-
-      {user && (
-        <AccountSettingsModal
+      <AccountSettingsModal
           isOpen={showSettingsModal}
           onClose={() => setShowSettingsModal(false)}
           account={user}
           onUpdated={updated => setUser(updated)}
-          onLoggedOut={() => {
-            setUser(null);
-            setClasses([]);
-            setWorkspaces([]);
-          setContext({ type: 'workspace', workspaceId: '' });
-          }}
+          onLoggedOut={handleUnauthorized}
         />
-      )}
 
       <CreateWorkspaceModal
         isOpen={showCreateWsModal}
