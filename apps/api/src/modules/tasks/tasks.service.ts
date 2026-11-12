@@ -165,9 +165,8 @@ export class TasksService {
   ): Promise<{ task: Task; etag: string }> {
     const task = this.tasks.get(taskId);
     if (!task) throw new DomainError('NOT_FOUND', 404);
-    requireVersion(task.version, ifMatch);
-
     await requireAction(this.getAuthorizer(), principal, 'task.edit_common', { type: 'workspace', id: task.workspaceId });
+    requireVersion(task.version, ifMatch);
 
     const change: Record<string, unknown> = {};
     if (input.title !== undefined) {
@@ -208,9 +207,8 @@ export class TasksService {
   ): Promise<{ task: Task; etag: string }> {
     const task = this.tasks.get(taskId);
     if (!task) throw new DomainError('NOT_FOUND', 404);
-    requireVersion(task.version, ifMatch);
-
     await requireAction(this.getAuthorizer(), principal, 'task.assign', { type: 'workspace', id: task.workspaceId });
+    requireVersion(task.version, ifMatch);
 
     const previousAssignee = task.assigneeId;
     task.assigneeId = input.assigneeId;
@@ -235,13 +233,12 @@ export class TasksService {
   ): Promise<{ task: Task; etag: string }> {
     const task = this.tasks.get(taskId);
     if (!task) throw new DomainError('NOT_FOUND', 404);
-    requireVersion(task.version, ifMatch);
-
     // TASK-04, TASK-08: Confirming completion
     await requireAction(this.getAuthorizer(), principal, 'task.read', { type: 'workspace', id: task.workspaceId });
     if (task.assigneeId !== principal.accountId) {
       await requireAction(this.getAuthorizer(), principal, 'task.edit_common', { type: 'workspace', id: task.workspaceId });
     }
+    requireVersion(task.version, ifMatch);
 
     task.status = 'done';
     task.version += 1;
@@ -258,12 +255,11 @@ export class TasksService {
   ): Promise<{ task: Task; etag: string }> {
     const task = this.tasks.get(taskId);
     if (!task) throw new DomainError('NOT_FOUND', 404);
-    requireVersion(task.version, ifMatch);
-
     await requireAction(this.getAuthorizer(), principal, 'task.read', { type: 'workspace', id: task.workspaceId });
     if (task.assigneeId !== principal.accountId) {
       await requireAction(this.getAuthorizer(), principal, 'task.edit_common', { type: 'workspace', id: task.workspaceId });
     }
+    requireVersion(task.version, ifMatch);
 
     task.status = 'todo';
     task.version += 1;
@@ -281,11 +277,11 @@ export class TasksService {
     for (const item of input.items) {
       const task = this.tasks.get(item.id);
       if (!task) throw new DomainError('NOT_FOUND', 404);
+      const requiredAction = input.action === 'trash' ? 'task.delete' : 'task.edit_common';
+      await requireAction(auth, principal, requiredAction, { type: 'workspace', id: task.workspaceId });
       if (task.version !== item.version) {
         throw new DomainError('VERSION_CONFLICT', 412);
       }
-      const requiredAction = input.action === 'trash' ? 'task.delete' : 'task.edit_common';
-      await requireAction(auth, principal, requiredAction, { type: 'workspace', id: task.workspaceId });
     }
 
     // Second pass: apply actions
@@ -317,9 +313,8 @@ export class TasksService {
   ): Promise<{ task: Task; checklistItem: ChecklistItemRecord; etag: string }> {
     const task = this.tasks.get(taskId);
     if (!task) throw new DomainError('NOT_FOUND', 404);
-    requireVersion(task.version, ifMatch);
-
     await this.requireChecklistPermission(principal, task);
+    requireVersion(task.version, ifMatch);
 
     const items = this.getItemsForTask(taskId);
     const now = new Date();
@@ -351,9 +346,8 @@ export class TasksService {
   ): Promise<{ task: Task; checklistItem: ChecklistItemRecord; etag: string }> {
     const task = this.tasks.get(taskId);
     if (!task) throw new DomainError('NOT_FOUND', 404);
-    requireVersion(task.version, ifMatch);
-
     await this.requireChecklistPermission(principal, task);
+    requireVersion(task.version, ifMatch);
 
     const item = this.checklist.get(itemId);
     if (!item || item.taskId !== taskId) throw new DomainError('NOT_FOUND', 404);
@@ -379,9 +373,8 @@ export class TasksService {
   ): Promise<{ task: Task; etag: string }> {
     const task = this.tasks.get(taskId);
     if (!task) throw new DomainError('NOT_FOUND', 404);
-    requireVersion(task.version, ifMatch);
-
     await this.requireChecklistPermission(principal, task);
+    requireVersion(task.version, ifMatch);
 
     const item = this.checklist.get(itemId);
     if (!item || item.taskId !== taskId) throw new DomainError('NOT_FOUND', 404);

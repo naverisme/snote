@@ -14,7 +14,7 @@ test('former assignee cannot complete or edit checklist after workspace access e
     title: 'Hand over this task', assigneeId: principal.accountId,
   });
   active = false;
-  await assert.rejects(service.completeTask(principal, task.id, etag),
+  await assert.rejects(service.completeTask(principal, task.id, '"0"'),
     (err: unknown) => err instanceof DomainError && err.status === 403);
   await assert.rejects(service.addChecklistItem(principal, task.id, { text: 'Should be denied' }, etag),
     (err: unknown) => err instanceof DomainError && err.status === 403);
