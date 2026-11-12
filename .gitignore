@@ -1,6 +1,8 @@
 node_modules/
 dist/
 .env
+deploy/.env.*
+!deploy/.env.example
 *.tsbuildinfo
 __pycache__/
 .agents/

@@ -26,10 +26,17 @@ import { LibrarySessionGuard } from './library-session.guard';
     },
     {
       provide: LocalStorageAdapter,
-      useFactory: () =>
-        new LocalStorageAdapter({
+      useFactory: () => {
+        const rawBudget = process.env.MAX_STORAGE_BYTES;
+        const maxPhysicalBytes = rawBudget ? Number(rawBudget) : undefined;
+        if (rawBudget && (!Number.isSafeInteger(maxPhysicalBytes) || maxPhysicalBytes! <= 0)) {
+          throw new Error('MAX_STORAGE_BYTES must be a positive integer');
+        }
+        return new LocalStorageAdapter({
           rootDir: path.resolve(process.env.STORAGE_ROOT ?? '.storage'),
-        }),
+          maxPhysicalBytes,
+        });
+      },
     },
     {
       provide: PrismaQuotaStore,

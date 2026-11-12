@@ -6,6 +6,7 @@ import { IdentityService } from './identity.service';
 import { AccountService } from './account-service';
 import { PrismaSessionStore } from './session-store';
 import { GoogleIdTokenVerifier } from './google-token-verifier';
+import { SmtpPasswordResetMailer } from './password-reset-mailer';
 
 const prisma = new PrismaClient();
 const sessionStore = new PrismaSessionStore(prisma);
@@ -18,8 +19,16 @@ const sessionStore = new PrismaSessionStore(prisma);
     { provide: 'SESSION_STORE', useValue: sessionStore },
     {
       provide: IdentityService,
-      useFactory: (db: PrismaClient, store: PrismaSessionStore) =>
-        new IdentityService(db, store, undefined, new GoogleIdTokenVerifier(process.env.GOOGLE_CLIENT_ID || '')),
+      useFactory: (db: PrismaClient, store: PrismaSessionStore) => {
+        const mailer = process.env.SMTP_HOST && process.env.MAIL_FROM && process.env.PUBLIC_BASE_URL
+          ? new SmtpPasswordResetMailer(
+            process.env.SMTP_HOST, Number(process.env.SMTP_PORT || '587'),
+            process.env.MAIL_FROM, process.env.PUBLIC_BASE_URL,
+            process.env.SMTP_USER, process.env.SMTP_PASSWORD,
+          ) : undefined;
+        return new IdentityService(db, store, undefined,
+          new GoogleIdTokenVerifier(process.env.GOOGLE_CLIENT_ID || ''), mailer);
+      },
       inject: [PrismaClient, 'SESSION_PORT'],
     },
     {

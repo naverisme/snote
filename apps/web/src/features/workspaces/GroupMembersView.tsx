@@ -1,545 +1,146 @@
-import React, { useState } from 'react';
-import { Users, Crown, UserMinus, UserPlus, LogOut, ShieldCheck, Mail, ArrowRightLeft, Check, X, AlertTriangle } from 'lucide-react';
-import type { Workspace, Account } from '../../shared/types';
+import { useEffect, useState } from 'react';
+import { Crown, UserMinus, UserPlus } from 'lucide-react';
+import type { Account, JoinRequest, Membership, Workspace } from '../../shared/types';
+import {
+  approveGroupJoinRequest, changeGroupLeader, createGroupInvitation,
+  createWorkspaceInvitation, declineGroupJoinRequest, leaveGroup,
+  listGroupJoinRequests, listGroupMembers, listWorkspaceMembers,
+  removeGroupMember, transferWorkspaceOwnership,
+} from '../../shared/api';
 
-interface GroupMemberItem {
-  id: string;
-  name: string;
-  email: string;
-  role: 'owner' | 'member';
-  joinedAt: string;
-  assignedTasksCount: number;
-}
-
-interface GroupMembersViewProps {
+interface Props {
   workspace: Workspace;
   currentUser?: Account | null;
+  classOwnerId?: string;
+  onMembershipChanged?: () => void;
 }
 
-const MOCK_GROUP_MEMBERS: GroupMemberItem[] = [
-  {
-    id: 'u-lead-01',
-    name: 'Nguyễn Văn Minh (Bạn)',
-    email: 'minh.nguyen@example.com',
-    role: 'owner',
-    joinedAt: '01/10/2026',
-    assignedTasksCount: 4,
-  },
-  {
-    id: 'u-mem-02',
-    name: 'Trần Thị Mai',
-    email: 'mai.tran@example.com',
-    role: 'member',
-    joinedAt: '03/10/2026',
-    assignedTasksCount: 3,
-  },
-  {
-    id: 'u-mem-03',
-    name: 'Lê Hoàng Nam',
-    email: 'nam.le@example.com',
-    role: 'member',
-    joinedAt: '05/10/2026',
-    assignedTasksCount: 2,
-  },
-  {
-    id: 'u-mem-04',
-    name: 'Phạm Quỳnh Anh',
-    email: 'quynhanh.pham@example.com',
-    role: 'member',
-    joinedAt: '07/10/2026',
-    assignedTasksCount: 1,
-  },
-];
+function errorText(error: unknown): string {
+  const response = error as { body?: { error?: { message?: string } }; message?: string };
+  return response?.body?.error?.message || response?.message || 'Thao tác không thành công. Vui lòng thử lại.';
+}
 
-const MOCK_PENDING_REQUESTS = [
-  { id: 'req-01', name: 'Đỗ Quốc Bảo', email: 'bao.do@example.com', requestedAt: '08/11/2026' },
-];
+export function GroupMembersView({ workspace, currentUser, classOwnerId, onMembershipChanged }: Props) {
+  const [members, setMembers] = useState<Membership[]>([]);
+  const [requests, setRequests] = useState<JoinRequest[]>([]);
+  const [inviteeId, setInviteeId] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
+  const isClassGroup = workspace.kind === 'class_group';
+  const me = members.find(member => member.memberId === currentUser?.id);
+  const canManage = Boolean(currentUser?.id && (
+    workspace.ownerId === currentUser.id || classOwnerId === currentUser.id || me?.role === 'leader'
+  ));
 
-export const GroupMembersView: React.FC<GroupMembersViewProps> = ({
-  workspace,
-  currentUser,
-}) => {
-  const [transferredAway, setTransferredAway] = useState(false);
-  const [members, setMembers] = useState<GroupMemberItem[]>(MOCK_GROUP_MEMBERS);
-  const [requests, setRequests] = useState(MOCK_PENDING_REQUESTS);
-  const [inviteEmail, setInviteEmail] = useState('');
-  const [showInviteModal, setShowInviteModal] = useState(false);
-  const [showLeaveModal, setShowLeaveModal] = useState(false);
-  const [actionSuccess, setActionSuccess] = useState<string | null>(null);
+  const load = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = isClassGroup ? await listGroupMembers(workspace.id) : await listWorkspaceMembers(workspace.id);
+      setMembers(response.data);
+      const canReadRequests = isClassGroup && Boolean(currentUser?.id && (
+        classOwnerId === currentUser.id || response.data.some(member => member.memberId === currentUser.id && member.role === 'leader')
+      ));
+      setRequests(canReadRequests ? (await listGroupJoinRequests(workspace.id)).data : []);
+    } catch (cause) {
+      setMembers([]);
+      setRequests([]);
+      setError(errorText(cause));
+    } finally { setLoading(false); }
+  };
 
-  const isOwner = !transferredAway && Boolean(currentUser?.id && currentUser.id === workspace.ownerId);
+  useEffect(() => { void load(); }, [workspace.id, currentUser?.id, classOwnerId]);
 
-  // Personal workspace guard
+  const run = async (action: () => Promise<unknown>, success: string, refresh = true): Promise<boolean> => {
+    setBusy(true);
+    setError(null);
+    setInfo(null);
+    try {
+      await action();
+      setInfo(success);
+      if (refresh) await load();
+      onMembershipChanged?.();
+      return true;
+    } catch (cause) { setError(errorText(cause)); return false; }
+    finally { setBusy(false); }
+  };
+
   if (workspace.kind === 'default') {
-    return (
-      <div className="section-box" style={{ padding: '32px 24px' }}>
-        <div style={{ maxWidth: '640px', margin: '0 auto', textAlign: 'center' }}>
-          <div
-            style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: '50%',
-              background: 'var(--surface-hover)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 16px',
-              color: 'var(--text-primary)',
-            }}
-          >
-            <ShieldCheck size={24} />
-          </div>
-          <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
-            Không gian Cá nhân Độc lập
-          </h2>
-          <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-            Theo quy định an toàn dữ liệu cá nhân (ACC-06), Workspace mặc định không cho phép chia sẻ hoặc thêm thành viên khác.
-            Để cộng tác nhóm, vui lòng tham gia hoặc tạo nhóm trong lớp học.
-          </p>
-        </div>
-      </div>
-    );
+    return <div className="section-box" style={{ padding: 24 }}>
+      <h2>Workspace cá nhân</h2>
+      <p>Workspace cá nhân chỉ dành cho bạn. Hãy tạo workspace độc lập để cộng tác.</p>
+    </div>;
   }
 
-  const handleApproveRequest = (id: string, name: string) => {
-    setRequests(requests.filter(r => r.id !== id));
-    setMembers([
-      ...members,
-      {
-        id,
-        name,
-        email: `${id}@example.com`,
-        role: 'member',
-        joinedAt: 'Hôm nay',
-        assignedTasksCount: 0,
-      },
-    ]);
-    setActionSuccess(`Đã duyệt thành viên ${name} vào nhóm`);
-    setTimeout(() => setActionSuccess(null), 3000);
-  };
-
-  const handleDeclineRequest = (id: string) => {
-    setRequests(requests.filter(r => r.id !== id));
-  };
-
-  const handleKickMember = (id: string, name: string) => {
-    if (confirm(`Bạn có chắc chắn muốn đưa ${name} ra khỏi nhóm?`)) {
-      setMembers(members.filter(m => m.id !== id));
-      setActionSuccess(`Đã xóa ${name} khỏi nhóm`);
-      setTimeout(() => setActionSuccess(null), 3000);
-    }
-  };
-
-  const handleTransferOwnership = (id: string, name: string) => {
-    if (confirm(`Chuyển giao quyền Trưởng nhóm cho ${name}? Bạn sẽ trở thành thành viên thường.`)) {
-      setMembers(members.map(m => {
-        if (m.id === id) return { ...m, role: 'owner' };
-        if (m.role === 'owner') return { ...m, role: 'member' };
-        return m;
-      }));
-      setTransferredAway(true);
-      setActionSuccess(`Đã chuyển quyền Trưởng nhóm cho ${name}`);
-      setTimeout(() => setActionSuccess(null), 3000);
-    }
-  };
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
-      {actionSuccess && (
-        <div
-          style={{
-            background: 'var(--surface-card)',
-            border: '1px solid var(--border-divider)',
-            padding: '10px 16px',
-            borderRadius: '6px',
-            color: 'var(--text-primary)',
-            fontSize: '13px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-          }}
-        >
-          <Check size={16} />
-          <span>{actionSuccess}</span>
-        </div>
-      )}
-
-      {/* Header Overview Card */}
-      <div
-        style={{
-          background: 'var(--surface-card)',
-          border: '1px solid var(--border-divider)',
-          borderRadius: '8px',
-          padding: '20px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <div>
-          <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
-            Thành viên Nhóm: {workspace.name}
-          </h2>
-          <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
-            Tổng số: {members.length} thành viên • Quản trị độc lập không gian làm việc nhóm
-          </p>
-        </div>
-
-        <div style={{ display: 'flex', gap: '8px' }}>
-          {isOwner ? (
-            <button
-              type="button"
-              className="btn btn-primary btn-sm"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-              onClick={() => setShowInviteModal(true)}
-            >
-              <UserPlus size={15} />
-              <span>Mời bạn cùng lớp</span>
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="btn btn-outline btn-sm"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'rgba(248, 113, 113, 0.9)' }}
-              onClick={() => setShowLeaveModal(true)}
-            >
-              <LogOut size={15} />
-              <span>Rời khỏi nhóm</span>
-            </button>
-          )}
-        </div>
+  return <div className="section-box" style={{ display: 'grid', gap: 20 }}>
+    <div className="view-header">
+      <div>
+        <h1 className="view-title">Thành viên: {workspace.name}</h1>
+        <p style={{ color: 'var(--text-secondary)', margin: '6px 0 0' }}>
+          {loading ? 'Đang tải thành viên...' : `${members.length} thành viên đang hoạt động`}
+        </p>
       </div>
-
-      {/* Owner: Pending Join Requests Queue */}
-      {isOwner && requests.length > 0 && (
-        <div
-          style={{
-            background: 'var(--surface-card)',
-            border: '1px solid var(--border-divider)',
-            borderRadius: '8px',
-            padding: '16px 20px',
-          }}
-        >
-          <h2 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 12px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span>Yêu cầu xin gia nhập nhóm</span>
-            <span
-              style={{
-                fontSize: '11px',
-                padding: '2px 8px',
-                borderRadius: '12px',
-                background: 'var(--surface-hover)',
-                color: 'var(--text-primary)',
-                border: '1px solid var(--border-divider)',
-              }}
-            >
-              {requests.length}
-            </span>
-          </h2>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {requests.map(req => (
-              <div
-                key={req.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '10px 14px',
-                  background: 'var(--surface-hover)',
-                  borderRadius: '6px',
-                  border: '1px solid var(--border-divider)',
-                }}
-              >
-                <div>
-                  <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-primary)' }}>{req.name}</div>
-                  <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{req.email} • Yêu cầu: {req.requestedAt}</div>
-                </div>
-
-                <div style={{ display: 'flex', gap: '6px' }}>
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-sm"
-                    style={{ padding: '4px 10px', height: '28px', fontSize: '12px' }}
-                    onClick={() => handleApproveRequest(req.id, req.name)}
-                  >
-                    Duyệt
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-outline btn-sm"
-                    style={{ padding: '4px 10px', height: '28px', fontSize: '12px' }}
-                    onClick={() => handleDeclineRequest(req.id)}
-                  >
-                    Từ chối
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Members Directory Table */}
-      <div
-        style={{
-          background: 'var(--surface-card)',
-          border: '1px solid var(--border-divider)',
-          borderRadius: '8px',
-          overflow: 'hidden',
-        }}
-      >
-        <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border-divider)' }}>
-          <h2 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
-            Danh sách thành viên hiện tại ({members.length})
-          </h2>
-        </div>
-
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
-          <thead>
-            <tr style={{ borderBottom: '1px solid var(--border-divider)', color: 'var(--text-secondary)' }}>
-              <th style={{ padding: '12px 20px', fontWeight: 500 }}>Thành viên</th>
-              <th style={{ padding: '12px 16px', fontWeight: 500 }}>Vai trò</th>
-              <th style={{ padding: '12px 16px', fontWeight: 500 }}>Ngày gia nhập</th>
-              <th style={{ padding: '12px 16px', fontWeight: 500 }}>Việc phụ trách</th>
-              {isOwner && <th style={{ padding: '12px 20px', fontWeight: 500, textAlign: 'right' }}>Thao tác</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {members.map(m => (
-              <tr
-                key={m.id}
-                style={{
-                  borderBottom: '1px solid var(--border-divider)',
-                  transition: 'background-color 120ms ease',
-                }}
-              >
-                <td style={{ padding: '12px 20px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div
-                      style={{
-                        width: '32px',
-                        height: '32px',
-                        borderRadius: '50%',
-                        background: 'var(--surface-hover)',
-                        border: '1px solid var(--border-divider)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '12px',
-                        fontWeight: 600,
-                        color: 'var(--text-primary)',
-                      }}
-                    >
-                      {m.name.substring(0, 1).toUpperCase()}
-                    </div>
-                    <div>
-                      <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{m.name}</div>
-                      <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{m.email}</div>
-                    </div>
-                  </div>
-                </td>
-
-                <td style={{ padding: '12px 16px' }}>
-                  {m.role === 'owner' ? (
-                    <span
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        padding: '3px 8px',
-                        borderRadius: '4px',
-                        background: 'var(--surface-hover)',
-                        border: '1px solid var(--border-divider)',
-                        fontSize: '12px',
-                        fontWeight: 600,
-                        color: 'var(--text-primary)',
-                      }}
-                    >
-                      <Crown size={12} />
-                      <span>Trưởng nhóm</span>
-                    </span>
-                  ) : (
-                    <span style={{ color: 'var(--text-secondary)' }}>Thành viên</span>
-                  )}
-                </td>
-
-                <td style={{ padding: '12px 16px', color: 'var(--text-secondary)' }}>
-                  {m.joinedAt}
-                </td>
-
-                <td style={{ padding: '12px 16px' }}>
-                  <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>
-                    {m.assignedTasksCount} công việc
-                  </span>
-                </td>
-
-                {isOwner && (
-                  <td style={{ padding: '12px 20px', textAlign: 'right' }}>
-                    {m.role !== 'owner' && (
-                      <div style={{ display: 'inline-flex', gap: '6px' }}>
-                        <button
-                          type="button"
-                          className="btn btn-outline btn-sm"
-                          style={{ fontSize: '11px', padding: '3px 8px', height: '26px' }}
-                          title="Chuyển quyền Trưởng nhóm"
-                          onClick={() => handleTransferOwnership(m.id, m.name)}
-                        >
-                          <ArrowRightLeft size={13} style={{ marginRight: '4px' }} />
-                          <span>Chuyển quyền</span>
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-outline btn-sm"
-                          style={{ fontSize: '11px', padding: '3px 8px', height: '26px', color: 'rgba(248, 113, 113, 0.9)' }}
-                          title="Xóa khỏi nhóm"
-                          onClick={() => handleKickMember(m.id, m.name)}
-                        >
-                          <UserMinus size={13} />
-                        </button>
-                      </div>
-                    )}
-                  </td>
-                )}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Modal Mời bạn cùng lớp */}
-      {showInviteModal && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0, 0, 0, 0.6)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 9999,
-          }}
-        >
-          <div
-            style={{
-              background: 'var(--surface-card)',
-              border: '1px solid var(--border-divider)',
-              borderRadius: '8px',
-              padding: '24px',
-              width: '100%',
-              maxWidth: '440px',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
-                Mời thành viên vào nhóm
-              </h2>
-              <button
-                type="button"
-                onClick={() => setShowInviteModal(false)}
-                style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '16px' }}>
-              Nhập email hoặc tên người dùng của bạn học trong lớp để gửi lời mời tham gia workspace nhóm:
-            </p>
-
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
-              <input
-                type="text"
-                placeholder="vd: banhoc@example.com"
-                value={inviteEmail}
-                onChange={e => setInviteEmail(e.target.value)}
-                style={{
-                  flex: 1,
-                  padding: '8px 12px',
-                  borderRadius: '6px',
-                  background: 'var(--surface-hover)',
-                  border: '1px solid var(--border-divider)',
-                  color: 'var(--text-primary)',
-                  fontSize: '13px',
-                }}
-              />
-              <button
-                type="button"
-                className="btn btn-primary btn-sm"
-                onClick={() => {
-                  if (inviteEmail.trim()) {
-                    setActionSuccess(`Đã gửi lời mời tới ${inviteEmail}`);
-                    setShowInviteModal(false);
-                    setInviteEmail('');
-                    setTimeout(() => setActionSuccess(null), 3000);
-                  }
-                }}
-              >
-                Gửi lời mời
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal Xác nhận rời nhóm (Member) */}
-      {showLeaveModal && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0, 0, 0, 0.6)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 9999,
-          }}
-        >
-          <div
-            style={{
-              background: 'var(--surface-card)',
-              border: '1px solid var(--border-divider)',
-              borderRadius: '8px',
-              padding: '24px',
-              width: '100%',
-              maxWidth: '460px',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px', color: 'rgba(248, 113, 113, 0.9)' }}>
-              <AlertTriangle size={20} />
-              <h2 style={{ fontSize: '16px', fontWeight: 600, margin: 0, color: 'var(--text-primary)' }}>
-                Xác nhận rời khỏi nhóm
-              </h2>
-            </div>
-
-            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '20px' }}>
-              Theo quy định bàn giao công việc (STR-09), toàn bộ việc bạn đã nhận và tiến độ nộp bài sẽ ở lại nhóm.
-              Vui lòng đảm bảo bạn đã hoàn tất hoặc bàn giao các đầu việc đang phụ trách cho Trưởng nhóm trước khi tiếp tục.
-            </p>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-              <button
-                type="button"
-                className="btn btn-outline btn-sm"
-                onClick={() => setShowLeaveModal(false)}
-              >
-                Hủy bỏ
-              </button>
-              <button
-                type="button"
-                className="btn btn-primary btn-sm"
-                style={{ background: 'rgba(239, 68, 68, 0.8)', borderColor: 'rgba(239, 68, 68, 0.8)' }}
-                onClick={() => {
-                  setShowLeaveModal(false);
-                  setActionSuccess('Bạn đã rời khỏi nhóm thành công');
-                  setTimeout(() => setActionSuccess(null), 3000);
-                }}
-              >
-                Xác nhận rời nhóm
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <button type="button" className="btn btn-secondary btn-sm" onClick={() => void load()} disabled={busy}>Làm mới</button>
     </div>
-  );
-};
+
+    {error && <div role="alert" style={{ color: 'var(--danger)' }}>{error}</div>}
+    {info && <div role="status" style={{ color: 'var(--success)' }}>{info}</div>}
+
+    {canManage && <form onSubmit={event => {
+      event.preventDefault();
+      const recipient = inviteeId.trim();
+      if (!recipient) return;
+      void run(() => isClassGroup
+        ? createGroupInvitation(workspace.id, recipient)
+        : createWorkspaceInvitation(workspace.id, recipient), 'Đã gửi lời mời.').then(ok => { if (ok) setInviteeId(''); });
+    }} style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+      <label className="form-label" htmlFor="member-invite-id" style={{ width: '100%' }}>Mã tài khoản người được mời</label>
+      <input id="member-invite-id" className="form-input" value={inviteeId} onChange={event => setInviteeId(event.target.value)}
+        placeholder="UUID tài khoản" required style={{ maxWidth: 320 }} />
+      <button type="submit" className="btn btn-primary" disabled={busy}><UserPlus size={15} /> Gửi lời mời</button>
+    </form>}
+
+    {canManage && isClassGroup && requests.length > 0 && <div>
+      <h2 className="section-title">Yêu cầu vào nhóm ({requests.length})</h2>
+      {requests.map(request => <div key={request.id} style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 8 }}>
+        <span style={{ flex: 1, overflowWrap: 'anywhere' }}>{request.initiatorId}</span>
+        <button type="button" className="btn btn-primary btn-sm" disabled={busy}
+          onClick={() => void run(() => approveGroupJoinRequest(request.id, request.version), 'Đã duyệt yêu cầu.')}>Duyệt</button>
+        <button type="button" className="btn btn-secondary btn-sm" disabled={busy}
+          onClick={() => void run(() => declineGroupJoinRequest(request.id, request.version), 'Đã từ chối yêu cầu.')}>Từ chối</button>
+      </div>)}
+    </div>}
+
+    <div className="table-container">
+      <table className="data-table">
+        <thead><tr><th>Thành viên</th><th>Vai trò</th>{canManage && <th>Thao tác</th>}</tr></thead>
+        <tbody>{members.map(member => <tr key={member.id}>
+          <td style={{ overflowWrap: 'anywhere' }}>{member.memberId}{member.memberId === currentUser?.id ? ' (Bạn)' : ''}</td>
+          <td>{member.role === 'leader' ? <><Crown size={14} /> Trưởng nhóm</> : 'Thành viên'}</td>
+          {canManage && <td>
+            {member.memberId !== currentUser?.id && <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <button type="button" className="btn btn-secondary btn-sm" disabled={busy}
+                onClick={() => void run(() => isClassGroup
+                  ? changeGroupLeader(workspace.id, member.memberId, member.version)
+                  : transferWorkspaceOwnership(workspace.id, member.memberId),
+                isClassGroup ? 'Đã đổi trưởng nhóm.' : 'Đã gửi yêu cầu chuyển chủ; người nhận cần chấp nhận.')}>Chuyển quyền</button>
+              <button type="button" className="btn btn-danger btn-sm" disabled={busy}
+                onClick={() => { if (confirm('Đưa thành viên này ra khỏi workspace?')) void run(
+                  () => removeGroupMember(workspace.id, member.memberId, undefined, member.version), 'Đã đưa thành viên ra khỏi workspace.'); }}>
+                <UserMinus size={14} /> Đưa ra
+              </button>
+            </div>}
+          </td>}
+        </tr>)}</tbody>
+      </table>
+      {!loading && members.length === 0 && !error && <p style={{ padding: 16 }}>Chưa có thành viên.</p>}
+    </div>
+
+    {me && !canManage && <button type="button" className="btn btn-secondary" disabled={busy}
+      onClick={() => { if (confirm('Rời workspace này?')) void run(() => leaveGroup(workspace.id, undefined, me.version), 'Đã rời workspace.', false); }}>
+      Rời workspace
+    </button>}
+  </div>;
+}

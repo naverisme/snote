@@ -247,6 +247,22 @@ export async function getWorkspace(workspaceId: string) {
   return request<ApiResponse<Workspace>>(`/workspaces/${encodeURIComponent(workspaceId)}`, 'GET');
 }
 
+export async function listWorkspaceMembers(workspaceId: string) {
+  return request<ApiResponse<Membership[]>>(`/workspaces/${encodeURIComponent(workspaceId)}/members`, 'GET');
+}
+
+export async function createWorkspaceInvitation(workspaceId: string, inviteeId: string) {
+  return request<ApiResponse<Invitation>>(`/workspaces/${encodeURIComponent(workspaceId)}/invitations`, 'POST', { inviteeId }, {
+    csrfToken: currentCsrfToken,
+  });
+}
+
+export async function transferWorkspaceOwnership(workspaceId: string, recipientId: string) {
+  return request<ApiResponse<OwnershipTransfer>>(`/workspaces/${encodeURIComponent(workspaceId)}/ownership-transfers`, 'POST', { recipientId }, {
+    csrfToken: currentCsrfToken,
+  });
+}
+
 export async function listClassGroups(classId: string) {
   return request<ApiResponse<Workspace[]>>(`/classes/${encodeURIComponent(classId)}/groups`, 'GET');
 }

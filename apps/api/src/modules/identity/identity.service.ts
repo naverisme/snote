@@ -5,6 +5,7 @@ import { DomainError } from '../../core/authorization';
 import { createSession, hashSecret, type SessionPort, type SessionStore } from '../../core/http';
 import { validateUsages } from './account-service';
 import type { GoogleTokenVerifier } from './google-token-verifier';
+import type { PasswordResetMailer } from './password-reset-mailer';
 
 type Register = components['schemas']['Register'];
 type Login = components['schemas']['Login'];
@@ -34,6 +35,7 @@ export class IdentityService {
     private readonly sessionStore: SessionStore & SessionPort,
     private readonly ttlMs = 7 * 24 * 60 * 60 * 1000,
     private readonly googleVerifier?: GoogleTokenVerifier,
+    private readonly passwordResetMailer?: PasswordResetMailer,
   ) {}
 
   async register(input: Register) {
@@ -201,6 +203,7 @@ export class IdentityService {
   }
 
   async passwordResetRequest(input: PasswordResetRequest): Promise<void> {
+    if (!this.passwordResetMailer) throw new DomainError('EMAIL_NOT_CONFIGURED', 503);
     if (!input.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.email)) {
       return; // Do not reveal email existence
     }
@@ -211,13 +214,19 @@ export class IdentityService {
     const tokenHash = hashSecret(token);
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
-    await this.db.passwordResetToken.create({
+    const record = await this.db.passwordResetToken.create({
       data: {
         accountId: account.id,
         tokenHash,
         expiresAt,
       },
     });
+    try {
+      await this.passwordResetMailer.send(account.email, token);
+    } catch {
+      await this.db.passwordResetToken.update({ where: { id: record.id }, data: { consumedAt: new Date() } });
+      console.error('Password reset delivery failed');
+    }
   }
 
   async passwordReset(input: PasswordReset): Promise<void> {
@@ -237,6 +246,12 @@ export class IdentityService {
       });
       if (!record) throw new DomainError('INVALID_INPUT', 422);
 
+      const consumed = await tx.passwordResetToken.updateMany({
+        where: { id: record.id, consumedAt: null },
+        data: { consumedAt: now },
+      });
+      if (consumed.count !== 1) throw new DomainError('INVALID_INPUT', 422);
+
       const passwordHash = hashPassword(input.newPassword);
       await tx.account.update({
         where: { id: record.accountId },
@@ -246,9 +261,13 @@ export class IdentityService {
         },
       });
 
-      await tx.passwordResetToken.update({
-        where: { id: record.id },
+      await tx.passwordResetToken.updateMany({
+        where: { accountId: record.accountId, consumedAt: null },
         data: { consumedAt: now },
+      });
+      await tx.session.updateMany({
+        where: { accountId: record.accountId, revokedAt: null },
+        data: { revokedAt: now },
       });
 
       await tx.auditEvent.create({

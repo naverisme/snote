@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { X, Plus, FolderKanban, ArrowRight } from 'lucide-react';
+import { X, ArrowRight } from 'lucide-react';
 import type { Class, Workspace, Account } from '../../shared/types';
 import {
   listClassGroups,
   createClassGroup,
   createGroupJoinRequest,
-  createGroupInvitation,
-  leaveGroup,
 } from '../../shared/api';
 
 interface ClassGroupsViewProps {
   cls: Class;
   currentUser: Account | null;
   onOpenGroupWorkspace: (ws: Workspace) => void;
+  accessibleGroupIds: string[];
 }
 
-export function ClassGroupsView({ cls, currentUser, onOpenGroupWorkspace }: ClassGroupsViewProps) {
+export function ClassGroupsView({ cls, currentUser, onOpenGroupWorkspace, accessibleGroupIds }: ClassGroupsViewProps) {
   const [groups, setGroups] = useState<Workspace[]>([]);
   const [newGroupName, setNewGroupName] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -30,22 +29,10 @@ export function ClassGroupsView({ cls, currentUser, onOpenGroupWorkspace }: Clas
     setError(null);
     try {
       const res = await listClassGroups(cls.id);
-      if (!res.data || res.data.length === 0) {
-        setGroups([
-          { id: 'ws-team-01', name: 'Nhóm 01 - AI Research', kind: 'class_group', classId: cls.id, ownerId: 'u-lead-01', status: 'active', timeZone: cls.timeZone, version: 1 },
-          { id: 'ws-team-02', name: 'Nhóm 02 - Web Platform', kind: 'class_group', classId: cls.id, ownerId: 'u-lead-02', status: 'active', timeZone: cls.timeZone, version: 1 },
-          { id: 'ws-team-03', name: 'Nhóm 03 - Cloud Engine', kind: 'class_group', classId: cls.id, ownerId: 'u-lead-03', status: 'active', timeZone: cls.timeZone, version: 1 },
-        ]);
-      } else {
-        setGroups(res.data);
-      }
-    } catch {
-      // Giữ mock groups cho preview UI
-      setGroups([
-        { id: 'ws-team-01', name: 'Nhóm 01 - AI Research', kind: 'class_group', classId: cls.id, ownerId: 'u-lead-01', status: 'active', timeZone: cls.timeZone, version: 1 },
-        { id: 'ws-team-02', name: 'Nhóm 02 - Web Platform', kind: 'class_group', classId: cls.id, ownerId: 'u-lead-02', status: 'active', timeZone: cls.timeZone, version: 1 },
-        { id: 'ws-team-03', name: 'Nhóm 03 - Cloud Engine', kind: 'class_group', classId: cls.id, ownerId: 'u-lead-03', status: 'active', timeZone: cls.timeZone, version: 1 },
-      ]);
+      setGroups(res.data ?? []);
+    } catch (cause: any) {
+      setGroups([]);
+      setError(cause?.body?.error?.message || cause?.message || 'Không thể tải danh sách nhóm.');
     } finally {
       setLoading(false);
     }
@@ -88,16 +75,16 @@ export function ClassGroupsView({ cls, currentUser, onOpenGroupWorkspace }: Clas
           </span>
         </div>
 
-        <button className="btn btn-primary" onClick={() => setShowCreateModal(true)}>
+        {isOwner && <button className="btn btn-primary" onClick={() => setShowCreateModal(true)}>
           + Tạo nhóm mới
-        </button>
+        </button>}
       </div>
 
       {error && <div style={{ color: 'var(--danger)', marginBottom: 12, fontSize: '0.875rem' }}>{error}</div>}
       {info && <div style={{ color: 'var(--success)', marginBottom: 12, fontSize: '0.875rem' }}>{info}</div>}
 
       <div className="section-box">
-        {groups.length === 0 ? (
+        {loading ? <div style={{ textAlign: 'center', padding: '32px 0' }}>Đang tải nhóm...</div> : groups.length === 0 && !error ? (
           <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-secondary)' }}>
             Chưa có nhóm nào được tạo trong lớp này.
           </div>
@@ -127,20 +114,20 @@ export function ClassGroupsView({ cls, currentUser, onOpenGroupWorkspace }: Clas
                       )}
                     </td>
                     <td style={{ textAlign: 'right' }}>
-                      <button
+                      {(isOwner || accessibleGroupIds.includes(g.id)) && <button
                         className="btn btn-primary btn-sm"
                         style={{ marginRight: 6, display: 'inline-flex', alignItems: 'center', gap: 4 }}
                         onClick={() => onOpenGroupWorkspace(g)}
                       >
                         <span>Vào Workspace nhóm</span>
                         <ArrowRight size={13} />
-                      </button>
-                      <button
+                      </button>}
+                      {!isOwner && !accessibleGroupIds.includes(g.id) && <button
                         className="btn btn-secondary btn-sm"
                         onClick={() => handleJoinRequest(g.id)}
                       >
                         Xin vào
-                      </button>
+                      </button>}
                     </td>
                   </tr>
                 ))}

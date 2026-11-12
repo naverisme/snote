@@ -27,14 +27,21 @@ const CLASSROOM_OPTIONS: { id: 'student' | 'teacher'; title: string; desc: strin
 ];
 
 export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) {
-  const [tab, setTab] = useState<'login' | 'register' | 'forgot' | 'reset'>('login');
+  const [tab, setTab] = useState<'login' | 'register' | 'forgot' | 'reset'>(() =>
+    typeof window !== 'undefined' && /^#reset=[A-Za-z0-9_-]{20,}$/.test(window.location.hash) ? 'reset' : 'login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [classroomUsages, setClassroomUsages] = useState<Array<'student' | 'teacher'>>([]);
   const [timeZone, setTimeZone] = useState(
     Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Ho_Chi_Minh',
   );
-  const [resetToken, setResetToken] = useState('');
+  const [resetToken, setResetToken] = useState(() => {
+    if (typeof window === 'undefined') return '';
+    const match = /^#reset=([A-Za-z0-9_-]{20,})$/.exec(window.location.hash);
+    if (!match) return '';
+    window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    return match[1];
+  });
   const [newPassword, setNewPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -72,7 +79,7 @@ export function AuthModal({ isOpen, onClose, onAuthenticated }: AuthModalProps) 
         onClose();
       } else if (tab === 'forgot') {
         await passwordResetRequest(email);
-        setInfo('Nếu email tồn tại, yêu cầu đặt lại mật khẩu đã được ghi nhận.');
+        setInfo('Nếu email tồn tại, liên kết đặt lại mật khẩu đã được gửi. Hãy kiểm tra hộp thư.');
         setTab('reset');
       } else if (tab === 'reset') {
         if (newPassword.length < 12) {

@@ -45,35 +45,18 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated }: ClassMemb
         listClassMembers(cls.id),
         getMyInvitations(),
       ]);
-      if (!membersRes.data || membersRes.data.length === 0) {
-        setMembers([
-          { id: 'mem-01', memberId: 'u-gv-01', classId: cls.id, role: 'member', status: 'active', version: 1 },
-          { id: 'mem-02', memberId: 'u-lt-02', classId: cls.id, role: 'monitor', status: 'active', version: 1 },
-          { id: 'mem-03', memberId: 'u-hs-03', classId: cls.id, role: 'member', status: 'active', version: 1 },
-          { id: 'mem-04', memberId: 'u-hs-04', classId: cls.id, role: 'member', status: 'active', version: 1 },
-        ]);
-      } else {
-        setMembers(membersRes.data);
-      }
+      setMembers(membersRes.data ?? []);
       setMyInvitations(myInvsRes.data.filter(i => i.targetType === 'class' && i.targetId === cls.id && i.status === 'pending'));
 
       if (isOwner) {
         const reqsRes = await listClassJoinRequests(cls.id);
         setPendingRequests(reqsRes.data);
       }
-    } catch {
-      // Giữ mock members cho preview UI
-      setMembers([
-        { id: 'mem-01', memberId: 'u-gv-01', classId: cls.id, role: 'member', status: 'active', version: 1 },
-        { id: 'mem-02', memberId: 'u-lt-02', classId: cls.id, role: 'monitor', status: 'active', version: 1 },
-        { id: 'mem-03', memberId: 'u-hs-03', classId: cls.id, role: 'member', status: 'active', version: 1 },
-        { id: 'mem-04', memberId: 'u-hs-04', classId: cls.id, role: 'member', status: 'active', version: 1 },
-      ]);
-      if (isOwner) {
-        setPendingRequests([
-          { id: 'req-01', targetType: 'class', targetId: cls.id, initiatorId: 'u-hs-05', status: 'pending', version: 1 },
-        ]);
-      }
+    } catch (cause: any) {
+      setMembers([]);
+      setMyInvitations([]);
+      setPendingRequests([]);
+      setError(cause?.body?.error?.message || cause?.message || 'Không thể tải thành viên lớp.');
     } finally {
       setLoading(false);
     }
@@ -221,6 +204,7 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated }: ClassMemb
 
       {error && <div style={{ color: 'var(--danger)', marginBottom: 12, fontSize: '0.875rem' }}>{error}</div>}
       {info && <div style={{ color: 'var(--success)', marginBottom: 12, fontSize: '0.875rem' }}>{info}</div>}
+      {loading && <p>Đang tải thành viên lớp...</p>}
 
       {/* Class Join Code & Invitation Bar */}
       <div className="section-box class-join-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>

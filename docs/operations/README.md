@@ -21,6 +21,8 @@
 
 **Phát hành:** migration tương thích bản đang chạy, backup/điểm phục hồi, chạy migration, phát hành backend rồi frontend, kiểm luồng đăng nhập/quyền, tạo tệp, Nộp và đọc bản cũ. Lỗi rollback mã ứng dụng tương thích schema; migration phá hủy phải có phương án phục hồi đã thử, không rollback tự động mà không xác định trạng thái tệp. Ghi version và mốc phát hành vào báo cáo vận hành.
 
+Bản Compose và các bước chạy localhost/domain nằm ở [hướng dẫn Docker](../../deploy/README.md). Chỉ chạy `compose.local.yaml` cùng Mailpit cho dữ liệu thử; domain thật cần SMTP, DNS, TLS và kiểm backup/restore riêng.
+
 **Giám sát:** độ trễ/lỗi endpoint, lượng tệp staging, biên nhận pending quá lâu, quota logic và bytes vật lý, thất bại preview, lỗi đối soát, thất bại backup/restore, hàng nhắc lịch; cảnh báo trước khi chạm ngân sách vật lý. Log chứa requestId, actor/scope/action không chứa nội dung riêng, mật khẩu, token hoặc bytes. Không tự đặt ngưỡng byte vật lý trước khi chọn máy chủ: khi cấu hình triển khai phải đặt ngân sách và ngưỡng cảnh báo, thử tình huống hết chỗ theo QA-06/07.
 
 **Chưa thể đóng cổng triển khai thực tế:** nơi chạy, chi phí, công suất, ngân sách bytes vật lý, khóa bí mật, đối tượng thử và diễn tập restore phải được ghi bằng giá trị thực của môi trường. Đây là đầu vào vận hành, không làm thay đổi quy tắc sản phẩm đã chốt.

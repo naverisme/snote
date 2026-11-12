@@ -1,18 +1,87 @@
+name: ${COMPOSE_PROJECT_NAME:-snote-v2-app}
 services:
   db:
     image: postgres:17.7
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: snote
-      POSTGRES_PASSWORD: snote_dev_only
       POSTGRES_DB: snote
-    ports:
-      - "5432:5432"
+      POSTGRES_USER: snote
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in the env file}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U snote -d snote"]
       interval: 5s
       timeout: 3s
-      retries: 10
+      retries: 12
+    networks: [private]
+
+  migrate:
+    build:
+      context: .
+      target: api
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL in the env file}
+    command: ["npm", "run", "prisma:migrate", "-w", "@snote/api"]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+    networks: [private]
+
+  api:
+    build:
+      context: .
+      target: api
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL in the env file}
+      STORAGE_ROOT: /data/storage
+      MAX_STORAGE_BYTES: ${MAX_STORAGE_BYTES:-}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      MAIL_FROM: ${MAIL_FROM:-}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:8080}
+    volumes:
+      - storage_data:/data/storage
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/v2/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    networks: [private]
+
+  web:
+    build:
+      context: .
+      target: web
+      args:
+        VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID:-}
+    restart: unless-stopped
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-http://localhost}
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${HTTP_PORT:-8080}:80"
+      - "${BIND_ADDRESS:-127.0.0.1}:${HTTPS_PORT:-8443}:443"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      api:
+        condition: service_healthy
+    networks: [private]
+
 volumes:
   postgres_data:
+  storage_data:
+  caddy_data:
+  caddy_config:
+
+networks:
+  private:

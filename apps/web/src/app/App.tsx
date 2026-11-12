@@ -35,7 +35,7 @@ type AppContext =
   | { type: 'workspace'; workspaceId: string }
   | { type: 'class'; classId: string };
 
-type ClassTab = 'members' | 'groups' | 'assignments' | 'tasks' | 'calendar' | 'library' | 'settings';
+type ClassTab = 'members' | 'groups' | 'assignments' | 'calendar' | 'settings';
 type WorkspaceTab = 'members' | 'tasks' | 'calendar' | 'library' | 'notes';
 
 export function App() {
@@ -57,7 +57,7 @@ export function App() {
   });
 
   // Modals
-  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(() => typeof window !== 'undefined' && window.location.hash.startsWith('#reset='));
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showCreateWsModal, setShowCreateWsModal] = useState(false);
   const [showCreateClassModal, setShowCreateClassModal] = useState(false);
@@ -175,10 +175,7 @@ export function App() {
     ? classes.find(c => c.id === context.classId) ?? null
     : null;
 
-  const isTeacher = Boolean(
-    (context.type === 'class' && activeClass?.ownerId === user?.id) ||
-    user?.usages.includes('teacher')
-  );
+  const canCreateClass = Boolean(user?.usages.includes('teacher'));
   const isClassOwner = Boolean(activeClass && user && activeClass.ownerId === user.id);
 
   const handleSelectWorkspace = (ws: Workspace) => {
@@ -196,7 +193,7 @@ export function App() {
   };
 
   const classGroupWs = activeClass
-    ? workspaces.find(w => w.kind === 'class_group' && w.id.includes(activeClass.id)) ?? null
+    ? workspaces.find(w => w.kind === 'class_group' && w.classId === activeClass.id) ?? null
     : null;
 
   // Space acronym for 30px circular button
@@ -258,7 +255,7 @@ export function App() {
                         className="pop-itm-btn pop-add-btn"
                         onClick={() => {
                           setSpacePickerOpen(false);
-                          if (isTeacher) setShowCreateClassModal(true);
+                          if (canCreateClass) setShowCreateClassModal(true);
                           else setShowCreateWsModal(true);
                         }}
                         title="Thêm mới không gian..."
@@ -331,7 +328,7 @@ export function App() {
                         className="pop-itm-btn pop-add-btn"
                         onClick={() => {
                           setSpacePickerOpen(false);
-                          if (isTeacher) setShowCreateClassModal(true);
+                          if (canCreateClass) setShowCreateClassModal(true);
                           else setShowCreateWsModal(true);
                         }}
                         title="Thêm mới không gian..."
@@ -461,7 +458,7 @@ export function App() {
           )}
 
           {/* CẤU HÌNH 3A: LỚP (GIÁO VIÊN) */}
-          {context.type === 'class' && isTeacher && (
+          {context.type === 'class' && isClassOwner && (
             <>
               <button
                 type="button"
@@ -514,7 +511,7 @@ export function App() {
           )}
 
           {/* CẤU HÌNH 3B: LỚP (HỌC SINH) */}
-          {context.type === 'class' && !isTeacher && (
+          {context.type === 'class' && !isClassOwner && (
             <>
               <button
                 type="button"
@@ -545,30 +542,12 @@ export function App() {
               </button>
               <button
                 type="button"
-                className={`nav-block-item ${classTab === 'tasks' ? 'active' : ''}`}
-                onClick={() => setClassTab('tasks')}
-                title="Công việc"
-              >
-                <CheckSquare size={18} className="nav-block-icon" />
-                <span>Công việc</span>
-              </button>
-              <button
-                type="button"
                 className={`nav-block-item ${classTab === 'calendar' ? 'active' : ''}`}
                 onClick={() => setClassTab('calendar')}
                 title="Lịch lớp"
               >
                 <Calendar size={18} className="nav-block-icon" />
                 <span>Lịch lớp</span>
-              </button>
-              <button
-                type="button"
-                className={`nav-block-item ${classTab === 'library' ? 'active' : ''}`}
-                onClick={() => setClassTab('library')}
-                title="Thư viện"
-              >
-                <BookOpen size={18} className="nav-block-icon" />
-                <span>Thư viện</span>
               </button>
             </>
           )}
@@ -691,7 +670,9 @@ export function App() {
                   key={activeClass.id}
                   cls={activeClass}
                   currentUser={user}
+                  accessibleGroupIds={workspaces.filter(ws => ws.classId === activeClass.id).map(ws => ws.id)}
                   onOpenGroupWorkspace={groupWs => {
+                    setWorkspaces(current => current.some(ws => ws.id === groupWs.id) ? current : [...current, groupWs]);
                     handleSelectWorkspace(groupWs);
                   }}
                 />
@@ -710,27 +691,12 @@ export function App() {
                 <AssignmentFeature
                   key={activeClass.id}
                   classId={activeClass.id}
-                  isTeacher={Boolean(isClassOwner || isTeacher)}
+                  isTeacher={isClassOwner}
                   activeWorkspaceId={classGroupWs?.id}
-                />
-              )}
-              {classTab === 'tasks' && (
-                <TasksContainer
-                  key={classGroupWs ? classGroupWs.id : activeClass.id}
-                  workspaceId={classGroupWs ? classGroupWs.id : activeClass.id}
-                  onUnauthorized={handleUnauthorized}
                 />
               )}
               {classTab === 'calendar' && (
                 <CalendarContainer key={activeClass.id} scopeType="class" scopeId={activeClass.id} />
-              )}
-              {classTab === 'library' && (
-                <LibraryView
-                  key={activeClass.id}
-                  workspaceId={classGroupWs ? classGroupWs.id : activeClass.id}
-                  isPersonalWorkspace={false}
-                  actorId={user?.id}
-                />
               )}
             </div>
           ) : activeWorkspace ? (
@@ -767,6 +733,8 @@ export function App() {
                 <GroupMembersView
                   workspace={activeWorkspace}
                   currentUser={user}
+                  classOwnerId={classes.find(cls => cls.id === activeWorkspace.classId)?.ownerId}
+                  onMembershipChanged={() => void loadContextData()}
                 />
               )}
               {workspaceTab === 'notes' && (

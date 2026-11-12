@@ -119,3 +119,31 @@ test('LocalStorageAdapter enforces physical server budget (QA-06, QA-07)', async
     await fs.rm(tempDir, { recursive: true, force: true });
   }
 });
+
+test('LocalStorageAdapter counts staged bytes once and serializes the physical budget', async () => {
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'snote-storage-budget-'));
+  try {
+    const adapter = new LocalStorageAdapter({ rootDir: tempDir, maxPhysicalBytes: 100 });
+    async function* chunks() {
+      yield Buffer.alloc(25, 65);
+      yield Buffer.alloc(25, 65);
+    }
+    await adapter.stage('first', chunks());
+    await adapter.stage('second', chunks());
+    assert.equal((await adapter.getPhysicalUsage()).totalBytes, 100);
+    await assert.rejects(() => adapter.stage('third', createAsyncIterable(Buffer.from('A'))),
+      (err: unknown) => err instanceof DomainError && err.code === 'PHYSICAL_STORAGE_EXHAUSTED');
+
+    await fs.rm(tempDir, { recursive: true, force: true });
+    await fs.mkdir(tempDir, { recursive: true });
+    const concurrent = new LocalStorageAdapter({ rootDir: tempDir, maxPhysicalBytes: 60 });
+    const outcomes = await Promise.allSettled([
+      concurrent.stage('a', createAsyncIterable(Buffer.alloc(40, 65))),
+      concurrent.stage('b', createAsyncIterable(Buffer.alloc(40, 65))),
+    ]);
+    assert.equal(outcomes.filter(result => result.status === 'fulfilled').length, 1);
+    assert.equal((await concurrent.getPhysicalUsage()).totalBytes, 40);
+  } finally {
+    await fs.rm(tempDir, { recursive: true, force: true });
+  }
+});

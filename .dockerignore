@@ -1,0 +1,14 @@
+.git
+.worktrees
+.runtime
+.env
+**/.env
+**/.env.*
+**/node_modules
+**/dist
+**/*.tsbuildinfo
+.storage
+.test_storage_*
+review
+coverage
+*.log

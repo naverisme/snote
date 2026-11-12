@@ -91,6 +91,7 @@ export class LocalStorageAdapter implements StoragePort {
   private readonly stagingDir: string;
   private readonly blobsDir: string;
   private maxPhysicalBytes?: number;
+  private stageTail: Promise<void> = Promise.resolve();
 
   constructor(options: LocalStorageOptions = {}) {
     this.rootDir = options.rootDir ?? path.resolve(process.cwd(), 'data', 'storage');
@@ -133,6 +134,18 @@ export class LocalStorageAdapter implements StoragePort {
   }
 
   public async stage(operationId: string, bytes: AsyncIterable<Uint8Array>): Promise<string> {
+    const previousStage = this.stageTail;
+    let releaseStage!: () => void;
+    this.stageTail = new Promise<void>(resolve => { releaseStage = resolve; });
+    await previousStage;
+    try {
+      return await this.stageUnlocked(operationId, bytes);
+    } finally {
+      releaseStage();
+    }
+  }
+
+  private async stageUnlocked(operationId: string, bytes: AsyncIterable<Uint8Array>): Promise<string> {
     await this.init();
 
     // Check physical storage budget before staging if configured
@@ -159,7 +172,8 @@ export class LocalStorageAdapter implements StoragePort {
 
         if (this.maxPhysicalBytes !== undefined) {
           const { totalBytes } = await this.getPhysicalUsage();
-          if (totalBytes + bytesWritten > this.maxPhysicalBytes) {
+          // totalBytes already includes bytes written to this staging file.
+          if (totalBytes + chunk.byteLength > this.maxPhysicalBytes) {
             writeStream.destroy();
             await fs.unlink(tempFilePath).catch(() => {});
             throw new DomainError('PHYSICAL_STORAGE_EXHAUSTED', 507);

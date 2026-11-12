@@ -1,7 +1,9 @@
 import { Prisma, type PrismaClient } from '@prisma/client';
 import type { components } from '@snote/contracts';
-import { DomainError } from '../../core/authorization';
+import { DomainError, requireAction } from '../../core/authorization';
 import { requireVersion } from '../../core/http';
+import { PrismaPolicyReader } from '../authorization/prisma-policy-reader';
+import { ScopedAuthorization } from '../authorization/policy';
 import type { GroupLifecycle } from './group-lifecycle';
 
 type GroupCreate = components['schemas']['GroupCreate'];
@@ -16,6 +18,15 @@ export class WorkspaceService {
     private readonly db: PrismaClient,
     private readonly groupLifecycle?: GroupLifecycle,
   ) {}
+
+  private async requireScopeAction(
+    db: Prisma.TransactionClient,
+    actorId: string,
+    action: string,
+    scope: { type: 'class' | 'workspace'; id: string },
+  ): Promise<void> {
+    await requireAction(new ScopedAuthorization(new PrismaPolicyReader(db)), { accountId: actorId }, action, scope);
+  }
 
   async listWorkspaces(actorId: string): Promise<WorkspaceSchema[]> {
     const list = await this.db.workspace.findMany({
@@ -143,6 +154,7 @@ export class WorkspaceService {
       const cls = await tx.class.findUnique({ where: { id: classId } });
       if (!cls) throw new DomainError('NOT_FOUND', 404);
       if (cls.status !== 'active') throw new DomainError('ARCHIVED', 409);
+      await this.requireScopeAction(tx, actorId, 'group.create', { type: 'class', id: classId });
 
       const isClassMember = await tx.classMembership.findFirst({
         where: { classId, accountId: actorId, status: 'active' },
@@ -282,6 +294,7 @@ export class WorkspaceService {
       await tx.$queryRaw`SELECT "id" FROM "Class" WHERE "id" = ${group.classId}::uuid FOR UPDATE`;
       const cls = await tx.class.findUnique({ where: { id: group.classId } });
       if (!cls || cls.status !== 'active') throw new DomainError('ARCHIVED', 409);
+      await this.requireScopeAction(tx, actorId, 'member.invite', { type: 'workspace', id: groupId });
 
       const inviteeMember = await tx.classMembership.findFirst({
         where: { classId: group.classId, accountId: inviteeId, status: 'active' },
@@ -365,7 +378,8 @@ export class WorkspaceService {
 
   async listGroupJoinRequests(actorId: string, groupId: string): Promise<JoinRequestSchema[]> {
     const group = await this.db.workspace.findUnique({ where: { id: groupId } });
-    if (!group) throw new DomainError('NOT_FOUND', 404);
+    if (!group || group.kind !== 'class_group') throw new DomainError('NOT_FOUND', 404);
+    await this.requireScopeAction(this.db, actorId, 'group.approve', { type: 'workspace', id: groupId });
 
     const requests = await this.db.joinRequest.findMany({
       where: { targetType: 'workspace', targetId: groupId, status: 'pending' },
@@ -408,6 +422,10 @@ export class WorkspaceService {
     return this.db.$transaction(async tx => {
       const req = await tx.joinRequest.findUnique({ where: { id: requestId } });
       if (!req || req.targetType !== 'workspace') throw new DomainError('NOT_FOUND', 404);
+      const group = await tx.workspace.findUnique({ where: { id: req.targetId } });
+      if (!group || group.kind !== 'class_group') throw new DomainError('NOT_FOUND', 404);
+      await this.requireScopeAction(tx, actorId, 'group.approve', { type: 'workspace', id: group.id });
+      if (req.status !== 'pending') throw new DomainError('CONFLICT', 409);
       requireVersion(req.version, ifMatch);
 
       const updated = await tx.joinRequest.update({
@@ -468,6 +486,14 @@ export class WorkspaceService {
 
   async removeGroupMember(actorId: string, groupId: string, memberId: string, handoverTo?: string, ifMatch?: string): Promise<MembershipSchema> {
     return this.db.$transaction(async tx => {
+      const group = await tx.workspace.findUnique({ where: { id: groupId } });
+      if (!group) throw new DomainError('NOT_FOUND', 404);
+      if (group.status !== 'active') throw new DomainError('ARCHIVED', 409);
+      if (group.classId) {
+        const cls = await tx.class.findUnique({ where: { id: group.classId } });
+        if (!cls || cls.status !== 'active') throw new DomainError('ARCHIVED', 409);
+      }
+      await this.requireScopeAction(tx, actorId, 'member.remove', { type: 'workspace', id: groupId });
       const target = await tx.workspaceMembership.findFirst({
         where: { workspaceId: groupId, accountId: memberId, status: 'active' },
       });
@@ -512,7 +538,9 @@ export class WorkspaceService {
       const ws = await tx.workspace.findUnique({ where: { id: workspaceId } });
       if (!ws) throw new DomainError('NOT_FOUND', 404);
       if (ws.kind === 'default') throw new DomainError('FORBIDDEN', 403); // default workspace cannot be shared (STR-01)
+      if (ws.classId) throw new DomainError('INVALID_INPUT', 422); // class groups enforce class membership via createGroupInvitation
       if (ws.status !== 'active') throw new DomainError('ARCHIVED', 409);
+      await this.requireScopeAction(tx, actorId, 'member.invite', { type: 'workspace', id: workspaceId });
 
       const inv = await tx.invitation.create({
         data: {

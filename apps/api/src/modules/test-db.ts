@@ -65,6 +65,8 @@ export class TestDb {
               if (!(v as any).in.includes(item[k])) match = false;
             } else if (v && typeof v === 'object' && 'gt' in v) {
               if (!(item[k] > (v as any).gt)) match = false;
+            } else if (v === null && item[k] === undefined) {
+              continue;
             } else if (item[k] !== v) {
               match = false;
             }
@@ -100,6 +102,8 @@ export class TestDb {
                 if (!(v as any).in.includes(item[k])) match = false;
               } else if (v && typeof v === 'object' && 'not' in v) {
                 if (item[k] === (v as any).not) match = false;
+              } else if (v === null && item[k] === undefined) {
+                continue;
               } else if (item[k] !== v) {
                 match = false;
               }
