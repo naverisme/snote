@@ -19,6 +19,7 @@ export class PrismaLibraryStore implements LibraryStore {
         folderId: item.folderId,
         currentRevisionId: item.currentRevisionId,
         type: item.type,
+        title: item.title,
         status: item.status,
         version: item.version,
       },
@@ -36,6 +37,7 @@ export class PrismaLibraryStore implements LibraryStore {
       folderId: row.folderId,
       currentRevisionId: row.currentRevisionId,
       type: row.type,
+      title: row.title,
       status: row.status,
       version: row.version,
       createdAt: row.createdAt,
@@ -49,6 +51,7 @@ export class PrismaLibraryStore implements LibraryStore {
       data: {
         ...(patch.folderId !== undefined ? { folderId: patch.folderId } : {}),
         ...(patch.currentRevisionId !== undefined ? { currentRevisionId: patch.currentRevisionId } : {}),
+        ...(patch.title !== undefined ? { title: patch.title } : {}),
         ...(patch.status !== undefined ? { status: patch.status } : {}),
         ...(patch.version !== undefined ? { version: patch.version } : {}),
       },
@@ -67,12 +70,13 @@ export class PrismaLibraryStore implements LibraryStore {
       },
       orderBy: { updatedAt: 'desc' },
     });
-    return rows.map((r: { id: string; workspaceId: string; folderId: string | null; currentRevisionId: string | null; type: string; status: string; version: number; createdAt: Date; updatedAt: Date }) => ({
+    return rows.map((r: { id: string; workspaceId: string; folderId: string | null; currentRevisionId: string | null; type: string; title: string | null; status: string; version: number; createdAt: Date; updatedAt: Date }) => ({
       id: r.id,
       workspaceId: r.workspaceId,
       folderId: r.folderId,
       currentRevisionId: r.currentRevisionId,
       type: r.type,
+      title: r.title,
       status: r.status,
       version: r.version,
       createdAt: r.createdAt,

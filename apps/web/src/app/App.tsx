@@ -15,7 +15,6 @@ import {
   Plus,
   Sun,
   Moon,
-  Bell,
   FileText,
 } from 'lucide-react';
 import type { Account, Class, Workspace } from '../shared/types';
@@ -619,34 +618,6 @@ export function App() {
             </>
           )}
 
-          {/* MỤC LƯU Ý: THÔNG BÁO CỦA TOÀN HỆ THỐNG (Header + Content Box) */}
-          <div className="sb-system-notice-container">
-            {!sidebarCollapsed ? (
-              <>
-                <div className="sb-notice-header">
-                  <div className="sb-notice-header-left">
-                    <Bell size={13} className="sb-notice-header-icon" />
-                    <span>Mục lưu ý</span>
-                  </div>
-                  <span className="sb-notice-badge">Hệ thống</span>
-                </div>
-                <div className="sb-notice-content-box">
-                  <div className="sb-notice-title">Thông báo nền tảng v2</div>
-                  <div className="sb-notice-body">
-                    Hệ thống đã chuẩn hóa kiến trúc giao diện màu lạnh, hỗ trợ đồng bộ theo thời gian thực.
-                  </div>
-                  <div className="sb-notice-footer">
-                    <span className="sb-notice-time">Toàn hệ thống</span>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div className="sb-notice-collapsed-icon" title="Mục lưu ý toàn hệ thống">
-                <Bell size={18} />
-                <span className="sb-notice-dot" />
-              </div>
-            )}
-          </div>
         </div>
 
         {/* 3.1 Footer Sidebar: Chiều cao 56px, chỉ có theme-toggle-btn và sb-avt-circle */}

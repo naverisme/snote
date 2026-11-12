@@ -771,7 +771,7 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
                     <div key={req.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: 'var(--surface-hover)', borderRadius: '6px', border: '1px solid var(--border-divider)' }}>
                       <div>
                         <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>{req.initiatorId}</div>
-                        <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Mã yêu cầu: {req.id.slice(0, 8)} • Thời điểm: {req.acceptedAt || 'Vừa xong'}</div>
+                        <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Mã yêu cầu: {req.id.slice(0, 8)} • Đang chờ xử lý</div>
                       </div>
                       <div style={{ display: 'flex', gap: '8px' }}>
                         <button
@@ -877,7 +877,7 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
                   <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-primary)' }} />
                   <input
                     type="text"
-                    placeholder="Tìm học sinh theo tên/email..."
+                    placeholder="Tìm theo mã tài khoản..."
                     value={search}
                     onChange={e => setSearch(e.target.value)}
                     style={{
@@ -1060,8 +1060,6 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
                     </th>
                     <th style={{ padding: '12px 16px', fontWeight: 600 }}>Vai trò</th>
                     <th style={{ padding: '12px 16px', fontWeight: 600 }}>Nhóm đang tham gia</th>
-                    <th style={{ padding: '12px 16px', fontWeight: 600 }}>Hoạt động gần nhất</th>
-                    <th style={{ padding: '12px 16px', fontWeight: 600 }}>Ngày vào lớp</th>
                     <th style={{ padding: '12px 20px', fontWeight: 600, textAlign: 'right', position: 'sticky', right: 0, zIndex: 3, background: 'var(--surface-card)', boxShadow: '-2px 0 4px -2px rgba(0,0,0,0.1)' }}>
                       Thao tác
                     </th>
@@ -1070,7 +1068,7 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
                 <tbody>
                   {sortedStudents.length === 0 ? (
                     <tr>
-                      <td colSpan={6} style={{ padding: '32px 20px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                      <td colSpan={4} style={{ padding: '32px 20px', textAlign: 'center', color: 'var(--text-secondary)' }}>
                         Không tìm thấy học sinh nào khớp với bộ lọc hiện tại.
                       </td>
                     </tr>
@@ -1108,14 +1106,6 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
                               {groupNameByMemberId[m.memberId]}
                             </span>
                           )}
-                        </td>
-
-                        <td style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontSize: '12px' }}>
-                          Vừa xong
-                        </td>
-
-                        <td style={{ padding: '12px 16px', color: 'var(--text-secondary)' }}>
-                          Hôm nay
                         </td>
 
                         <td style={{ padding: '12px 20px', textAlign: 'right', position: 'sticky', right: 0, zIndex: 2, background: 'var(--surface-card)', boxShadow: '-2px 0 4px -2px rgba(0,0,0,0.1)' }}>
@@ -1223,10 +1213,6 @@ export function ClassMembersView({ cls, currentUser, onClassUpdated, viewRole }:
                           ) : (
                             <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{groupNameByMemberId[m.memberId]}</span>
                           )}
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <span style={{ color: 'var(--text-secondary)' }}>Hoạt động:</span>
-                          <span style={{ color: 'var(--text-primary)', fontSize: '12px', fontWeight: 500 }}>Vừa xong</span>
                         </div>
                       </div>
                     </div>

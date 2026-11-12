@@ -288,6 +288,7 @@ model LibraryItem {
   folderId String? @db.Uuid
   currentRevisionId String? @db.Uuid
   type String
+  title String?
   status String @default("active")
   version Int @default(1)
   createdAt DateTime @default(now())

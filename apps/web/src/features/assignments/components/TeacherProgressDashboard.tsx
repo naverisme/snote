@@ -85,11 +85,11 @@ export const TeacherProgressDashboard: React.FC<TeacherProgressDashboardProps> =
             const checklistPercent = hasChecklist
               ? Math.round(((recipient.checklistCompleted ?? 0) / (recipient.checklistTotal || 1)) * 100)
               : null;
-            const checklistDisplay = hasChecklist
+            const checklistDisplay = recipient.checklistTotal === undefined ? 'Chưa có dữ liệu' : hasChecklist
               ? `${checklistPercent}% (${recipient.checklistCompleted ?? 0}/${recipient.checklistTotal} mục)`
               : 'Chưa có checklist';
 
-            const tasksDisplay = `${recipient.tasksCompleted ?? 0}/${recipient.tasksTotal ?? 0} việc`;
+            const tasksDisplay = recipient.tasksTotal === undefined ? 'Chưa có dữ liệu' : `${recipient.tasksCompleted ?? 0}/${recipient.tasksTotal} việc`;
             const hasSubmitted = recipient.submissionVersion !== undefined && recipient.submissionVersion > 0;
 
             return (

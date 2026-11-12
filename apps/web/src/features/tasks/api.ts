@@ -26,10 +26,23 @@ function withAuth(options: RequestOptions = {}) {
 
 export class TaskApiClient {
   async listWorkspaceTasks(workspaceId: string, options: RequestOptions = {}): Promise<Task[]> {
-    const result = await request<Data<Task[]>>(
-      `/workspaces/${encodeURIComponent(workspaceId)}/tasks`, 'GET', undefined, options,
-    );
-    return result.data;
+    const tasks: Task[] = [];
+    const seenCursors = new Set<string>();
+    let cursor: string | undefined;
+    do {
+      const query = new URLSearchParams({ limit: '100' });
+      if (cursor) query.set('cursor', cursor);
+      const result: Data<Task[]> & { nextCursor?: string } = await request<Data<Task[]> & { nextCursor?: string }>(
+        `/workspaces/${encodeURIComponent(workspaceId)}/tasks?${query}`, 'GET', undefined, options,
+      );
+      tasks.push(...result.data);
+      cursor = result.nextCursor;
+      if (cursor) {
+        if (seenCursors.has(cursor)) throw new Error('Danh sách công việc bị thay đổi khi đang tải. Vui lòng thử lại.');
+        seenCursors.add(cursor);
+      }
+    } while (cursor);
+    return tasks;
   }
 
   async listMyTasks(filter?: string, timeZone?: string, options: RequestOptions = {}): Promise<Task[]> {

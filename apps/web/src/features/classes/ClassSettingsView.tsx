@@ -179,7 +179,7 @@ export function ClassSettingsView({ cls, currentUser, onClassUpdated }: ClassSet
 
       <section className="review-panel review-class-profile" aria-label="Thông tin lớp">
         <h2>Thông tin học phần</h2>
-        <div><label>Tên lớp học <input value={cls.name} readOnly /></label><label>Mã lớp <input value={cls.id} readOnly /></label><label>Múi giờ <input value={cls.timeZone} readOnly /></label></div>
+        <div><label>Tên lớp học <input value={cls.name} readOnly /></label><label>ID lớp <input value={cls.id} readOnly /></label><label>Múi giờ <input value={cls.timeZone} readOnly /></label></div>
       </section>
 
       {/* Accordion 4 sections (CUXC-10, E5) */}
