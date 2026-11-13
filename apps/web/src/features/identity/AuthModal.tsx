@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ComponentType, type FormEvent } from 'react';
-import { ArrowLeft, Check, Eye, EyeOff, GraduationCap, User, X } from 'lucide-react';
-import { googleSignIn, login, passwordReset, passwordResetRequest, register } from '../../shared/api';
+import { ArrowLeft, Check, Eye, EyeOff, GraduationCap, User, X, Loader2, RefreshCw } from 'lucide-react';
+import { googleSignIn, login, passwordReset, passwordResetRequest, register, requestPasswordResetOtp, passwordResetWithOtp } from '../../shared/api';
 import type { Account } from '../../shared/types';
 import { VIETNAM_TIME_ZONE } from '../../shared/time-zone';
 import { GoogleSignInButton } from './GoogleSignInButton';
@@ -36,7 +36,9 @@ function authErrorMessage(error: unknown, view: AuthView): string {
   if (code === 'ACCOUNT_LINK_REQUIRED') return 'Email này đã có tài khoản SNOTE. Hãy đăng nhập bằng mật khẩu trước.';
   if (code === 'INVALID_GOOGLE_CREDENTIAL') return 'Không thể xác minh tài khoản Google. Vui lòng thử lại.';
   if (code === 'EMAIL_NOT_CONFIGURED') return 'Chưa cấu hình dịch vụ gửi email. Hãy liên hệ người quản trị.';
-  if (code === 'INVALID_INPUT' && view === 'reset') return 'Liên kết không hợp lệ hoặc đã hết hạn. Hãy yêu cầu liên kết mới.';
+  if (code === 'OTP_RATE_LIMITED') return 'Bạn đã yêu cầu hoặc nhập sai mã quá nhiều lần. Vui lòng chờ rồi thử lại.';
+  if (code === 'INVALID_OTP') return 'Mã xác nhận không đúng hoặc đã hết hạn (10 phút). Vui lòng thử lại hoặc gửi lại mã.';
+  if (code === 'INVALID_INPUT' && view === 'reset') return 'Thông tin đặt lại không hợp lệ hoặc đã hết hạn. Vui lòng thử lại.';
   if (error instanceof TypeError) return 'Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại.';
   return response?.body?.error?.message || response?.message || 'Không thể hoàn tất thao tác. Vui lòng thử lại.';
 }
@@ -53,13 +55,13 @@ const VIEW_COPY: Record<AuthView, { title: string; description: string; action: 
     action: 'Tạo tài khoản',
   },
   forgot: {
-    title: 'Lấy lại mật khẩu',
-    description: 'Nhập email tài khoản. Chúng tôi sẽ gửi liên kết đặt lại mật khẩu nếu email đã được đăng ký.',
-    action: 'Gửi liên kết',
+    title: 'Lấy lại mật khẩu qua OTP',
+    description: 'Nhập email tài khoản. Chúng tôi sẽ gửi mã xác nhận 6 số đến email của bạn.',
+    action: 'Gửi mã xác nhận',
   },
   reset: {
-    title: 'Tạo mật khẩu mới',
-    description: 'Chọn mật khẩu có ít nhất 12 ký tự. Các phiên đăng nhập cũ sẽ kết thúc sau khi đặt lại.',
+    title: 'Đặt lại mật khẩu mới',
+    description: 'Nhập mã xác nhận 6 số từ email và thiết lập mật khẩu mới (tối thiểu 12 ký tự).',
     action: 'Lưu mật khẩu mới',
   },
 };
@@ -69,8 +71,13 @@ export function AuthModal({ isOpen, presentation = 'modal', onClose, onAuthentic
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [resetOtpCode, setResetOtpCode] = useState('');
   const [resetToken, setResetToken] = useState(readResetToken);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
+  const [otpCountdown, setOtpCountdown] = useState(0);
+  const [maskedEmail, setMaskedEmail] = useState('');
   const [classroomUsages, setClassroomUsages] = useState<ClassroomUsage[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
@@ -78,6 +85,12 @@ export function AuthModal({ isOpen, presentation = 'modal', onClose, onAuthentic
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
+
+  useEffect(() => {
+    if (otpCountdown <= 0) return;
+    const timer = window.setTimeout(() => setOtpCountdown(sec => Math.max(0, sec - 1)), 1000);
+    return () => window.clearTimeout(timer);
+  }, [otpCountdown]);
 
   useEffect(() => {
     if (!resetToken || typeof window === 'undefined') return;
@@ -126,10 +139,18 @@ export function AuthModal({ isOpen, presentation = 'modal', onClose, onAuthentic
   useEffect(() => {
     if (!isOpen) return;
     const frame = requestAnimationFrame(() => {
-      dialogRef.current?.querySelector<HTMLElement>(view === 'reset' ? '#auth-new-password' : '#auth-email')?.focus();
+      if (view === 'reset') {
+        if (!resetToken && resetOtpCode.length < 6) {
+          dialogRef.current?.querySelector<HTMLElement>('#auth-reset-otp')?.focus();
+        } else {
+          dialogRef.current?.querySelector<HTMLElement>('#auth-new-password')?.focus();
+        }
+      } else {
+        dialogRef.current?.querySelector<HTMLElement>('#auth-email')?.focus();
+      }
     });
     return () => cancelAnimationFrame(frame);
-  }, [isOpen, view]);
+  }, [isOpen, view, resetToken]);
 
   if (!isOpen) return null;
 
@@ -139,7 +160,42 @@ export function AuthModal({ isOpen, presentation = 'modal', onClose, onAuthentic
     setInfo(null);
     setPassword('');
     setNewPassword('');
+    setConfirmNewPassword('');
+    setResetOtpCode('');
     setShowPassword(false);
+    setShowConfirmNewPassword(false);
+  };
+
+  const handleOtpInput = (val: string) => {
+    const clean = val.replace(/\D/g, '').slice(0, 6);
+    setResetOtpCode(clean);
+    if (error) setError(null);
+  };
+
+  const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    if (pasted.length > 0) {
+      e.preventDefault();
+      setResetOtpCode(pasted);
+      if (error) setError(null);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (loading || otpCountdown > 0 || !email.trim()) return;
+    setError(null);
+    setInfo(null);
+    setLoading(true);
+    try {
+      const result = await requestPasswordResetOtp(email.trim());
+      setMaskedEmail(result.data.emailMasked || email.trim());
+      setOtpCountdown(result.data.resendAfterSeconds || 60);
+      setInfo(`Đã gửi lại mã xác nhận tới ${result.data.emailMasked || email.trim()}.`);
+    } catch (caught) {
+      setError(authErrorMessage(caught, 'forgot'));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const finishAuthentication = (account: Account) => {
@@ -162,13 +218,40 @@ export function AuthModal({ isOpen, presentation = 'modal', onClose, onAuthentic
         const result = await register({ email: email.trim(), password, usages: toAccountUsages(classroomUsages), timeZone: VIETNAM_TIME_ZONE });
         finishAuthentication(result.data);
       } else if (view === 'forgot') {
-        await passwordResetRequest(email.trim());
-        setInfo('Nếu email đã được đăng ký, liên kết đặt lại mật khẩu đã được gửi. Hãy kiểm tra cả thư mục thư rác.');
+        if (!email.trim()) {
+          setError('Vui lòng nhập địa chỉ email.');
+          return;
+        }
+        const result = await requestPasswordResetOtp(email.trim());
+        setMaskedEmail(result.data.emailMasked || email.trim());
+        setOtpCountdown(result.data.resendAfterSeconds || 60);
+        setView('reset');
+        setInfo(`Mã xác nhận 6 số đã được gửi tới ${result.data.emailMasked || email.trim()}. Vui lòng kiểm tra hộp thư.`);
       } else {
-        if (newPassword.length < 12) { setError('Mật khẩu mới cần ít nhất 12 ký tự.'); return; }
-        await passwordReset(resetToken, newPassword);
+        if (resetToken && !resetOtpCode) {
+          if (newPassword.length < 12) { setError('Mật khẩu mới cần ít nhất 12 ký tự.'); return; }
+          await passwordReset(resetToken, newPassword);
+          changeView('login');
+          setInfo('Mật khẩu đã được cập nhật. Hãy đăng nhập bằng mật khẩu mới.');
+          return;
+        }
+
+        const cleanOtp = resetOtpCode.trim();
+        if (!/^\d{6}$/.test(cleanOtp)) {
+          setError('Vui lòng nhập đủ 6 chữ số mã xác nhận.');
+          return;
+        }
+        if (newPassword.length < 12) {
+          setError('Mật khẩu mới cần ít nhất 12 ký tự.');
+          return;
+        }
+        if (newPassword !== confirmNewPassword) {
+          setError('Mật khẩu xác nhận không khớp.');
+          return;
+        }
+        await passwordResetWithOtp(email.trim(), cleanOtp, newPassword);
         changeView('login');
-        setInfo('Mật khẩu đã được cập nhật. Hãy đăng nhập bằng mật khẩu mới.');
+        setInfo('Mật khẩu đã được cập nhật thành công. Vui lòng đăng nhập bằng mật khẩu mới.');
       }
     } catch (caught) {
       setError(authErrorMessage(caught, view));
@@ -250,17 +333,155 @@ export function AuthModal({ isOpen, presentation = 'modal', onClose, onAuthentic
             </div>
           )}
 
-          {(view === 'login' || view === 'register' || view === 'reset') && (
+          {(view === 'login' || view === 'register') && (
             <div className="form-group">
               <div className="auth-label-row">
-                <label className="form-label" htmlFor={view === 'reset' ? 'auth-new-password' : 'auth-password'}>{view === 'reset' ? 'Mật khẩu mới' : 'Mật khẩu'}</label>
+                <label className="form-label" htmlFor="auth-password">Mật khẩu</label>
                 {view === 'login' && <button type="button" className="auth-text-button" onClick={() => changeView('forgot')} disabled={loading}>Quên mật khẩu?</button>}
               </div>
               <div className="auth-password-field">
-                <input id={view === 'reset' ? 'auth-new-password' : 'auth-password'} className="form-input" type={showPassword ? 'text' : 'password'} autoComplete={view === 'login' ? 'current-password' : 'new-password'} minLength={view === 'login' ? undefined : 12} required value={passwordValue} onChange={event => passwordSetter(event.target.value)} placeholder="Nhập mật khẩu" aria-describedby={view === 'register' || view === 'reset' ? 'auth-password-hint' : undefined} />
+                <input id="auth-password" className="form-input" type={showPassword ? 'text' : 'password'} autoComplete={view === 'login' ? 'current-password' : 'new-password'} minLength={view === 'login' ? undefined : 12} required value={password} onChange={event => setPassword(event.target.value)} placeholder="Nhập mật khẩu" aria-describedby={view === 'register' ? 'auth-password-hint' : undefined} />
                 <button type="button" className="auth-password-toggle" onClick={() => setShowPassword(current => !current)} aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'} aria-pressed={showPassword}>{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button>
               </div>
-              {(view === 'register' || view === 'reset') && <p className="auth-field-hint" id="auth-password-hint">Ít nhất 12 ký tự.</p>}
+              {view === 'register' && <p className="auth-field-hint" id="auth-password-hint">Ít nhất 12 ký tự.</p>}
+            </div>
+          )}
+
+          {view === 'reset' && (
+            <div className="auth-reset-container animate-slide-down">
+              {maskedEmail && (
+                <div className="auth-email-badge">
+                  <span>Mã gửi tới: <strong>{maskedEmail}</strong></span>
+                  <button
+                    type="button"
+                    className="auth-text-button"
+                    onClick={() => changeView('forgot')}
+                    style={{ fontSize: '0.78rem' }}
+                  >
+                    Đổi email
+                  </button>
+                </div>
+              )}
+
+              {!maskedEmail && !email && (
+                <div className="form-group">
+                  <label className="form-label" htmlFor="auth-email">Địa chỉ email</label>
+                  <input
+                    id="auth-email"
+                    className="form-input"
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    required
+                    value={email}
+                    onChange={event => setEmail(event.target.value)}
+                    placeholder="ten@vidu.com"
+                  />
+                </div>
+              )}
+
+              {!resetToken && (
+                <div className="form-group">
+                  <div className="auth-label-row">
+                    <label className="form-label" htmlFor="auth-reset-otp">Mã xác nhận (6 số)</label>
+                    <button
+                      type="button"
+                      className="auth-text-button auth-resend-inline"
+                      onClick={handleResendOtp}
+                      disabled={loading || otpCountdown > 0 || !email.trim()}
+                    >
+                      {otpCountdown > 0 ? (
+                        <>
+                          <RefreshCw size={13} className="animate-spin" />
+                          <span>Gửi lại ({otpCountdown}s)</span>
+                        </>
+                      ) : (
+                        <>
+                          <RefreshCw size={13} />
+                          <span>Gửi lại mã</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  <div className="auth-otp-field-row">
+                    <input
+                      id="auth-reset-otp"
+                      className="form-input auth-otp-input"
+                      type="text"
+                      inputMode="numeric"
+                      autoComplete="one-time-code"
+                      pattern="[0-9]{6}"
+                      maxLength={6}
+                      required
+                      value={resetOtpCode}
+                      onChange={event => handleOtpInput(event.target.value)}
+                      onPaste={handleOtpPaste}
+                      placeholder="••••••"
+                    />
+                    <span className="auth-otp-count">{resetOtpCode.length}/6 số</span>
+                  </div>
+                </div>
+              )}
+
+              <div className="form-group">
+                <label className="form-label" htmlFor="auth-new-password">Mật khẩu mới</label>
+                <div className="auth-password-field">
+                  <input
+                    id="auth-new-password"
+                    className="form-input"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    minLength={12}
+                    required
+                    value={newPassword}
+                    onChange={event => setNewPassword(event.target.value)}
+                    placeholder="Tối thiểu 12 ký tự"
+                  />
+                  <button
+                    type="button"
+                    className="auth-password-toggle"
+                    onClick={() => setShowPassword(current => !current)}
+                    aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                    aria-pressed={showPassword}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                <p className={`auth-field-hint ${newPassword.length >= 12 ? 'auth-hint-valid' : ''}`}>
+                  {newPassword.length >= 12 ? '✓ Đạt độ dài tối thiểu' : `Cần tối thiểu 12 ký tự (${newPassword.length}/12)`}
+                </p>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" htmlFor="auth-confirm-password">Nhập lại mật khẩu mới</label>
+                <div className="auth-password-field">
+                  <input
+                    id="auth-confirm-password"
+                    className="form-input"
+                    type={showConfirmNewPassword ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    minLength={12}
+                    required
+                    value={confirmNewPassword}
+                    onChange={event => setConfirmNewPassword(event.target.value)}
+                    placeholder="Nhập lại mật khẩu mới"
+                  />
+                  <button
+                    type="button"
+                    className="auth-password-toggle"
+                    onClick={() => setShowConfirmNewPassword(current => !current)}
+                    aria-label={showConfirmNewPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                    aria-pressed={showConfirmNewPassword}
+                  >
+                    {showConfirmNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                {confirmNewPassword.length > 0 && (
+                  <p className={`auth-field-hint ${newPassword === confirmNewPassword ? 'auth-hint-valid' : 'auth-hint-invalid'}`}>
+                    {newPassword === confirmNewPassword ? '✓ Mật khẩu xác nhận trùng khớp' : '✗ Mật khẩu xác nhận chưa khớp'}
+                  </p>
+                )}
+              </div>
             </div>
           )}
 
@@ -287,14 +508,32 @@ export function AuthModal({ isOpen, presentation = 'modal', onClose, onAuthentic
             </>
           )}
 
-          <button className="btn btn-primary auth-submit" type="submit" disabled={loading || (view === 'reset' && !resetToken)}>{loading ? 'Đang xử lý…' : copy.action}</button>
+          <button
+            className="btn btn-primary auth-submit"
+            type="submit"
+            disabled={
+              loading ||
+              (view === 'reset' && (
+                resetToken
+                  ? newPassword.length < 12
+                  : (resetOtpCode.length !== 6 || newPassword.length < 12 || newPassword !== confirmNewPassword)
+              ))
+            }
+          >
+            {loading ? (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <Loader2 size={16} className="animate-spin" />
+                <span>Đang xử lý…</span>
+              </span>
+            ) : copy.action}
+          </button>
         </form>
 
         <footer className="auth-footer">
           {view === 'login' && <p>Chưa có tài khoản? <button type="button" className="auth-text-button" onClick={() => changeView('register')} disabled={loading}>Tạo tài khoản</button></p>}
           {view === 'register' && <p>Đã có tài khoản? <button type="button" className="auth-text-button" onClick={() => changeView('login')} disabled={loading}>Đăng nhập</button></p>}
           {(view === 'forgot' || view === 'reset') && <button type="button" className="auth-text-button auth-back" onClick={() => changeView('login')} disabled={loading}><ArrowLeft size={16} /> Quay lại đăng nhập</button>}
-          {view === 'reset' && <button type="button" className="auth-text-button" onClick={() => changeView('forgot')} disabled={loading}>Yêu cầu liên kết mới</button>}
+          {view === 'reset' && !resetToken && <button type="button" className="auth-text-button" onClick={() => changeView('forgot')} disabled={loading}>Gửi lại tới email khác</button>}
         </footer>
       </section>
     </Container>

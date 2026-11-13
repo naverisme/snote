@@ -89,9 +89,26 @@ export async function passwordReset(token: string, newPassword: string) {
   return request<ApiResponse<{ success: boolean }>>('/auth/password-reset', 'POST', { token, newPassword });
 }
 
+export async function requestPasswordResetOtp(email: string) {
+  return request<ApiResponse<PasswordChangeOtpRequestResult>>('/auth/password-reset-otp-request', 'POST', { email });
+}
+
+export async function verifyPasswordResetOtp(email: string, code: string) {
+  return request<ApiResponse<{ valid: boolean }>>('/auth/verify-password-reset-otp', 'POST', { email, code });
+}
+
+export async function passwordResetWithOtp(email: string, code: string, newPassword: string) {
+  return request<ApiResponse<{ success: boolean }>>('/auth/password-reset-otp', 'POST', { email, code, newPassword });
+}
+
 export async function requestPasswordChangeOtp() {
   return request<ApiResponse<PasswordChangeOtpRequestResult>>(
     '/me/password-change-otp', 'POST', undefined, { csrfToken: currentCsrfToken });
+}
+
+export async function verifyPasswordChangeOtp(code: string) {
+  return request<ApiResponse<{ valid: boolean }>>(
+    '/me/verify-password-change-otp', 'POST', { code }, { csrfToken: currentCsrfToken });
 }
 
 export async function changePasswordWithOtp(code: ChangePasswordWithOtpInput['code'], newPassword: ChangePasswordWithOtpInput['newPassword']) {

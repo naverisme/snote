@@ -20,9 +20,23 @@ model Account {
   usages       AccountUsage[]
   resetTokens  PasswordResetToken[]
   passwordChangeOtp PasswordChangeOtp?
+  passwordResetOtp PasswordResetOtp?
 }
 
 model PasswordChangeOtp {
+  accountId String @id @db.Uuid
+  codeHash String
+  expiresAt DateTime
+  sentAt DateTime
+  windowStartedAt DateTime
+  sendCount Int @default(1)
+  failedAttempts Int @default(0)
+  lockedUntil DateTime?
+  consumedAt DateTime?
+  account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+}
+
+model PasswordResetOtp {
   accountId String @id @db.Uuid
   codeHash String
   expiresAt DateTime

@@ -21,7 +21,7 @@ import {
   Loader2,
   AlertCircle,
 } from 'lucide-react';
-import { changeProfile, changeUsages, logout, getMe, requestPasswordChangeOtp, changePasswordWithOtp } from '../../shared/api';
+import { changeProfile, changeUsages, logout, getMe, requestPasswordChangeOtp, verifyPasswordChangeOtp, changePasswordWithOtp } from '../../shared/api';
 import type { Account } from '../../shared/types';
 import { toggleClassroomUsage } from './usage-selection';
 import './account-settings.css';
@@ -83,6 +83,8 @@ export function AccountSettingsModal({
   const [otpCode, setOtpCode] = useState('');
   const [otpEmail, setOtpEmail] = useState('');
   const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [otpVerifyLoading, setOtpVerifyLoading] = useState(false);
   const [resendSeconds, setResendSeconds] = useState(0);
   const [otpRequestLoading, setOtpRequestLoading] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
@@ -102,6 +104,7 @@ export function AccountSettingsModal({
     setInlinePasswordError(null);
     setFormShaking(false);
     setPasswordChangeSuccess(false);
+    setOtpVerified(false);
   }, [account, isOpen]);
 
   useEffect(() => {
@@ -209,9 +212,6 @@ export function AccountSettingsModal({
       e.preventDefault();
       setOtpCode(pasted);
       if (inlinePasswordError) setInlinePasswordError(null);
-      if (pasted.length === 6) {
-        document.getElementById('new-password-input')?.focus();
-      }
     }
   };
 
@@ -221,6 +221,7 @@ export function AccountSettingsModal({
     setError(null);
     setInlinePasswordError(null);
     setSuccess(null);
+    setOtpVerified(false);
     try {
       const result = await requestPasswordChangeOtp();
       setOtpSent(true);
@@ -242,6 +243,40 @@ export function AccountSettingsModal({
       triggerShake(msg);
     } finally {
       setOtpRequestLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!/^\d{6}$/.test(otpCode)) {
+      triggerShake('Vui lòng nhập đủ 6 chữ số mã xác nhận.');
+      otpInputRef.current?.focus();
+      return;
+    }
+    setOtpVerifyLoading(true);
+    setInlinePasswordError(null);
+    try {
+      await verifyPasswordChangeOtp(otpCode);
+      setOtpVerified(true);
+      setSuccess('Mã xác nhận hợp lệ. Hãy tạo mật khẩu mới phía dưới.');
+      window.setTimeout(() => {
+        document.getElementById('new-password-input')?.focus();
+      }, 100);
+    } catch (cause: any) {
+      const code = cause?.body?.error?.code;
+      const retrySec = cause?.body?.error?.details?.retryAfterSeconds;
+      if (retrySec && typeof retrySec === 'number') {
+        setResendSeconds(retrySec);
+      }
+      const msg = code === 'OTP_RATE_LIMITED'
+        ? (retrySec ? `Đã nhập sai quá 5 lần. Tạm khóa bảo mật ${Math.ceil(retrySec / 60)} phút.` : 'Bạn đã nhập sai quá nhiều lần. Yêu cầu mã mới sau 15 phút.')
+        : code === 'INVALID_OTP'
+        ? 'Mã xác nhận không đúng hoặc đã hết hạn (10 phút). Vui lòng thử lại.'
+        : 'Không thể xác thực mã OTP. Vui lòng thử lại.';
+      triggerShake(msg);
+      otpInputRef.current?.focus();
+    } finally {
+      setOtpVerifyLoading(false);
     }
   };
 
@@ -564,10 +599,11 @@ export function AccountSettingsModal({
                     </>
                   )}
                 </button>
-              ) : (
+              ) : !otpVerified ? (
+                /* Bước 5a: Nhập và xác thực mã OTP 6 số */
                 <div className="animate-slide-down">
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12, fontSize: '0.82rem', color: 'var(--ink-muted)' }}>
-                    <span>Mã đã gửi tới:</span>
+                    <span>Mã xác nhận đã gửi tới:</span>
                     <strong style={{ color: 'var(--ink-title)' }}>{otpEmail}</strong>
                   </div>
 
@@ -578,9 +614,11 @@ export function AccountSettingsModal({
                     </div>
                   )}
 
-                  <form onSubmit={handlePasswordUpdate} className={formShaking ? 'animate-shake' : ''}>
+                  <form onSubmit={handleVerifyOtp} className={formShaking ? 'animate-shake' : ''}>
                     <div className="form-group">
-                      <label className="form-label" htmlFor="password-otp-input">Mã xác nhận (6 chữ số)</label>
+                      <label className="form-label" htmlFor="password-otp-input">
+                        Bước 1: Nhập mã xác nhận (6 chữ số)
+                      </label>
                       <div className="otp-input-container">
                         <input
                           id="password-otp-input"
@@ -603,8 +641,77 @@ export function AccountSettingsModal({
                       </div>
                     </div>
 
+                    <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 10, marginTop: 14 }}>
+                      <button
+                        type="submit"
+                        className="btn btn-primary btn-sm"
+                        disabled={otpVerifyLoading || otpCode.length !== 6}
+                      >
+                        {otpVerifyLoading ? (
+                          <>
+                            <Loader2 size={14} className="animate-spin" />
+                            <span>Đang kiểm tra mã…</span>
+                          </>
+                        ) : (
+                          'Tiếp tục: Đặt mật khẩu mới'
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-secondary btn-sm resend-btn"
+                        onClick={handleRequestOtp}
+                        disabled={otpRequestLoading || resendSeconds > 0}
+                      >
+                        {otpRequestLoading ? (
+                          <>
+                            <Loader2 size={14} className="animate-spin" />
+                            <span>Đang gửi mã…</span>
+                          </>
+                        ) : resendSeconds > 0 ? (
+                          <>
+                            <RefreshCw size={14} className="animate-pulse-subtle" />
+                            <span>Gửi lại sau {resendSeconds}s</span>
+                          </>
+                        ) : (
+                          <>
+                            <RefreshCw size={14} />
+                            <span>Gửi lại mã</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              ) : (
+                /* Bước 5b: Sau khi xác thực mã OTP xong mới hiện form nhập mật khẩu mới */
+                <div className="animate-slide-down">
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: 'var(--success-light)', border: '1px solid var(--success)', borderRadius: 'var(--radius-sm)', marginBottom: 14 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.82rem', color: 'var(--success-dark)' }}>
+                      <CheckCircle2 size={16} />
+                      <span>Đã xác nhận mã OTP hợp lệ</span>
+                    </div>
+                    <button
+                      type="button"
+                      className="btn-link"
+                      style={{ fontSize: '0.78rem', color: 'var(--accent)', cursor: 'pointer', background: 'none', border: 'none' }}
+                      onClick={() => setOtpVerified(false)}
+                    >
+                      Nhập mã khác
+                    </button>
+                  </div>
+
+                  {inlinePasswordError && (
+                    <div className="inline-form-error animate-shake" role="alert">
+                      <AlertCircle size={15} style={{ flexShrink: 0, marginTop: 1 }} />
+                      <span>{inlinePasswordError}</span>
+                    </div>
+                  )}
+
+                  <form onSubmit={handlePasswordUpdate} className={formShaking ? 'animate-shake' : ''}>
                     <div className="form-group">
-                      <label className="form-label" htmlFor="new-password-input">Mật khẩu mới</label>
+                      <label className="form-label" htmlFor="new-password-input">
+                        Bước 2: Mật khẩu mới (tối thiểu 12 ký tự)
+                      </label>
                       <div className="password-input-wrapper">
                         <input
                           id="new-password-input"
@@ -677,7 +784,7 @@ export function AccountSettingsModal({
                       <button
                         type="submit"
                         className="btn btn-primary btn-sm"
-                        disabled={passwordLoading || newPassword.length < 12 || newPassword !== confirmPassword || otpCode.length !== 6}
+                        disabled={passwordLoading || newPassword.length < 12 || newPassword !== confirmPassword}
                       >
                         {passwordLoading ? (
                           <>
@@ -686,29 +793,6 @@ export function AccountSettingsModal({
                           </>
                         ) : (
                           'Xác nhận đổi mật khẩu'
-                        )}
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-secondary btn-sm resend-btn"
-                        onClick={handleRequestOtp}
-                        disabled={otpRequestLoading || resendSeconds > 0}
-                      >
-                        {otpRequestLoading ? (
-                          <>
-                            <Loader2 size={14} className="animate-spin" />
-                            <span>Đang gửi mã…</span>
-                          </>
-                        ) : resendSeconds > 0 ? (
-                          <>
-                            <RefreshCw size={14} className="animate-pulse-subtle" />
-                            <span>Gửi lại sau {resendSeconds}s</span>
-                          </>
-                        ) : (
-                          <>
-                            <RefreshCw size={14} />
-                            <span>Gửi lại mã</span>
-                          </>
                         )}
                       </button>
                     </div>

@@ -31,6 +31,14 @@ export class MeController {
     return replySuccess(res, result);
   }
 
+  @Post('verify-password-change-otp')
+  async verifyPasswordChangeOtp(@Body() body: { code: string },
+    @Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const session = await requireAuthAndCsrf(req, this.sessionPort);
+    const valid = await this.identityService.verifyPasswordChangeOtp(session.accountId, body?.code);
+    return replySuccess(res, { valid });
+  }
+
   @Post('change-password')
   async changePasswordWithOtp(@Body() body: ChangePasswordWithOtpInput,
     @Req() req: Request, @Res({ passthrough: true }) res: Response) {

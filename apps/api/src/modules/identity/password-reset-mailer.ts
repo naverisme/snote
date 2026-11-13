@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer';
 export interface PasswordResetMailer {
   send(to: string, token: string): Promise<void>;
   sendOtp(to: string, code: string): Promise<void>;
+  sendResetOtp(to: string, code: string): Promise<void>;
 }
 
 export class SmtpPasswordResetMailer implements PasswordResetMailer {
@@ -41,6 +42,15 @@ export class SmtpPasswordResetMailer implements PasswordResetMailer {
       to,
       subject: 'Mã xác nhận đổi mật khẩu SNOTE',
       text: `Mã xác nhận đổi mật khẩu SNOTE của bạn là ${code}. Mã có hiệu lực trong 10 phút và chỉ dùng một lần. Nếu bạn không yêu cầu, hãy bỏ qua email này.`,
+    });
+  }
+
+  async sendResetOtp(to: string, code: string): Promise<void> {
+    await this.transport.sendMail({
+      from: this.from,
+      to,
+      subject: 'Mã xác nhận đặt lại mật khẩu SNOTE',
+      text: `Mã xác nhận đặt lại mật khẩu SNOTE của bạn là ${code}. Mã có hiệu lực trong 10 phút và chỉ dùng một lần. Nếu bạn không yêu cầu, hãy bỏ qua email này.`,
     });
   }
 }

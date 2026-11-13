@@ -1,7 +1,7 @@
 import { Body, Controller, Inject, Post, Req, Res } from '@nestjs/common';
 import type { components } from '@snote/contracts';
 import { IdentityService } from './identity.service';
-import { getSession, parseCookie, replyCommand, requireAuthAndCsrf, type Request, type Response } from './http-utils';
+import { getSession, parseCookie, replyCommand, replySuccess, requireAuthAndCsrf, type Request, type Response } from './http-utils';
 import type { SessionPort } from '../../core/http';
 
 type Register = components['schemas']['Register'];
@@ -61,6 +61,24 @@ export class AuthController {
   @Post('password-reset-request')
   async passwordResetRequest(@Body() body: PasswordResetRequest, @Res({ passthrough: true }) res: Response) {
     await this.identityService.passwordResetRequest(body);
+    return replyCommand(res, true);
+  }
+
+  @Post('password-reset-otp-request')
+  async requestPasswordResetOtp(@Body() body: { email: string }, @Res({ passthrough: true }) res: Response) {
+    const result = await this.identityService.requestPasswordResetOtp(body?.email);
+    return replySuccess(res, result);
+  }
+
+  @Post('verify-password-reset-otp')
+  async verifyPasswordResetOtp(@Body() body: { email: string; code: string }, @Res({ passthrough: true }) res: Response) {
+    const valid = await this.identityService.verifyPasswordResetOtp(body?.email, body?.code);
+    return replySuccess(res, { valid });
+  }
+
+  @Post('password-reset-otp')
+  async passwordResetWithOtp(@Body() body: { email: string; code: string; newPassword: string }, @Res({ passthrough: true }) res: Response) {
+    await this.identityService.passwordResetWithOtp(body?.email, body?.code, body?.newPassword);
     return replyCommand(res, true);
   }
 

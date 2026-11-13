@@ -385,3 +385,58 @@
   .auth-message { margin: 18px 20px 0; }
   .auth-footer { padding: 16px 20px; }
 }
+
+/* OTP & Reset Form Enhancements */
+.auth-email-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--surface-hover);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  margin-bottom: 14px;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.auth-email-badge strong {
+  color: var(--text-primary);
+}
+
+.auth-resend-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--accent);
+}
+
+.auth-otp-field-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.auth-otp-input {
+  max-width: 170px;
+  letter-spacing: 0.25em;
+  font-family: var(--font-mono, monospace);
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.auth-otp-count {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.auth-hint-valid {
+  color: #16a34a !important;
+}
+
+.auth-hint-invalid {
+  color: #dc2626 !important;
+}
+
