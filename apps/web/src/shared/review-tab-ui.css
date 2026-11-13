@@ -46,6 +46,39 @@
 .review-invite-form .form-label { flex-basis: 100%; }
 .review-member-tabs { border: 0; border-bottom: 1px solid var(--border-divider); border-radius: 0; background: transparent; padding: 0 0 8px; }
 .review-members-directory .table-container { margin-top: 14px; }
+.group-members-screen { gap: 20px; }
+.group-members-hero { align-items: center; }
+.group-members-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.group-members-meta span, .group-role { display: inline-flex; align-items: center; gap: 5px; padding: 4px 8px; border: 1px solid var(--border-divider); border-radius: 5px; background: var(--surface-hover); color: var(--text-primary); font-size: 11px; font-weight: 600; }
+.review-group-shortcuts, .group-members-shortcuts { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.group-members-shortcuts { padding: 0 2px; }
+.group-members-shortcuts > span { color: var(--text-secondary); font-size: 12px; margin-right: 4px; }
+.group-members-stats > div { align-content: start; min-height: 100px; }
+.group-progress { height: 6px; width: 100%; overflow: hidden; border-radius: 99px; background: var(--surface-hover); }
+.group-progress > span { display: block; height: 100%; border-radius: inherit; background: var(--text-primary); transition: width 180ms ease-out; }
+.group-members-leadership .review-panel { align-content: start; gap: 16px; }
+.group-members-leadership h2 { display: flex; align-items: center; gap: 7px; }
+.group-person { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.group-person > div { min-width: 0; display: grid; gap: 3px; }
+.group-person strong { font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
+.group-person small, .group-account-id { font-size: 11px; color: var(--text-secondary); overflow-wrap: anywhere; }
+.group-avatar { display: grid; place-items: center; flex: 0 0 34px; width: 34px; height: 34px; border: 1px solid var(--border-divider); border-radius: 50%; background: var(--surface-hover); font-size: 11px; font-weight: 700; color: var(--text-primary); }
+.group-copy-id { border: 0; background: transparent; color: var(--text-secondary); padding: 5px; border-radius: 5px; cursor: pointer; flex: 0 0 auto; }
+.group-copy-id:hover { background: var(--surface-hover); color: var(--text-primary); }
+.group-members-search { margin-top: 14px; width: min(360px, 100%); }
+.group-members-table { min-width: 720px; }
+.group-members-table td { vertical-align: middle; }
+.group-members-table td:first-child { min-width: 270px; }
+.group-member-progress { display: grid; grid-template-columns: auto minmax(50px, 100px) auto; align-items: center; gap: 8px; white-space: nowrap; font-size: 12px; }
+.group-member-progress small { color: var(--text-secondary); font-size: 11px; }
+.group-request-row, .group-task-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 12px 0; border-top: 1px solid var(--border-divider); }
+.group-request-row > span:first-child, .group-task-row > span:first-child { display: grid; gap: 3px; min-width: 0; overflow-wrap: anywhere; }
+.group-request-row small, .group-task-row small { color: var(--text-secondary); font-size: 11px; }
+.group-task-list { display: grid; gap: 4px; }
+.group-task-list > p { padding: 12px 0; }
+.group-task-row > span:last-child { color: var(--text-secondary); font-size: 12px; }
+.review-member-tabs .review-filters button { display: inline-flex; align-items: center; gap: 6px; }
+@media (max-width: 680px) { .group-members-hero, .group-members-leadership { display: grid; } .group-members-stats { grid-template-columns: 1fr; } .review-group-shortcuts, .group-members-shortcuts { width: 100%; } .group-members-search { width: 100%; } .group-members-table { min-width: 680px; } }
 .notes-composer { display: grid; gap: 10px; }
 .notes-composer p { margin-bottom: 4px; }
 .notes-composer label { font-size: 12px; font-weight: 600; }
