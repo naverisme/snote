@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Copy, X, AlertCircle } from 'lucide-react';
+import { listWorkspaces } from '../../../shared/api';
+import type { Workspace } from '../../../shared/types';
 import type { ItemDetail } from '../types';
 
 export interface CopyItemModalProps {
@@ -15,16 +17,39 @@ export const CopyItemModal: React.FC<CopyItemModalProps> = ({
   onClose,
   onCopy,
 }) => {
-  if (!isOpen || !item) return null;
-
   const [targetWorkspaceId, setTargetWorkspaceId] = useState('');
+  const [destinations, setDestinations] = useState<Workspace[]>([]);
+  const [loadingDestinations, setLoadingDestinations] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isOpen || !item) return;
+    let cancelled = false;
+    setTargetWorkspaceId('');
+    setDestinations([]);
+    setErrorMessage(null);
+    setLoadingDestinations(true);
+    void listWorkspaces().then(result => {
+      if (!cancelled) setDestinations(result.data.filter(workspace => workspace.status === 'active' && workspace.id !== item.workspaceId));
+    }).catch(() => {
+      if (!cancelled) setErrorMessage('Không tải được danh sách workspace. Hãy đóng và mở lại cửa sổ này.');
+    }).finally(() => {
+      if (!cancelled) setLoadingDestinations(false);
+    });
+    return () => { cancelled = true; };
+  }, [isOpen, item?.workspaceId]);
+
+  if (!isOpen || !item) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!targetWorkspaceId.trim()) {
-      setErrorMessage('Vui lòng nhập mã Workspace đích');
+      setErrorMessage('Vui lòng chọn workspace đích.');
+      return;
+    }
+    if (!item.currentRevisionId) {
+      setErrorMessage('Tài liệu chưa có phiên bản để sao chép. Hãy tải lại Thư viện.');
       return;
     }
     setErrorMessage(null);
@@ -50,7 +75,7 @@ export const CopyItemModal: React.FC<CopyItemModalProps> = ({
         <div className="flex justify-between items-center border-b border-[var(--hairline)] pb-3">
           <h2 id="copy-title" className="text-base font-bold text-[var(--ink-title)] flex items-center gap-1.5">
             <Copy size={16} className="text-emerald-600" />
-            <span>Sao chép sang Workspace khác (LIB-04, LIB-12)</span>
+            <span>Sao chép sang workspace khác</span>
           </h2>
           <button
             type="button"
@@ -75,18 +100,20 @@ export const CopyItemModal: React.FC<CopyItemModalProps> = ({
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <div>
-            <label className="block text-xs font-semibold text-[var(--ink-title)] mb-1">
-              Mã Workspace đích (UUID)
+            <label htmlFor="copy-target-workspace" className="block text-xs font-semibold text-[var(--ink-title)] mb-1">
+              Workspace đích
             </label>
-            <input
-              type="text"
-              className="w-full p-2.5 border border-[var(--hairline)] rounded-lg text-xs bg-white text-[var(--ink-body)] focus:border-blue-500 focus:outline-none"
-              placeholder="Nhập workspaceId đích..."
+            <select
+              id="copy-target-workspace"
+              className="w-full p-2.5 border border-[var(--hairline)] rounded-lg text-xs bg-[var(--surface-overlay)] text-[var(--ink-body)] focus:border-blue-500 focus:outline-none"
               value={targetWorkspaceId}
               onChange={(e) => setTargetWorkspaceId(e.target.value)}
-              required
-              autoFocus
-            />
+              required disabled={loadingDestinations || destinations.length === 0}
+            >
+              <option value="">{loadingDestinations ? 'Đang tải workspace...' : 'Chọn workspace'}</option>
+              {destinations.map(workspace => <option key={workspace.id} value={workspace.id}>{workspace.name}</option>)}
+            </select>
+            {!loadingDestinations && destinations.length === 0 && !errorMessage && <p className="mt-1 text-xs text-[var(--ink-subtle)]">Bạn chưa có workspace khác đang hoạt động.</p>}
           </div>
 
           <div className="flex justify-end gap-2 pt-2 border-t border-[var(--hairline)]">
@@ -101,7 +128,7 @@ export const CopyItemModal: React.FC<CopyItemModalProps> = ({
             <button
               type="submit"
               className="px-4 py-1.5 text-xs bg-[var(--accent)] hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-all active:scale-95 disabled:opacity-50"
-              disabled={isSubmitting}
+              disabled={isSubmitting || loadingDestinations || !targetWorkspaceId}
             >
               {isSubmitting ? 'Đang sao chép...' : 'Xác nhận sao chép'}
             </button>

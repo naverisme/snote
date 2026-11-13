@@ -10,7 +10,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import type { ChecklistItemViewModel, Task } from './types';
-import { vietnamDateTimeParts } from '../../shared/time-zone';
+import { VIETNAM_TIME_ZONE, vietnamDateTimeParts } from '../../shared/time-zone';
 
 interface TaskListViewProps {
   tasks: Task[];
@@ -473,6 +473,7 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
                         <Clock size={11} style={{ color: 'var(--ink-muted)' }} />
                         <span>
                           {new Date(task.dueAt).toLocaleDateString('vi-VN', {
+                            timeZone: VIETNAM_TIME_ZONE,
                             day: '2-digit',
                             month: '2-digit',
                             hour: '2-digit',

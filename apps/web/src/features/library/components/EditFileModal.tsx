@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { File, X, Replace, Copy, AlertCircle } from 'lucide-react';
 import type { Folder, ItemDetail } from '../types';
 import { ALLOWED_EXTENSIONS, MAX_FILE_SIZE, formatBytes } from '../utils';
@@ -26,13 +26,21 @@ export const EditFileModal: React.FC<EditFileModalProps> = ({
   onOverwrite,
   onCopyAsNew,
 }) => {
-  if (!isOpen || !item) return null;
-
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [targetFolderId, setTargetFolderId] = useState<string>(item.folderId ?? '');
+  const [targetFolderId, setTargetFolderId] = useState<string>(item?.folderId ?? '');
   const [actionType, setActionType] = useState<'overwrite' | 'copy'>('overwrite');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isOpen || !item) return;
+    setSelectedFile(null);
+    setTargetFolderId(item.folderId ?? '');
+    setActionType('overwrite');
+    setErrorMessage(null);
+  }, [isOpen, item?.id]);
+
+  if (!isOpen || !item) return null;
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setErrorMessage(null);

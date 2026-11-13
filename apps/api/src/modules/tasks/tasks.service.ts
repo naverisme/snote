@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { DomainError, requireAction, type AuthorizationPort, type Principal } from '../../core/authorization';
 import { requireVersion } from '../../core/http';
+import { civilDateEnd } from '../../core/civil-date';
 import type {
   BulkTasks,
   Checklist,
@@ -15,8 +16,10 @@ import type {
   Worksession,
 } from './tasks.types';
 
+type StoredTask = Task & { createdAt: Date; updatedAt: Date; dueDate?: string; dueDateZone?: string };
+
 export class TasksService {
-  private tasks = new Map<string, Task & { createdAt: Date; updatedAt: Date; dueDateZone?: string }>();
+  private tasks = new Map<string, StoredTask>();
   private checklist = new Map<string, ChecklistItemRecord>();
   private workSessions = new Map<string, Worksession & { createdAt: Date; updatedAt: Date; isLate?: boolean }>();
   private audits: TaskAuditRecord[] = [];
@@ -25,7 +28,7 @@ export class TasksService {
 
   /** Restore a request-local domain instance from the persisted task state. */
   loadState(state: {
-    tasks: (Task & { createdAt: Date; updatedAt: Date; dueDateZone?: string })[];
+    tasks: StoredTask[];
     checklist: ChecklistItemRecord[];
     workSessions: (Worksession & { createdAt: Date; updatedAt: Date; isLate?: boolean })[];
     audits: TaskAuditRecord[];
@@ -49,6 +52,14 @@ export class TasksService {
     return this.authPort;
   }
 
+  private dueAt(input: { dueAt?: string; dueDate?: { date: string; timeZone: string } }): string | undefined {
+    if (input.dueAt && input.dueDate) throw new DomainError('INVALID_INPUT', 422);
+    if (input.dueAt) return input.dueAt;
+    if (!input.dueDate) return undefined;
+    try { return civilDateEnd(input.dueDate.date, input.dueDate.timeZone).toISOString(); }
+    catch { throw new DomainError('INVALID_INPUT', 422); }
+  }
+
   // --- Task Operations ---
 
   async createTask(
@@ -68,13 +79,14 @@ export class TasksService {
 
     const taskId = randomUUID();
     const now = new Date();
-    const task: Task & { createdAt: Date; updatedAt: Date; dueDateZone?: string } = {
+    const task: StoredTask = {
       id: taskId,
       workspaceId,
       title: input.title.trim(),
       importance: input.importance ?? 'medium',
       status: 'todo',
-      dueAt: input.dueAt ?? (input.dueDate ? `${input.dueDate.date}T23:59:59Z` : undefined),
+      dueAt: this.dueAt(input),
+      dueDate: input.dueDate?.date,
       dueDateZone: input.dueDate?.timeZone,
       assigneeId: input.assigneeId,
       version: 1,
@@ -187,7 +199,8 @@ export class TasksService {
     }
     if (input.dueAt !== undefined || input.dueDate !== undefined) {
       change.oldDueAt = task.dueAt;
-      task.dueAt = input.dueAt ?? (input.dueDate ? `${input.dueDate.date}T23:59:59Z` : undefined);
+      task.dueAt = this.dueAt(input);
+      task.dueDate = input.dueDate?.date;
       task.dueDateZone = input.dueDate?.timeZone;
       change.newDueAt = task.dueAt;
     }

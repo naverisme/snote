@@ -248,6 +248,8 @@ model TaskAudit {
 
 model Event {
   id String @id @default(uuid()) @db.Uuid
+  ownerId String? @db.Uuid
+  content String?
   scopeType String
   scopeId String @db.Uuid
   kind String

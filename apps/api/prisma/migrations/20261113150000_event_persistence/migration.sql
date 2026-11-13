@@ -1,0 +1,2 @@
+ALTER TABLE "Event" ADD COLUMN "ownerId" UUID;
+ALTER TABLE "Event" ADD COLUMN "content" TEXT;

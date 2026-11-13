@@ -1,3 +1,5 @@
+import { civilDateEnd } from '../../core/civil-date';
+
 export interface AssignmentPolicyFacts {
   deadline: Date | null;
   deadlineDate: Date | null;
@@ -22,14 +24,9 @@ export interface TimelinessResult {
  */
 export function calculateCivilDeadline(dateStr: string, timeZone: string): Date {
   try {
-    // If date is YYYY-MM-DD
-    const [year, month, day] = dateStr.split('-').map(Number);
-    // Rough calculation or ISO representation for end of that day in UTC offset:
-    // To handle timezone deterministically:
-    const d = new Date(Date.UTC(year, month - 1, day, 23, 59, 59, 999));
-    return d;
+    return civilDateEnd(dateStr, timeZone);
   } catch {
-    return new Date(`${dateStr}T23:59:59.999Z`);
+    return civilDateEnd(dateStr, 'UTC');
   }
 }
 

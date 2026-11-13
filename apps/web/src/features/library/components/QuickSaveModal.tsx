@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FileText, Link, X, Download, AlertCircle } from 'lucide-react';
 import { calculateListEnter } from '../markdown-helper';
 
@@ -9,13 +9,17 @@ export interface QuickSaveModalProps {
 }
 
 export const QuickSaveModal: React.FC<QuickSaveModalProps> = ({ isOpen, onClose, onQuickSave }) => {
-  if (!isOpen) return null;
-
   const [type, setType] = useState<'text' | 'link'>('text');
   const [title, setTitle] = useState('');
   const [contentOrUrl, setContentOrUrl] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen) setErrorMessage(null);
+  }, [isOpen]);
+
+  if (!isOpen) return null;
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter') {

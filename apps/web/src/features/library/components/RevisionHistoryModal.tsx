@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { History, X, AlertCircle, FileEdit, Check } from 'lucide-react';
 import type { ItemDetail, LibraryItem } from '../types';
 
@@ -17,14 +17,23 @@ export const RevisionHistoryModal: React.FC<RevisionHistoryModalProps> = ({
   onOverwriteRevision,
   onOverwriteUploadFile,
 }) => {
-  if (!isOpen || !item) return null;
-
   const [isOverwriting, setIsOverwriting] = useState(false);
-  const [newContent, setNewContent] = useState(item.revision?.text || '');
-  const [newUrl, setNewUrl] = useState(item.revision?.url || '');
+  const [newContent, setNewContent] = useState(item?.revision?.text || '');
+  const [newUrl, setNewUrl] = useState(item?.revision?.url || '');
   const [newFile, setNewFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isOpen || !item) return;
+    setIsOverwriting(false);
+    setNewContent(item.revision?.text || '');
+    setNewUrl(item.revision?.url || '');
+    setNewFile(null);
+    setErrorMessage(null);
+  }, [isOpen, item?.id, item?.revision?.id]);
+
+  if (!isOpen || !item) return null;
 
   const handleOverwriteSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

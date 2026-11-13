@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { X } from 'lucide-react';
 import { taskApi } from './api';
 import { listWorkspaces } from '../../shared/api';
+import { vietnamDateTimeParts } from '../../shared/time-zone';
 import { TaskDetailPanel } from './TaskDetailPanel';
 import { TaskFilters } from './TaskFilters';
 import { TaskGanttView } from './TaskGanttView';
@@ -96,16 +97,19 @@ export const TasksContainer: React.FC<TasksContainerProps> = ({
       // If a newer request has started, discard this result (QA-13)
       if (reqId !== activeRequestIdRef.current) return;
 
-      const [loadedSessions, loadedChecklists] = await Promise.all([
-        taskApi.listWorkSessions({ signal: controller.signal }),
-        Promise.all(loadedTasks.map(task => taskApi.listChecklistItems(task.id, { signal: controller.signal }))),
+      const [sessionResult, checklistResults] = await Promise.all([
+        taskApi.listWorkSessions({ signal: controller.signal }).then(data => ({ data, failed: false }), () => ({ data: [] as WorkSessionViewModel[], failed: true })),
+        Promise.allSettled(loadedTasks.map(task => taskApi.listChecklistItems(task.id, { signal: controller.signal }))),
       ]);
       if (reqId !== activeRequestIdRef.current) return;
 
       setTasks(loadedTasks);
-      setChecklistMap(Object.fromEntries(loadedTasks.map((task, index) => [task.id, loadedChecklists[index]])));
-      setWorkSessions(loadedSessions);
-      setError(null);
+      setChecklistMap(Object.fromEntries(loadedTasks.map((task, index) => [task.id,
+        checklistResults[index].status === 'fulfilled' ? checklistResults[index].value : [],
+      ])));
+      setWorkSessions(sessionResult.data);
+      setError(sessionResult.failed || checklistResults.some(result => result.status === 'rejected')
+        ? 'Một số checklist hoặc buổi làm chưa tải được. Hãy thử làm mới.' : null);
     } catch (err: unknown) {
       if (reqId !== activeRequestIdRef.current) return;
       if (err instanceof Error && err.name === 'AbortError') return;
@@ -177,26 +181,26 @@ export const TasksContainer: React.FC<TasksContainerProps> = ({
 
     // Filters
     const now = new Date();
-    const todayStr = now.toISOString().slice(0, 10);
+    const todayStr = vietnamDateTimeParts(now).date;
     const tomorrow = new Date(now.getTime() + 86400000);
-    const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+    const tomorrowStr = vietnamDateTimeParts(tomorrow).date;
 
     if (activeFilter === 'today') {
       result = result.filter(t => {
-        const isDueToday = t.dueAt?.slice(0, 10) === todayStr;
-        const hasSessionToday = workSessions.some(s => s.taskId === t.id && s.startAt.slice(0, 10) === todayStr);
+        const isDueToday = t.dueAt ? vietnamDateTimeParts(t.dueAt).date === todayStr : false;
+        const hasSessionToday = workSessions.some(s => s.taskId === t.id && vietnamDateTimeParts(s.startAt).date === todayStr);
         return isDueToday || hasSessionToday;
       });
     } else if (activeFilter === 'tomorrow') {
       result = result.filter(t => {
-        const isDueTomorrow = t.dueAt?.slice(0, 10) === tomorrowStr;
-        const hasSessionTomorrow = workSessions.some(s => s.taskId === t.id && s.startAt.slice(0, 10) === tomorrowStr);
+        const isDueTomorrow = t.dueAt ? vietnamDateTimeParts(t.dueAt).date === tomorrowStr : false;
+        const hasSessionTomorrow = workSessions.some(s => s.taskId === t.id && vietnamDateTimeParts(s.startAt).date === tomorrowStr);
         return isDueTomorrow || hasSessionTomorrow;
       });
     } else if (activeFilter === 'important') {
       result = result.filter(t => t.importance === 'high');
     } else if (activeFilter === 'upcoming') {
-      result = result.filter(t => t.dueAt && t.dueAt.slice(0, 10) > tomorrowStr);
+      result = result.filter(t => t.dueAt && vietnamDateTimeParts(t.dueAt).date > tomorrowStr);
     }
 
     // Sorting (TASK-11, TASK-17)
@@ -212,8 +216,8 @@ export const TasksContainer: React.FC<TasksContainerProps> = ({
     } else {
       // Default: "Việc tiếp theo" (TASK-11, TASK-17)
       const isOverdue = (t: Task) => Boolean(t.status !== 'done' && t.dueAt && new Date(t.dueAt).getTime() < now.getTime());
-      const isDueToday = (t: Task) => Boolean(t.dueAt?.slice(0, 10) === todayStr);
-      const hasSessionToday = (t: Task) => workSessions.some(s => s.taskId === t.id && s.startAt.slice(0, 10) === todayStr);
+      const isDueToday = (t: Task) => Boolean(t.dueAt && vietnamDateTimeParts(t.dueAt).date === todayStr);
+      const hasSessionToday = (t: Task) => workSessions.some(s => s.taskId === t.id && vietnamDateTimeParts(s.startAt).date === todayStr);
 
       const gOverdue: Task[] = [];
       const gToday: Task[] = [];
@@ -241,8 +245,8 @@ export const TasksContainer: React.FC<TasksContainerProps> = ({
   }, [tasks, searchQuery, activeFilter, sortMode, workSessions]);
 
   const upcomingCount = useMemo(() => {
-    const tomorrowStr = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
-    return tasks.filter(t => t.dueAt && t.dueAt.slice(0, 10) > tomorrowStr).length;
+    const tomorrowStr = vietnamDateTimeParts(new Date(Date.now() + 86400000)).date;
+    return tasks.filter(t => t.dueAt && vietnamDateTimeParts(t.dueAt).date > tomorrowStr).length;
   }, [tasks]);
 
   // Actions

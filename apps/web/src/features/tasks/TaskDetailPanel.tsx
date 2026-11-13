@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { X, Check, Lock, RotateCcw, Plus, Clock } from 'lucide-react';
 import type { ChecklistItemViewModel, Task, WorkSessionViewModel } from './types';
+import { VIETNAM_TIME_ZONE } from '../../shared/time-zone';
 
 interface TaskDetailPanelProps {
   task: Task;
@@ -229,7 +230,7 @@ export const TaskDetailPanel: React.FC<TaskDetailPanelProps> = ({
         <div>
           <span style={{ color: 'var(--ink-title)', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
             <Clock size={12} style={{ color: 'var(--ink-muted)' }} />
-            <span>{task.dueAt ? new Date(task.dueAt).toLocaleString('vi-VN') : 'Chưa đặt hạn'}</span>
+            <span>{task.dueAt ? new Date(task.dueAt).toLocaleString('vi-VN', { timeZone: VIETNAM_TIME_ZONE }) : 'Chưa đặt hạn'}</span>
           </span>
         </div>
 
@@ -409,8 +410,8 @@ export const TaskDetailPanel: React.FC<TaskDetailPanelProps> = ({
               >
                 <div>
                   <span>
-                    {new Date(sess.startAt).toLocaleString('vi-VN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })} -{' '}
-                    {new Date(sess.endAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                    {new Date(sess.startAt).toLocaleString('vi-VN', { timeZone: VIETNAM_TIME_ZONE, month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })} -{' '}
+                    {new Date(sess.endAt).toLocaleTimeString('vi-VN', { timeZone: VIETNAM_TIME_ZONE, hour: '2-digit', minute: '2-digit' })}
                   </span>
                   {sess.isLate && (
                     <span style={{ marginLeft: '6px', fontSize: '10px', background: 'rgba(239, 68, 68, 0.1)', color: 'var(--danger)', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '1px 5px', borderRadius: '4px', fontWeight: 600 }}>

@@ -12,6 +12,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import type { ChecklistItemViewModel, Task, WorkSessionViewModel } from './types';
+import { VIETNAM_TIME_ZONE, vietnamDateTimeParts } from '../../shared/time-zone';
 
 interface TaskGanttViewProps {
   tasks: Task[];
@@ -38,16 +39,16 @@ export const TaskGanttView: React.FC<TaskGanttViewProps> = ({
   const [weekOffset, setWeekOffset] = useState<number>(0);
 
   // Normalize current date
-  const todayStr = useMemo(() => now.toISOString().slice(0, 10), [now]);
+  const todayStr = useMemo(() => vietnamDateTimeParts(now).date, [now]);
 
   // Compute Monday of the base week
   const baseMonday = useMemo(() => {
-    const d = new Date(now);
-    d.setHours(0, 0, 0, 0);
+    const day = vietnamDateTimeParts(now).date;
+    const d = new Date(`${day}T00:00:00+07:00`);
     // Day of week: 0 = Sun, 1 = Mon, ..., 6 = Sat
-    const dayOfWeek = d.getDay();
+    const dayOfWeek = new Date(`${day}T12:00:00Z`).getUTCDay();
     const distanceToMonday = (dayOfWeek + 6) % 7; // Distance from Monday
-    d.setDate(d.getDate() - distanceToMonday + weekOffset * 7);
+    d.setUTCDate(d.getUTCDate() - distanceToMonday + weekOffset * 7);
     return d;
   }, [now, weekOffset]);
 
@@ -58,7 +59,7 @@ export const TaskGanttView: React.FC<TaskGanttViewProps> = ({
   const timelineDays = useMemo(() => {
     return Array.from({ length: TOTAL_DAYS }, (_, i) => {
       const d = new Date(baseMonday);
-      d.setDate(d.getDate() + i);
+      d.setUTCDate(d.getUTCDate() + i);
       return d;
     });
   }, [baseMonday]);
@@ -71,7 +72,7 @@ export const TaskGanttView: React.FC<TaskGanttViewProps> = ({
       return {
         index: wIndex + 1,
         label: `Tuần ${wIndex + 1}`,
-        subLabel: `${start.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })} - ${end.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}`,
+        subLabel: `${start.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', timeZone: VIETNAM_TIME_ZONE })} - ${end.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', timeZone: VIETNAM_TIME_ZONE })}`,
         start,
         end,
       };
@@ -85,7 +86,7 @@ export const TaskGanttView: React.FC<TaskGanttViewProps> = ({
   const rangeHeaderLabel = useMemo(() => {
     const first = timelineDays[0];
     const last = timelineDays[timelineDays.length - 1];
-    return `${first.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })} - ${last.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })} (5 Tuần)`;
+    return `${first.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', timeZone: VIETNAM_TIME_ZONE })} - ${last.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: VIETNAM_TIME_ZONE })} (5 Tuần)`;
   }, [timelineDays]);
 
   // Priority color coding helper
@@ -173,7 +174,7 @@ export const TaskGanttView: React.FC<TaskGanttViewProps> = ({
       } else {
         startDate = new Date(now);
       }
-      startDate.setHours(0, 0, 0, 0);
+      startDate = new Date(`${vietnamDateTimeParts(startDate).date}T00:00:00+07:00`);
 
       let durationDays = 1;
       if (dueDate) {
@@ -604,7 +605,7 @@ export const TaskGanttView: React.FC<TaskGanttViewProps> = ({
                       color: task.isOverdue ? '#dc2626' : task.isDueToday ? '#d97706' : 'var(--ink-body, #334155)',
                     }}
                   >
-                    {task.dueAt ? new Date(task.dueAt).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' }) : '—'}
+                    {task.dueAt ? new Date(task.dueAt).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', timeZone: VIETNAM_TIME_ZONE }) : '—'}
                   </div>
 
                   {/* Duration */}
@@ -705,9 +706,10 @@ export const TaskGanttView: React.FC<TaskGanttViewProps> = ({
             }}
           >
             {timelineDays.map(d => {
-              const dateStr = d.toISOString().slice(0, 10);
+              const dateStr = vietnamDateTimeParts(d).date;
               const isToday = dateStr === todayStr;
-              const isWeekend = d.getDay() === 0 || d.getDay() === 6;
+              const dayOfWeek = new Date(`${dateStr}T12:00:00Z`).getUTCDay();
+              const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
               return (
                 <div
@@ -722,7 +724,7 @@ export const TaskGanttView: React.FC<TaskGanttViewProps> = ({
                     lineHeight: '28px',
                   }}
                 >
-                  {d.toLocaleDateString('vi-VN', { weekday: 'narrow' })} {d.getDate()}
+                  {d.toLocaleDateString('vi-VN', { weekday: 'narrow', timeZone: VIETNAM_TIME_ZONE })} {Number(dateStr.slice(8))}
                 </div>
               );
             })}
@@ -742,9 +744,10 @@ export const TaskGanttView: React.FC<TaskGanttViewProps> = ({
             }}
           >
             {timelineDays.map(d => {
-              const dateStr = d.toISOString().slice(0, 10);
+              const dateStr = vietnamDateTimeParts(d).date;
               const isToday = dateStr === todayStr;
-              const isWeekend = d.getDay() === 0 || d.getDay() === 6;
+              const dayOfWeek = new Date(`${dateStr}T12:00:00Z`).getUTCDay();
+              const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
               return (
                 <div

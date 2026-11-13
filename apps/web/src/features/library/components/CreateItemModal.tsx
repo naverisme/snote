@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FileText, Folder, Link, X, AlertCircle } from 'lucide-react';
 import type { Folder as FolderType, LibraryItemType } from '../types';
 import { ALLOWED_EXTENSIONS, MAX_FILE_SIZE, formatBytes } from '../utils';
@@ -23,8 +23,6 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({
   onCreateLink,
   onUploadFile,
 }) => {
-  if (!isOpen) return null;
-
   const [activeTab, setActiveTab] = useState<LibraryItemType>('text');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -33,6 +31,15 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setSelectedFolderId(initialFolderId ?? '');
+    setSelectedFile(null);
+    setErrorMessage(null);
+  }, [isOpen, initialFolderId]);
+
+  if (!isOpen) return null;
 
   // CUXB-07 / LIB-09: Markdown list auto-continuation and termination helper
   const handleContentKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {

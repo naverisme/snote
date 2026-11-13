@@ -24,6 +24,15 @@ export class CalendarService {
 
   constructor(private readonly authPort: AuthorizationPort = { decide: async () => ({ allowed: false }) }) {}
 
+  loadState(state: ReturnType<CalendarService['snapshot']>): void {
+    this.events = new Map(state.events.map(event => [event.id, event]));
+    this.auditEvents = state.auditEvents;
+  }
+
+  snapshot() {
+    return { events: Array.from(this.events.values()), auditEvents: this.auditEvents };
+  }
+
   private getAuthorizer(): AuthorizationPort {
     return this.authPort;
   }

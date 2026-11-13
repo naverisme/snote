@@ -1,6 +1,7 @@
 import { Prisma, type PrismaClient } from '@prisma/client';
 import type { AuthorizationPort, Principal } from '../../core/authorization';
 import { TasksService } from './tasks.service';
+import { civilDateEnd } from '../../core/civil-date';
 import type { Task } from './tasks.types';
 
 type State = ReturnType<TasksService['snapshot']>;
@@ -31,7 +32,8 @@ async function persist(tx: Prisma.TransactionClient, before: State, after: State
       workspaceId: task.workspaceId,
       assigneeId: task.assigneeId ?? null,
       title: task.title,
-      dueAt: task.dueAt ? new Date(task.dueAt) : null,
+      dueAt: task.dueDate ? null : task.dueAt ? new Date(task.dueAt) : null,
+      dueDate: task.dueDate ? new Date(`${task.dueDate}T00:00:00Z`) : null,
       dueDateZone: task.dueDateZone ?? null,
       importance: task.importance,
       status: task.status,
@@ -89,7 +91,11 @@ async function load(tx: Prisma.TransactionClient, method: string, args: unknown[
     .includes(method) ? await tx.checklistItem.findMany({ where: { taskId } }) : [];
   return {
     tasks: tasks.map(row => ({ id: row.id, workspaceId: row.workspaceId, title: row.title,
-      assigneeId: row.assigneeId ?? undefined, dueAt: row.dueAt?.toISOString(),
+      assigneeId: row.assigneeId ?? undefined,
+      dueAt: row.dueDate && row.dueDateZone
+        ? civilDateEnd(row.dueDate.toISOString().slice(0, 10), row.dueDateZone).toISOString()
+        : row.dueAt?.toISOString(),
+      dueDate: row.dueDate?.toISOString().slice(0, 10),
       dueDateZone: row.dueDateZone ?? undefined, importance: row.importance as Task['importance'],
       status: row.status as Task['status'], version: row.version,
       createdAt: row.createdAt, updatedAt: row.updatedAt })),
