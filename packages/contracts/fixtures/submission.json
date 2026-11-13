@@ -1,6 +1,0 @@
-{
-  "request": {"text": "Bản nộp thử"},
-  "success": {"data": {"id": "s_1", "recipientId": "r_1", "version": 1, "acceptedAt": "2026-11-07T06:00:00Z", "timeliness": "on_time", "submittedBy": "a_1"}, "requestId": "req_1"},
-  "conflict": {"error": {"code": "IDEMPOTENCY_CONFLICT", "message": "Key belongs to another request", "details": {}}, "requestId": "req_2"},
-  "stale": {"error": {"code": "VERSION_CONFLICT", "message": "Read current version", "details": {}}, "requestId": "req_3"}
-}

@@ -32,7 +32,6 @@ import { LibraryView } from '../features/library';
 import { AssignmentFeature } from '../features/assignments';
 import { GroupMembersView } from '../features/workspaces/GroupMembersView';
 import { WorkspaceNotesView } from '../features/notes/WorkspaceNotesView';
-import { PreviewHarness } from '../previews/PreviewHarness';
 
 type AppContext =
   | { type: 'workspace'; workspaceId: string }
@@ -222,19 +221,6 @@ export function App() {
   const currentSpaceFullName = context.type === 'workspace'
     ? (activeWorkspace?.name ?? 'Workspace')
     : (`Lớp: ${activeClass?.name ?? ''}`);
-
-  const isHarnessMode = typeof window !== 'undefined' && (
-    new URLSearchParams(window.location.search).get('preview') === 'harness' ||
-    new URLSearchParams(window.location.search).get('mode') === 'preview'
-  );
-
-  if (isHarnessMode) {
-    return <PreviewHarness />;
-  }
-
-  if (isHarnessMode) {
-    return <PreviewHarness />;
-  }
 
   if (checkingSession) {
     return <main className="auth-page"><div className="auth-page-status" role="status">Đang mở không gian SNOTE…</div></main>;

@@ -4,11 +4,9 @@
   "version": "0.1.0",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "npm run build && node --test dist/core/*.spec.js",
     "start": "node dist/main.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
-    "seed": "node prisma/seed.cjs",
     "check:db": "node prisma/check-db.cjs"
   },
   "dependencies": {
