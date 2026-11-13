@@ -27,11 +27,13 @@ export class ApiExceptionFilter implements ExceptionFilter {
     const reqId = (request.headers['x-request-id'] as string) || requestId();
 
     if (exception instanceof DomainError) {
+      const details: Record<string, unknown> = {};
       if ('retryAfterSeconds' in exception && typeof exception.retryAfterSeconds === 'number') {
         response.setHeader('Retry-After', String(exception.retryAfterSeconds));
+        details.retryAfterSeconds = exception.retryAfterSeconds;
       }
       response.status(exception.status).json({
-        error: { code: exception.code, message: exception.code, details: {} },
+        error: { code: exception.code, message: exception.code, details },
         requestId: reqId,
       });
       return;
