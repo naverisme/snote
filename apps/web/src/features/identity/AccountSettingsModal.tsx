@@ -14,8 +14,10 @@ import {
   UserCheck,
   KeyRound,
   Copy,
+  Mail,
+  RefreshCw,
 } from 'lucide-react';
-import { changeProfile, changeUsages, logout, getMe, passwordReset } from '../../shared/api';
+import { changeProfile, changeUsages, logout, getMe, requestPasswordChangeOtp, changePasswordWithOtp } from '../../shared/api';
 import type { Account } from '../../shared/types';
 import { toggleClassroomUsage } from './usage-selection';
 
@@ -70,9 +72,14 @@ export function AccountSettingsModal({
   const [userAlias, setUserAlias] = useState(account.displayName || '');
   const [copiedId, setCopiedId] = useState(false);
 
-  // Password reset states
+  // Password change by email code
   const [newPassword, setNewPassword] = useState('');
-  const [resetToken, setResetToken] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [otpCode, setOtpCode] = useState('');
+  const [otpEmail, setOtpEmail] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [resendSeconds, setResendSeconds] = useState(0);
+  const [otpRequestLoading, setOtpRequestLoading] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
 
   useEffect(() => {
@@ -82,6 +89,12 @@ export function AccountSettingsModal({
     setError(null);
     setSuccess(null);
   }, [account, isOpen]);
+
+  useEffect(() => {
+    if (!isOpen || resendSeconds <= 0) return;
+    const timer = window.setTimeout(() => setResendSeconds(seconds => Math.max(0, seconds - 1)), 1000);
+    return () => window.clearTimeout(timer);
+  }, [isOpen, resendSeconds]);
 
   if (!isOpen) return null;
 
@@ -155,25 +168,50 @@ export function AccountSettingsModal({
     }
   };
 
+  const handleRequestOtp = async () => {
+    if (otpRequestLoading || resendSeconds > 0) return;
+    setOtpRequestLoading(true);
+    setError(null);
+    setSuccess(null);
+    try {
+      const result = await requestPasswordChangeOtp();
+      setOtpSent(true);
+      setOtpEmail(result.data.emailMasked);
+      setOtpCode('');
+      setResendSeconds(result.data.resendAfterSeconds);
+      setSuccess('Email chứa mã xác nhận đã được máy chủ gửi. Mã có hiệu lực trong 10 phút; kiểm tra cả thư rác.');
+    } catch (cause: any) {
+      const code = cause?.body?.error?.code;
+      setError(code === 'EMAIL_NOT_CONFIGURED' ? 'Chưa cấu hình email. Vui lòng liên hệ quản trị viên.'
+        : code === 'EMAIL_DELIVERY_FAILED' ? 'Không gửi được email. Vui lòng thử lại sau.'
+        : code === 'OTP_RATE_LIMITED' ? 'Bạn đã yêu cầu mã quá nhiều lần. Vui lòng chờ rồi thử lại.'
+        : 'Không thể gửi mã. Kiểm tra kết nối và thử lại.');
+    } finally { setOtpRequestLoading(false); }
+  };
+
   const handlePasswordUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!/^\d{6}$/.test(otpCode)) { setError('Nhập đủ 6 chữ số trong email.'); return; }
     if (newPassword.length < 12) {
       setError('Mật khẩu mới tối thiểu 12 ký tự');
       return;
     }
+    if (newPassword !== confirmPassword) { setError('Mật khẩu nhập lại chưa khớp.'); return; }
     setPasswordLoading(true);
     setError(null);
     try {
-      if (resetToken.trim()) {
-        await passwordReset(resetToken.trim(), newPassword);
-        setSuccess('Mật khẩu đã được cập nhật thành công!');
-        setNewPassword('');
-        setResetToken('');
-      } else {
-        setError('Vui lòng nhập mã token xác thực đổi mật khẩu');
-      }
-    } catch (err: any) {
-      setError(err?.body?.error?.message || err?.message || 'Lỗi đổi mật khẩu');
+      await changePasswordWithOtp(otpCode, newPassword);
+      setNewPassword('');
+      setConfirmPassword('');
+      setOtpCode('');
+      setOtpSent(false);
+      setSuccess('Mật khẩu đã đổi. Bạn sẽ được chuyển tới màn đăng nhập.');
+      window.setTimeout(() => { onLoggedOut(); onClose(); }, 1200);
+    } catch (cause: any) {
+      const code = cause?.body?.error?.code;
+      setError(code === 'OTP_RATE_LIMITED' ? 'Bạn đã nhập sai quá nhiều lần. Yêu cầu mã mới sau 15 phút.'
+        : code === 'INVALID_OTP' ? 'Mã sai hoặc đã hết hạn. Kiểm tra email mới nhất hoặc gửi lại mã.'
+        : 'Không thể đổi mật khẩu. Vui lòng thử lại.');
     } finally {
       setPasswordLoading(false);
     }
@@ -190,7 +228,8 @@ export function AccountSettingsModal({
 
   return (
     <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true">
-      <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '640px' }}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}
+        style={{ width: 'min(640px, calc(100vw - 24px))', maxWidth: '640px', minWidth: 0 }}>
         <div className="modal-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <h2 className="modal-title">Cài đặt & Tùy chọn</h2>
@@ -403,41 +442,61 @@ export function AccountSettingsModal({
               </div>
             </form>
 
-            {/* Change Password Form */}
-            <form onSubmit={handlePasswordUpdate} style={{ paddingTop: 16, borderTop: '1px solid var(--border-light)' }}>
+            <section style={{ paddingTop: 16, borderTop: '1px solid var(--border-light)' }} aria-labelledby="password-change-title">
               <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--ink-title)', display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
                 <KeyRound size={15} />
-                <span>Đổi mật khẩu bảo mật</span>
+                <span id="password-change-title">Đổi mật khẩu qua email</span>
               </span>
-              <div className="form-group">
-                <label className="form-label" htmlFor="reset-token-input">Mã Token đặt lại (hoặc mã xác thực)</label>
-                <input
-                  id="reset-token-input"
-                  className="form-input"
-                  type="text"
-                  placeholder="Nhập mã token đặt lại..."
-                  value={resetToken}
-                  onChange={e => setResetToken(e.target.value)}
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label" htmlFor="new-password-input">Mật khẩu mới (tối thiểu 12 ký tự)</label>
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <input
-                    id="new-password-input"
-                    className="form-input"
-                    type="password"
-                    placeholder="••••••••••••"
-                    value={newPassword}
-                    onChange={e => setNewPassword(e.target.value)}
-                    style={{ flex: 1 }}
-                  />
-                  <button type="submit" className="btn btn-secondary btn-sm" disabled={passwordLoading}>
-                    {passwordLoading ? 'Đang cập nhật...' : 'Đổi mật khẩu'}
-                  </button>
-                </div>
-              </div>
-            </form>
+              <p style={{ color: 'var(--ink-muted)', fontSize: '0.82rem', marginBottom: 12 }}>
+                Gửi mã 6 chữ số đến email tài khoản. Mã dùng một lần trong 10 phút. Đổi thành công sẽ đăng xuất các thiết bị.
+              </p>
+              {!otpSent ? (
+                <button type="button" className="btn btn-secondary btn-sm" onClick={handleRequestOtp} disabled={otpRequestLoading}>
+                  <Mail size={15} /> {otpRequestLoading ? 'Đang gửi mã…' : 'Gửi mã qua email'}
+                </button>
+              ) : (
+                <form onSubmit={handlePasswordUpdate}>
+                  <p style={{ color: 'var(--ink-muted)', fontSize: '0.82rem', marginBottom: 10 }}>
+                    Mã đã gửi tới <strong>{otpEmail}</strong>. Chỉ dùng mã trong email mới nhất.
+                  </p>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="password-otp-input">Mã xác nhận</label>
+                    <input id="password-otp-input" className="form-input" type="text" inputMode="numeric"
+                      autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} required
+                      value={otpCode} onChange={event => setOtpCode(event.target.value.replace(/\D/g, '').slice(0, 6))}
+                      placeholder="6 chữ số" style={{ maxWidth: 190, letterSpacing: '0.18em', fontVariantNumeric: 'tabular-nums' }} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="new-password-input">Mật khẩu mới</label>
+                    <input
+                      id="new-password-input"
+                      className="form-input"
+                      type="password"
+                      autoComplete="new-password"
+                      placeholder="••••••••••••"
+                      value={newPassword}
+                      onChange={e => setNewPassword(e.target.value)}
+                      minLength={12}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="confirm-password-input">Nhập lại mật khẩu mới</label>
+                    <input id="confirm-password-input" className="form-input" type="password" autoComplete="new-password"
+                      minLength={12} required value={confirmPassword} onChange={event => setConfirmPassword(event.target.value)} />
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+                    <button type="submit" className="btn btn-primary btn-sm" disabled={passwordLoading}>
+                      {passwordLoading ? 'Đang cập nhật…' : 'Xác nhận đổi mật khẩu'}
+                    </button>
+                    <button type="button" className="btn btn-secondary btn-sm" onClick={handleRequestOtp}
+                      disabled={otpRequestLoading || resendSeconds > 0}>
+                      <RefreshCw size={14} /> {resendSeconds > 0 ? `Gửi lại sau ${resendSeconds}s` : 'Gửi lại mã'}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </section>
           </div>
         )}
 

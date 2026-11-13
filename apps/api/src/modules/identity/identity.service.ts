@@ -1,7 +1,8 @@
-import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
+import { randomBytes, randomInt, scryptSync, timingSafeEqual } from 'node:crypto';
 import { Prisma, type PrismaClient } from '@prisma/client';
 import type { components } from '@snote/contracts';
-import { DomainError } from '../../core/authorization';
+import type { PasswordChangeOtpRequestResult } from '@snote/contracts/password-change-otp';
+import { DomainError, RateLimitError } from '../../core/authorization';
 import { createSession, hashSecret, type SessionPort, type SessionStore } from '../../core/http';
 import { validateUsages } from './account-service';
 import type { GoogleTokenVerifier } from './google-token-verifier';
@@ -283,6 +284,88 @@ export class IdentityService {
         },
       });
     }, { isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted });
+  }
+
+  async requestPasswordChangeOtp(accountId: string): Promise<PasswordChangeOtpRequestResult> {
+    if (!this.passwordResetMailer) throw new DomainError('EMAIL_NOT_CONFIGURED', 503);
+    const now = new Date();
+    const code = randomInt(100000, 1000000).toString();
+    const codeHash = hashPassword(code);
+    const result = await this.db.$transaction(async tx => {
+      await tx.$queryRaw`SELECT id FROM "Account" WHERE id = ${accountId}::uuid FOR UPDATE`;
+      const account = await tx.account.findUnique({ where: { id: accountId } });
+      if (!account) throw new DomainError('NOT_FOUND', 404);
+      const previous = await tx.passwordChangeOtp.findUnique({ where: { accountId } });
+      if (previous?.lockedUntil && previous.lockedUntil > now) return {
+        status: 'limited' as const, retryAfterSeconds: Math.ceil((previous.lockedUntil.getTime() - now.getTime()) / 1000),
+      };
+      if (previous && now.getTime() - previous.sentAt.getTime() < 60_000) return {
+        status: 'limited' as const, retryAfterSeconds: Math.ceil((60_000 - now.getTime() + previous.sentAt.getTime()) / 1000),
+      };
+      const sameWindow = !!previous && now.getTime() - previous.windowStartedAt.getTime() < 3_600_000;
+      if (sameWindow && previous.sendCount >= 5) return {
+        status: 'limited' as const, retryAfterSeconds: Math.ceil((3_600_000 - now.getTime() + previous.windowStartedAt.getTime()) / 1000),
+      };
+      await tx.passwordChangeOtp.upsert({
+        where: { accountId },
+        create: { accountId, codeHash, sentAt: now, expiresAt: new Date(now.getTime() + 600_000), windowStartedAt: now },
+        update: { codeHash, sentAt: now, expiresAt: new Date(now.getTime() + 600_000), consumedAt: null,
+          windowStartedAt: sameWindow ? previous!.windowStartedAt : now,
+          sendCount: sameWindow ? previous!.sendCount + 1 : 1,
+          failedAttempts: sameWindow ? previous!.failedAttempts : 0,
+          lockedUntil: null },
+      });
+      return { status: 'ready' as const, email: account.email };
+    });
+    if (result.status === 'limited') throw new RateLimitError('OTP_RATE_LIMITED', result.retryAfterSeconds);
+    try {
+      await this.passwordResetMailer.sendOtp(result.email, code);
+    } catch {
+      await this.db.passwordChangeOtp.updateMany({
+        where: { accountId, codeHash, consumedAt: null },
+        data: { consumedAt: new Date(), sentAt: new Date(0), sendCount: { decrement: 1 } },
+      });
+      console.error('Password change code delivery failed');
+      throw new DomainError('EMAIL_DELIVERY_FAILED', 502);
+    }
+    const [local, domain] = result.email.split('@');
+    const emailMasked = `${local.slice(0, 1)}***${local.length > 2 ? local.slice(-1) : ''}@${domain}`;
+    return { emailMasked, resendAfterSeconds: 60, expiresInSeconds: 600 };
+  }
+
+  async changePasswordWithOtp(accountId: string, code: string, newPassword: string): Promise<void> {
+    if (!/^\d{6}$/.test(code) || !newPassword || newPassword.length < 12) {
+      throw new DomainError('INVALID_INPUT', 422);
+    }
+    const now = new Date();
+    const result = await this.db.$transaction(async tx => {
+      await tx.$queryRaw`SELECT id FROM "Account" WHERE id = ${accountId}::uuid FOR UPDATE`;
+      const record = await tx.passwordChangeOtp.findUnique({ where: { accountId } });
+      if (record?.lockedUntil && record.lockedUntil > now) return {
+        status: 'limited' as const, retryAfterSeconds: Math.ceil((record.lockedUntil.getTime() - now.getTime()) / 1000),
+      };
+      if (!record || record.consumedAt || record.expiresAt <= now) return { status: 'invalid' as const };
+      if (!verifyPassword(code, record.codeHash)) {
+        const failedAttempts = record.failedAttempts + 1;
+        await tx.passwordChangeOtp.update({ where: { accountId }, data: {
+          failedAttempts,
+          ...(failedAttempts >= 5 ? { lockedUntil: new Date(now.getTime() + 900_000), consumedAt: now } : {}),
+        } });
+        return failedAttempts >= 5 ? { status: 'limited' as const, retryAfterSeconds: 900 }
+          : { status: 'invalid' as const };
+      }
+      await tx.passwordChangeOtp.update({ where: { accountId }, data: { consumedAt: now, failedAttempts: 0, lockedUntil: null } });
+      await tx.account.update({ where: { id: accountId }, data: {
+        passwordHash: hashPassword(newPassword), version: { increment: 1 },
+      } });
+      await tx.passwordResetToken.updateMany({ where: { accountId, consumedAt: null }, data: { consumedAt: now } });
+      await tx.session.updateMany({ where: { accountId, revokedAt: null }, data: { revokedAt: now } });
+      await tx.auditEvent.create({ data: { actorId: accountId, scopeType: 'account', scopeId: accountId,
+        action: 'account.password_change_otp', targetId: accountId } });
+      return { status: 'success' as const };
+    });
+    if (result.status === 'limited') throw new RateLimitError('OTP_RATE_LIMITED', result.retryAfterSeconds);
+    if (result.status === 'invalid') throw new DomainError('INVALID_OTP', 422);
   }
 
   async getMe(accountId: string): Promise<AccountSchema> {

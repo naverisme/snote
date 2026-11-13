@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Inject, Patch, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Patch, Post, Req, Res } from '@nestjs/common';
 import type { components } from '@snote/contracts';
+import type { ChangePasswordWithOtpInput } from '@snote/contracts/password-change-otp';
 import { IdentityService } from './identity.service';
 import { AccountService } from './account-service';
-import { getSession, replySuccess, requireAuthAndCsrf, type Request, type Response } from './http-utils';
+import { getSession, replyCommand, replySuccess, requireAuthAndCsrf, type Request, type Response } from './http-utils';
 import type { SessionPort } from '../../core/http';
 
 type UsageUpdate = components['schemas']['UsageUpdate'];
@@ -21,6 +22,21 @@ export class MeController {
     const session = await getSession(req, this.sessionPort);
     const account = await this.identityService.getMe(session.accountId);
     return replySuccess(res, account, account.version);
+  }
+
+  @Post('password-change-otp')
+  async requestPasswordChangeOtp(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const session = await requireAuthAndCsrf(req, this.sessionPort);
+    const result = await this.identityService.requestPasswordChangeOtp(session.accountId);
+    return replySuccess(res, result);
+  }
+
+  @Post('change-password')
+  async changePasswordWithOtp(@Body() body: ChangePasswordWithOtpInput,
+    @Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const session = await requireAuthAndCsrf(req, this.sessionPort);
+    await this.identityService.changePasswordWithOtp(session.accountId, body?.code, body?.newPassword);
+    return replyCommand(res, true);
   }
 
   @Patch('usages')

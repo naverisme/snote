@@ -15,3 +15,7 @@ export async function requireAction(port: AuthorizationPort, principal: Principa
 export class DomainError extends Error {
   constructor(public readonly code: string, public readonly status: number) { super(code); }
 }
+
+export class RateLimitError extends DomainError {
+  constructor(code: string, public readonly retryAfterSeconds: number) { super(code, 429); }
+}

@@ -1,4 +1,5 @@
 import { request, ApiError } from '../api/generated/client';
+import type { PasswordChangeOtpRequestResult, ChangePasswordWithOtpInput } from '@snote/contracts/password-change-otp';
 import type {
   Account,
   Class,
@@ -86,6 +87,18 @@ export async function passwordResetRequest(email: string) {
 
 export async function passwordReset(token: string, newPassword: string) {
   return request<ApiResponse<{ success: boolean }>>('/auth/password-reset', 'POST', { token, newPassword });
+}
+
+export async function requestPasswordChangeOtp() {
+  return request<ApiResponse<PasswordChangeOtpRequestResult>>(
+    '/me/password-change-otp', 'POST', undefined, { csrfToken: currentCsrfToken });
+}
+
+export async function changePasswordWithOtp(code: ChangePasswordWithOtpInput['code'], newPassword: ChangePasswordWithOtpInput['newPassword']) {
+  const result = await request<ApiResponse<{ success: boolean }>>(
+    '/me/change-password', 'POST', { code, newPassword }, { csrfToken: currentCsrfToken });
+  setCsrfToken(undefined);
+  return result;
 }
 
 // Me API
